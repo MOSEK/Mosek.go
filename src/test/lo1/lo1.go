@@ -57,7 +57,7 @@ func main() {
         if r != 0 { os.Exit(1) }
 
 	/* Directs the log task stream to the 'printstr' function. */
-	//r = MSK_linkfunctotaskstream(task,MSK_STREAM_LOG,NULL,printstr);
+	task.PutStreamFunc(mosek.STREAM_LOG,func(msg string) { fmt.Print(msg) })
 
 	/* Append 'numcon' empty constraints. The constraints will
 	/* initially have no bounds. */
