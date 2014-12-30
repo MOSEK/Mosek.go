@@ -1,9 +1,5 @@
 package main
 /*
-  Copyright: $$copyright
-
-  File:      $${file}
-
   Purpose:   To demonstrate how to solve a small linear
              optimization problem using the MOSEK C API, 
              and handle the solver result and the problem
