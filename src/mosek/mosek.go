@@ -14,11 +14,13 @@ import "C"
 import "unsafe"
 
 type Env struct {
+        r    int32
         cptr unsafe.Pointer
 }
 
 type Task struct {
-        cptr unsafe.Pointer
+        r               int32
+        cptr            unsafe.Pointer
 	streamfunc      [4]func(string)
 	callbackfunc    func(int32)int
 	infcallbackfunc func(int32,[]float64,[]int32,[]int64)int
@@ -147,14 +149,21 @@ func (t *Task) PutCallbackFunc(fun func(int32) int) {
 		C.MSK_putcallbackfunc(t.ptr(), (*[0]byte)(C.callbackfunc), C.MSKuserhandle_t(unsafe.Pointer(t)))
 	}
 }
-func (t *Task) PutInfoCallbackFunc(fun func(int32) int) {
-	t.callbackfunc = fun
+
+func (t *Task) PutInfoCallbackFunc(fun func(int32,[]float64,[]int32,[]int64) int) {
+	t.infcallbackfunc = fun
 	if fun == nil {
 		C.MSK_putcallbackfunc(t.ptr(), nil, nil)
 	} else {
 		C.MSK_putcallbackfunc(t.ptr(), (*[0]byte)(C.callbackfunc), C.MSKuserhandle_t(unsafe.Pointer(t)))
 	}
 }
+
+func (e * Env)  ClearError() { e.r = RES_OK }
+func (t * Task) ClearError() { t.r = RES_OK }
+
+func (e * Env)  GetRes() int32 { return e.r }
+func (t * Task) GetRes() int32 { return t.r }
 
 func minint(a []int) (r int) {
         if len(a) == 0 { panic("Minimum of empty array") }
@@ -398,39 +407,38 @@ const ( // enum iparam
     IPAR_SOL_READ_WIDTH int32 = 162
     IPAR_SOLUTION_CALLBACK int32 = 163
     IPAR_TIMING_LEVEL int32 = 164
-    IPAR_WARNING_LEVEL int32 = 165
-    IPAR_WRITE_BAS_CONSTRAINTS int32 = 166
-    IPAR_WRITE_BAS_HEAD int32 = 167
-    IPAR_WRITE_BAS_VARIABLES int32 = 168
-    IPAR_WRITE_DATA_COMPRESSED int32 = 169
-    IPAR_WRITE_DATA_FORMAT int32 = 170
-    IPAR_WRITE_DATA_PARAM int32 = 171
-    IPAR_WRITE_FREE_CON int32 = 172
-    IPAR_WRITE_GENERIC_NAMES int32 = 173
-    IPAR_WRITE_GENERIC_NAMES_IO int32 = 174
-    IPAR_WRITE_IGNORE_INCOMPATIBLE_CONIC_ITEMS int32 = 175
-    IPAR_WRITE_IGNORE_INCOMPATIBLE_ITEMS int32 = 176
-    IPAR_WRITE_IGNORE_INCOMPATIBLE_NL_ITEMS int32 = 177
-    IPAR_WRITE_IGNORE_INCOMPATIBLE_PSD_ITEMS int32 = 178
-    IPAR_WRITE_INT_CONSTRAINTS int32 = 179
-    IPAR_WRITE_INT_HEAD int32 = 180
-    IPAR_WRITE_INT_VARIABLES int32 = 181
-    IPAR_WRITE_LP_LINE_WIDTH int32 = 182
-    IPAR_WRITE_LP_QUOTED_NAMES int32 = 183
-    IPAR_WRITE_LP_STRICT_FORMAT int32 = 184
-    IPAR_WRITE_LP_TERMS_PER_LINE int32 = 185
-    IPAR_WRITE_MPS_FORMAT int32 = 186
-    IPAR_WRITE_MPS_INT int32 = 187
-    IPAR_WRITE_PRECISION int32 = 188
-    IPAR_WRITE_SOL_BARVARIABLES int32 = 189
-    IPAR_WRITE_SOL_CONSTRAINTS int32 = 190
-    IPAR_WRITE_SOL_HEAD int32 = 191
-    IPAR_WRITE_SOL_IGNORE_INVALID_NAMES int32 = 192
-    IPAR_WRITE_SOL_VARIABLES int32 = 193
-    IPAR_WRITE_TASK_INC_SOL int32 = 194
-    IPAR_WRITE_XML_MODE int32 = 195
+    IPAR_WRITE_BAS_CONSTRAINTS int32 = 165
+    IPAR_WRITE_BAS_HEAD int32 = 166
+    IPAR_WRITE_BAS_VARIABLES int32 = 167
+    IPAR_WRITE_DATA_COMPRESSED int32 = 168
+    IPAR_WRITE_DATA_FORMAT int32 = 169
+    IPAR_WRITE_DATA_PARAM int32 = 170
+    IPAR_WRITE_FREE_CON int32 = 171
+    IPAR_WRITE_GENERIC_NAMES int32 = 172
+    IPAR_WRITE_GENERIC_NAMES_IO int32 = 173
+    IPAR_WRITE_IGNORE_INCOMPATIBLE_CONIC_ITEMS int32 = 174
+    IPAR_WRITE_IGNORE_INCOMPATIBLE_ITEMS int32 = 175
+    IPAR_WRITE_IGNORE_INCOMPATIBLE_NL_ITEMS int32 = 176
+    IPAR_WRITE_IGNORE_INCOMPATIBLE_PSD_ITEMS int32 = 177
+    IPAR_WRITE_INT_CONSTRAINTS int32 = 178
+    IPAR_WRITE_INT_HEAD int32 = 179
+    IPAR_WRITE_INT_VARIABLES int32 = 180
+    IPAR_WRITE_LP_LINE_WIDTH int32 = 181
+    IPAR_WRITE_LP_QUOTED_NAMES int32 = 182
+    IPAR_WRITE_LP_STRICT_FORMAT int32 = 183
+    IPAR_WRITE_LP_TERMS_PER_LINE int32 = 184
+    IPAR_WRITE_MPS_FORMAT int32 = 185
+    IPAR_WRITE_MPS_INT int32 = 186
+    IPAR_WRITE_PRECISION int32 = 187
+    IPAR_WRITE_SOL_BARVARIABLES int32 = 188
+    IPAR_WRITE_SOL_CONSTRAINTS int32 = 189
+    IPAR_WRITE_SOL_HEAD int32 = 190
+    IPAR_WRITE_SOL_IGNORE_INVALID_NAMES int32 = 191
+    IPAR_WRITE_SOL_VARIABLES int32 = 192
+    IPAR_WRITE_TASK_INC_SOL int32 = 193
+    IPAR_WRITE_XML_MODE int32 = 194
     IPAR_BEGIN int32 = 0
-    IPAR_END   int32 = 196
+    IPAR_END   int32 = 195
 )
 const ( // enum solsta
     SOL_STA_DUAL_FEAS int32 = 3
@@ -1638,3499 +1646,4071 @@ const ( // enum miocontsoltype
     MIO_CONT_SOL_BEGIN int32 = 0
     MIO_CONT_SOL_END   int32 = 4
 )
-func (task *Task) AnalyzeNames(whichstream_ int32,nametype_ int32) (_res int32) {
-  _res = int32(C.MSK_analyzenames(task.ptr(),C.MSKstreamtypee(whichstream_),C.MSKnametypee(nametype_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AnalyzeProblem(whichstream_ int32) (_res int32) {
-  _res = int32(C.MSK_analyzeproblem(task.ptr(),C.MSKstreamtypee(whichstream_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AnalyzeSolution(whichstream_ int32,whichsol_ int32) (_res int32) {
-  _res = int32(C.MSK_analyzesolution(task.ptr(),C.MSKstreamtypee(whichstream_),C.MSKsoltypee(whichsol_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AppendBarvars(dim_ []int32) (_res int32) {
-  num_ := minint([]int{ len(dim_) })
-  _c_num_ := C.MSKint32t(num_)
-  if dim_ == nil { panic("Argument 'dim_' is nil in call to 'AppendBarvars'") }
-  var _c_dim_ *C.MSKint32t = nil
-  if len(dim_) > 0 { _c_dim_ = (*C.MSKint32t)(&dim_[0]) }
-  _res = int32(C.MSK_appendbarvars(task.ptr(),_c_num_,_c_dim_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AppendCone(conetype_ int32,conepar_ float64,submem_ []int32) (_res int32) {
-  _c_conepar_ := C.MSKrealt(conepar_)
-  nummem_ := minint([]int{ len(submem_) })
-  _c_nummem_ := C.MSKint32t(nummem_)
-  if submem_ == nil { panic("Argument 'submem_' is nil in call to 'AppendCone'") }
-  var _c_submem_ *C.MSKint32t = nil
-  if len(submem_) > 0 { _c_submem_ = (*C.MSKint32t)(&submem_[0]) }
-  _res = int32(C.MSK_appendcone(task.ptr(),C.MSKconetypee(conetype_),_c_conepar_,_c_nummem_,_c_submem_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AppendConeSeq(conetype_ int32,conepar_ float64,nummem_ int32,j_ int32) (_res int32) {
-  _c_conepar_ := C.MSKrealt(conepar_)
-  _c_nummem_ := C.MSKint32t(nummem_)
-  _c_j_ := C.MSKint32t(j_)
-  _res = int32(C.MSK_appendconeseq(task.ptr(),C.MSKconetypee(conetype_),_c_conepar_,_c_nummem_,_c_j_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AppendConesSeq(conetype_ []int32,conepar_ []float64,nummem_ []int32,j_ int32) (_res int32) {
-  num_ := minint([]int{ len(conetype_),len(conepar_),len(nummem_) })
-  _c_num_ := C.MSKint32t(num_)
-  if conetype_ == nil { panic("Argument 'conetype_' is nil in call to 'AppendConesSeq'") }
-  var _c_conetype_ *C.MSKconetypee = nil
-  if len(conetype_) > 0 { _c_conetype_ = (*C.MSKconetypee)(unsafe.Pointer(&conetype_[0])) }
-  if conepar_ == nil { panic("Argument 'conepar_' is nil in call to 'AppendConesSeq'") }
-  var _c_conepar_ *C.MSKrealt = nil
-  if len(conepar_) > 0 { _c_conepar_ = (*C.MSKrealt)(&conepar_[0]) }
-  if nummem_ == nil { panic("Argument 'nummem_' is nil in call to 'AppendConesSeq'") }
-  var _c_nummem_ *C.MSKint32t = nil
-  if len(nummem_) > 0 { _c_nummem_ = (*C.MSKint32t)(&nummem_[0]) }
-  _c_j_ := C.MSKint32t(j_)
-  _res = int32(C.MSK_appendconesseq(task.ptr(),_c_num_,_c_conetype_,_c_conepar_,_c_nummem_,_c_j_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AppendCons(num_ int32) (_res int32) {
-  _c_num_ := C.MSKint32t(num_)
-  _res = int32(C.MSK_appendcons(task.ptr(),_c_num_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AppendSparseSymMat(dim_ int32,subi_ []int32,subj_ []int32,valij_ []float64) (_r_idx_ int64,_res int32) {
-  _c_dim_ := C.MSKint32t(dim_)
-  nz_ := minint([]int{ len(subi_),len(subj_),len(valij_) })
-  _c_nz_ := C.MSKint64t(nz_)
-  if subi_ == nil { panic("Argument 'subi_' is nil in call to 'AppendSparseSymMat'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'AppendSparseSymMat'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if valij_ == nil { panic("Argument 'valij_' is nil in call to 'AppendSparseSymMat'") }
-  var _c_valij_ *C.MSKrealt = nil
-  if len(valij_) > 0 { _c_valij_ = (*C.MSKrealt)(&valij_[0]) }
-  var _c_idx_ C.MSKint64t
-  _res = int32(C.MSK_appendsparsesymmat(task.ptr(),_c_dim_,_c_nz_,_c_subi_,_c_subj_,_c_valij_,&_c_idx_))
-  if _res != 0 { return }
-  _r_idx_ = int64(_c_idx_)
-  return
-}
-func (task *Task) AppendStat() (_res int32) {
-  _res = int32(C.MSK_appendstat(task.ptr()))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) AppendVars(num_ int32) (_res int32) {
-  _c_num_ := C.MSKint32t(num_)
-  _res = int32(C.MSK_appendvars(task.ptr(),_c_num_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) BasisCond() (_r_nrmbasis_ float64,_r_nrminvbasis_ float64,_res int32) {
-  var _c_nrmbasis_ C.MSKrealt
-  var _c_nrminvbasis_ C.MSKrealt
-  _res = int32(C.MSK_basiscond(task.ptr(),&_c_nrmbasis_,&_c_nrminvbasis_))
-  if _res != 0 { return }
-  _r_nrmbasis_ = float64(_c_nrmbasis_)
-  _r_nrminvbasis_ = float64(_c_nrminvbasis_)
-  return
-}
-func (task *Task) CheckConvexity() (_res int32) {
-  _res = int32(C.MSK_checkconvexity(task.ptr()))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) CheckMem(file_ string,line_ int32) (_res int32) {
-  _c_file_ := C.CString(file_)
-  defer C.free(unsafe.Pointer(_c_file_))
-  _c_line_ := C.MSKint32t(line_)
-  _res = int32(C.MSK_checkmemtask(task.ptr(),C.MSKstring_t(_c_file_),_c_line_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ChgBound(accmode_ int32,i_ int32,lower_ int32,finite_ int32,value_ float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_lower_ := C.MSKint32t(lower_)
-  _c_finite_ := C.MSKint32t(finite_)
-  _c_value_ := C.MSKrealt(value_)
-  _res = int32(C.MSK_chgbound(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,_c_lower_,_c_finite_,_c_value_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ChgConBound(i_ int32,lower_ int32,finite_ int32,value_ float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_lower_ := C.MSKint32t(lower_)
-  _c_finite_ := C.MSKint32t(finite_)
-  _c_value_ := C.MSKrealt(value_)
-  _res = int32(C.MSK_chgconbound(task.ptr(),_c_i_,_c_lower_,_c_finite_,_c_value_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ChgVarBound(j_ int32,lower_ int32,finite_ int32,value_ float64) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  _c_lower_ := C.MSKint32t(lower_)
-  _c_finite_ := C.MSKint32t(finite_)
-  _c_value_ := C.MSKrealt(value_)
-  _res = int32(C.MSK_chgvarbound(task.ptr(),_c_j_,_c_lower_,_c_finite_,_c_value_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) CommitChanges() (_res int32) {
-  _res = int32(C.MSK_commitchanges(task.ptr()))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) DeleteSolution(whichsol_ int32) (_res int32) {
-  _res = int32(C.MSK_deletesolution(task.ptr(),C.MSKsoltypee(whichsol_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) DualSensitivity(subj_ []int32,leftpricej_ []float64,rightpricej_ []float64,leftrangej_ []float64,rightrangej_ []float64) (_r_leftpricej_ []float64,_r_rightpricej_ []float64,_r_leftrangej_ []float64,_r_rightrangej_ []float64,_res int32) {
-  numj_ := minint([]int{ len(subj_) })
-  _c_numj_ := C.MSKint32t(numj_)
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'DualSensitivity'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if leftpricej_ == nil { leftpricej_ = make([]float64,numj_,numj_)
-  } else if len(leftpricej_) < int(numj_) { panic("Slice in 'leftpricej_' is too short in call to 'DualSensitivity'") }
-  var _c_leftpricej_ *C.MSKrealt = nil
-  if len(leftpricej_) > 0 { _c_leftpricej_ = (*C.MSKrealt)(&leftpricej_[0]) }
-  if rightpricej_ == nil { rightpricej_ = make([]float64,numj_,numj_)
-  } else if len(rightpricej_) < int(numj_) { panic("Slice in 'rightpricej_' is too short in call to 'DualSensitivity'") }
-  var _c_rightpricej_ *C.MSKrealt = nil
-  if len(rightpricej_) > 0 { _c_rightpricej_ = (*C.MSKrealt)(&rightpricej_[0]) }
-  if leftrangej_ == nil { leftrangej_ = make([]float64,numj_,numj_)
-  } else if len(leftrangej_) < int(numj_) { panic("Slice in 'leftrangej_' is too short in call to 'DualSensitivity'") }
-  var _c_leftrangej_ *C.MSKrealt = nil
-  if len(leftrangej_) > 0 { _c_leftrangej_ = (*C.MSKrealt)(&leftrangej_[0]) }
-  if rightrangej_ == nil { rightrangej_ = make([]float64,numj_,numj_)
-  } else if len(rightrangej_) < int(numj_) { panic("Slice in 'rightrangej_' is too short in call to 'DualSensitivity'") }
-  var _c_rightrangej_ *C.MSKrealt = nil
-  if len(rightrangej_) > 0 { _c_rightrangej_ = (*C.MSKrealt)(&rightrangej_[0]) }
-  _res = int32(C.MSK_dualsensitivity(task.ptr(),_c_numj_,_c_subj_,_c_leftpricej_,_c_rightpricej_,_c_leftrangej_,_c_rightrangej_))
-  if _res != 0 { return }
-  _r_leftpricej_ = leftpricej_
-  _r_rightpricej_ = rightpricej_
-  _r_leftrangej_ = leftrangej_
-  _r_rightrangej_ = rightrangej_
-  return
-}
-func (task *Task) GetACol(j_ int32,subj_ []int32,valj_ []float64) (_r_nzj_ int32,_r_subj_ []int32,_r_valj_ []float64,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var _c_nzj_ C.MSKint32t
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetAColNumNz(j_)
-  if _res != 0 { return }
-  if subj_ == nil { subj_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(subj_) < int(__tmp_var_1) { panic("Slice in 'subj_' is too short in call to 'GetACol'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  var __tmp_var_4 int32
-  __tmp_var_4,_res = task.GetAColNumNz(j_)
-  if _res != 0 { return }
-  if valj_ == nil { valj_ = make([]float64,__tmp_var_4,__tmp_var_4)
-  } else if len(valj_) < int(__tmp_var_4) { panic("Slice in 'valj_' is too short in call to 'GetACol'") }
-  var _c_valj_ *C.MSKrealt = nil
-  if len(valj_) > 0 { _c_valj_ = (*C.MSKrealt)(&valj_[0]) }
-  _res = int32(C.MSK_getacol(task.ptr(),_c_j_,&_c_nzj_,_c_subj_,_c_valj_))
-  if _res != 0 { return }
-  _r_nzj_ = int32(_c_nzj_)
-  _r_subj_ = subj_
-  _r_valj_ = valj_
-  return
-}
-func (task *Task) GetAColNumNz(i_ int32) (_r_nzj_ int32,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_nzj_ C.MSKint32t
-  _res = int32(C.MSK_getacolnumnz(task.ptr(),_c_i_,&_c_nzj_))
-  if _res != 0 { return }
-  _r_nzj_ = int32(_c_nzj_)
-  return
-}
-func (task *Task) GetAColSliceTrip(first_ int32,last_ int32,subi_ []int32,subj_ []int32,val_ []float64) (_r_subi_ []int32,_r_subj_ []int32,_r_val_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  maxnumnz_ := minint([]int{ len(subi_),len(subj_),len(val_) })
-  _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
-  var _c_surp_ C.MSKint64t = C.MSKint64t(len(subi_))
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetASliceNumNz(ACC_CON,first_,last_)
-  if _res != 0 { return }
-  if subi_ == nil { subi_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(subi_) < int(__tmp_var_1) { panic("Slice in 'subi_' is too short in call to 'GetAColSliceTrip'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  var __tmp_var_6 int64
-  __tmp_var_6,_res = task.GetASliceNumNz(ACC_CON,first_,last_)
-  if _res != 0 { return }
-  if subj_ == nil { subj_ = make([]int32,__tmp_var_6,__tmp_var_6)
-  } else if len(subj_) < int(__tmp_var_6) { panic("Slice in 'subj_' is too short in call to 'GetAColSliceTrip'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  var __tmp_var_11 int64
-  __tmp_var_11,_res = task.GetASliceNumNz(ACC_CON,first_,last_)
-  if _res != 0 { return }
-  if val_ == nil { val_ = make([]float64,__tmp_var_11,__tmp_var_11)
-  } else if len(val_) < int(__tmp_var_11) { panic("Slice in 'val_' is too short in call to 'GetAColSliceTrip'") }
-  var _c_val_ *C.MSKrealt = nil
-  if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
-  _res = int32(C.MSK_getacolslicetrip(task.ptr(),_c_first_,_c_last_,_c_maxnumnz_,&_c_surp_,_c_subi_,_c_subj_,_c_val_))
-  if _res != 0 { return }
-  _r_subi_ = subi_
-  _r_subj_ = subj_
-  _r_val_ = val_
-  return
-}
-func (task *Task) GetAij(i_ int32,j_ int32) (_r_aij_ float64,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_j_ := C.MSKint32t(j_)
-  var _c_aij_ C.MSKrealt
-  _res = int32(C.MSK_getaij(task.ptr(),_c_i_,_c_j_,&_c_aij_))
-  if _res != 0 { return }
-  _r_aij_ = float64(_c_aij_)
-  return
-}
-func (task *Task) GetAPieceNumNz(firsti_ int32,lasti_ int32,firstj_ int32,lastj_ int32) (_r_numnz_ int32,_res int32) {
-  _c_firsti_ := C.MSKint32t(firsti_)
-  _c_lasti_ := C.MSKint32t(lasti_)
-  _c_firstj_ := C.MSKint32t(firstj_)
-  _c_lastj_ := C.MSKint32t(lastj_)
-  var _c_numnz_ C.MSKint32t
-  _res = int32(C.MSK_getapiecenumnz(task.ptr(),_c_firsti_,_c_lasti_,_c_firstj_,_c_lastj_,&_c_numnz_))
-  if _res != 0 { return }
-  _r_numnz_ = int32(_c_numnz_)
-  return
-}
-func (task *Task) GetARow(i_ int32,subi_ []int32,vali_ []float64) (_r_nzi_ int32,_r_subi_ []int32,_r_vali_ []float64,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_nzi_ C.MSKint32t
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetARowNumNz(i_)
-  if _res != 0 { return }
-  if subi_ == nil { subi_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(subi_) < int(__tmp_var_1) { panic("Slice in 'subi_' is too short in call to 'GetARow'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  var __tmp_var_4 int32
-  __tmp_var_4,_res = task.GetARowNumNz(i_)
-  if _res != 0 { return }
-  if vali_ == nil { vali_ = make([]float64,__tmp_var_4,__tmp_var_4)
-  } else if len(vali_) < int(__tmp_var_4) { panic("Slice in 'vali_' is too short in call to 'GetARow'") }
-  var _c_vali_ *C.MSKrealt = nil
-  if len(vali_) > 0 { _c_vali_ = (*C.MSKrealt)(&vali_[0]) }
-  _res = int32(C.MSK_getarow(task.ptr(),_c_i_,&_c_nzi_,_c_subi_,_c_vali_))
-  if _res != 0 { return }
-  _r_nzi_ = int32(_c_nzi_)
-  _r_subi_ = subi_
-  _r_vali_ = vali_
-  return
-}
-func (task *Task) GetARowNumNz(i_ int32) (_r_nzi_ int32,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_nzi_ C.MSKint32t
-  _res = int32(C.MSK_getarownumnz(task.ptr(),_c_i_,&_c_nzi_))
-  if _res != 0 { return }
-  _r_nzi_ = int32(_c_nzi_)
-  return
-}
-func (task *Task) GetARowSliceTrip(first_ int32,last_ int32,subi_ []int32,subj_ []int32,val_ []float64) (_r_subi_ []int32,_r_subj_ []int32,_r_val_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  maxnumnz_ := minint([]int{ len(subi_),len(subj_),len(val_) })
-  _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
-  var _c_surp_ C.MSKint64t = C.MSKint64t(len(subi_))
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetASliceNumNz(ACC_CON,first_,last_)
-  if _res != 0 { return }
-  if subi_ == nil { subi_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(subi_) < int(__tmp_var_1) { panic("Slice in 'subi_' is too short in call to 'GetARowSliceTrip'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  var __tmp_var_6 int64
-  __tmp_var_6,_res = task.GetASliceNumNz(ACC_CON,first_,last_)
-  if _res != 0 { return }
-  if subj_ == nil { subj_ = make([]int32,__tmp_var_6,__tmp_var_6)
-  } else if len(subj_) < int(__tmp_var_6) { panic("Slice in 'subj_' is too short in call to 'GetARowSliceTrip'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  var __tmp_var_11 int64
-  __tmp_var_11,_res = task.GetASliceNumNz(ACC_CON,first_,last_)
-  if _res != 0 { return }
-  if val_ == nil { val_ = make([]float64,__tmp_var_11,__tmp_var_11)
-  } else if len(val_) < int(__tmp_var_11) { panic("Slice in 'val_' is too short in call to 'GetARowSliceTrip'") }
-  var _c_val_ *C.MSKrealt = nil
-  if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
-  _res = int32(C.MSK_getarowslicetrip(task.ptr(),_c_first_,_c_last_,_c_maxnumnz_,&_c_surp_,_c_subi_,_c_subj_,_c_val_))
-  if _res != 0 { return }
-  _r_subi_ = subi_
-  _r_subj_ = subj_
-  _r_val_ = val_
-  return
-}
-func (task *Task) GetASlice(accmode_ int32,first_ int32,last_ int32,ptrb_ []int64,ptre_ []int64,sub_ []int32,val_ []float64) (_r_ptrb_ []int64,_r_ptre_ []int64,_r_sub_ []int32,_r_val_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetASliceNumNz(accmode_,first_,last_)
-  if _res != 0 { return }
-  maxnumnz_ := __tmp_var_1
-  _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
-  var _c_surp_ C.MSKint64t = C.MSKint64t(len(sub_))
-  if ptrb_ == nil { ptrb_ = make([]int64,last_ - first_,last_ - first_)
-  } else if len(ptrb_) < int(last_ - first_) { panic("Slice in 'ptrb_' is too short in call to 'GetASlice'") }
-  var _c_ptrb_ *C.MSKint64t = nil
-  if len(ptrb_) > 0 { _c_ptrb_ = (*C.MSKint64t)(&ptrb_[0]) }
-  if ptre_ == nil { ptre_ = make([]int64,last_ - first_,last_ - first_)
-  } else if len(ptre_) < int(last_ - first_) { panic("Slice in 'ptre_' is too short in call to 'GetASlice'") }
-  var _c_ptre_ *C.MSKint64t = nil
-  if len(ptre_) > 0 { _c_ptre_ = (*C.MSKint64t)(&ptre_[0]) }
-  if sub_ == nil { sub_ = make([]int32,maxnumnz_,maxnumnz_)
-  } else if len(sub_) < int(maxnumnz_) { panic("Slice in 'sub_' is too short in call to 'GetASlice'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if val_ == nil { val_ = make([]float64,maxnumnz_,maxnumnz_)
-  } else if len(val_) < int(maxnumnz_) { panic("Slice in 'val_' is too short in call to 'GetASlice'") }
-  var _c_val_ *C.MSKrealt = nil
-  if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
-  _res = int32(C.MSK_getaslice64(task.ptr(),C.MSKaccmodee(accmode_),_c_first_,_c_last_,_c_maxnumnz_,&_c_surp_,_c_ptrb_,_c_ptre_,_c_sub_,_c_val_))
-  if _res != 0 { return }
-  _r_ptrb_ = ptrb_
-  _r_ptre_ = ptre_
-  _r_sub_ = sub_
-  _r_val_ = val_
-  return
-}
-func (task *Task) GetASliceNumNz(accmode_ int32,first_ int32,last_ int32) (_r_numnz_ int64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  var _c_numnz_ C.MSKint64t
-  _res = int32(C.MSK_getaslicenumnz64(task.ptr(),C.MSKaccmodee(accmode_),_c_first_,_c_last_,&_c_numnz_))
-  if _res != 0 { return }
-  _r_numnz_ = int64(_c_numnz_)
-  return
-}
-func (task *Task) GetBaraBlockTriplet(subi_ []int32,subj_ []int32,subk_ []int32,subl_ []int32,valijkl_ []float64) (_r_num_ int64,_r_subi_ []int32,_r_subj_ []int32,_r_subk_ []int32,_r_subl_ []int32,_r_valijkl_ []float64,_res int32) {
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetNumBaraBlockTriplets()
-  if _res != 0 { return }
-  maxnum_ := __tmp_var_1
-  _c_maxnum_ := C.MSKint64t(maxnum_)
-  var _c_num_ C.MSKint64t
-  if subi_ == nil { subi_ = make([]int32,maxnum_,maxnum_)
-  } else if len(subi_) < int(maxnum_) { panic("Slice in 'subi_' is too short in call to 'GetBaraBlockTriplet'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  if subj_ == nil { subj_ = make([]int32,maxnum_,maxnum_)
-  } else if len(subj_) < int(maxnum_) { panic("Slice in 'subj_' is too short in call to 'GetBaraBlockTriplet'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if subk_ == nil { subk_ = make([]int32,maxnum_,maxnum_)
-  } else if len(subk_) < int(maxnum_) { panic("Slice in 'subk_' is too short in call to 'GetBaraBlockTriplet'") }
-  var _c_subk_ *C.MSKint32t = nil
-  if len(subk_) > 0 { _c_subk_ = (*C.MSKint32t)(&subk_[0]) }
-  if subl_ == nil { subl_ = make([]int32,maxnum_,maxnum_)
-  } else if len(subl_) < int(maxnum_) { panic("Slice in 'subl_' is too short in call to 'GetBaraBlockTriplet'") }
-  var _c_subl_ *C.MSKint32t = nil
-  if len(subl_) > 0 { _c_subl_ = (*C.MSKint32t)(&subl_[0]) }
-  if valijkl_ == nil { valijkl_ = make([]float64,maxnum_,maxnum_)
-  } else if len(valijkl_) < int(maxnum_) { panic("Slice in 'valijkl_' is too short in call to 'GetBaraBlockTriplet'") }
-  var _c_valijkl_ *C.MSKrealt = nil
-  if len(valijkl_) > 0 { _c_valijkl_ = (*C.MSKrealt)(&valijkl_[0]) }
-  _res = int32(C.MSK_getbarablocktriplet(task.ptr(),_c_maxnum_,&_c_num_,_c_subi_,_c_subj_,_c_subk_,_c_subl_,_c_valijkl_))
-  if _res != 0 { return }
-  _r_num_ = int64(_c_num_)
-  _r_subi_ = subi_
-  _r_subj_ = subj_
-  _r_subk_ = subk_
-  _r_subl_ = subl_
-  _r_valijkl_ = valijkl_
-  return
-}
-func (task *Task) GetBaraIdx(idx_ int64,sub_ []int64,weights_ []float64) (_r_i_ int32,_r_j_ int32,_r_num_ int64,_r_sub_ []int64,_r_weights_ []float64,_res int32) {
-  _c_idx_ := C.MSKint64t(idx_)
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetBaraIdxInfo(idx_)
-  if _res != 0 { return }
-  maxnum_ := __tmp_var_1
-  _c_maxnum_ := C.MSKint64t(maxnum_)
-  var _c_i_ C.MSKint32t
-  var _c_j_ C.MSKint32t
-  var _c_num_ C.MSKint64t
-  if sub_ == nil { sub_ = make([]int64,maxnum_,maxnum_)
-  } else if len(sub_) < int(maxnum_) { panic("Slice in 'sub_' is too short in call to 'GetBaraIdx'") }
-  var _c_sub_ *C.MSKint64t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint64t)(&sub_[0]) }
-  if weights_ == nil { weights_ = make([]float64,maxnum_,maxnum_)
-  } else if len(weights_) < int(maxnum_) { panic("Slice in 'weights_' is too short in call to 'GetBaraIdx'") }
-  var _c_weights_ *C.MSKrealt = nil
-  if len(weights_) > 0 { _c_weights_ = (*C.MSKrealt)(&weights_[0]) }
-  _res = int32(C.MSK_getbaraidx(task.ptr(),_c_idx_,_c_maxnum_,&_c_i_,&_c_j_,&_c_num_,_c_sub_,_c_weights_))
-  if _res != 0 { return }
-  _r_i_ = int32(_c_i_)
-  _r_j_ = int32(_c_j_)
-  _r_num_ = int64(_c_num_)
-  _r_sub_ = sub_
-  _r_weights_ = weights_
-  return
-}
-func (task *Task) GetBaraIdxIJ(idx_ int64) (_r_i_ int32,_r_j_ int32,_res int32) {
-  _c_idx_ := C.MSKint64t(idx_)
-  var _c_i_ C.MSKint32t
-  var _c_j_ C.MSKint32t
-  _res = int32(C.MSK_getbaraidxij(task.ptr(),_c_idx_,&_c_i_,&_c_j_))
-  if _res != 0 { return }
-  _r_i_ = int32(_c_i_)
-  _r_j_ = int32(_c_j_)
-  return
-}
-func (task *Task) GetBaraIdxInfo(idx_ int64) (_r_num_ int64,_res int32) {
-  _c_idx_ := C.MSKint64t(idx_)
-  var _c_num_ C.MSKint64t
-  _res = int32(C.MSK_getbaraidxinfo(task.ptr(),_c_idx_,&_c_num_))
-  if _res != 0 { return }
-  _r_num_ = int64(_c_num_)
-  return
-}
-func (task *Task) GetBaraSparsity(idxij_ []int64) (_r_numnz_ int64,_r_idxij_ []int64,_res int32) {
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetNumBaraNz()
-  if _res != 0 { return }
-  maxnumnz_ := __tmp_var_1
-  _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
-  var _c_numnz_ C.MSKint64t
-  if idxij_ == nil { idxij_ = make([]int64,maxnumnz_,maxnumnz_)
-  } else if len(idxij_) < int(maxnumnz_) { panic("Slice in 'idxij_' is too short in call to 'GetBaraSparsity'") }
-  var _c_idxij_ *C.MSKint64t = nil
-  if len(idxij_) > 0 { _c_idxij_ = (*C.MSKint64t)(&idxij_[0]) }
-  _res = int32(C.MSK_getbarasparsity(task.ptr(),_c_maxnumnz_,&_c_numnz_,_c_idxij_))
-  if _res != 0 { return }
-  _r_numnz_ = int64(_c_numnz_)
-  _r_idxij_ = idxij_
-  return
-}
-func (task *Task) GetBarcBlockTriplet(subj_ []int32,subk_ []int32,subl_ []int32,valijkl_ []float64) (_r_num_ int64,_r_subj_ []int32,_r_subk_ []int32,_r_subl_ []int32,_r_valijkl_ []float64,_res int32) {
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetNumBarcBlockTriplets()
-  if _res != 0 { return }
-  maxnum_ := __tmp_var_1
-  _c_maxnum_ := C.MSKint64t(maxnum_)
-  var _c_num_ C.MSKint64t
-  if subj_ == nil { subj_ = make([]int32,maxnum_,maxnum_)
-  } else if len(subj_) < int(maxnum_) { panic("Slice in 'subj_' is too short in call to 'GetBarcBlockTriplet'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if subk_ == nil { subk_ = make([]int32,maxnum_,maxnum_)
-  } else if len(subk_) < int(maxnum_) { panic("Slice in 'subk_' is too short in call to 'GetBarcBlockTriplet'") }
-  var _c_subk_ *C.MSKint32t = nil
-  if len(subk_) > 0 { _c_subk_ = (*C.MSKint32t)(&subk_[0]) }
-  if subl_ == nil { subl_ = make([]int32,maxnum_,maxnum_)
-  } else if len(subl_) < int(maxnum_) { panic("Slice in 'subl_' is too short in call to 'GetBarcBlockTriplet'") }
-  var _c_subl_ *C.MSKint32t = nil
-  if len(subl_) > 0 { _c_subl_ = (*C.MSKint32t)(&subl_[0]) }
-  if valijkl_ == nil { valijkl_ = make([]float64,maxnum_,maxnum_)
-  } else if len(valijkl_) < int(maxnum_) { panic("Slice in 'valijkl_' is too short in call to 'GetBarcBlockTriplet'") }
-  var _c_valijkl_ *C.MSKrealt = nil
-  if len(valijkl_) > 0 { _c_valijkl_ = (*C.MSKrealt)(&valijkl_[0]) }
-  _res = int32(C.MSK_getbarcblocktriplet(task.ptr(),_c_maxnum_,&_c_num_,_c_subj_,_c_subk_,_c_subl_,_c_valijkl_))
-  if _res != 0 { return }
-  _r_num_ = int64(_c_num_)
-  _r_subj_ = subj_
-  _r_subk_ = subk_
-  _r_subl_ = subl_
-  _r_valijkl_ = valijkl_
-  return
-}
-func (task *Task) GetBarcIdx(idx_ int64,sub_ []int64,weights_ []float64) (_r_j_ int32,_r_num_ int64,_r_sub_ []int64,_r_weights_ []float64,_res int32) {
-  _c_idx_ := C.MSKint64t(idx_)
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetBarcIdxInfo(idx_)
-  if _res != 0 { return }
-  maxnum_ := __tmp_var_1
-  _c_maxnum_ := C.MSKint64t(maxnum_)
-  var _c_j_ C.MSKint32t
-  var _c_num_ C.MSKint64t
-  if sub_ == nil { sub_ = make([]int64,maxnum_,maxnum_)
-  } else if len(sub_) < int(maxnum_) { panic("Slice in 'sub_' is too short in call to 'GetBarcIdx'") }
-  var _c_sub_ *C.MSKint64t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint64t)(&sub_[0]) }
-  if weights_ == nil { weights_ = make([]float64,maxnum_,maxnum_)
-  } else if len(weights_) < int(maxnum_) { panic("Slice in 'weights_' is too short in call to 'GetBarcIdx'") }
-  var _c_weights_ *C.MSKrealt = nil
-  if len(weights_) > 0 { _c_weights_ = (*C.MSKrealt)(&weights_[0]) }
-  _res = int32(C.MSK_getbarcidx(task.ptr(),_c_idx_,_c_maxnum_,&_c_j_,&_c_num_,_c_sub_,_c_weights_))
-  if _res != 0 { return }
-  _r_j_ = int32(_c_j_)
-  _r_num_ = int64(_c_num_)
-  _r_sub_ = sub_
-  _r_weights_ = weights_
-  return
-}
-func (task *Task) GetBarcIdxInfo(idx_ int64) (_r_num_ int64,_res int32) {
-  _c_idx_ := C.MSKint64t(idx_)
-  var _c_num_ C.MSKint64t
-  _res = int32(C.MSK_getbarcidxinfo(task.ptr(),_c_idx_,&_c_num_))
-  if _res != 0 { return }
-  _r_num_ = int64(_c_num_)
-  return
-}
-func (task *Task) GetBarcIdxJ(idx_ int64) (_r_j_ int32,_res int32) {
-  _c_idx_ := C.MSKint64t(idx_)
-  var _c_j_ C.MSKint32t
-  _res = int32(C.MSK_getbarcidxj(task.ptr(),_c_idx_,&_c_j_))
-  if _res != 0 { return }
-  _r_j_ = int32(_c_j_)
-  return
-}
-func (task *Task) GetBarcSparsity(idxj_ []int64) (_r_numnz_ int64,_r_idxj_ []int64,_res int32) {
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetNumBarcNz()
-  if _res != 0 { return }
-  maxnumnz_ := __tmp_var_1
-  _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
-  var _c_numnz_ C.MSKint64t
-  if idxj_ == nil { idxj_ = make([]int64,maxnumnz_,maxnumnz_)
-  } else if len(idxj_) < int(maxnumnz_) { panic("Slice in 'idxj_' is too short in call to 'GetBarcSparsity'") }
-  var _c_idxj_ *C.MSKint64t = nil
-  if len(idxj_) > 0 { _c_idxj_ = (*C.MSKint64t)(&idxj_[0]) }
-  _res = int32(C.MSK_getbarcsparsity(task.ptr(),_c_maxnumnz_,&_c_numnz_,_c_idxj_))
-  if _res != 0 { return }
-  _r_numnz_ = int64(_c_numnz_)
-  _r_idxj_ = idxj_
-  return
-}
-func (task *Task) GetBarsJ(whichsol_ int32,j_ int32,barsj_ []float64) (_r_barsj_ []float64,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetLenBarvarJ(j_)
-  if _res != 0 { return }
-  if barsj_ == nil { barsj_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(barsj_) < int(__tmp_var_1) { panic("Slice in 'barsj_' is too short in call to 'GetBarsJ'") }
-  var _c_barsj_ *C.MSKrealt = nil
-  if len(barsj_) > 0 { _c_barsj_ = (*C.MSKrealt)(&barsj_[0]) }
-  _res = int32(C.MSK_getbarsj(task.ptr(),C.MSKsoltypee(whichsol_),_c_j_,_c_barsj_))
-  if _res != 0 { return }
-  _r_barsj_ = barsj_
-  return
-}
-func (task *Task) GetBarvarName(i_ int32) (_r_name_ string,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetBarvarNameLen(i_)
-  if _res != 0 { return }
-  maxlen_ := 1 + __tmp_var_3
-  _c_maxlen_ := C.MSKint32t(maxlen_)
-  _c_name_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
-  defer C.free(unsafe.Pointer(_c_name_))
-  _res = int32(C.MSK_getbarvarname(task.ptr(),_c_i_,_c_maxlen_,C.MSKstring_t(_c_name_)))
-  if _res != 0 { return }
-  _r_name_ = C.GoStringN(_c_name_,C.int(maxlen_))
-  return
-}
-func (task *Task) GetBarvarNameIndex(somename_ string) (_r_asgn_ int32,_r_index_ int32,_res int32) {
-  _c_somename_ := C.CString(somename_)
-  defer C.free(unsafe.Pointer(_c_somename_))
-  var _c_asgn_ C.MSKint32t
-  var _c_index_ C.MSKint32t
-  _res = int32(C.MSK_getbarvarnameindex(task.ptr(),C.MSKstring_t(_c_somename_),&_c_asgn_,&_c_index_))
-  if _res != 0 { return }
-  _r_asgn_ = int32(_c_asgn_)
-  _r_index_ = int32(_c_index_)
-  return
-}
-func (task *Task) GetBarvarNameLen(i_ int32) (_r_len_ int32,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_len_ C.MSKint32t
-  _res = int32(C.MSK_getbarvarnamelen(task.ptr(),_c_i_,&_c_len_))
-  if _res != 0 { return }
-  _r_len_ = int32(_c_len_)
-  return
-}
-func (task *Task) GetBarxJ(whichsol_ int32,j_ int32,barxj_ []float64) (_r_barxj_ []float64,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetLenBarvarJ(j_)
-  if _res != 0 { return }
-  if barxj_ == nil { barxj_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(barxj_) < int(__tmp_var_1) { panic("Slice in 'barxj_' is too short in call to 'GetBarxJ'") }
-  var _c_barxj_ *C.MSKrealt = nil
-  if len(barxj_) > 0 { _c_barxj_ = (*C.MSKrealt)(&barxj_[0]) }
-  _res = int32(C.MSK_getbarxj(task.ptr(),C.MSKsoltypee(whichsol_),_c_j_,_c_barxj_))
-  if _res != 0 { return }
-  _r_barxj_ = barxj_
-  return
-}
-func (task *Task) GetBound(accmode_ int32,i_ int32) (_r_bk_ int32,_r_bl_ float64,_r_bu_ float64,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_bk_ C.MSKboundkeye
-  var _c_bl_ C.MSKrealt
-  var _c_bu_ C.MSKrealt
-  _res = int32(C.MSK_getbound(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,&_c_bk_,&_c_bl_,&_c_bu_))
-  if _res != 0 { return }
-  _r_bk_ = int32(_c_bk_)
-  _r_bl_ = float64(_c_bl_)
-  _r_bu_ = float64(_c_bu_)
-  return
-}
-func (task *Task) GetBoundSlice(accmode_ int32,first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_r_bk_ []int32,_r_bl_ []float64,_r_bu_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if bk_ == nil { bk_ = make([]int32,last_ - first_,last_ - first_)
-  } else if len(bk_) < int(last_ - first_) { panic("Slice in 'bk_' is too short in call to 'GetBoundSlice'") }
-  var _c_bk_ *C.MSKboundkeye = nil
-  if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
-  if bl_ == nil { bl_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(bl_) < int(last_ - first_) { panic("Slice in 'bl_' is too short in call to 'GetBoundSlice'") }
-  var _c_bl_ *C.MSKrealt = nil
-  if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
-  if bu_ == nil { bu_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(bu_) < int(last_ - first_) { panic("Slice in 'bu_' is too short in call to 'GetBoundSlice'") }
-  var _c_bu_ *C.MSKrealt = nil
-  if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
-  _res = int32(C.MSK_getboundslice(task.ptr(),C.MSKaccmodee(accmode_),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  _r_bk_ = bk_
-  _r_bl_ = bl_
-  _r_bu_ = bu_
-  return
-}
-func (task *Task) GetC(c_ []float64) (_r_c_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if c_ == nil { c_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(c_) < int(__tmp_var_1) { panic("Slice in 'c_' is too short in call to 'GetC'") }
-  var _c_c_ *C.MSKrealt = nil
-  if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
-  _res = int32(C.MSK_getc(task.ptr(),_c_c_))
-  if _res != 0 { return }
-  _r_c_ = c_
-  return
-}
-func (task *Task) GetCfix() (_r_cfix_ float64,_res int32) {
-  var _c_cfix_ C.MSKrealt
-  _res = int32(C.MSK_getcfix(task.ptr(),&_c_cfix_))
-  if _res != 0 { return }
-  _r_cfix_ = float64(_c_cfix_)
-  return
-}
-func (task *Task) GetCJ(j_ int32) (_r_cj_ float64,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var _c_cj_ C.MSKrealt
-  _res = int32(C.MSK_getcj(task.ptr(),_c_j_,&_c_cj_))
-  if _res != 0 { return }
-  _r_cj_ = float64(_c_cj_)
-  return
-}
-func (task *Task) GetConBound(i_ int32) (_r_bk_ int32,_r_bl_ float64,_r_bu_ float64,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_bk_ C.MSKboundkeye
-  var _c_bl_ C.MSKrealt
-  var _c_bu_ C.MSKrealt
-  _res = int32(C.MSK_getconbound(task.ptr(),_c_i_,&_c_bk_,&_c_bl_,&_c_bu_))
-  if _res != 0 { return }
-  _r_bk_ = int32(_c_bk_)
-  _r_bl_ = float64(_c_bl_)
-  _r_bu_ = float64(_c_bu_)
-  return
-}
-func (task *Task) GetConBoundSlice(first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_r_bk_ []int32,_r_bl_ []float64,_r_bu_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if bk_ == nil { bk_ = make([]int32,last_ - first_,last_ - first_)
-  } else if len(bk_) < int(last_ - first_) { panic("Slice in 'bk_' is too short in call to 'GetConBoundSlice'") }
-  var _c_bk_ *C.MSKboundkeye = nil
-  if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
-  if bl_ == nil { bl_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(bl_) < int(last_ - first_) { panic("Slice in 'bl_' is too short in call to 'GetConBoundSlice'") }
-  var _c_bl_ *C.MSKrealt = nil
-  if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
-  if bu_ == nil { bu_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(bu_) < int(last_ - first_) { panic("Slice in 'bu_' is too short in call to 'GetConBoundSlice'") }
-  var _c_bu_ *C.MSKrealt = nil
-  if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
-  _res = int32(C.MSK_getconboundslice(task.ptr(),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  _r_bk_ = bk_
-  _r_bl_ = bl_
-  _r_bu_ = bu_
-  return
-}
-func (task *Task) GetCone(k_ int32,submem_ []int32) (_r_conetype_ int32,_r_conepar_ float64,_r_nummem_ int32,_r_submem_ []int32,_res int32) {
-  _c_k_ := C.MSKint32t(k_)
-  var _c_conetype_ C.MSKconetypee
-  var _c_conepar_ C.MSKrealt
-  var _c_nummem_ C.MSKint32t
-  var __tmp_var_1 int32
-  _,_,__tmp_var_1,_res = task.GetConeInfo(k_)
-  if _res != 0 { return }
-  if submem_ == nil { submem_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(submem_) < int(__tmp_var_1) { panic("Slice in 'submem_' is too short in call to 'GetCone'") }
-  var _c_submem_ *C.MSKint32t = nil
-  if len(submem_) > 0 { _c_submem_ = (*C.MSKint32t)(&submem_[0]) }
-  _res = int32(C.MSK_getcone(task.ptr(),_c_k_,&_c_conetype_,&_c_conepar_,&_c_nummem_,_c_submem_))
-  if _res != 0 { return }
-  _r_conetype_ = int32(_c_conetype_)
-  _r_conepar_ = float64(_c_conepar_)
-  _r_nummem_ = int32(_c_nummem_)
-  _r_submem_ = submem_
-  return
-}
-func (task *Task) GetConeInfo(k_ int32) (_r_conetype_ int32,_r_conepar_ float64,_r_nummem_ int32,_res int32) {
-  _c_k_ := C.MSKint32t(k_)
-  var _c_conetype_ C.MSKconetypee
-  var _c_conepar_ C.MSKrealt
-  var _c_nummem_ C.MSKint32t
-  _res = int32(C.MSK_getconeinfo(task.ptr(),_c_k_,&_c_conetype_,&_c_conepar_,&_c_nummem_))
-  if _res != 0 { return }
-  _r_conetype_ = int32(_c_conetype_)
-  _r_conepar_ = float64(_c_conepar_)
-  _r_nummem_ = int32(_c_nummem_)
-  return
-}
-func (task *Task) GetConeName(i_ int32) (_r_name_ string,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetConeNameLen(i_)
-  if _res != 0 { return }
-  maxlen_ := 1 + __tmp_var_3
-  _c_maxlen_ := C.MSKint32t(maxlen_)
-  _c_name_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
-  defer C.free(unsafe.Pointer(_c_name_))
-  _res = int32(C.MSK_getconename(task.ptr(),_c_i_,_c_maxlen_,C.MSKstring_t(_c_name_)))
-  if _res != 0 { return }
-  _r_name_ = C.GoStringN(_c_name_,C.int(maxlen_))
-  return
-}
-func (task *Task) GetConeNameIndex(somename_ string) (_r_asgn_ int32,_r_index_ int32,_res int32) {
-  _c_somename_ := C.CString(somename_)
-  defer C.free(unsafe.Pointer(_c_somename_))
-  var _c_asgn_ C.MSKint32t
-  var _c_index_ C.MSKint32t
-  _res = int32(C.MSK_getconenameindex(task.ptr(),C.MSKstring_t(_c_somename_),&_c_asgn_,&_c_index_))
-  if _res != 0 { return }
-  _r_asgn_ = int32(_c_asgn_)
-  _r_index_ = int32(_c_index_)
-  return
-}
-func (task *Task) GetConeNameLen(i_ int32) (_r_len_ int32,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_len_ C.MSKint32t
-  _res = int32(C.MSK_getconenamelen(task.ptr(),_c_i_,&_c_len_))
-  if _res != 0 { return }
-  _r_len_ = int32(_c_len_)
-  return
-}
-func (task *Task) GetConName(i_ int32) (_r_name_ string,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetConNameLen(i_)
-  if _res != 0 { return }
-  maxlen_ := 1 + __tmp_var_3
-  _c_maxlen_ := C.MSKint32t(maxlen_)
-  _c_name_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
-  defer C.free(unsafe.Pointer(_c_name_))
-  _res = int32(C.MSK_getconname(task.ptr(),_c_i_,_c_maxlen_,C.MSKstring_t(_c_name_)))
-  if _res != 0 { return }
-  _r_name_ = C.GoStringN(_c_name_,C.int(maxlen_))
-  return
-}
-func (task *Task) GetConNameIndex(somename_ string) (_r_asgn_ int32,_r_index_ int32,_res int32) {
-  _c_somename_ := C.CString(somename_)
-  defer C.free(unsafe.Pointer(_c_somename_))
-  var _c_asgn_ C.MSKint32t
-  var _c_index_ C.MSKint32t
-  _res = int32(C.MSK_getconnameindex(task.ptr(),C.MSKstring_t(_c_somename_),&_c_asgn_,&_c_index_))
-  if _res != 0 { return }
-  _r_asgn_ = int32(_c_asgn_)
-  _r_index_ = int32(_c_index_)
-  return
-}
-func (task *Task) GetConNameLen(i_ int32) (_r_len_ int32,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_len_ C.MSKint32t
-  _res = int32(C.MSK_getconnamelen(task.ptr(),_c_i_,&_c_len_))
-  if _res != 0 { return }
-  _r_len_ = int32(_c_len_)
-  return
-}
-func (task *Task) GetCSlice(first_ int32,last_ int32,c_ []float64) (_r_c_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if c_ == nil { c_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(c_) < int(last_ - first_) { panic("Slice in 'c_' is too short in call to 'GetCSlice'") }
-  var _c_c_ *C.MSKrealt = nil
-  if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
-  _res = int32(C.MSK_getcslice(task.ptr(),_c_first_,_c_last_,_c_c_))
-  if _res != 0 { return }
-  _r_c_ = c_
-  return
-}
-func (task *Task) GetDimBarvarJ(j_ int32) (_r_dimbarvarj_ int32,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var _c_dimbarvarj_ C.MSKint32t
-  _res = int32(C.MSK_getdimbarvarj(task.ptr(),_c_j_,&_c_dimbarvarj_))
-  if _res != 0 { return }
-  _r_dimbarvarj_ = int32(_c_dimbarvarj_)
-  return
-}
-func (task *Task) GetDouInf(whichdinf_ int32) (_r_dvalue_ float64,_res int32) {
-  var _c_dvalue_ C.MSKrealt
-  _res = int32(C.MSK_getdouinf(task.ptr(),C.MSKdinfiteme(whichdinf_),&_c_dvalue_))
-  if _res != 0 { return }
-  _r_dvalue_ = float64(_c_dvalue_)
-  return
-}
-func (task *Task) GetDouParam(param_ int32) (_r_parvalue_ float64,_res int32) {
-  var _c_parvalue_ C.MSKrealt
-  _res = int32(C.MSK_getdouparam(task.ptr(),C.MSKdparame(param_),&_c_parvalue_))
-  if _res != 0 { return }
-  _r_parvalue_ = float64(_c_parvalue_)
-  return
-}
-func (task *Task) GetDualObj(whichsol_ int32) (_r_dualobj_ float64,_res int32) {
-  var _c_dualobj_ C.MSKrealt
-  _res = int32(C.MSK_getdualobj(task.ptr(),C.MSKsoltypee(whichsol_),&_c_dualobj_))
-  if _res != 0 { return }
-  _r_dualobj_ = float64(_c_dualobj_)
-  return
-}
-func (task *Task) GetDviolBarvar(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64,_res int32) {
-  num_ := minint([]int{ len(sub_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetDviolBarvar'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if viol_ == nil { viol_ = make([]float64,num_,num_)
-  } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetDviolBarvar'") }
-  var _c_viol_ *C.MSKrealt = nil
-  if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
-  _res = int32(C.MSK_getdviolbarvar(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
-  if _res != 0 { return }
-  _r_viol_ = viol_
-  return
-}
-func (task *Task) GetDviolCon(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64,_res int32) {
-  num_ := minint([]int{ len(sub_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetDviolCon'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if viol_ == nil { viol_ = make([]float64,num_,num_)
-  } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetDviolCon'") }
-  var _c_viol_ *C.MSKrealt = nil
-  if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
-  _res = int32(C.MSK_getdviolcon(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
-  if _res != 0 { return }
-  _r_viol_ = viol_
-  return
-}
-func (task *Task) GetDviolCones(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64,_res int32) {
-  num_ := minint([]int{ len(sub_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetDviolCones'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if viol_ == nil { viol_ = make([]float64,num_,num_)
-  } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetDviolCones'") }
-  var _c_viol_ *C.MSKrealt = nil
-  if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
-  _res = int32(C.MSK_getdviolcones(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
-  if _res != 0 { return }
-  _r_viol_ = viol_
-  return
-}
-func (task *Task) GetDviolVar(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64,_res int32) {
-  num_ := minint([]int{ len(sub_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetDviolVar'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if viol_ == nil { viol_ = make([]float64,num_,num_)
-  } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetDviolVar'") }
-  var _c_viol_ *C.MSKrealt = nil
-  if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
-  _res = int32(C.MSK_getdviolvar(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
-  if _res != 0 { return }
-  _r_viol_ = viol_
-  return
-}
-func (task *Task) GetInfeasibleSubProblem(whichsol_ int32) (_r_inftask_ Task,_res int32) {
-  var _c_inftask_ C.MSKtask_t
-  _res = int32(C.MSK_getinfeasiblesubproblem(task.ptr(),C.MSKsoltypee(whichsol_),&_c_inftask_))
-  if _res != 0 { return }
-  _r_inftask_.cptr = unsafe.Pointer(_c_inftask_)
-  return
-}
-func (task *Task) GetInfIndex(inftype_ int32,infname_ string) (_r_infindex_ int32,_res int32) {
-  _c_infname_ := C.CString(infname_)
-  defer C.free(unsafe.Pointer(_c_infname_))
-  var _c_infindex_ C.MSKint32t
-  _res = int32(C.MSK_getinfindex(task.ptr(),C.MSKinftypee(inftype_),C.MSKstring_t(_c_infname_),&_c_infindex_))
-  if _res != 0 { return }
-  _r_infindex_ = int32(_c_infindex_)
-  return
-}
-func (task *Task) GetInfMax(inftype_ int32,infmax_ []int32) (_r_infmax_ []int32,_res int32) {
-  if infmax_ == nil { infmax_ = make([]int32,MAX_STR_LEN,MAX_STR_LEN)
-  } else if len(infmax_) < int(MAX_STR_LEN) { panic("Slice in 'infmax_' is too short in call to 'GetInfMax'") }
-  var _c_infmax_ *C.MSKint32t = nil
-  if len(infmax_) > 0 { _c_infmax_ = (*C.MSKint32t)(&infmax_[0]) }
-  _res = int32(C.MSK_getinfmax(task.ptr(),C.MSKinftypee(inftype_),_c_infmax_))
-  if _res != 0 { return }
-  _r_infmax_ = infmax_
-  return
-}
-func (task *Task) GetInfName(inftype_ int32,whichinf_ int32) (_r_infname_ string,_res int32) {
-  _c_whichinf_ := C.MSKint32t(whichinf_)
-  _c_infname_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
-  defer C.free(unsafe.Pointer(_c_infname_))
-  _res = int32(C.MSK_getinfname(task.ptr(),C.MSKinftypee(inftype_),_c_whichinf_,C.MSKstring_t(_c_infname_)))
-  if _res != 0 { return }
-  _r_infname_ = C.GoStringN(_c_infname_,C.int(MAX_STR_LEN))
-  return
-}
-func (task *Task) GetIntInf(whichiinf_ int32) (_r_ivalue_ int32,_res int32) {
-  var _c_ivalue_ C.MSKint32t
-  _res = int32(C.MSK_getintinf(task.ptr(),C.MSKiinfiteme(whichiinf_),&_c_ivalue_))
-  if _res != 0 { return }
-  _r_ivalue_ = int32(_c_ivalue_)
-  return
-}
-func (task *Task) GetIntParam(param_ int32) (_r_parvalue_ int32,_res int32) {
-  var _c_parvalue_ C.MSKint32t
-  _res = int32(C.MSK_getintparam(task.ptr(),C.MSKiparame(param_),&_c_parvalue_))
-  if _res != 0 { return }
-  _r_parvalue_ = int32(_c_parvalue_)
-  return
-}
-func (task *Task) GetLenBarvarJ(j_ int32) (_r_lenbarvarj_ int64,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var _c_lenbarvarj_ C.MSKint64t
-  _res = int32(C.MSK_getlenbarvarj(task.ptr(),_c_j_,&_c_lenbarvarj_))
-  if _res != 0 { return }
-  _r_lenbarvarj_ = int64(_c_lenbarvarj_)
-  return
-}
-func (task *Task) GetLintInf(whichliinf_ int32) (_r_ivalue_ int64,_res int32) {
-  var _c_ivalue_ C.MSKint64t
-  _res = int32(C.MSK_getlintinf(task.ptr(),C.MSKliinfiteme(whichliinf_),&_c_ivalue_))
-  if _res != 0 { return }
-  _r_ivalue_ = int64(_c_ivalue_)
-  return
-}
-func (task *Task) GetMaxNumANz() (_r_maxnumanz_ int64,_res int32) {
-  var _c_maxnumanz_ C.MSKint64t
-  _res = int32(C.MSK_getmaxnumanz64(task.ptr(),&_c_maxnumanz_))
-  if _res != 0 { return }
-  _r_maxnumanz_ = int64(_c_maxnumanz_)
-  return
-}
-func (task *Task) GetMaxNumBarvar() (_r_maxnumbarvar_ int32,_res int32) {
-  var _c_maxnumbarvar_ C.MSKint32t
-  _res = int32(C.MSK_getmaxnumbarvar(task.ptr(),&_c_maxnumbarvar_))
-  if _res != 0 { return }
-  _r_maxnumbarvar_ = int32(_c_maxnumbarvar_)
-  return
-}
-func (task *Task) GetMaxNumCon() (_r_maxnumcon_ int32,_res int32) {
-  var _c_maxnumcon_ C.MSKint32t
-  _res = int32(C.MSK_getmaxnumcon(task.ptr(),&_c_maxnumcon_))
-  if _res != 0 { return }
-  _r_maxnumcon_ = int32(_c_maxnumcon_)
-  return
-}
-func (task *Task) GetMaxNumCone() (_r_maxnumcone_ int32,_res int32) {
-  var _c_maxnumcone_ C.MSKint32t
-  _res = int32(C.MSK_getmaxnumcone(task.ptr(),&_c_maxnumcone_))
-  if _res != 0 { return }
-  _r_maxnumcone_ = int32(_c_maxnumcone_)
-  return
-}
-func (task *Task) GetMaxNumQNz() (_r_maxnumqnz_ int64,_res int32) {
-  var _c_maxnumqnz_ C.MSKint64t
-  _res = int32(C.MSK_getmaxnumqnz64(task.ptr(),&_c_maxnumqnz_))
-  if _res != 0 { return }
-  _r_maxnumqnz_ = int64(_c_maxnumqnz_)
-  return
-}
-func (task *Task) GetMaxNumVar() (_r_maxnumvar_ int32,_res int32) {
-  var _c_maxnumvar_ C.MSKint32t
-  _res = int32(C.MSK_getmaxnumvar(task.ptr(),&_c_maxnumvar_))
-  if _res != 0 { return }
-  _r_maxnumvar_ = int32(_c_maxnumvar_)
-  return
-}
-func (task *Task) GetMemUsage() (_r_meminuse_ int64,_r_maxmemuse_ int64,_res int32) {
-  var _c_meminuse_ C.MSKint64t
-  var _c_maxmemuse_ C.MSKint64t
-  _res = int32(C.MSK_getmemusagetask(task.ptr(),&_c_meminuse_,&_c_maxmemuse_))
-  if _res != 0 { return }
-  _r_meminuse_ = int64(_c_meminuse_)
-  _r_maxmemuse_ = int64(_c_maxmemuse_)
-  return
-}
-func (task *Task) GetNumANz() (_r_numanz_ int32,_res int32) {
-  var _c_numanz_ C.MSKint32t
-  _res = int32(C.MSK_getnumanz(task.ptr(),&_c_numanz_))
-  if _res != 0 { return }
-  _r_numanz_ = int32(_c_numanz_)
-  return
-}
-func (task *Task) GetNumANz64() (_r_numanz_ int64,_res int32) {
-  var _c_numanz_ C.MSKint64t
-  _res = int32(C.MSK_getnumanz64(task.ptr(),&_c_numanz_))
-  if _res != 0 { return }
-  _r_numanz_ = int64(_c_numanz_)
-  return
-}
-func (task *Task) GetNumBaraBlockTriplets() (_r_num_ int64,_res int32) {
-  var _c_num_ C.MSKint64t
-  _res = int32(C.MSK_getnumbarablocktriplets(task.ptr(),&_c_num_))
-  if _res != 0 { return }
-  _r_num_ = int64(_c_num_)
-  return
-}
-func (task *Task) GetNumBaraNz() (_r_nz_ int64,_res int32) {
-  var _c_nz_ C.MSKint64t
-  _res = int32(C.MSK_getnumbaranz(task.ptr(),&_c_nz_))
-  if _res != 0 { return }
-  _r_nz_ = int64(_c_nz_)
-  return
-}
-func (task *Task) GetNumBarcBlockTriplets() (_r_num_ int64,_res int32) {
-  var _c_num_ C.MSKint64t
-  _res = int32(C.MSK_getnumbarcblocktriplets(task.ptr(),&_c_num_))
-  if _res != 0 { return }
-  _r_num_ = int64(_c_num_)
-  return
-}
-func (task *Task) GetNumBarcNz() (_r_nz_ int64,_res int32) {
-  var _c_nz_ C.MSKint64t
-  _res = int32(C.MSK_getnumbarcnz(task.ptr(),&_c_nz_))
-  if _res != 0 { return }
-  _r_nz_ = int64(_c_nz_)
-  return
-}
-func (task *Task) GetNumBarvar() (_r_numbarvar_ int32,_res int32) {
-  var _c_numbarvar_ C.MSKint32t
-  _res = int32(C.MSK_getnumbarvar(task.ptr(),&_c_numbarvar_))
-  if _res != 0 { return }
-  _r_numbarvar_ = int32(_c_numbarvar_)
-  return
-}
-func (task *Task) GetNumCon() (_r_numcon_ int32,_res int32) {
-  var _c_numcon_ C.MSKint32t
-  _res = int32(C.MSK_getnumcon(task.ptr(),&_c_numcon_))
-  if _res != 0 { return }
-  _r_numcon_ = int32(_c_numcon_)
-  return
-}
-func (task *Task) GetNumCone() (_r_numcone_ int32,_res int32) {
-  var _c_numcone_ C.MSKint32t
-  _res = int32(C.MSK_getnumcone(task.ptr(),&_c_numcone_))
-  if _res != 0 { return }
-  _r_numcone_ = int32(_c_numcone_)
-  return
-}
-func (task *Task) GetNumConeMem(k_ int32) (_r_nummem_ int32,_res int32) {
-  _c_k_ := C.MSKint32t(k_)
-  var _c_nummem_ C.MSKint32t
-  _res = int32(C.MSK_getnumconemem(task.ptr(),_c_k_,&_c_nummem_))
-  if _res != 0 { return }
-  _r_nummem_ = int32(_c_nummem_)
-  return
-}
-func (task *Task) GetNumIntVar() (_r_numintvar_ int32,_res int32) {
-  var _c_numintvar_ C.MSKint32t
-  _res = int32(C.MSK_getnumintvar(task.ptr(),&_c_numintvar_))
-  if _res != 0 { return }
-  _r_numintvar_ = int32(_c_numintvar_)
-  return
-}
-func (task *Task) GetNumParam(partype_ int32) (_r_numparam_ int32,_res int32) {
-  var _c_numparam_ C.MSKint32t
-  _res = int32(C.MSK_getnumparam(task.ptr(),C.MSKparametertypee(partype_),&_c_numparam_))
-  if _res != 0 { return }
-  _r_numparam_ = int32(_c_numparam_)
-  return
-}
-func (task *Task) GetNumQConKNz(k_ int32) (_r_numqcnz_ int64,_res int32) {
-  _c_k_ := C.MSKint32t(k_)
-  var _c_numqcnz_ C.MSKint64t
-  _res = int32(C.MSK_getnumqconknz64(task.ptr(),_c_k_,&_c_numqcnz_))
-  if _res != 0 { return }
-  _r_numqcnz_ = int64(_c_numqcnz_)
-  return
-}
-func (task *Task) GetNumQObjNz() (_r_numqonz_ int64,_res int32) {
-  var _c_numqonz_ C.MSKint64t
-  _res = int32(C.MSK_getnumqobjnz64(task.ptr(),&_c_numqonz_))
-  if _res != 0 { return }
-  _r_numqonz_ = int64(_c_numqonz_)
-  return
-}
-func (task *Task) GetNumSymMat() (_r_num_ int64,_res int32) {
-  var _c_num_ C.MSKint64t
-  _res = int32(C.MSK_getnumsymmat(task.ptr(),&_c_num_))
-  if _res != 0 { return }
-  _r_num_ = int64(_c_num_)
-  return
-}
-func (task *Task) GetNumVar() (_r_numvar_ int32,_res int32) {
-  var _c_numvar_ C.MSKint32t
-  _res = int32(C.MSK_getnumvar(task.ptr(),&_c_numvar_))
-  if _res != 0 { return }
-  _r_numvar_ = int32(_c_numvar_)
-  return
-}
-func (task *Task) GetObjName() (_r_objname_ string,_res int32) {
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetObjNameLen()
-  if _res != 0 { return }
-  maxlen_ := 1 + __tmp_var_3
-  _c_maxlen_ := C.MSKint32t(maxlen_)
-  _c_objname_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
-  defer C.free(unsafe.Pointer(_c_objname_))
-  _res = int32(C.MSK_getobjname(task.ptr(),_c_maxlen_,C.MSKstring_t(_c_objname_)))
-  if _res != 0 { return }
-  _r_objname_ = C.GoStringN(_c_objname_,C.int(maxlen_))
-  return
-}
-func (task *Task) GetObjNameLen() (_r_len_ int32,_res int32) {
-  var _c_len_ C.MSKint32t
-  _res = int32(C.MSK_getobjnamelen(task.ptr(),&_c_len_))
-  if _res != 0 { return }
-  _r_len_ = int32(_c_len_)
-  return
-}
-func (task *Task) GetObjSense() (_r_sense_ int32,_res int32) {
-  var _c_sense_ C.MSKobjsensee
-  _res = int32(C.MSK_getobjsense(task.ptr(),&_c_sense_))
-  if _res != 0 { return }
-  _r_sense_ = int32(_c_sense_)
-  return
-}
-func (task *Task) GetParamMax(partype_ int32) (_r_parammax_ int32,_res int32) {
-  var _c_parammax_ C.MSKint32t
-  _res = int32(C.MSK_getparammax(task.ptr(),C.MSKparametertypee(partype_),&_c_parammax_))
-  if _res != 0 { return }
-  _r_parammax_ = int32(_c_parammax_)
-  return
-}
-func (task *Task) GetParamName(partype_ int32,param_ int32) (_r_parname_ string,_res int32) {
-  _c_param_ := C.MSKint32t(param_)
-  _c_parname_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
-  defer C.free(unsafe.Pointer(_c_parname_))
-  _res = int32(C.MSK_getparamname(task.ptr(),C.MSKparametertypee(partype_),_c_param_,C.MSKstring_t(_c_parname_)))
-  if _res != 0 { return }
-  _r_parname_ = C.GoStringN(_c_parname_,C.int(MAX_STR_LEN))
-  return
-}
-func (task *Task) GetPrimalObj(whichsol_ int32) (_r_primalobj_ float64,_res int32) {
-  var _c_primalobj_ C.MSKrealt
-  _res = int32(C.MSK_getprimalobj(task.ptr(),C.MSKsoltypee(whichsol_),&_c_primalobj_))
-  if _res != 0 { return }
-  _r_primalobj_ = float64(_c_primalobj_)
-  return
-}
-func (task *Task) GetProbType() (_r_probtype_ int32,_res int32) {
-  var _c_probtype_ C.MSKproblemtypee
-  _res = int32(C.MSK_getprobtype(task.ptr(),&_c_probtype_))
-  if _res != 0 { return }
-  _r_probtype_ = int32(_c_probtype_)
-  return
-}
-func (task *Task) GetProSta(whichsol_ int32) (_r_prosta_ int32,_res int32) {
-  var _c_prosta_ C.MSKprostae
-  _res = int32(C.MSK_getprosta(task.ptr(),C.MSKsoltypee(whichsol_),&_c_prosta_))
-  if _res != 0 { return }
-  _r_prosta_ = int32(_c_prosta_)
-  return
-}
-func (task *Task) GetPviolBarvar(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64,_res int32) {
-  num_ := minint([]int{ len(sub_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetPviolBarvar'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if viol_ == nil { viol_ = make([]float64,num_,num_)
-  } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetPviolBarvar'") }
-  var _c_viol_ *C.MSKrealt = nil
-  if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
-  _res = int32(C.MSK_getpviolbarvar(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
-  if _res != 0 { return }
-  _r_viol_ = viol_
-  return
-}
-func (task *Task) GetPviolCon(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64,_res int32) {
-  num_ := minint([]int{ len(sub_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetPviolCon'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if viol_ == nil { viol_ = make([]float64,num_,num_)
-  } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetPviolCon'") }
-  var _c_viol_ *C.MSKrealt = nil
-  if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
-  _res = int32(C.MSK_getpviolcon(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
-  if _res != 0 { return }
-  _r_viol_ = viol_
-  return
-}
-func (task *Task) GetPviolCones(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64,_res int32) {
-  num_ := minint([]int{ len(sub_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetPviolCones'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if viol_ == nil { viol_ = make([]float64,num_,num_)
-  } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetPviolCones'") }
-  var _c_viol_ *C.MSKrealt = nil
-  if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
-  _res = int32(C.MSK_getpviolcones(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
-  if _res != 0 { return }
-  _r_viol_ = viol_
-  return
-}
-func (task *Task) GetPviolVar(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64,_res int32) {
-  num_ := minint([]int{ len(sub_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetPviolVar'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if viol_ == nil { viol_ = make([]float64,num_,num_)
-  } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetPviolVar'") }
-  var _c_viol_ *C.MSKrealt = nil
-  if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
-  _res = int32(C.MSK_getpviolvar(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
-  if _res != 0 { return }
-  _r_viol_ = viol_
-  return
-}
-func (task *Task) GetQConK(k_ int32,qcsubi_ []int32,qcsubj_ []int32,qcval_ []float64) (_r_numqcnz_ int64,_r_qcsubi_ []int32,_r_qcsubj_ []int32,_r_qcval_ []float64,_res int32) {
-  _c_k_ := C.MSKint32t(k_)
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetNumQConKNz(k_)
-  if _res != 0 { return }
-  maxnumqcnz_ := __tmp_var_1
-  _c_maxnumqcnz_ := C.MSKint64t(maxnumqcnz_)
-  var _c_qcsurp_ C.MSKint64t = C.MSKint64t(len(qcsubi_))
-  var _c_numqcnz_ C.MSKint64t
-  var __tmp_var_4 int64
-  __tmp_var_4,_res = task.GetNumQConKNz(k_)
-  if _res != 0 { return }
-  if qcsubi_ == nil { qcsubi_ = make([]int32,__tmp_var_4,__tmp_var_4)
-  } else if len(qcsubi_) < int(__tmp_var_4) { panic("Slice in 'qcsubi_' is too short in call to 'GetQConK'") }
-  var _c_qcsubi_ *C.MSKint32t = nil
-  if len(qcsubi_) > 0 { _c_qcsubi_ = (*C.MSKint32t)(&qcsubi_[0]) }
-  var __tmp_var_7 int64
-  __tmp_var_7,_res = task.GetNumQConKNz(k_)
-  if _res != 0 { return }
-  if qcsubj_ == nil { qcsubj_ = make([]int32,__tmp_var_7,__tmp_var_7)
-  } else if len(qcsubj_) < int(__tmp_var_7) { panic("Slice in 'qcsubj_' is too short in call to 'GetQConK'") }
-  var _c_qcsubj_ *C.MSKint32t = nil
-  if len(qcsubj_) > 0 { _c_qcsubj_ = (*C.MSKint32t)(&qcsubj_[0]) }
-  var __tmp_var_10 int64
-  __tmp_var_10,_res = task.GetNumQConKNz(k_)
-  if _res != 0 { return }
-  if qcval_ == nil { qcval_ = make([]float64,__tmp_var_10,__tmp_var_10)
-  } else if len(qcval_) < int(__tmp_var_10) { panic("Slice in 'qcval_' is too short in call to 'GetQConK'") }
-  var _c_qcval_ *C.MSKrealt = nil
-  if len(qcval_) > 0 { _c_qcval_ = (*C.MSKrealt)(&qcval_[0]) }
-  _res = int32(C.MSK_getqconk64(task.ptr(),_c_k_,_c_maxnumqcnz_,&_c_qcsurp_,&_c_numqcnz_,_c_qcsubi_,_c_qcsubj_,_c_qcval_))
-  if _res != 0 { return }
-  _r_numqcnz_ = int64(_c_numqcnz_)
-  _r_qcsubi_ = qcsubi_
-  _r_qcsubj_ = qcsubj_
-  _r_qcval_ = qcval_
-  return
-}
-func (task *Task) GetQObj(qosubi_ []int32,qosubj_ []int32,qoval_ []float64) (_r_numqonz_ int32,_r_qosubi_ []int32,_r_qosubj_ []int32,_r_qoval_ []float64,_res int32) {
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetNumQObjNz()
-  if _res != 0 { return }
-  maxnumqonz_ := __tmp_var_1
-  _c_maxnumqonz_ := C.MSKint32t(maxnumqonz_)
-  var _c_qosurp_ C.MSKint32t = C.MSKint32t(len(qosubi_))
-  var _c_numqonz_ C.MSKint32t
-  if qosubi_ == nil { qosubi_ = make([]int32,maxnumqonz_,maxnumqonz_)
-  } else if len(qosubi_) < int(maxnumqonz_) { panic("Slice in 'qosubi_' is too short in call to 'GetQObj'") }
-  var _c_qosubi_ *C.MSKint32t = nil
-  if len(qosubi_) > 0 { _c_qosubi_ = (*C.MSKint32t)(&qosubi_[0]) }
-  if qosubj_ == nil { qosubj_ = make([]int32,maxnumqonz_,maxnumqonz_)
-  } else if len(qosubj_) < int(maxnumqonz_) { panic("Slice in 'qosubj_' is too short in call to 'GetQObj'") }
-  var _c_qosubj_ *C.MSKint32t = nil
-  if len(qosubj_) > 0 { _c_qosubj_ = (*C.MSKint32t)(&qosubj_[0]) }
-  if qoval_ == nil { qoval_ = make([]float64,maxnumqonz_,maxnumqonz_)
-  } else if len(qoval_) < int(maxnumqonz_) { panic("Slice in 'qoval_' is too short in call to 'GetQObj'") }
-  var _c_qoval_ *C.MSKrealt = nil
-  if len(qoval_) > 0 { _c_qoval_ = (*C.MSKrealt)(&qoval_[0]) }
-  _res = int32(C.MSK_getqobj(task.ptr(),_c_maxnumqonz_,&_c_qosurp_,&_c_numqonz_,_c_qosubi_,_c_qosubj_,_c_qoval_))
-  if _res != 0 { return }
-  _r_numqonz_ = int32(_c_numqonz_)
-  _r_qosubi_ = qosubi_
-  _r_qosubj_ = qosubj_
-  _r_qoval_ = qoval_
-  return
-}
-func (task *Task) GetQObj64(qosubi_ []int32,qosubj_ []int32,qoval_ []float64) (_r_numqonz_ int64,_r_qosubi_ []int32,_r_qosubj_ []int32,_r_qoval_ []float64,_res int32) {
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetNumQObjNz()
-  if _res != 0 { return }
-  maxnumqonz_ := __tmp_var_1
-  _c_maxnumqonz_ := C.MSKint64t(maxnumqonz_)
-  var _c_qosurp_ C.MSKint64t = C.MSKint64t(len(qosubi_))
-  var _c_numqonz_ C.MSKint64t
-  if qosubi_ == nil { qosubi_ = make([]int32,maxnumqonz_,maxnumqonz_)
-  } else if len(qosubi_) < int(maxnumqonz_) { panic("Slice in 'qosubi_' is too short in call to 'GetQObj64'") }
-  var _c_qosubi_ *C.MSKint32t = nil
-  if len(qosubi_) > 0 { _c_qosubi_ = (*C.MSKint32t)(&qosubi_[0]) }
-  if qosubj_ == nil { qosubj_ = make([]int32,maxnumqonz_,maxnumqonz_)
-  } else if len(qosubj_) < int(maxnumqonz_) { panic("Slice in 'qosubj_' is too short in call to 'GetQObj64'") }
-  var _c_qosubj_ *C.MSKint32t = nil
-  if len(qosubj_) > 0 { _c_qosubj_ = (*C.MSKint32t)(&qosubj_[0]) }
-  if qoval_ == nil { qoval_ = make([]float64,maxnumqonz_,maxnumqonz_)
-  } else if len(qoval_) < int(maxnumqonz_) { panic("Slice in 'qoval_' is too short in call to 'GetQObj64'") }
-  var _c_qoval_ *C.MSKrealt = nil
-  if len(qoval_) > 0 { _c_qoval_ = (*C.MSKrealt)(&qoval_[0]) }
-  _res = int32(C.MSK_getqobj64(task.ptr(),_c_maxnumqonz_,&_c_qosurp_,&_c_numqonz_,_c_qosubi_,_c_qosubj_,_c_qoval_))
-  if _res != 0 { return }
-  _r_numqonz_ = int64(_c_numqonz_)
-  _r_qosubi_ = qosubi_
-  _r_qosubj_ = qosubj_
-  _r_qoval_ = qoval_
-  return
-}
-func (task *Task) GetQObjIJ(i_ int32,j_ int32) (_r_qoij_ float64,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_j_ := C.MSKint32t(j_)
-  var _c_qoij_ C.MSKrealt
-  _res = int32(C.MSK_getqobjij(task.ptr(),_c_i_,_c_j_,&_c_qoij_))
-  if _res != 0 { return }
-  _r_qoij_ = float64(_c_qoij_)
-  return
-}
-func (task *Task) GetReducedCosts(whichsol_ int32,first_ int32,last_ int32,redcosts_ []float64) (_r_redcosts_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if redcosts_ == nil { redcosts_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(redcosts_) < int(last_ - first_) { panic("Slice in 'redcosts_' is too short in call to 'GetReducedCosts'") }
-  var _c_redcosts_ *C.MSKrealt = nil
-  if len(redcosts_) > 0 { _c_redcosts_ = (*C.MSKrealt)(&redcosts_[0]) }
-  _res = int32(C.MSK_getreducedcosts(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_redcosts_))
-  if _res != 0 { return }
-  _r_redcosts_ = redcosts_
-  return
-}
-func (task *Task) GetSkc(whichsol_ int32,skc_ []int32) (_r_skc_ []int32,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if skc_ == nil { skc_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(skc_) < int(__tmp_var_1) { panic("Slice in 'skc_' is too short in call to 'GetSkc'") }
-  var _c_skc_ *C.MSKstakeye = nil
-  if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
-  _res = int32(C.MSK_getskc(task.ptr(),C.MSKsoltypee(whichsol_),_c_skc_))
-  if _res != 0 { return }
-  _r_skc_ = skc_
-  return
-}
-func (task *Task) GetSkcSlice(whichsol_ int32,first_ int32,last_ int32,skc_ []int32) (_r_skc_ []int32,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if skc_ == nil { skc_ = make([]int32,last_ - first_,last_ - first_)
-  } else if len(skc_) < int(last_ - first_) { panic("Slice in 'skc_' is too short in call to 'GetSkcSlice'") }
-  var _c_skc_ *C.MSKstakeye = nil
-  if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
-  _res = int32(C.MSK_getskcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_skc_))
-  if _res != 0 { return }
-  _r_skc_ = skc_
-  return
-}
-func (task *Task) GetSkx(whichsol_ int32,skx_ []int32) (_r_skx_ []int32,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if skx_ == nil { skx_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(skx_) < int(__tmp_var_1) { panic("Slice in 'skx_' is too short in call to 'GetSkx'") }
-  var _c_skx_ *C.MSKstakeye = nil
-  if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
-  _res = int32(C.MSK_getskx(task.ptr(),C.MSKsoltypee(whichsol_),_c_skx_))
-  if _res != 0 { return }
-  _r_skx_ = skx_
-  return
-}
-func (task *Task) GetSkxSlice(whichsol_ int32,first_ int32,last_ int32,skx_ []int32) (_r_skx_ []int32,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if skx_ == nil { skx_ = make([]int32,last_ - first_,last_ - first_)
-  } else if len(skx_) < int(last_ - first_) { panic("Slice in 'skx_' is too short in call to 'GetSkxSlice'") }
-  var _c_skx_ *C.MSKstakeye = nil
-  if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
-  _res = int32(C.MSK_getskxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_skx_))
-  if _res != 0 { return }
-  _r_skx_ = skx_
-  return
-}
-func (task *Task) GetSlc(whichsol_ int32,slc_ []float64) (_r_slc_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if slc_ == nil { slc_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(slc_) < int(__tmp_var_1) { panic("Slice in 'slc_' is too short in call to 'GetSlc'") }
-  var _c_slc_ *C.MSKrealt = nil
-  if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
-  _res = int32(C.MSK_getslc(task.ptr(),C.MSKsoltypee(whichsol_),_c_slc_))
-  if _res != 0 { return }
-  _r_slc_ = slc_
-  return
-}
-func (task *Task) GetSlcSlice(whichsol_ int32,first_ int32,last_ int32,slc_ []float64) (_r_slc_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if slc_ == nil { slc_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(slc_) < int(last_ - first_) { panic("Slice in 'slc_' is too short in call to 'GetSlcSlice'") }
-  var _c_slc_ *C.MSKrealt = nil
-  if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
-  _res = int32(C.MSK_getslcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_slc_))
-  if _res != 0 { return }
-  _r_slc_ = slc_
-  return
-}
-func (task *Task) GetSlx(whichsol_ int32,slx_ []float64) (_r_slx_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if slx_ == nil { slx_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(slx_) < int(__tmp_var_1) { panic("Slice in 'slx_' is too short in call to 'GetSlx'") }
-  var _c_slx_ *C.MSKrealt = nil
-  if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
-  _res = int32(C.MSK_getslx(task.ptr(),C.MSKsoltypee(whichsol_),_c_slx_))
-  if _res != 0 { return }
-  _r_slx_ = slx_
-  return
-}
-func (task *Task) GetSlxSlice(whichsol_ int32,first_ int32,last_ int32,slx_ []float64) (_r_slx_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if slx_ == nil { slx_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(slx_) < int(last_ - first_) { panic("Slice in 'slx_' is too short in call to 'GetSlxSlice'") }
-  var _c_slx_ *C.MSKrealt = nil
-  if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
-  _res = int32(C.MSK_getslxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_slx_))
-  if _res != 0 { return }
-  _r_slx_ = slx_
-  return
-}
-func (task *Task) GetSnx(whichsol_ int32,snx_ []float64) (_r_snx_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if snx_ == nil { snx_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(snx_) < int(__tmp_var_1) { panic("Slice in 'snx_' is too short in call to 'GetSnx'") }
-  var _c_snx_ *C.MSKrealt = nil
-  if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
-  _res = int32(C.MSK_getsnx(task.ptr(),C.MSKsoltypee(whichsol_),_c_snx_))
-  if _res != 0 { return }
-  _r_snx_ = snx_
-  return
-}
-func (task *Task) GetSnxSlice(whichsol_ int32,first_ int32,last_ int32,snx_ []float64) (_r_snx_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if snx_ == nil { snx_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(snx_) < int(last_ - first_) { panic("Slice in 'snx_' is too short in call to 'GetSnxSlice'") }
-  var _c_snx_ *C.MSKrealt = nil
-  if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
-  _res = int32(C.MSK_getsnxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_snx_))
-  if _res != 0 { return }
-  _r_snx_ = snx_
-  return
-}
-func (task *Task) GetSolSta(whichsol_ int32) (_r_solsta_ int32,_res int32) {
-  var _c_solsta_ C.MSKsolstae
-  _res = int32(C.MSK_getsolsta(task.ptr(),C.MSKsoltypee(whichsol_),&_c_solsta_))
-  if _res != 0 { return }
-  _r_solsta_ = int32(_c_solsta_)
-  return
-}
-func (task *Task) GetSolution(whichsol_ int32,skc_ []int32,skx_ []int32,skn_ []int32,xc_ []float64,xx_ []float64,y_ []float64,slc_ []float64,suc_ []float64,slx_ []float64,sux_ []float64,snx_ []float64) (_r_prosta_ int32,_r_solsta_ int32,_r_skc_ []int32,_r_skx_ []int32,_r_skn_ []int32,_r_xc_ []float64,_r_xx_ []float64,_r_y_ []float64,_r_slc_ []float64,_r_suc_ []float64,_r_slx_ []float64,_r_sux_ []float64,_r_snx_ []float64,_res int32) {
-  var _c_prosta_ C.MSKprostae
-  var _c_solsta_ C.MSKsolstae
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if skc_ == nil { skc_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(skc_) < int(__tmp_var_1) { panic("Slice in 'skc_' is too short in call to 'GetSolution'") }
-  var _c_skc_ *C.MSKstakeye = nil
-  if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if skx_ == nil { skx_ = make([]int32,__tmp_var_3,__tmp_var_3)
-  } else if len(skx_) < int(__tmp_var_3) { panic("Slice in 'skx_' is too short in call to 'GetSolution'") }
-  var _c_skx_ *C.MSKstakeye = nil
-  if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
-  var __tmp_var_5 int32
-  __tmp_var_5,_res = task.GetNumCone()
-  if _res != 0 { return }
-  if skn_ == nil { skn_ = make([]int32,__tmp_var_5,__tmp_var_5)
-  } else if len(skn_) < int(__tmp_var_5) { panic("Slice in 'skn_' is too short in call to 'GetSolution'") }
-  var _c_skn_ *C.MSKstakeye = nil
-  if len(skn_) > 0 { _c_skn_ = (*C.MSKstakeye)(unsafe.Pointer(&skn_[0])) }
-  var __tmp_var_7 int32
-  __tmp_var_7,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if xc_ == nil { xc_ = make([]float64,__tmp_var_7,__tmp_var_7)
-  } else if len(xc_) < int(__tmp_var_7) { panic("Slice in 'xc_' is too short in call to 'GetSolution'") }
-  var _c_xc_ *C.MSKrealt = nil
-  if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
-  var __tmp_var_9 int32
-  __tmp_var_9,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if xx_ == nil { xx_ = make([]float64,__tmp_var_9,__tmp_var_9)
-  } else if len(xx_) < int(__tmp_var_9) { panic("Slice in 'xx_' is too short in call to 'GetSolution'") }
-  var _c_xx_ *C.MSKrealt = nil
-  if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
-  var __tmp_var_11 int32
-  __tmp_var_11,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if y_ == nil { y_ = make([]float64,__tmp_var_11,__tmp_var_11)
-  } else if len(y_) < int(__tmp_var_11) { panic("Slice in 'y_' is too short in call to 'GetSolution'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  var __tmp_var_13 int32
-  __tmp_var_13,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if slc_ == nil { slc_ = make([]float64,__tmp_var_13,__tmp_var_13)
-  } else if len(slc_) < int(__tmp_var_13) { panic("Slice in 'slc_' is too short in call to 'GetSolution'") }
-  var _c_slc_ *C.MSKrealt = nil
-  if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
-  var __tmp_var_15 int32
-  __tmp_var_15,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if suc_ == nil { suc_ = make([]float64,__tmp_var_15,__tmp_var_15)
-  } else if len(suc_) < int(__tmp_var_15) { panic("Slice in 'suc_' is too short in call to 'GetSolution'") }
-  var _c_suc_ *C.MSKrealt = nil
-  if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
-  var __tmp_var_17 int32
-  __tmp_var_17,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if slx_ == nil { slx_ = make([]float64,__tmp_var_17,__tmp_var_17)
-  } else if len(slx_) < int(__tmp_var_17) { panic("Slice in 'slx_' is too short in call to 'GetSolution'") }
-  var _c_slx_ *C.MSKrealt = nil
-  if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
-  var __tmp_var_19 int32
-  __tmp_var_19,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if sux_ == nil { sux_ = make([]float64,__tmp_var_19,__tmp_var_19)
-  } else if len(sux_) < int(__tmp_var_19) { panic("Slice in 'sux_' is too short in call to 'GetSolution'") }
-  var _c_sux_ *C.MSKrealt = nil
-  if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
-  var __tmp_var_21 int32
-  __tmp_var_21,_res = task.GetNumCone()
-  if _res != 0 { return }
-  if snx_ == nil { snx_ = make([]float64,__tmp_var_21,__tmp_var_21)
-  } else if len(snx_) < int(__tmp_var_21) { panic("Slice in 'snx_' is too short in call to 'GetSolution'") }
-  var _c_snx_ *C.MSKrealt = nil
-  if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
-  _res = int32(C.MSK_getsolution(task.ptr(),C.MSKsoltypee(whichsol_),&_c_prosta_,&_c_solsta_,_c_skc_,_c_skx_,_c_skn_,_c_xc_,_c_xx_,_c_y_,_c_slc_,_c_suc_,_c_slx_,_c_sux_,_c_snx_))
-  if _res != 0 { return }
-  _r_prosta_ = int32(_c_prosta_)
-  _r_solsta_ = int32(_c_solsta_)
-  _r_skc_ = skc_
-  _r_skx_ = skx_
-  _r_skn_ = skn_
-  _r_xc_ = xc_
-  _r_xx_ = xx_
-  _r_y_ = y_
-  _r_slc_ = slc_
-  _r_suc_ = suc_
-  _r_slx_ = slx_
-  _r_sux_ = sux_
-  _r_snx_ = snx_
-  return
-}
-func (task *Task) GetSolutionI(accmode_ int32,i_ int32,whichsol_ int32) (_r_sk_ int32,_r_x_ float64,_r_sl_ float64,_r_su_ float64,_r_sn_ float64,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_sk_ C.MSKstakeye
-  var _c_x_ C.MSKrealt
-  var _c_sl_ C.MSKrealt
-  var _c_su_ C.MSKrealt
-  var _c_sn_ C.MSKrealt
-  _res = int32(C.MSK_getsolutioni(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,C.MSKsoltypee(whichsol_),&_c_sk_,&_c_x_,&_c_sl_,&_c_su_,&_c_sn_))
-  if _res != 0 { return }
-  _r_sk_ = int32(_c_sk_)
-  _r_x_ = float64(_c_x_)
-  _r_sl_ = float64(_c_sl_)
-  _r_su_ = float64(_c_su_)
-  _r_sn_ = float64(_c_sn_)
-  return
-}
-func (task *Task) GetSolutionInfo(whichsol_ int32) (_r_pobj_ float64,_r_pviolcon_ float64,_r_pviolvar_ float64,_r_pviolbarvar_ float64,_r_pviolcone_ float64,_r_pviolitg_ float64,_r_dobj_ float64,_r_dviolcon_ float64,_r_dviolvar_ float64,_r_dviolbarvar_ float64,_r_dviolcone_ float64,_res int32) {
-  var _c_pobj_ C.MSKrealt
-  var _c_pviolcon_ C.MSKrealt
-  var _c_pviolvar_ C.MSKrealt
-  var _c_pviolbarvar_ C.MSKrealt
-  var _c_pviolcone_ C.MSKrealt
-  var _c_pviolitg_ C.MSKrealt
-  var _c_dobj_ C.MSKrealt
-  var _c_dviolcon_ C.MSKrealt
-  var _c_dviolvar_ C.MSKrealt
-  var _c_dviolbarvar_ C.MSKrealt
-  var _c_dviolcone_ C.MSKrealt
-  _res = int32(C.MSK_getsolutioninfo(task.ptr(),C.MSKsoltypee(whichsol_),&_c_pobj_,&_c_pviolcon_,&_c_pviolvar_,&_c_pviolbarvar_,&_c_pviolcone_,&_c_pviolitg_,&_c_dobj_,&_c_dviolcon_,&_c_dviolvar_,&_c_dviolbarvar_,&_c_dviolcone_))
-  if _res != 0 { return }
-  _r_pobj_ = float64(_c_pobj_)
-  _r_pviolcon_ = float64(_c_pviolcon_)
-  _r_pviolvar_ = float64(_c_pviolvar_)
-  _r_pviolbarvar_ = float64(_c_pviolbarvar_)
-  _r_pviolcone_ = float64(_c_pviolcone_)
-  _r_pviolitg_ = float64(_c_pviolitg_)
-  _r_dobj_ = float64(_c_dobj_)
-  _r_dviolcon_ = float64(_c_dviolcon_)
-  _r_dviolvar_ = float64(_c_dviolvar_)
-  _r_dviolbarvar_ = float64(_c_dviolbarvar_)
-  _r_dviolcone_ = float64(_c_dviolcone_)
-  return
-}
-func (task *Task) GetSolutionSlice(whichsol_ int32,solitem_ int32,first_ int32,last_ int32,values_ []float64) (_r_values_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if values_ == nil { values_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(values_) < int(last_ - first_) { panic("Slice in 'values_' is too short in call to 'GetSolutionSlice'") }
-  var _c_values_ *C.MSKrealt = nil
-  if len(values_) > 0 { _c_values_ = (*C.MSKrealt)(&values_[0]) }
-  _res = int32(C.MSK_getsolutionslice(task.ptr(),C.MSKsoltypee(whichsol_),C.MSKsoliteme(solitem_),_c_first_,_c_last_,_c_values_))
-  if _res != 0 { return }
-  _r_values_ = values_
-  return
-}
-func (task *Task) GetSparseSymMat(idx_ int64,subi_ []int32,subj_ []int32,valij_ []float64) (_r_subi_ []int32,_r_subj_ []int32,_r_valij_ []float64,_res int32) {
-  _c_idx_ := C.MSKint64t(idx_)
-  var __tmp_var_1 int64
-  _,__tmp_var_1,_,_res = task.GetSymMatInfo(idx_)
-  if _res != 0 { return }
-  maxlen_ := __tmp_var_1
-  _c_maxlen_ := C.MSKint64t(maxlen_)
-  if subi_ == nil { subi_ = make([]int32,maxlen_,maxlen_)
-  } else if len(subi_) < int(maxlen_) { panic("Slice in 'subi_' is too short in call to 'GetSparseSymMat'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  if subj_ == nil { subj_ = make([]int32,maxlen_,maxlen_)
-  } else if len(subj_) < int(maxlen_) { panic("Slice in 'subj_' is too short in call to 'GetSparseSymMat'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if valij_ == nil { valij_ = make([]float64,maxlen_,maxlen_)
-  } else if len(valij_) < int(maxlen_) { panic("Slice in 'valij_' is too short in call to 'GetSparseSymMat'") }
-  var _c_valij_ *C.MSKrealt = nil
-  if len(valij_) > 0 { _c_valij_ = (*C.MSKrealt)(&valij_[0]) }
-  _res = int32(C.MSK_getsparsesymmat(task.ptr(),_c_idx_,_c_maxlen_,_c_subi_,_c_subj_,_c_valij_))
-  if _res != 0 { return }
-  _r_subi_ = subi_
-  _r_subj_ = subj_
-  _r_valij_ = valij_
-  return
-}
-func (task *Task) GetStrParam(param_ int32) (_r_len_ int32,_r_parvalue_ string,_res int32) {
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetStrParamLen(param_)
-  if _res != 0 { return }
-  maxlen_ := 1 + __tmp_var_3
-  _c_maxlen_ := C.MSKint32t(maxlen_)
-  var _c_len_ C.MSKint32t
-  _c_parvalue_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
-  defer C.free(unsafe.Pointer(_c_parvalue_))
-  _res = int32(C.MSK_getstrparam(task.ptr(),C.MSKsparame(param_),_c_maxlen_,&_c_len_,C.MSKstring_t(_c_parvalue_)))
-  if _res != 0 { return }
-  _r_len_ = int32(_c_len_)
-  _r_parvalue_ = C.GoStringN(_c_parvalue_,C.int(maxlen_))
-  return
-}
-func (task *Task) GetStrParamLen(param_ int32) (_r_len_ int32,_res int32) {
-  var _c_len_ C.MSKint32t
-  _res = int32(C.MSK_getstrparamlen(task.ptr(),C.MSKsparame(param_),&_c_len_))
-  if _res != 0 { return }
-  _r_len_ = int32(_c_len_)
-  return
-}
-func (task *Task) GetSuc(whichsol_ int32,suc_ []float64) (_r_suc_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if suc_ == nil { suc_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(suc_) < int(__tmp_var_1) { panic("Slice in 'suc_' is too short in call to 'GetSuc'") }
-  var _c_suc_ *C.MSKrealt = nil
-  if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
-  _res = int32(C.MSK_getsuc(task.ptr(),C.MSKsoltypee(whichsol_),_c_suc_))
-  if _res != 0 { return }
-  _r_suc_ = suc_
-  return
-}
-func (task *Task) GetSucSlice(whichsol_ int32,first_ int32,last_ int32,suc_ []float64) (_r_suc_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if suc_ == nil { suc_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(suc_) < int(last_ - first_) { panic("Slice in 'suc_' is too short in call to 'GetSucSlice'") }
-  var _c_suc_ *C.MSKrealt = nil
-  if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
-  _res = int32(C.MSK_getsucslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_suc_))
-  if _res != 0 { return }
-  _r_suc_ = suc_
-  return
-}
-func (task *Task) GetSux(whichsol_ int32,sux_ []float64) (_r_sux_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if sux_ == nil { sux_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(sux_) < int(__tmp_var_1) { panic("Slice in 'sux_' is too short in call to 'GetSux'") }
-  var _c_sux_ *C.MSKrealt = nil
-  if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
-  _res = int32(C.MSK_getsux(task.ptr(),C.MSKsoltypee(whichsol_),_c_sux_))
-  if _res != 0 { return }
-  _r_sux_ = sux_
-  return
-}
-func (task *Task) GetSuxSlice(whichsol_ int32,first_ int32,last_ int32,sux_ []float64) (_r_sux_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if sux_ == nil { sux_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(sux_) < int(last_ - first_) { panic("Slice in 'sux_' is too short in call to 'GetSuxSlice'") }
-  var _c_sux_ *C.MSKrealt = nil
-  if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
-  _res = int32(C.MSK_getsuxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_sux_))
-  if _res != 0 { return }
-  _r_sux_ = sux_
-  return
-}
-func (task *Task) GetSymMatInfo(idx_ int64) (_r_dim_ int32,_r_nz_ int64,_r_type_ int32,_res int32) {
-  _c_idx_ := C.MSKint64t(idx_)
-  var _c_dim_ C.MSKint32t
-  var _c_nz_ C.MSKint64t
-  var _c_type_ C.MSKsymmattypee
-  _res = int32(C.MSK_getsymmatinfo(task.ptr(),_c_idx_,&_c_dim_,&_c_nz_,&_c_type_))
-  if _res != 0 { return }
-  _r_dim_ = int32(_c_dim_)
-  _r_nz_ = int64(_c_nz_)
-  _r_type_ = int32(_c_type_)
-  return
-}
-func (task *Task) GetTaskName() (_r_taskname_ string,_res int32) {
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetTaskNameLen()
-  if _res != 0 { return }
-  maxlen_ := 1 + __tmp_var_3
-  _c_maxlen_ := C.MSKint32t(maxlen_)
-  _c_taskname_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
-  defer C.free(unsafe.Pointer(_c_taskname_))
-  _res = int32(C.MSK_gettaskname(task.ptr(),_c_maxlen_,C.MSKstring_t(_c_taskname_)))
-  if _res != 0 { return }
-  _r_taskname_ = C.GoStringN(_c_taskname_,C.int(maxlen_))
-  return
-}
-func (task *Task) GetTaskNameLen() (_r_len_ int32,_res int32) {
-  var _c_len_ C.MSKint32t
-  _res = int32(C.MSK_gettasknamelen(task.ptr(),&_c_len_))
-  if _res != 0 { return }
-  _r_len_ = int32(_c_len_)
-  return
-}
-func (task *Task) GetVarBound(i_ int32) (_r_bk_ int32,_r_bl_ float64,_r_bu_ float64,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_bk_ C.MSKboundkeye
-  var _c_bl_ C.MSKrealt
-  var _c_bu_ C.MSKrealt
-  _res = int32(C.MSK_getvarbound(task.ptr(),_c_i_,&_c_bk_,&_c_bl_,&_c_bu_))
-  if _res != 0 { return }
-  _r_bk_ = int32(_c_bk_)
-  _r_bl_ = float64(_c_bl_)
-  _r_bu_ = float64(_c_bu_)
-  return
-}
-func (task *Task) GetVarBoundSlice(first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_r_bk_ []int32,_r_bl_ []float64,_r_bu_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if bk_ == nil { bk_ = make([]int32,last_ - first_,last_ - first_)
-  } else if len(bk_) < int(last_ - first_) { panic("Slice in 'bk_' is too short in call to 'GetVarBoundSlice'") }
-  var _c_bk_ *C.MSKboundkeye = nil
-  if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
-  if bl_ == nil { bl_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(bl_) < int(last_ - first_) { panic("Slice in 'bl_' is too short in call to 'GetVarBoundSlice'") }
-  var _c_bl_ *C.MSKrealt = nil
-  if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
-  if bu_ == nil { bu_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(bu_) < int(last_ - first_) { panic("Slice in 'bu_' is too short in call to 'GetVarBoundSlice'") }
-  var _c_bu_ *C.MSKrealt = nil
-  if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
-  _res = int32(C.MSK_getvarboundslice(task.ptr(),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  _r_bk_ = bk_
-  _r_bl_ = bl_
-  _r_bu_ = bu_
-  return
-}
-func (task *Task) GetVarBranchDir(j_ int32) (_r_direction_ int32,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var _c_direction_ C.MSKbranchdire
-  _res = int32(C.MSK_getvarbranchdir(task.ptr(),_c_j_,&_c_direction_))
-  if _res != 0 { return }
-  _r_direction_ = int32(_c_direction_)
-  return
-}
-func (task *Task) GetVarBranchOrder(j_ int32) (_r_priority_ int32,_r_direction_ int32,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var _c_priority_ C.MSKint32t
-  var _c_direction_ C.MSKbranchdire
-  _res = int32(C.MSK_getvarbranchorder(task.ptr(),_c_j_,&_c_priority_,&_c_direction_))
-  if _res != 0 { return }
-  _r_priority_ = int32(_c_priority_)
-  _r_direction_ = int32(_c_direction_)
-  return
-}
-func (task *Task) GetVarBranchPri(j_ int32) (_r_priority_ int32,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var _c_priority_ C.MSKint32t
-  _res = int32(C.MSK_getvarbranchpri(task.ptr(),_c_j_,&_c_priority_))
-  if _res != 0 { return }
-  _r_priority_ = int32(_c_priority_)
-  return
-}
-func (task *Task) GetVarName(j_ int32) (_r_name_ string,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetVarNameLen(j_)
-  if _res != 0 { return }
-  maxlen_ := 1 + __tmp_var_3
-  _c_maxlen_ := C.MSKint32t(maxlen_)
-  _c_name_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
-  defer C.free(unsafe.Pointer(_c_name_))
-  _res = int32(C.MSK_getvarname(task.ptr(),_c_j_,_c_maxlen_,C.MSKstring_t(_c_name_)))
-  if _res != 0 { return }
-  _r_name_ = C.GoStringN(_c_name_,C.int(maxlen_))
-  return
-}
-func (task *Task) GetVarNameIndex(somename_ string) (_r_asgn_ int32,_r_index_ int32,_res int32) {
-  _c_somename_ := C.CString(somename_)
-  defer C.free(unsafe.Pointer(_c_somename_))
-  var _c_asgn_ C.MSKint32t
-  var _c_index_ C.MSKint32t
-  _res = int32(C.MSK_getvarnameindex(task.ptr(),C.MSKstring_t(_c_somename_),&_c_asgn_,&_c_index_))
-  if _res != 0 { return }
-  _r_asgn_ = int32(_c_asgn_)
-  _r_index_ = int32(_c_index_)
-  return
-}
-func (task *Task) GetVarNameLen(i_ int32) (_r_len_ int32,_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  var _c_len_ C.MSKint32t
-  _res = int32(C.MSK_getvarnamelen(task.ptr(),_c_i_,&_c_len_))
-  if _res != 0 { return }
-  _r_len_ = int32(_c_len_)
-  return
-}
-func (task *Task) GetVarType(j_ int32) (_r_vartype_ int32,_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  var _c_vartype_ C.MSKvariabletypee
-  _res = int32(C.MSK_getvartype(task.ptr(),_c_j_,&_c_vartype_))
-  if _res != 0 { return }
-  _r_vartype_ = int32(_c_vartype_)
-  return
-}
-func (task *Task) GetVarTypeList(subj_ []int32,vartype_ []int32) (_r_vartype_ []int32,_res int32) {
-  num_ := minint([]int{ len(subj_) })
-  _c_num_ := C.MSKint32t(num_)
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'GetVarTypeList'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if vartype_ == nil { vartype_ = make([]int32,num_,num_)
-  } else if len(vartype_) < int(num_) { panic("Slice in 'vartype_' is too short in call to 'GetVarTypeList'") }
-  var _c_vartype_ *C.MSKvariabletypee = nil
-  if len(vartype_) > 0 { _c_vartype_ = (*C.MSKvariabletypee)(unsafe.Pointer(&vartype_[0])) }
-  _res = int32(C.MSK_getvartypelist(task.ptr(),_c_num_,_c_subj_,_c_vartype_))
-  if _res != 0 { return }
-  _r_vartype_ = vartype_
-  return
-}
-func (task *Task) GetXc(whichsol_ int32,xc_ []float64) (_r_xc_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if xc_ == nil { xc_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(xc_) < int(__tmp_var_1) { panic("Slice in 'xc_' is too short in call to 'GetXc'") }
-  var _c_xc_ *C.MSKrealt = nil
-  if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
-  _res = int32(C.MSK_getxc(task.ptr(),C.MSKsoltypee(whichsol_),_c_xc_))
-  if _res != 0 { return }
-  _r_xc_ = xc_
-  return
-}
-func (task *Task) GetXcSlice(whichsol_ int32,first_ int32,last_ int32,xc_ []float64) (_r_xc_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if xc_ == nil { xc_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(xc_) < int(last_ - first_) { panic("Slice in 'xc_' is too short in call to 'GetXcSlice'") }
-  var _c_xc_ *C.MSKrealt = nil
-  if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
-  _res = int32(C.MSK_getxcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_xc_))
-  if _res != 0 { return }
-  _r_xc_ = xc_
-  return
-}
-func (task *Task) GetXx(whichsol_ int32,xx_ []float64) (_r_xx_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if xx_ == nil { xx_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(xx_) < int(__tmp_var_1) { panic("Slice in 'xx_' is too short in call to 'GetXx'") }
-  var _c_xx_ *C.MSKrealt = nil
-  if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
-  _res = int32(C.MSK_getxx(task.ptr(),C.MSKsoltypee(whichsol_),_c_xx_))
-  if _res != 0 { return }
-  _r_xx_ = xx_
-  return
-}
-func (task *Task) GetXxSlice(whichsol_ int32,first_ int32,last_ int32,xx_ []float64) (_r_xx_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if xx_ == nil { xx_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(xx_) < int(last_ - first_) { panic("Slice in 'xx_' is too short in call to 'GetXxSlice'") }
-  var _c_xx_ *C.MSKrealt = nil
-  if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
-  _res = int32(C.MSK_getxxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_xx_))
-  if _res != 0 { return }
-  _r_xx_ = xx_
-  return
-}
-func (task *Task) GetY(whichsol_ int32,y_ []float64) (_r_y_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if y_ == nil { y_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(y_) < int(__tmp_var_1) { panic("Slice in 'y_' is too short in call to 'GetY'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  _res = int32(C.MSK_gety(task.ptr(),C.MSKsoltypee(whichsol_),_c_y_))
-  if _res != 0 { return }
-  _r_y_ = y_
-  return
-}
-func (task *Task) GetYSlice(whichsol_ int32,first_ int32,last_ int32,y_ []float64) (_r_y_ []float64,_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if y_ == nil { y_ = make([]float64,last_ - first_,last_ - first_)
-  } else if len(y_) < int(last_ - first_) { panic("Slice in 'y_' is too short in call to 'GetYSlice'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  _res = int32(C.MSK_getyslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_y_))
-  if _res != 0 { return }
-  _r_y_ = y_
-  return
-}
-func (task *Task) InitBasisSolve(basis_ []int32) (_r_basis_ []int32,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if basis_ == nil { basis_ = make([]int32,__tmp_var_1,__tmp_var_1)
-  } else if len(basis_) < int(__tmp_var_1) { panic("Slice in 'basis_' is too short in call to 'InitBasisSolve'") }
-  var _c_basis_ *C.MSKint32t = nil
-  if len(basis_) > 0 { _c_basis_ = (*C.MSKint32t)(&basis_[0]) }
-  _res = int32(C.MSK_initbasissolve(task.ptr(),_c_basis_))
-  if _res != 0 { return }
-  _r_basis_ = basis_
-  return
-}
-func (task *Task) InputData(maxnumcon_ int32,maxnumvar_ int32,c_ []float64,cfix_ float64,aptrb_ []int64,aptre_ []int64,asub_ []int32,aval_ []float64,bkc_ []int32,blc_ []float64,buc_ []float64,bkx_ []int32,blx_ []float64,bux_ []float64) (_res int32) {
-  _c_maxnumcon_ := C.MSKint32t(maxnumcon_)
-  _c_maxnumvar_ := C.MSKint32t(maxnumvar_)
-  numcon_ := minint([]int{ len(buc_),len(blc_),len(bkc_) })
-  _c_numcon_ := C.MSKint32t(numcon_)
-  numvar_ := minint([]int{ len(c_),len(bux_),len(blx_),len(bkx_),len(aptrb_),len(aptre_) })
-  _c_numvar_ := C.MSKint32t(numvar_)
-  if c_ == nil { panic("Argument 'c_' is nil in call to 'InputData'") }
-  var _c_c_ *C.MSKrealt = nil
-  if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
-  _c_cfix_ := C.MSKrealt(cfix_)
-  if aptrb_ == nil { panic("Argument 'aptrb_' is nil in call to 'InputData'") }
-  var _c_aptrb_ *C.MSKint64t = nil
-  if len(aptrb_) > 0 { _c_aptrb_ = (*C.MSKint64t)(&aptrb_[0]) }
-  if aptre_ == nil { panic("Argument 'aptre_' is nil in call to 'InputData'") }
-  var _c_aptre_ *C.MSKint64t = nil
-  if len(aptre_) > 0 { _c_aptre_ = (*C.MSKint64t)(&aptre_[0]) }
-  if asub_ == nil { panic("Argument 'asub_' is nil in call to 'InputData'") }
-  var _c_asub_ *C.MSKint32t = nil
-  if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
-  if aval_ == nil { panic("Argument 'aval_' is nil in call to 'InputData'") }
-  var _c_aval_ *C.MSKrealt = nil
-  if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
-  if bkc_ == nil { panic("Argument 'bkc_' is nil in call to 'InputData'") }
-  var _c_bkc_ *C.MSKboundkeye = nil
-  if len(bkc_) > 0 { _c_bkc_ = (*C.MSKboundkeye)(unsafe.Pointer(&bkc_[0])) }
-  if blc_ == nil { panic("Argument 'blc_' is nil in call to 'InputData'") }
-  var _c_blc_ *C.MSKrealt = nil
-  if len(blc_) > 0 { _c_blc_ = (*C.MSKrealt)(&blc_[0]) }
-  if buc_ == nil { panic("Argument 'buc_' is nil in call to 'InputData'") }
-  var _c_buc_ *C.MSKrealt = nil
-  if len(buc_) > 0 { _c_buc_ = (*C.MSKrealt)(&buc_[0]) }
-  if bkx_ == nil { panic("Argument 'bkx_' is nil in call to 'InputData'") }
-  var _c_bkx_ *C.MSKboundkeye = nil
-  if len(bkx_) > 0 { _c_bkx_ = (*C.MSKboundkeye)(unsafe.Pointer(&bkx_[0])) }
-  if blx_ == nil { panic("Argument 'blx_' is nil in call to 'InputData'") }
-  var _c_blx_ *C.MSKrealt = nil
-  if len(blx_) > 0 { _c_blx_ = (*C.MSKrealt)(&blx_[0]) }
-  if bux_ == nil { panic("Argument 'bux_' is nil in call to 'InputData'") }
-  var _c_bux_ *C.MSKrealt = nil
-  if len(bux_) > 0 { _c_bux_ = (*C.MSKrealt)(&bux_[0]) }
-  _res = int32(C.MSK_inputdata64(task.ptr(),_c_maxnumcon_,_c_maxnumvar_,_c_numcon_,_c_numvar_,_c_c_,_c_cfix_,_c_aptrb_,_c_aptre_,_c_asub_,_c_aval_,_c_bkc_,_c_blc_,_c_buc_,_c_bkx_,_c_blx_,_c_bux_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) IsDouParName(parname_ string) (_r_param_ int32,_res int32) {
-  _c_parname_ := C.CString(parname_)
-  defer C.free(unsafe.Pointer(_c_parname_))
-  var _c_param_ C.MSKdparame
-  _res = int32(C.MSK_isdouparname(task.ptr(),C.MSKstring_t(_c_parname_),&_c_param_))
-  if _res != 0 { return }
-  _r_param_ = int32(_c_param_)
-  return
-}
-func (task *Task) IsIntParName(parname_ string) (_r_param_ int32,_res int32) {
-  _c_parname_ := C.CString(parname_)
-  defer C.free(unsafe.Pointer(_c_parname_))
-  var _c_param_ C.MSKiparame
-  _res = int32(C.MSK_isintparname(task.ptr(),C.MSKstring_t(_c_parname_),&_c_param_))
-  if _res != 0 { return }
-  _r_param_ = int32(_c_param_)
-  return
-}
-func (task *Task) IsStrParName(parname_ string) (_r_param_ int32,_res int32) {
-  _c_parname_ := C.CString(parname_)
-  defer C.free(unsafe.Pointer(_c_parname_))
-  var _c_param_ C.MSKsparame
-  _res = int32(C.MSK_isstrparname(task.ptr(),C.MSKstring_t(_c_parname_),&_c_param_))
-  if _res != 0 { return }
-  _r_param_ = int32(_c_param_)
-  return
-}
-func (task *Task) LinkFileToStream(whichstream_ int32,filename_ string,append_ int32) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _c_append_ := C.MSKint32t(append_)
-  _res = int32(C.MSK_linkfiletotaskstream(task.ptr(),C.MSKstreamtypee(whichstream_),C.MSKstring_t(_c_filename_),_c_append_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) OneSolutionSummary(whichstream_ int32,whichsol_ int32) (_res int32) {
-  _res = int32(C.MSK_onesolutionsummary(task.ptr(),C.MSKstreamtypee(whichstream_),C.MSKsoltypee(whichsol_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) OptimizerSummary(whichstream_ int32) (_res int32) {
-  _res = int32(C.MSK_optimizersummary(task.ptr(),C.MSKstreamtypee(whichstream_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) Optimize() (_r_trmcode_ int32,_res int32) {
-  var _c_trmcode_ C.MSKrescodee
-  _res = int32(C.MSK_optimizetrm(task.ptr(),&_c_trmcode_))
-  if _res != 0 { return }
-  _r_trmcode_ = int32(_c_trmcode_)
-  return
-}
-func (task *Task) PrimalRepair(wlc_ []float64,wuc_ []float64,wlx_ []float64,wux_ []float64) (_res int32) {
-  if wlc_ == nil { panic("Argument 'wlc_' is nil in call to 'PrimalRepair'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if len(wlc_) < int(__tmp_var_1) { panic("Slice argument 'wlc_' is too short in call to 'PrimalRepair'") }
-  var _c_wlc_ *C.MSKrealt = nil
-  if len(wlc_) > 0 { _c_wlc_ = (*C.MSKrealt)(&wlc_[0]) }
-  if wuc_ == nil { panic("Argument 'wuc_' is nil in call to 'PrimalRepair'") }
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if len(wuc_) < int(__tmp_var_3) { panic("Slice argument 'wuc_' is too short in call to 'PrimalRepair'") }
-  var _c_wuc_ *C.MSKrealt = nil
-  if len(wuc_) > 0 { _c_wuc_ = (*C.MSKrealt)(&wuc_[0]) }
-  if wlx_ == nil { panic("Argument 'wlx_' is nil in call to 'PrimalRepair'") }
-  var __tmp_var_5 int32
-  __tmp_var_5,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if len(wlx_) < int(__tmp_var_5) { panic("Slice argument 'wlx_' is too short in call to 'PrimalRepair'") }
-  var _c_wlx_ *C.MSKrealt = nil
-  if len(wlx_) > 0 { _c_wlx_ = (*C.MSKrealt)(&wlx_[0]) }
-  if wux_ == nil { panic("Argument 'wux_' is nil in call to 'PrimalRepair'") }
-  var __tmp_var_7 int32
-  __tmp_var_7,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if len(wux_) < int(__tmp_var_7) { panic("Slice argument 'wux_' is too short in call to 'PrimalRepair'") }
-  var _c_wux_ *C.MSKrealt = nil
-  if len(wux_) > 0 { _c_wux_ = (*C.MSKrealt)(&wux_[0]) }
-  _res = int32(C.MSK_primalrepair(task.ptr(),_c_wlc_,_c_wuc_,_c_wlx_,_c_wux_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PrimalSensitivity(subi_ []int32,marki_ []int32,subj_ []int32,markj_ []int32,leftpricei_ []float64,rightpricei_ []float64,leftrangei_ []float64,rightrangei_ []float64,leftpricej_ []float64,rightpricej_ []float64,leftrangej_ []float64,rightrangej_ []float64) (_r_leftpricei_ []float64,_r_rightpricei_ []float64,_r_leftrangei_ []float64,_r_rightrangei_ []float64,_r_leftpricej_ []float64,_r_rightpricej_ []float64,_r_leftrangej_ []float64,_r_rightrangej_ []float64,_res int32) {
-  numi_ := minint([]int{ len(subi_),len(marki_) })
-  _c_numi_ := C.MSKint32t(numi_)
-  if subi_ == nil { panic("Argument 'subi_' is nil in call to 'PrimalSensitivity'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  if marki_ == nil { panic("Argument 'marki_' is nil in call to 'PrimalSensitivity'") }
-  var _c_marki_ *C.MSKmarke = nil
-  if len(marki_) > 0 { _c_marki_ = (*C.MSKmarke)(unsafe.Pointer(&marki_[0])) }
-  numj_ := minint([]int{ len(subj_),len(markj_) })
-  _c_numj_ := C.MSKint32t(numj_)
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PrimalSensitivity'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if markj_ == nil { panic("Argument 'markj_' is nil in call to 'PrimalSensitivity'") }
-  var _c_markj_ *C.MSKmarke = nil
-  if len(markj_) > 0 { _c_markj_ = (*C.MSKmarke)(unsafe.Pointer(&markj_[0])) }
-  if leftpricei_ == nil { leftpricei_ = make([]float64,numi_,numi_)
-  } else if len(leftpricei_) < int(numi_) { panic("Slice in 'leftpricei_' is too short in call to 'PrimalSensitivity'") }
-  var _c_leftpricei_ *C.MSKrealt = nil
-  if len(leftpricei_) > 0 { _c_leftpricei_ = (*C.MSKrealt)(&leftpricei_[0]) }
-  if rightpricei_ == nil { rightpricei_ = make([]float64,numi_,numi_)
-  } else if len(rightpricei_) < int(numi_) { panic("Slice in 'rightpricei_' is too short in call to 'PrimalSensitivity'") }
-  var _c_rightpricei_ *C.MSKrealt = nil
-  if len(rightpricei_) > 0 { _c_rightpricei_ = (*C.MSKrealt)(&rightpricei_[0]) }
-  if leftrangei_ == nil { leftrangei_ = make([]float64,numi_,numi_)
-  } else if len(leftrangei_) < int(numi_) { panic("Slice in 'leftrangei_' is too short in call to 'PrimalSensitivity'") }
-  var _c_leftrangei_ *C.MSKrealt = nil
-  if len(leftrangei_) > 0 { _c_leftrangei_ = (*C.MSKrealt)(&leftrangei_[0]) }
-  if rightrangei_ == nil { rightrangei_ = make([]float64,numi_,numi_)
-  } else if len(rightrangei_) < int(numi_) { panic("Slice in 'rightrangei_' is too short in call to 'PrimalSensitivity'") }
-  var _c_rightrangei_ *C.MSKrealt = nil
-  if len(rightrangei_) > 0 { _c_rightrangei_ = (*C.MSKrealt)(&rightrangei_[0]) }
-  if leftpricej_ == nil { leftpricej_ = make([]float64,numj_,numj_)
-  } else if len(leftpricej_) < int(numj_) { panic("Slice in 'leftpricej_' is too short in call to 'PrimalSensitivity'") }
-  var _c_leftpricej_ *C.MSKrealt = nil
-  if len(leftpricej_) > 0 { _c_leftpricej_ = (*C.MSKrealt)(&leftpricej_[0]) }
-  if rightpricej_ == nil { rightpricej_ = make([]float64,numj_,numj_)
-  } else if len(rightpricej_) < int(numj_) { panic("Slice in 'rightpricej_' is too short in call to 'PrimalSensitivity'") }
-  var _c_rightpricej_ *C.MSKrealt = nil
-  if len(rightpricej_) > 0 { _c_rightpricej_ = (*C.MSKrealt)(&rightpricej_[0]) }
-  if leftrangej_ == nil { leftrangej_ = make([]float64,numj_,numj_)
-  } else if len(leftrangej_) < int(numj_) { panic("Slice in 'leftrangej_' is too short in call to 'PrimalSensitivity'") }
-  var _c_leftrangej_ *C.MSKrealt = nil
-  if len(leftrangej_) > 0 { _c_leftrangej_ = (*C.MSKrealt)(&leftrangej_[0]) }
-  if rightrangej_ == nil { rightrangej_ = make([]float64,numj_,numj_)
-  } else if len(rightrangej_) < int(numj_) { panic("Slice in 'rightrangej_' is too short in call to 'PrimalSensitivity'") }
-  var _c_rightrangej_ *C.MSKrealt = nil
-  if len(rightrangej_) > 0 { _c_rightrangej_ = (*C.MSKrealt)(&rightrangej_[0]) }
-  _res = int32(C.MSK_primalsensitivity(task.ptr(),_c_numi_,_c_subi_,_c_marki_,_c_numj_,_c_subj_,_c_markj_,_c_leftpricei_,_c_rightpricei_,_c_leftrangei_,_c_rightrangei_,_c_leftpricej_,_c_rightpricej_,_c_leftrangej_,_c_rightrangej_))
-  if _res != 0 { return }
-  _r_leftpricei_ = leftpricei_
-  _r_rightpricei_ = rightpricei_
-  _r_leftrangei_ = leftrangei_
-  _r_rightrangei_ = rightrangei_
-  _r_leftpricej_ = leftpricej_
-  _r_rightpricej_ = rightpricej_
-  _r_leftrangej_ = leftrangej_
-  _r_rightrangej_ = rightrangej_
-  return
-}
-func (task *Task) ProbTypeToStr(probtype_ int32) (_r_str_ string,_res int32) {
-  _c_str_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
-  defer C.free(unsafe.Pointer(_c_str_))
-  _res = int32(C.MSK_probtypetostr(task.ptr(),C.MSKproblemtypee(probtype_),C.MSKstring_t(_c_str_)))
-  if _res != 0 { return }
-  _r_str_ = C.GoStringN(_c_str_,C.int(MAX_STR_LEN))
-  return
-}
-func (task *Task) ProStaToStr(prosta_ int32) (_r_str_ string,_res int32) {
-  _c_str_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
-  defer C.free(unsafe.Pointer(_c_str_))
-  _res = int32(C.MSK_prostatostr(task.ptr(),C.MSKprostae(prosta_),C.MSKstring_t(_c_str_)))
-  if _res != 0 { return }
-  _r_str_ = C.GoStringN(_c_str_,C.int(MAX_STR_LEN))
-  return
-}
-func (task *Task) PutACol(j_ int32,subj_ []int32,valj_ []float64) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  nzj_ := minint([]int{ len(subj_),len(valj_) })
-  _c_nzj_ := C.MSKint32t(nzj_)
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutACol'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if valj_ == nil { panic("Argument 'valj_' is nil in call to 'PutACol'") }
-  var _c_valj_ *C.MSKrealt = nil
-  if len(valj_) > 0 { _c_valj_ = (*C.MSKrealt)(&valj_[0]) }
-  _res = int32(C.MSK_putacol(task.ptr(),_c_j_,_c_nzj_,_c_subj_,_c_valj_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutAColList(sub_ []int32,ptrb_ []int32,ptre_ []int32,asub_ []int32,aval_ []float64) (_res int32) {
-  num_ := minint([]int{ len(sub_),len(ptrb_),len(ptre_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutAColList'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if ptrb_ == nil { panic("Argument 'ptrb_' is nil in call to 'PutAColList'") }
-  var _c_ptrb_ *C.MSKint32t = nil
-  if len(ptrb_) > 0 { _c_ptrb_ = (*C.MSKint32t)(&ptrb_[0]) }
-  if ptre_ == nil { panic("Argument 'ptre_' is nil in call to 'PutAColList'") }
-  var _c_ptre_ *C.MSKint32t = nil
-  if len(ptre_) > 0 { _c_ptre_ = (*C.MSKint32t)(&ptre_[0]) }
-  if asub_ == nil { panic("Argument 'asub_' is nil in call to 'PutAColList'") }
-  var _c_asub_ *C.MSKint32t = nil
-  if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
-  if aval_ == nil { panic("Argument 'aval_' is nil in call to 'PutAColList'") }
-  var _c_aval_ *C.MSKrealt = nil
-  if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
-  _res = int32(C.MSK_putacollist(task.ptr(),_c_num_,_c_sub_,_c_ptrb_,_c_ptre_,_c_asub_,_c_aval_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutAColSlice(first_ int32,last_ int32,ptrb_ []int64,ptre_ []int64,asub_ []int32,aval_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if ptrb_ == nil { panic("Argument 'ptrb_' is nil in call to 'PutAColSlice'") }
-  if len(ptrb_) < int(last_ - first_) { panic("Slice argument 'ptrb_' is too short in call to 'PutAColSlice'") }
-  var _c_ptrb_ *C.MSKint64t = nil
-  if len(ptrb_) > 0 { _c_ptrb_ = (*C.MSKint64t)(&ptrb_[0]) }
-  if ptre_ == nil { panic("Argument 'ptre_' is nil in call to 'PutAColSlice'") }
-  if len(ptre_) < int(last_ - first_) { panic("Slice argument 'ptre_' is too short in call to 'PutAColSlice'") }
-  var _c_ptre_ *C.MSKint64t = nil
-  if len(ptre_) > 0 { _c_ptre_ = (*C.MSKint64t)(&ptre_[0]) }
-  if asub_ == nil { panic("Argument 'asub_' is nil in call to 'PutAColSlice'") }
-  var _c_asub_ *C.MSKint32t = nil
-  if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
-  if aval_ == nil { panic("Argument 'aval_' is nil in call to 'PutAColSlice'") }
-  var _c_aval_ *C.MSKrealt = nil
-  if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
-  _res = int32(C.MSK_putacolslice64(task.ptr(),_c_first_,_c_last_,_c_ptrb_,_c_ptre_,_c_asub_,_c_aval_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutAij(i_ int32,j_ int32,aij_ float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_j_ := C.MSKint32t(j_)
-  _c_aij_ := C.MSKrealt(aij_)
-  _res = int32(C.MSK_putaij(task.ptr(),_c_i_,_c_j_,_c_aij_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutAijList(subi_ []int32,subj_ []int32,valij_ []float64) (_res int32) {
-  num_ := minint([]int{ len(subi_),len(subj_),len(valij_) })
-  _c_num_ := C.MSKint64t(num_)
-  if subi_ == nil { panic("Argument 'subi_' is nil in call to 'PutAijList'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutAijList'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if valij_ == nil { panic("Argument 'valij_' is nil in call to 'PutAijList'") }
-  var _c_valij_ *C.MSKrealt = nil
-  if len(valij_) > 0 { _c_valij_ = (*C.MSKrealt)(&valij_[0]) }
-  _res = int32(C.MSK_putaijlist64(task.ptr(),_c_num_,_c_subi_,_c_subj_,_c_valij_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutARow(i_ int32,subi_ []int32,vali_ []float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  nzi_ := minint([]int{ len(subi_),len(vali_) })
-  _c_nzi_ := C.MSKint32t(nzi_)
-  if subi_ == nil { panic("Argument 'subi_' is nil in call to 'PutARow'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  if vali_ == nil { panic("Argument 'vali_' is nil in call to 'PutARow'") }
-  var _c_vali_ *C.MSKrealt = nil
-  if len(vali_) > 0 { _c_vali_ = (*C.MSKrealt)(&vali_[0]) }
-  _res = int32(C.MSK_putarow(task.ptr(),_c_i_,_c_nzi_,_c_subi_,_c_vali_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutARowList(sub_ []int32,aptrb_ []int32,aptre_ []int32,asub_ []int32,aval_ []float64) (_res int32) {
-  num_ := minint([]int{ len(sub_),len(aptrb_),len(aptre_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutARowList'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if aptrb_ == nil { panic("Argument 'aptrb_' is nil in call to 'PutARowList'") }
-  var _c_aptrb_ *C.MSKint32t = nil
-  if len(aptrb_) > 0 { _c_aptrb_ = (*C.MSKint32t)(&aptrb_[0]) }
-  if aptre_ == nil { panic("Argument 'aptre_' is nil in call to 'PutARowList'") }
-  var _c_aptre_ *C.MSKint32t = nil
-  if len(aptre_) > 0 { _c_aptre_ = (*C.MSKint32t)(&aptre_[0]) }
-  if asub_ == nil { panic("Argument 'asub_' is nil in call to 'PutARowList'") }
-  var _c_asub_ *C.MSKint32t = nil
-  if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
-  if aval_ == nil { panic("Argument 'aval_' is nil in call to 'PutARowList'") }
-  var _c_aval_ *C.MSKrealt = nil
-  if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
-  _res = int32(C.MSK_putarowlist(task.ptr(),_c_num_,_c_sub_,_c_aptrb_,_c_aptre_,_c_asub_,_c_aval_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutARowSlice(first_ int32,last_ int32,ptrb_ []int64,ptre_ []int64,asub_ []int32,aval_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if ptrb_ == nil { panic("Argument 'ptrb_' is nil in call to 'PutARowSlice'") }
-  if len(ptrb_) < int(last_ - first_) { panic("Slice argument 'ptrb_' is too short in call to 'PutARowSlice'") }
-  var _c_ptrb_ *C.MSKint64t = nil
-  if len(ptrb_) > 0 { _c_ptrb_ = (*C.MSKint64t)(&ptrb_[0]) }
-  if ptre_ == nil { panic("Argument 'ptre_' is nil in call to 'PutARowSlice'") }
-  if len(ptre_) < int(last_ - first_) { panic("Slice argument 'ptre_' is too short in call to 'PutARowSlice'") }
-  var _c_ptre_ *C.MSKint64t = nil
-  if len(ptre_) > 0 { _c_ptre_ = (*C.MSKint64t)(&ptre_[0]) }
-  if asub_ == nil { panic("Argument 'asub_' is nil in call to 'PutARowSlice'") }
-  var _c_asub_ *C.MSKint32t = nil
-  if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
-  if aval_ == nil { panic("Argument 'aval_' is nil in call to 'PutARowSlice'") }
-  var _c_aval_ *C.MSKrealt = nil
-  if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
-  _res = int32(C.MSK_putarowslice64(task.ptr(),_c_first_,_c_last_,_c_ptrb_,_c_ptre_,_c_asub_,_c_aval_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBaraBlockTriplet(num_ int64,subi_ []int32,subj_ []int32,subk_ []int32,subl_ []int32,valijkl_ []float64) (_res int32) {
-  _c_num_ := C.MSKint64t(num_)
-  if subi_ == nil { panic("Argument 'subi_' is nil in call to 'PutBaraBlockTriplet'") }
-  if len(subi_) < int(num_) { panic("Slice argument 'subi_' is too short in call to 'PutBaraBlockTriplet'") }
-  var _c_subi_ *C.MSKint32t = nil
-  if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutBaraBlockTriplet'") }
-  if len(subj_) < int(num_) { panic("Slice argument 'subj_' is too short in call to 'PutBaraBlockTriplet'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if subk_ == nil { panic("Argument 'subk_' is nil in call to 'PutBaraBlockTriplet'") }
-  if len(subk_) < int(num_) { panic("Slice argument 'subk_' is too short in call to 'PutBaraBlockTriplet'") }
-  var _c_subk_ *C.MSKint32t = nil
-  if len(subk_) > 0 { _c_subk_ = (*C.MSKint32t)(&subk_[0]) }
-  if subl_ == nil { panic("Argument 'subl_' is nil in call to 'PutBaraBlockTriplet'") }
-  if len(subl_) < int(num_) { panic("Slice argument 'subl_' is too short in call to 'PutBaraBlockTriplet'") }
-  var _c_subl_ *C.MSKint32t = nil
-  if len(subl_) > 0 { _c_subl_ = (*C.MSKint32t)(&subl_[0]) }
-  if valijkl_ == nil { panic("Argument 'valijkl_' is nil in call to 'PutBaraBlockTriplet'") }
-  if len(valijkl_) < int(num_) { panic("Slice argument 'valijkl_' is too short in call to 'PutBaraBlockTriplet'") }
-  var _c_valijkl_ *C.MSKrealt = nil
-  if len(valijkl_) > 0 { _c_valijkl_ = (*C.MSKrealt)(&valijkl_[0]) }
-  _res = int32(C.MSK_putbarablocktriplet(task.ptr(),_c_num_,_c_subi_,_c_subj_,_c_subk_,_c_subl_,_c_valijkl_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBarAij(i_ int32,j_ int32,sub_ []int64,weights_ []float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_j_ := C.MSKint32t(j_)
-  num_ := minint([]int{ len(sub_),len(weights_) })
-  _c_num_ := C.MSKint64t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutBarAij'") }
-  var _c_sub_ *C.MSKint64t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint64t)(&sub_[0]) }
-  if weights_ == nil { panic("Argument 'weights_' is nil in call to 'PutBarAij'") }
-  var _c_weights_ *C.MSKrealt = nil
-  if len(weights_) > 0 { _c_weights_ = (*C.MSKrealt)(&weights_[0]) }
-  _res = int32(C.MSK_putbaraij(task.ptr(),_c_i_,_c_j_,_c_num_,_c_sub_,_c_weights_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBarcBlockTriplet(num_ int64,subj_ []int32,subk_ []int32,subl_ []int32,valjkl_ []float64) (_res int32) {
-  _c_num_ := C.MSKint64t(num_)
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutBarcBlockTriplet'") }
-  if len(subj_) < int(num_) { panic("Slice argument 'subj_' is too short in call to 'PutBarcBlockTriplet'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if subk_ == nil { panic("Argument 'subk_' is nil in call to 'PutBarcBlockTriplet'") }
-  if len(subk_) < int(num_) { panic("Slice argument 'subk_' is too short in call to 'PutBarcBlockTriplet'") }
-  var _c_subk_ *C.MSKint32t = nil
-  if len(subk_) > 0 { _c_subk_ = (*C.MSKint32t)(&subk_[0]) }
-  if subl_ == nil { panic("Argument 'subl_' is nil in call to 'PutBarcBlockTriplet'") }
-  if len(subl_) < int(num_) { panic("Slice argument 'subl_' is too short in call to 'PutBarcBlockTriplet'") }
-  var _c_subl_ *C.MSKint32t = nil
-  if len(subl_) > 0 { _c_subl_ = (*C.MSKint32t)(&subl_[0]) }
-  if valjkl_ == nil { panic("Argument 'valjkl_' is nil in call to 'PutBarcBlockTriplet'") }
-  if len(valjkl_) < int(num_) { panic("Slice argument 'valjkl_' is too short in call to 'PutBarcBlockTriplet'") }
-  var _c_valjkl_ *C.MSKrealt = nil
-  if len(valjkl_) > 0 { _c_valjkl_ = (*C.MSKrealt)(&valjkl_[0]) }
-  _res = int32(C.MSK_putbarcblocktriplet(task.ptr(),_c_num_,_c_subj_,_c_subk_,_c_subl_,_c_valjkl_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBarcJ(j_ int32,sub_ []int64,weights_ []float64) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  num_ := minint([]int{ len(sub_),len(weights_) })
-  _c_num_ := C.MSKint64t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutBarcJ'") }
-  var _c_sub_ *C.MSKint64t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint64t)(&sub_[0]) }
-  if weights_ == nil { panic("Argument 'weights_' is nil in call to 'PutBarcJ'") }
-  var _c_weights_ *C.MSKrealt = nil
-  if len(weights_) > 0 { _c_weights_ = (*C.MSKrealt)(&weights_[0]) }
-  _res = int32(C.MSK_putbarcj(task.ptr(),_c_j_,_c_num_,_c_sub_,_c_weights_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBarsJ(whichsol_ int32,j_ int32,barsj_ []float64) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  if barsj_ == nil { panic("Argument 'barsj_' is nil in call to 'PutBarsJ'") }
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetLenBarvarJ(j_)
-  if _res != 0 { return }
-  if len(barsj_) < int(__tmp_var_1) { panic("Slice argument 'barsj_' is too short in call to 'PutBarsJ'") }
-  var _c_barsj_ *C.MSKrealt = nil
-  if len(barsj_) > 0 { _c_barsj_ = (*C.MSKrealt)(&barsj_[0]) }
-  _res = int32(C.MSK_putbarsj(task.ptr(),C.MSKsoltypee(whichsol_),_c_j_,_c_barsj_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBarvarName(j_ int32,name_ string) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  _c_name_ := C.CString(name_)
-  defer C.free(unsafe.Pointer(_c_name_))
-  _res = int32(C.MSK_putbarvarname(task.ptr(),_c_j_,C.MSKstring_t(_c_name_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBarxJ(whichsol_ int32,j_ int32,barxj_ []float64) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  if barxj_ == nil { panic("Argument 'barxj_' is nil in call to 'PutBarxJ'") }
-  var __tmp_var_1 int64
-  __tmp_var_1,_res = task.GetLenBarvarJ(j_)
-  if _res != 0 { return }
-  if len(barxj_) < int(__tmp_var_1) { panic("Slice argument 'barxj_' is too short in call to 'PutBarxJ'") }
-  var _c_barxj_ *C.MSKrealt = nil
-  if len(barxj_) > 0 { _c_barxj_ = (*C.MSKrealt)(&barxj_[0]) }
-  _res = int32(C.MSK_putbarxj(task.ptr(),C.MSKsoltypee(whichsol_),_c_j_,_c_barxj_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBound(accmode_ int32,i_ int32,bk_ int32,bl_ float64,bu_ float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_bl_ := C.MSKrealt(bl_)
-  _c_bu_ := C.MSKrealt(bu_)
-  _res = int32(C.MSK_putbound(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,C.MSKboundkeye(bk_),_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBoundList(accmode_ int32,sub_ []int32,bk_ []int32,bl_ []float64,bu_ []float64) (_res int32) {
-  num_ := minint([]int{ len(sub_),len(bk_),len(bl_),len(bu_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutBoundList'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if bk_ == nil { panic("Argument 'bk_' is nil in call to 'PutBoundList'") }
-  var _c_bk_ *C.MSKboundkeye = nil
-  if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
-  if bl_ == nil { panic("Argument 'bl_' is nil in call to 'PutBoundList'") }
-  var _c_bl_ *C.MSKrealt = nil
-  if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
-  if bu_ == nil { panic("Argument 'bu_' is nil in call to 'PutBoundList'") }
-  var _c_bu_ *C.MSKrealt = nil
-  if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
-  _res = int32(C.MSK_putboundlist(task.ptr(),C.MSKaccmodee(accmode_),_c_num_,_c_sub_,_c_bk_,_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutBoundSlice(con_ int32,first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if bk_ == nil { panic("Argument 'bk_' is nil in call to 'PutBoundSlice'") }
-  if len(bk_) < int(last_ - first_) { panic("Slice argument 'bk_' is too short in call to 'PutBoundSlice'") }
-  var _c_bk_ *C.MSKboundkeye = nil
-  if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
-  if bl_ == nil { panic("Argument 'bl_' is nil in call to 'PutBoundSlice'") }
-  if len(bl_) < int(last_ - first_) { panic("Slice argument 'bl_' is too short in call to 'PutBoundSlice'") }
-  var _c_bl_ *C.MSKrealt = nil
-  if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
-  if bu_ == nil { panic("Argument 'bu_' is nil in call to 'PutBoundSlice'") }
-  if len(bu_) < int(last_ - first_) { panic("Slice argument 'bu_' is too short in call to 'PutBoundSlice'") }
-  var _c_bu_ *C.MSKrealt = nil
-  if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
-  _res = int32(C.MSK_putboundslice(task.ptr(),C.MSKaccmodee(con_),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutCfix(cfix_ float64) (_res int32) {
-  _c_cfix_ := C.MSKrealt(cfix_)
-  _res = int32(C.MSK_putcfix(task.ptr(),_c_cfix_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutCJ(j_ int32,cj_ float64) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  _c_cj_ := C.MSKrealt(cj_)
-  _res = int32(C.MSK_putcj(task.ptr(),_c_j_,_c_cj_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutCList(subj_ []int32,val_ []float64) (_res int32) {
-  num_ := minint([]int{ len(subj_),len(val_) })
-  _c_num_ := C.MSKint32t(num_)
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutCList'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if val_ == nil { panic("Argument 'val_' is nil in call to 'PutCList'") }
-  var _c_val_ *C.MSKrealt = nil
-  if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
-  _res = int32(C.MSK_putclist(task.ptr(),_c_num_,_c_subj_,_c_val_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutConBound(i_ int32,bk_ int32,bl_ float64,bu_ float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_bl_ := C.MSKrealt(bl_)
-  _c_bu_ := C.MSKrealt(bu_)
-  _res = int32(C.MSK_putconbound(task.ptr(),_c_i_,C.MSKboundkeye(bk_),_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutConBoundList(sub_ []int32,bkc_ []int32,blc_ []float64,buc_ []float64) (_res int32) {
-  num_ := minint([]int{ len(sub_),len(bkc_),len(blc_),len(buc_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutConBoundList'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if bkc_ == nil { panic("Argument 'bkc_' is nil in call to 'PutConBoundList'") }
-  var _c_bkc_ *C.MSKboundkeye = nil
-  if len(bkc_) > 0 { _c_bkc_ = (*C.MSKboundkeye)(unsafe.Pointer(&bkc_[0])) }
-  if blc_ == nil { panic("Argument 'blc_' is nil in call to 'PutConBoundList'") }
-  var _c_blc_ *C.MSKrealt = nil
-  if len(blc_) > 0 { _c_blc_ = (*C.MSKrealt)(&blc_[0]) }
-  if buc_ == nil { panic("Argument 'buc_' is nil in call to 'PutConBoundList'") }
-  var _c_buc_ *C.MSKrealt = nil
-  if len(buc_) > 0 { _c_buc_ = (*C.MSKrealt)(&buc_[0]) }
-  _res = int32(C.MSK_putconboundlist(task.ptr(),_c_num_,_c_sub_,_c_bkc_,_c_blc_,_c_buc_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutConBoundSlice(first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if bk_ == nil { panic("Argument 'bk_' is nil in call to 'PutConBoundSlice'") }
-  if len(bk_) < int(last_ - first_) { panic("Slice argument 'bk_' is too short in call to 'PutConBoundSlice'") }
-  var _c_bk_ *C.MSKboundkeye = nil
-  if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
-  if bl_ == nil { panic("Argument 'bl_' is nil in call to 'PutConBoundSlice'") }
-  if len(bl_) < int(last_ - first_) { panic("Slice argument 'bl_' is too short in call to 'PutConBoundSlice'") }
-  var _c_bl_ *C.MSKrealt = nil
-  if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
-  if bu_ == nil { panic("Argument 'bu_' is nil in call to 'PutConBoundSlice'") }
-  if len(bu_) < int(last_ - first_) { panic("Slice argument 'bu_' is too short in call to 'PutConBoundSlice'") }
-  var _c_bu_ *C.MSKrealt = nil
-  if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
-  _res = int32(C.MSK_putconboundslice(task.ptr(),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutCone(k_ int32,conetype_ int32,conepar_ float64,submem_ []int32) (_res int32) {
-  _c_k_ := C.MSKint32t(k_)
-  _c_conepar_ := C.MSKrealt(conepar_)
-  nummem_ := minint([]int{ len(submem_) })
-  _c_nummem_ := C.MSKint32t(nummem_)
-  if submem_ == nil { panic("Argument 'submem_' is nil in call to 'PutCone'") }
-  var _c_submem_ *C.MSKint32t = nil
-  if len(submem_) > 0 { _c_submem_ = (*C.MSKint32t)(&submem_[0]) }
-  _res = int32(C.MSK_putcone(task.ptr(),_c_k_,C.MSKconetypee(conetype_),_c_conepar_,_c_nummem_,_c_submem_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutConeName(j_ int32,name_ string) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  _c_name_ := C.CString(name_)
-  defer C.free(unsafe.Pointer(_c_name_))
-  _res = int32(C.MSK_putconename(task.ptr(),_c_j_,C.MSKstring_t(_c_name_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutConName(i_ int32,name_ string) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_name_ := C.CString(name_)
-  defer C.free(unsafe.Pointer(_c_name_))
-  _res = int32(C.MSK_putconname(task.ptr(),_c_i_,C.MSKstring_t(_c_name_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutCSlice(first_ int32,last_ int32,slice_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if slice_ == nil { panic("Argument 'slice_' is nil in call to 'PutCSlice'") }
-  if len(slice_) < int(last_ - first_) { panic("Slice argument 'slice_' is too short in call to 'PutCSlice'") }
-  var _c_slice_ *C.MSKrealt = nil
-  if len(slice_) > 0 { _c_slice_ = (*C.MSKrealt)(&slice_[0]) }
-  _res = int32(C.MSK_putcslice(task.ptr(),_c_first_,_c_last_,_c_slice_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutDouParam(param_ int32,parvalue_ float64) (_res int32) {
-  _c_parvalue_ := C.MSKrealt(parvalue_)
-  _res = int32(C.MSK_putdouparam(task.ptr(),C.MSKdparame(param_),_c_parvalue_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutIntParam(param_ int32,parvalue_ int32) (_res int32) {
-  _c_parvalue_ := C.MSKint32t(parvalue_)
-  _res = int32(C.MSK_putintparam(task.ptr(),C.MSKiparame(param_),_c_parvalue_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutMaxNumANz(maxnumanz_ int64) (_res int32) {
-  _c_maxnumanz_ := C.MSKint64t(maxnumanz_)
-  _res = int32(C.MSK_putmaxnumanz(task.ptr(),_c_maxnumanz_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutMaxNumBarvar(maxnumbarvar_ int32) (_res int32) {
-  _c_maxnumbarvar_ := C.MSKint32t(maxnumbarvar_)
-  _res = int32(C.MSK_putmaxnumbarvar(task.ptr(),_c_maxnumbarvar_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutMaxNumCon(maxnumcon_ int32) (_res int32) {
-  _c_maxnumcon_ := C.MSKint32t(maxnumcon_)
-  _res = int32(C.MSK_putmaxnumcon(task.ptr(),_c_maxnumcon_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutMaxNumCone(maxnumcone_ int32) (_res int32) {
-  _c_maxnumcone_ := C.MSKint32t(maxnumcone_)
-  _res = int32(C.MSK_putmaxnumcone(task.ptr(),_c_maxnumcone_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutMaxNumQNz(maxnumqnz_ int64) (_res int32) {
-  _c_maxnumqnz_ := C.MSKint64t(maxnumqnz_)
-  _res = int32(C.MSK_putmaxnumqnz(task.ptr(),_c_maxnumqnz_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutMaxNumVar(maxnumvar_ int32) (_res int32) {
-  _c_maxnumvar_ := C.MSKint32t(maxnumvar_)
-  _res = int32(C.MSK_putmaxnumvar(task.ptr(),_c_maxnumvar_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutNaDouParam(paramname_ string,parvalue_ float64) (_res int32) {
-  _c_paramname_ := C.CString(paramname_)
-  defer C.free(unsafe.Pointer(_c_paramname_))
-  _c_parvalue_ := C.MSKrealt(parvalue_)
-  _res = int32(C.MSK_putnadouparam(task.ptr(),C.MSKstring_t(_c_paramname_),_c_parvalue_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutNaIntParam(paramname_ string,parvalue_ int32) (_res int32) {
-  _c_paramname_ := C.CString(paramname_)
-  defer C.free(unsafe.Pointer(_c_paramname_))
-  _c_parvalue_ := C.MSKint32t(parvalue_)
-  _res = int32(C.MSK_putnaintparam(task.ptr(),C.MSKstring_t(_c_paramname_),_c_parvalue_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutNaStrParam(paramname_ string,parvalue_ string) (_res int32) {
-  _c_paramname_ := C.CString(paramname_)
-  defer C.free(unsafe.Pointer(_c_paramname_))
-  _c_parvalue_ := C.CString(parvalue_)
-  defer C.free(unsafe.Pointer(_c_parvalue_))
-  _res = int32(C.MSK_putnastrparam(task.ptr(),C.MSKstring_t(_c_paramname_),C.MSKstring_t(_c_parvalue_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutObjName(objname_ string) (_res int32) {
-  _c_objname_ := C.CString(objname_)
-  defer C.free(unsafe.Pointer(_c_objname_))
-  _res = int32(C.MSK_putobjname(task.ptr(),C.MSKstring_t(_c_objname_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutObjSense(sense_ int32) (_res int32) {
-  _res = int32(C.MSK_putobjsense(task.ptr(),C.MSKobjsensee(sense_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutParam(parname_ string,parvalue_ string) (_res int32) {
-  _c_parname_ := C.CString(parname_)
-  defer C.free(unsafe.Pointer(_c_parname_))
-  _c_parvalue_ := C.CString(parvalue_)
-  defer C.free(unsafe.Pointer(_c_parvalue_))
-  _res = int32(C.MSK_putparam(task.ptr(),C.MSKstring_t(_c_parname_),C.MSKstring_t(_c_parvalue_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutQCon(qcsubk_ []int32,qcsubi_ []int32,qcsubj_ []int32,qcval_ []float64) (_res int32) {
-  numqcnz_ := minint([]int{ len(qcsubi_),len(qcsubj_),len(qcval_) })
-  _c_numqcnz_ := C.MSKint32t(numqcnz_)
-  if qcsubk_ == nil { panic("Argument 'qcsubk_' is nil in call to 'PutQCon'") }
-  var _c_qcsubk_ *C.MSKint32t = nil
-  if len(qcsubk_) > 0 { _c_qcsubk_ = (*C.MSKint32t)(&qcsubk_[0]) }
-  if qcsubi_ == nil { panic("Argument 'qcsubi_' is nil in call to 'PutQCon'") }
-  var _c_qcsubi_ *C.MSKint32t = nil
-  if len(qcsubi_) > 0 { _c_qcsubi_ = (*C.MSKint32t)(&qcsubi_[0]) }
-  if qcsubj_ == nil { panic("Argument 'qcsubj_' is nil in call to 'PutQCon'") }
-  var _c_qcsubj_ *C.MSKint32t = nil
-  if len(qcsubj_) > 0 { _c_qcsubj_ = (*C.MSKint32t)(&qcsubj_[0]) }
-  if qcval_ == nil { panic("Argument 'qcval_' is nil in call to 'PutQCon'") }
-  var _c_qcval_ *C.MSKrealt = nil
-  if len(qcval_) > 0 { _c_qcval_ = (*C.MSKrealt)(&qcval_[0]) }
-  _res = int32(C.MSK_putqcon(task.ptr(),_c_numqcnz_,_c_qcsubk_,_c_qcsubi_,_c_qcsubj_,_c_qcval_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutQConK(k_ int32,qcsubi_ []int32,qcsubj_ []int32,qcval_ []float64) (_res int32) {
-  _c_k_ := C.MSKint32t(k_)
-  numqcnz_ := minint([]int{ len(qcsubi_),len(qcsubj_),len(qcval_) })
-  _c_numqcnz_ := C.MSKint32t(numqcnz_)
-  if qcsubi_ == nil { panic("Argument 'qcsubi_' is nil in call to 'PutQConK'") }
-  var _c_qcsubi_ *C.MSKint32t = nil
-  if len(qcsubi_) > 0 { _c_qcsubi_ = (*C.MSKint32t)(&qcsubi_[0]) }
-  if qcsubj_ == nil { panic("Argument 'qcsubj_' is nil in call to 'PutQConK'") }
-  var _c_qcsubj_ *C.MSKint32t = nil
-  if len(qcsubj_) > 0 { _c_qcsubj_ = (*C.MSKint32t)(&qcsubj_[0]) }
-  if qcval_ == nil { panic("Argument 'qcval_' is nil in call to 'PutQConK'") }
-  var _c_qcval_ *C.MSKrealt = nil
-  if len(qcval_) > 0 { _c_qcval_ = (*C.MSKrealt)(&qcval_[0]) }
-  _res = int32(C.MSK_putqconk(task.ptr(),_c_k_,_c_numqcnz_,_c_qcsubi_,_c_qcsubj_,_c_qcval_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutQObj(qosubi_ []int32,qosubj_ []int32,qoval_ []float64) (_res int32) {
-  numqonz_ := minint([]int{ len(qosubi_),len(qosubj_),len(qoval_) })
-  _c_numqonz_ := C.MSKint32t(numqonz_)
-  if qosubi_ == nil { panic("Argument 'qosubi_' is nil in call to 'PutQObj'") }
-  var _c_qosubi_ *C.MSKint32t = nil
-  if len(qosubi_) > 0 { _c_qosubi_ = (*C.MSKint32t)(&qosubi_[0]) }
-  if qosubj_ == nil { panic("Argument 'qosubj_' is nil in call to 'PutQObj'") }
-  var _c_qosubj_ *C.MSKint32t = nil
-  if len(qosubj_) > 0 { _c_qosubj_ = (*C.MSKint32t)(&qosubj_[0]) }
-  if qoval_ == nil { panic("Argument 'qoval_' is nil in call to 'PutQObj'") }
-  var _c_qoval_ *C.MSKrealt = nil
-  if len(qoval_) > 0 { _c_qoval_ = (*C.MSKrealt)(&qoval_[0]) }
-  _res = int32(C.MSK_putqobj(task.ptr(),_c_numqonz_,_c_qosubi_,_c_qosubj_,_c_qoval_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutQObjIJ(i_ int32,j_ int32,qoij_ float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_j_ := C.MSKint32t(j_)
-  _c_qoij_ := C.MSKrealt(qoij_)
-  _res = int32(C.MSK_putqobjij(task.ptr(),_c_i_,_c_j_,_c_qoij_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSkc(whichsol_ int32,skc_ []int32) (_res int32) {
-  if skc_ == nil { panic("Argument 'skc_' is nil in call to 'PutSkc'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if len(skc_) < int(__tmp_var_1) { panic("Slice argument 'skc_' is too short in call to 'PutSkc'") }
-  var _c_skc_ *C.MSKstakeye = nil
-  if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
-  _res = int32(C.MSK_putskc(task.ptr(),C.MSKsoltypee(whichsol_),_c_skc_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSkcSlice(whichsol_ int32,first_ int32,last_ int32,skc_ []int32) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if skc_ == nil { panic("Argument 'skc_' is nil in call to 'PutSkcSlice'") }
-  if len(skc_) < int(last_ - first_) { panic("Slice argument 'skc_' is too short in call to 'PutSkcSlice'") }
-  var _c_skc_ *C.MSKstakeye = nil
-  if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
-  _res = int32(C.MSK_putskcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_skc_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSkx(whichsol_ int32,skx_ []int32) (_res int32) {
-  if skx_ == nil { panic("Argument 'skx_' is nil in call to 'PutSkx'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if len(skx_) < int(__tmp_var_1) { panic("Slice argument 'skx_' is too short in call to 'PutSkx'") }
-  var _c_skx_ *C.MSKstakeye = nil
-  if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
-  _res = int32(C.MSK_putskx(task.ptr(),C.MSKsoltypee(whichsol_),_c_skx_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSkxSlice(whichsol_ int32,first_ int32,last_ int32,skx_ []int32) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if skx_ == nil { panic("Argument 'skx_' is nil in call to 'PutSkxSlice'") }
-  if len(skx_) < int(last_ - first_) { panic("Slice argument 'skx_' is too short in call to 'PutSkxSlice'") }
-  var _c_skx_ *C.MSKstakeye = nil
-  if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
-  _res = int32(C.MSK_putskxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_skx_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSlc(whichsol_ int32,slc_ []float64) (_res int32) {
-  if slc_ == nil { panic("Argument 'slc_' is nil in call to 'PutSlc'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if len(slc_) < int(__tmp_var_1) { panic("Slice argument 'slc_' is too short in call to 'PutSlc'") }
-  var _c_slc_ *C.MSKrealt = nil
-  if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
-  _res = int32(C.MSK_putslc(task.ptr(),C.MSKsoltypee(whichsol_),_c_slc_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSlcSlice(whichsol_ int32,first_ int32,last_ int32,slc_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if slc_ == nil { panic("Argument 'slc_' is nil in call to 'PutSlcSlice'") }
-  if len(slc_) < int(last_ - first_) { panic("Slice argument 'slc_' is too short in call to 'PutSlcSlice'") }
-  var _c_slc_ *C.MSKrealt = nil
-  if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
-  _res = int32(C.MSK_putslcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_slc_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSlx(whichsol_ int32,slx_ []float64) (_res int32) {
-  if slx_ == nil { panic("Argument 'slx_' is nil in call to 'PutSlx'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if len(slx_) < int(__tmp_var_1) { panic("Slice argument 'slx_' is too short in call to 'PutSlx'") }
-  var _c_slx_ *C.MSKrealt = nil
-  if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
-  _res = int32(C.MSK_putslx(task.ptr(),C.MSKsoltypee(whichsol_),_c_slx_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSlxSlice(whichsol_ int32,first_ int32,last_ int32,slx_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if slx_ == nil { panic("Argument 'slx_' is nil in call to 'PutSlxSlice'") }
-  if len(slx_) < int(last_ - first_) { panic("Slice argument 'slx_' is too short in call to 'PutSlxSlice'") }
-  var _c_slx_ *C.MSKrealt = nil
-  if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
-  _res = int32(C.MSK_putslxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_slx_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSnx(whichsol_ int32,sux_ []float64) (_res int32) {
-  if sux_ == nil { panic("Argument 'sux_' is nil in call to 'PutSnx'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if len(sux_) < int(__tmp_var_1) { panic("Slice argument 'sux_' is too short in call to 'PutSnx'") }
-  var _c_sux_ *C.MSKrealt = nil
-  if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
-  _res = int32(C.MSK_putsnx(task.ptr(),C.MSKsoltypee(whichsol_),_c_sux_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSnxSlice(whichsol_ int32,first_ int32,last_ int32,snx_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if snx_ == nil { panic("Argument 'snx_' is nil in call to 'PutSnxSlice'") }
-  if len(snx_) < int(last_ - first_) { panic("Slice argument 'snx_' is too short in call to 'PutSnxSlice'") }
-  var _c_snx_ *C.MSKrealt = nil
-  if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
-  _res = int32(C.MSK_putsnxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_snx_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSolution(whichsol_ int32,skc_ []int32,skx_ []int32,skn_ []int32,xc_ []float64,xx_ []float64,y_ []float64,slc_ []float64,suc_ []float64,slx_ []float64,sux_ []float64,snx_ []float64) (_res int32) {
-  if skc_ == nil { panic("Argument 'skc_' is nil in call to 'PutSolution'") }
-  var _c_skc_ *C.MSKstakeye = nil
-  if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
-  if skx_ == nil { panic("Argument 'skx_' is nil in call to 'PutSolution'") }
-  var _c_skx_ *C.MSKstakeye = nil
-  if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
-  if skn_ == nil { panic("Argument 'skn_' is nil in call to 'PutSolution'") }
-  var _c_skn_ *C.MSKstakeye = nil
-  if len(skn_) > 0 { _c_skn_ = (*C.MSKstakeye)(unsafe.Pointer(&skn_[0])) }
-  if xc_ == nil { panic("Argument 'xc_' is nil in call to 'PutSolution'") }
-  var _c_xc_ *C.MSKrealt = nil
-  if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
-  if xx_ == nil { panic("Argument 'xx_' is nil in call to 'PutSolution'") }
-  var _c_xx_ *C.MSKrealt = nil
-  if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
-  if y_ == nil { panic("Argument 'y_' is nil in call to 'PutSolution'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  if slc_ == nil { panic("Argument 'slc_' is nil in call to 'PutSolution'") }
-  var _c_slc_ *C.MSKrealt = nil
-  if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
-  if suc_ == nil { panic("Argument 'suc_' is nil in call to 'PutSolution'") }
-  var _c_suc_ *C.MSKrealt = nil
-  if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
-  if slx_ == nil { panic("Argument 'slx_' is nil in call to 'PutSolution'") }
-  var _c_slx_ *C.MSKrealt = nil
-  if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
-  if sux_ == nil { panic("Argument 'sux_' is nil in call to 'PutSolution'") }
-  var _c_sux_ *C.MSKrealt = nil
-  if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
-  if snx_ == nil { panic("Argument 'snx_' is nil in call to 'PutSolution'") }
-  var _c_snx_ *C.MSKrealt = nil
-  if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
-  _res = int32(C.MSK_putsolution(task.ptr(),C.MSKsoltypee(whichsol_),_c_skc_,_c_skx_,_c_skn_,_c_xc_,_c_xx_,_c_y_,_c_slc_,_c_suc_,_c_slx_,_c_sux_,_c_snx_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSolutionI(accmode_ int32,i_ int32,whichsol_ int32,sk_ int32,x_ float64,sl_ float64,su_ float64,sn_ float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_x_ := C.MSKrealt(x_)
-  _c_sl_ := C.MSKrealt(sl_)
-  _c_su_ := C.MSKrealt(su_)
-  _c_sn_ := C.MSKrealt(sn_)
-  _res = int32(C.MSK_putsolutioni(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,C.MSKsoltypee(whichsol_),C.MSKstakeye(sk_),_c_x_,_c_sl_,_c_su_,_c_sn_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSolutionYI(i_ int32,whichsol_ int32,y_ float64) (_res int32) {
-  _c_i_ := C.MSKint32t(i_)
-  _c_y_ := C.MSKrealt(y_)
-  _res = int32(C.MSK_putsolutionyi(task.ptr(),_c_i_,C.MSKsoltypee(whichsol_),_c_y_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutStrParam(param_ int32,parvalue_ string) (_res int32) {
-  _c_parvalue_ := C.CString(parvalue_)
-  defer C.free(unsafe.Pointer(_c_parvalue_))
-  _res = int32(C.MSK_putstrparam(task.ptr(),C.MSKsparame(param_),C.MSKstring_t(_c_parvalue_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSuc(whichsol_ int32,suc_ []float64) (_res int32) {
-  if suc_ == nil { panic("Argument 'suc_' is nil in call to 'PutSuc'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if len(suc_) < int(__tmp_var_1) { panic("Slice argument 'suc_' is too short in call to 'PutSuc'") }
-  var _c_suc_ *C.MSKrealt = nil
-  if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
-  _res = int32(C.MSK_putsuc(task.ptr(),C.MSKsoltypee(whichsol_),_c_suc_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSucSlice(whichsol_ int32,first_ int32,last_ int32,suc_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if suc_ == nil { panic("Argument 'suc_' is nil in call to 'PutSucSlice'") }
-  if len(suc_) < int(last_ - first_) { panic("Slice argument 'suc_' is too short in call to 'PutSucSlice'") }
-  var _c_suc_ *C.MSKrealt = nil
-  if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
-  _res = int32(C.MSK_putsucslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_suc_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSux(whichsol_ int32,sux_ []float64) (_res int32) {
-  if sux_ == nil { panic("Argument 'sux_' is nil in call to 'PutSux'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if len(sux_) < int(__tmp_var_1) { panic("Slice argument 'sux_' is too short in call to 'PutSux'") }
-  var _c_sux_ *C.MSKrealt = nil
-  if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
-  _res = int32(C.MSK_putsux(task.ptr(),C.MSKsoltypee(whichsol_),_c_sux_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutSuxSlice(whichsol_ int32,first_ int32,last_ int32,sux_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if sux_ == nil { panic("Argument 'sux_' is nil in call to 'PutSuxSlice'") }
-  if len(sux_) < int(last_ - first_) { panic("Slice argument 'sux_' is too short in call to 'PutSuxSlice'") }
-  var _c_sux_ *C.MSKrealt = nil
-  if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
-  _res = int32(C.MSK_putsuxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_sux_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutTaskName(taskname_ string) (_res int32) {
-  _c_taskname_ := C.CString(taskname_)
-  defer C.free(unsafe.Pointer(_c_taskname_))
-  _res = int32(C.MSK_puttaskname(task.ptr(),C.MSKstring_t(_c_taskname_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutVarBound(j_ int32,bk_ int32,bl_ float64,bu_ float64) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  _c_bl_ := C.MSKrealt(bl_)
-  _c_bu_ := C.MSKrealt(bu_)
-  _res = int32(C.MSK_putvarbound(task.ptr(),_c_j_,C.MSKboundkeye(bk_),_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutVarBoundList(sub_ []int32,bkx_ []int32,blx_ []float64,bux_ []float64) (_res int32) {
-  num_ := minint([]int{ len(sub_),len(bkx_),len(blx_),len(bux_) })
-  _c_num_ := C.MSKint32t(num_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutVarBoundList'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if bkx_ == nil { panic("Argument 'bkx_' is nil in call to 'PutVarBoundList'") }
-  var _c_bkx_ *C.MSKboundkeye = nil
-  if len(bkx_) > 0 { _c_bkx_ = (*C.MSKboundkeye)(unsafe.Pointer(&bkx_[0])) }
-  if blx_ == nil { panic("Argument 'blx_' is nil in call to 'PutVarBoundList'") }
-  var _c_blx_ *C.MSKrealt = nil
-  if len(blx_) > 0 { _c_blx_ = (*C.MSKrealt)(&blx_[0]) }
-  if bux_ == nil { panic("Argument 'bux_' is nil in call to 'PutVarBoundList'") }
-  var _c_bux_ *C.MSKrealt = nil
-  if len(bux_) > 0 { _c_bux_ = (*C.MSKrealt)(&bux_[0]) }
-  _res = int32(C.MSK_putvarboundlist(task.ptr(),_c_num_,_c_sub_,_c_bkx_,_c_blx_,_c_bux_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutVarBoundSlice(first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if bk_ == nil { panic("Argument 'bk_' is nil in call to 'PutVarBoundSlice'") }
-  if len(bk_) < int(last_ - first_) { panic("Slice argument 'bk_' is too short in call to 'PutVarBoundSlice'") }
-  var _c_bk_ *C.MSKboundkeye = nil
-  if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
-  if bl_ == nil { panic("Argument 'bl_' is nil in call to 'PutVarBoundSlice'") }
-  if len(bl_) < int(last_ - first_) { panic("Slice argument 'bl_' is too short in call to 'PutVarBoundSlice'") }
-  var _c_bl_ *C.MSKrealt = nil
-  if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
-  if bu_ == nil { panic("Argument 'bu_' is nil in call to 'PutVarBoundSlice'") }
-  if len(bu_) < int(last_ - first_) { panic("Slice argument 'bu_' is too short in call to 'PutVarBoundSlice'") }
-  var _c_bu_ *C.MSKrealt = nil
-  if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
-  _res = int32(C.MSK_putvarboundslice(task.ptr(),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutVarBranchOrder(j_ int32,priority_ int32,direction_ int32) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  _c_priority_ := C.MSKint32t(priority_)
-  _res = int32(C.MSK_putvarbranchorder(task.ptr(),_c_j_,_c_priority_,C.int(direction_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutVarName(j_ int32,name_ string) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  _c_name_ := C.CString(name_)
-  defer C.free(unsafe.Pointer(_c_name_))
-  _res = int32(C.MSK_putvarname(task.ptr(),_c_j_,C.MSKstring_t(_c_name_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutVarType(j_ int32,vartype_ int32) (_res int32) {
-  _c_j_ := C.MSKint32t(j_)
-  _res = int32(C.MSK_putvartype(task.ptr(),_c_j_,C.MSKvariabletypee(vartype_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutVarTypeList(subj_ []int32,vartype_ []int32) (_res int32) {
-  num_ := minint([]int{ len(subj_),len(vartype_) })
-  _c_num_ := C.MSKint32t(num_)
-  if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutVarTypeList'") }
-  var _c_subj_ *C.MSKint32t = nil
-  if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
-  if vartype_ == nil { panic("Argument 'vartype_' is nil in call to 'PutVarTypeList'") }
-  var _c_vartype_ *C.MSKvariabletypee = nil
-  if len(vartype_) > 0 { _c_vartype_ = (*C.MSKvariabletypee)(unsafe.Pointer(&vartype_[0])) }
-  _res = int32(C.MSK_putvartypelist(task.ptr(),_c_num_,_c_subj_,_c_vartype_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutXc(whichsol_ int32,xc_ []float64) (_r_xc_ []float64,_res int32) {
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if xc_ == nil { xc_ = make([]float64,__tmp_var_1,__tmp_var_1)
-  } else if len(xc_) < int(__tmp_var_1) { panic("Slice in 'xc_' is too short in call to 'PutXc'") }
-  var _c_xc_ *C.MSKrealt = nil
-  if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
-  _res = int32(C.MSK_putxc(task.ptr(),C.MSKsoltypee(whichsol_),_c_xc_))
-  if _res != 0 { return }
-  _r_xc_ = xc_
-  return
-}
-func (task *Task) PutXcSlice(whichsol_ int32,first_ int32,last_ int32,xc_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if xc_ == nil { panic("Argument 'xc_' is nil in call to 'PutXcSlice'") }
-  if len(xc_) < int(last_ - first_) { panic("Slice argument 'xc_' is too short in call to 'PutXcSlice'") }
-  var _c_xc_ *C.MSKrealt = nil
-  if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
-  _res = int32(C.MSK_putxcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_xc_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutXx(whichsol_ int32,xx_ []float64) (_res int32) {
-  if xx_ == nil { panic("Argument 'xx_' is nil in call to 'PutXx'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumVar()
-  if _res != 0 { return }
-  if len(xx_) < int(__tmp_var_1) { panic("Slice argument 'xx_' is too short in call to 'PutXx'") }
-  var _c_xx_ *C.MSKrealt = nil
-  if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
-  _res = int32(C.MSK_putxx(task.ptr(),C.MSKsoltypee(whichsol_),_c_xx_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutXxSlice(whichsol_ int32,first_ int32,last_ int32,xx_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if xx_ == nil { panic("Argument 'xx_' is nil in call to 'PutXxSlice'") }
-  if len(xx_) < int(last_ - first_) { panic("Slice argument 'xx_' is too short in call to 'PutXxSlice'") }
-  var _c_xx_ *C.MSKrealt = nil
-  if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
-  _res = int32(C.MSK_putxxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_xx_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutY(whichsol_ int32,y_ []float64) (_res int32) {
-  if y_ == nil { panic("Argument 'y_' is nil in call to 'PutY'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if len(y_) < int(__tmp_var_1) { panic("Slice argument 'y_' is too short in call to 'PutY'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  _res = int32(C.MSK_puty(task.ptr(),C.MSKsoltypee(whichsol_),_c_y_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) PutYSlice(whichsol_ int32,first_ int32,last_ int32,y_ []float64) (_res int32) {
-  _c_first_ := C.MSKint32t(first_)
-  _c_last_ := C.MSKint32t(last_)
-  if y_ == nil { panic("Argument 'y_' is nil in call to 'PutYSlice'") }
-  if len(y_) < int(last_ - first_) { panic("Slice argument 'y_' is too short in call to 'PutYSlice'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  _res = int32(C.MSK_putyslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_y_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ReadBranchPriorities(filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_readbranchpriorities(task.ptr(),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ReadData(filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_readdataautoformat(task.ptr(),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ReadDataFormat(filename_ string,format_ int32,compress_ int32) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_readdataformat(task.ptr(),C.MSKstring_t(_c_filename_),C.int(format_),C.int(compress_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ReadParamFile(filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_readparamfile(task.ptr(),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ReadSolution(whichsol_ int32,filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_readsolution(task.ptr(),C.MSKsoltypee(whichsol_),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ReadSummary(whichstream_ int32) (_res int32) {
-  _res = int32(C.MSK_readsummary(task.ptr(),C.MSKstreamtypee(whichstream_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ReadTask(filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_readtask(task.ptr(),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) RemoveBarvars(subset_ []int32) (_res int32) {
-  num_ := minint([]int{ len(subset_) })
-  _c_num_ := C.MSKint32t(num_)
-  if subset_ == nil { panic("Argument 'subset_' is nil in call to 'RemoveBarvars'") }
-  var _c_subset_ *C.MSKint32t = nil
-  if len(subset_) > 0 { _c_subset_ = (*C.MSKint32t)(&subset_[0]) }
-  _res = int32(C.MSK_removebarvars(task.ptr(),_c_num_,_c_subset_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) RemoveCones(subset_ []int32) (_res int32) {
-  num_ := minint([]int{ len(subset_) })
-  _c_num_ := C.MSKint32t(num_)
-  if subset_ == nil { panic("Argument 'subset_' is nil in call to 'RemoveCones'") }
-  var _c_subset_ *C.MSKint32t = nil
-  if len(subset_) > 0 { _c_subset_ = (*C.MSKint32t)(&subset_[0]) }
-  _res = int32(C.MSK_removecones(task.ptr(),_c_num_,_c_subset_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) RemoveCons(subset_ []int32) (_res int32) {
-  num_ := minint([]int{ len(subset_) })
-  _c_num_ := C.MSKint32t(num_)
-  if subset_ == nil { panic("Argument 'subset_' is nil in call to 'RemoveCons'") }
-  var _c_subset_ *C.MSKint32t = nil
-  if len(subset_) > 0 { _c_subset_ = (*C.MSKint32t)(&subset_[0]) }
-  _res = int32(C.MSK_removecons(task.ptr(),_c_num_,_c_subset_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) RemoveVars(subset_ []int32) (_res int32) {
-  num_ := minint([]int{ len(subset_) })
-  _c_num_ := C.MSKint32t(num_)
-  if subset_ == nil { panic("Argument 'subset_' is nil in call to 'RemoveVars'") }
-  var _c_subset_ *C.MSKint32t = nil
-  if len(subset_) > 0 { _c_subset_ = (*C.MSKint32t)(&subset_[0]) }
-  _res = int32(C.MSK_removevars(task.ptr(),_c_num_,_c_subset_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) ResizeTask(maxnumcon_ int32,maxnumvar_ int32,maxnumcone_ int32,maxnumanz_ int64,maxnumqnz_ int64) (_res int32) {
-  _c_maxnumcon_ := C.MSKint32t(maxnumcon_)
-  _c_maxnumvar_ := C.MSKint32t(maxnumvar_)
-  _c_maxnumcone_ := C.MSKint32t(maxnumcone_)
-  _c_maxnumanz_ := C.MSKint64t(maxnumanz_)
-  _c_maxnumqnz_ := C.MSKint64t(maxnumqnz_)
-  _res = int32(C.MSK_resizetask(task.ptr(),_c_maxnumcon_,_c_maxnumvar_,_c_maxnumcone_,_c_maxnumanz_,_c_maxnumqnz_))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) SensitivityReport(whichstream_ int32) (_res int32) {
-  _res = int32(C.MSK_sensitivityreport(task.ptr(),C.MSKstreamtypee(whichstream_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) SetDefaults() (_res int32) {
-  _res = int32(C.MSK_setdefaults(task.ptr()))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) SkToStr(sk_ int32) (_r_str_ string,_res int32) {
-  _c_str_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
-  defer C.free(unsafe.Pointer(_c_str_))
-  _res = int32(C.MSK_sktostr(task.ptr(),C.MSKstakeye(sk_),C.MSKstring_t(_c_str_)))
-  if _res != 0 { return }
-  _r_str_ = C.GoStringN(_c_str_,C.int(MAX_STR_LEN))
-  return
-}
-func (task *Task) SolStaToStr(solsta_ int32) (_r_str_ string,_res int32) {
-  _c_str_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
-  defer C.free(unsafe.Pointer(_c_str_))
-  _res = int32(C.MSK_solstatostr(task.ptr(),C.MSKsolstae(solsta_),C.MSKstring_t(_c_str_)))
-  if _res != 0 { return }
-  _r_str_ = C.GoStringN(_c_str_,C.int(MAX_STR_LEN))
-  return
-}
-func (task *Task) SolutionDef(whichsol_ int32) (_r_isdef_ bool,_res int32) {
-  var _c_isdef_ C.MSKbooleant
-  _res = int32(C.MSK_solutiondef(task.ptr(),C.MSKsoltypee(whichsol_),&_c_isdef_))
-  if _res != 0 { return }
-  _r_isdef_ = int(_c_isdef_)!=0
-  return
-}
-func (task *Task) SolutionSummary(whichstream_ int32) (_res int32) {
-  _res = int32(C.MSK_solutionsummary(task.ptr(),C.MSKstreamtypee(whichstream_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) SolveWithBasis(transp_ int32,numnz_ int32,sub_ []int32,val_ []float64) (_r_numnz_ int32,_r_sub_ []int32,_r_val_ []float64,_res int32) {
-  _c_transp_ := C.MSKint32t(transp_)
-  var _c_numnz_ C.MSKint32t = C.MSKint32t(numnz_)
-  if sub_ == nil { panic("Argument 'sub_' is nil in call to 'SolveWithBasis'") }
-  var __tmp_var_1 int32
-  __tmp_var_1,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if len(sub_) < int(__tmp_var_1) { panic("Slice argument 'sub_' is too short in call to 'SolveWithBasis'") }
-  var _c_sub_ *C.MSKint32t = nil
-  if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
-  if val_ == nil { panic("Argument 'val_' is nil in call to 'SolveWithBasis'") }
-  var __tmp_var_3 int32
-  __tmp_var_3,_res = task.GetNumCon()
-  if _res != 0 { return }
-  if len(val_) < int(__tmp_var_3) { panic("Slice argument 'val_' is too short in call to 'SolveWithBasis'") }
-  var _c_val_ *C.MSKrealt = nil
-  if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
-  _res = int32(C.MSK_solvewithbasis(task.ptr(),_c_transp_,& _c_numnz_,_c_sub_,_c_val_))
-  if _res != 0 { return }
-  _r_numnz_ = int32(_c_numnz_)
-  _r_sub_ = sub_
-  _r_val_ = val_
-  return
-}
-func (task *Task) StartStat() (_res int32) {
-  _res = int32(C.MSK_startstat(task.ptr()))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) StopStat() (_res int32) {
-  _res = int32(C.MSK_stopstat(task.ptr()))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) StrToConeType(str_ string) (_r_conetype_ int32,_res int32) {
-  _c_str_ := C.CString(str_)
-  defer C.free(unsafe.Pointer(_c_str_))
-  var _c_conetype_ C.MSKconetypee
-  _res = int32(C.MSK_strtoconetype(task.ptr(),C.MSKstring_t(_c_str_),&_c_conetype_))
-  if _res != 0 { return }
-  _r_conetype_ = int32(_c_conetype_)
-  return
-}
-func (task *Task) StrToSk(str_ string) (_r_sk_ int32,_res int32) {
-  _c_str_ := C.CString(str_)
-  defer C.free(unsafe.Pointer(_c_str_))
-  var _c_sk_ C.MSKint32t
-  _res = int32(C.MSK_strtosk(task.ptr(),C.MSKstring_t(_c_str_),&_c_sk_))
-  if _res != 0 { return }
-  _r_sk_ = int32(_c_sk_)
-  return
-}
-func (task *Task) Toconic() (_res int32) {
-  _res = int32(C.MSK_toconic(task.ptr()))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) UpdateSolutionInfo(whichsol_ int32) (_res int32) {
-  _res = int32(C.MSK_updatesolutioninfo(task.ptr(),C.MSKsoltypee(whichsol_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) WriteBranchPriorities(filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_writebranchpriorities(task.ptr(),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) WriteData(filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_writedata(task.ptr(),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) WriteParamFile(filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_writeparamfile(task.ptr(),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) WriteSolution(whichsol_ int32,filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_writesolution(task.ptr(),C.MSKsoltypee(whichsol_),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (task *Task) WriteTask(filename_ string) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _res = int32(C.MSK_writetask(task.ptr(),C.MSKstring_t(_c_filename_)))
-  if _res != 0 { return }
-  return
-}
-func (env *Env) Axpy(n_ int32,alpha_ float64,x_ []float64,y_ []float64) (_r_y_ []float64,_res int32) {
-  _c_n_ := C.MSKint32t(n_)
-  _c_alpha_ := C.MSKrealt(alpha_)
-  if x_ == nil { panic("Argument 'x_' is nil in call to 'Axpy'") }
-  if len(x_) < int(n_) { panic("Slice argument 'x_' is too short in call to 'Axpy'") }
-  var _c_x_ *C.MSKrealt = nil
-  if len(x_) > 0 { _c_x_ = (*C.MSKrealt)(&x_[0]) }
-  if y_ == nil { panic("Argument 'y_' is nil in call to 'Axpy'") }
-  if len(y_) < int(n_) { panic("Slice argument 'y_' is too short in call to 'Axpy'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  _res = int32(C.MSK_axpy(env.ptr(),_c_n_,_c_alpha_,_c_x_,_c_y_))
-  if _res != 0 { return }
-  _r_y_ = y_
-  return
-}
-func (env *Env) CheckInLicense(feature_ int32) (_res int32) {
-  _res = int32(C.MSK_checkinlicense(env.ptr(),C.MSKfeaturee(feature_)))
-  if _res != 0 { return }
-  return
-}
-func (env *Env) CheckoutLicense(feature_ int32) (_res int32) {
-  _res = int32(C.MSK_checkoutlicense(env.ptr(),C.MSKfeaturee(feature_)))
-  if _res != 0 { return }
-  return
-}
-func (env *Env) Dot(n_ int32,x_ []float64,y_ []float64) (_r_xty_ float64,_res int32) {
-  _c_n_ := C.MSKint32t(n_)
-  if x_ == nil { panic("Argument 'x_' is nil in call to 'Dot'") }
-  if len(x_) < int(n_) { panic("Slice argument 'x_' is too short in call to 'Dot'") }
-  var _c_x_ *C.MSKrealt = nil
-  if len(x_) > 0 { _c_x_ = (*C.MSKrealt)(&x_[0]) }
-  if y_ == nil { panic("Argument 'y_' is nil in call to 'Dot'") }
-  if len(y_) < int(n_) { panic("Slice argument 'y_' is too short in call to 'Dot'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  var _c_xty_ C.MSKrealt
-  _res = int32(C.MSK_dot(env.ptr(),_c_n_,_c_x_,_c_y_,&_c_xty_))
-  if _res != 0 { return }
-  _r_xty_ = float64(_c_xty_)
-  return
-}
-func (env *Env) EchoIntro(longver_ int32) (_res int32) {
-  _c_longver_ := C.MSKint32t(longver_)
-  _res = int32(C.MSK_echointro(env.ptr(),_c_longver_))
-  if _res != 0 { return }
-  return
-}
-func (env *Env) Gemm(transa_ int32,transb_ int32,m_ int32,n_ int32,k_ int32,alpha_ float64,a_ []float64,b_ []float64,beta_ float64,c_ []float64) (_r_c_ []float64,_res int32) {
-  _c_m_ := C.MSKint32t(m_)
-  _c_n_ := C.MSKint32t(n_)
-  _c_k_ := C.MSKint32t(k_)
-  _c_alpha_ := C.MSKrealt(alpha_)
-  if a_ == nil { panic("Argument 'a_' is nil in call to 'Gemm'") }
-  if len(a_) < int(m_ * k_) { panic("Slice argument 'a_' is too short in call to 'Gemm'") }
-  var _c_a_ *C.MSKrealt = nil
-  if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
-  if b_ == nil { panic("Argument 'b_' is nil in call to 'Gemm'") }
-  if len(b_) < int(k_ * n_) { panic("Slice argument 'b_' is too short in call to 'Gemm'") }
-  var _c_b_ *C.MSKrealt = nil
-  if len(b_) > 0 { _c_b_ = (*C.MSKrealt)(&b_[0]) }
-  _c_beta_ := C.MSKrealt(beta_)
-  if c_ == nil { panic("Argument 'c_' is nil in call to 'Gemm'") }
-  if len(c_) < int(m_ * n_) { panic("Slice argument 'c_' is too short in call to 'Gemm'") }
-  var _c_c_ *C.MSKrealt = nil
-  if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
-  _res = int32(C.MSK_gemm(env.ptr(),C.MSKtransposee(transa_),C.MSKtransposee(transb_),_c_m_,_c_n_,_c_k_,_c_alpha_,_c_a_,_c_b_,_c_beta_,_c_c_))
-  if _res != 0 { return }
-  _r_c_ = c_
-  return
-}
-func (env *Env) Gemv(transa_ int32,m_ int32,n_ int32,alpha_ float64,a_ []float64,x_ []float64,beta_ float64,y_ []float64) (_r_y_ []float64,_res int32) {
-  _c_m_ := C.MSKint32t(m_)
-  _c_n_ := C.MSKint32t(n_)
-  _c_alpha_ := C.MSKrealt(alpha_)
-  if a_ == nil { panic("Argument 'a_' is nil in call to 'Gemv'") }
-  if len(a_) < int(n_ * m_) { panic("Slice argument 'a_' is too short in call to 'Gemv'") }
-  var _c_a_ *C.MSKrealt = nil
-  if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
-  if x_ == nil { panic("Argument 'x_' is nil in call to 'Gemv'") }
-  var __tmp_var_3 int32
-  if (transa_ == TRANSPOSE_NO) {
-    __tmp_var_3 = n_
-  }else {
-    __tmp_var_3 = m_
+func (task *Task) AnalyzeNames(whichstream_ int32,nametype_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_analyzenames(task.ptr(),C.MSKstreamtypee(whichstream_),C.MSKnametypee(nametype_)))
+    if task.r != 0 { return }
   }
-  if len(x_) < int(__tmp_var_3) { panic("Slice argument 'x_' is too short in call to 'Gemv'") }
-  var _c_x_ *C.MSKrealt = nil
-  if len(x_) > 0 { _c_x_ = (*C.MSKrealt)(&x_[0]) }
-  _c_beta_ := C.MSKrealt(beta_)
-  if y_ == nil { panic("Argument 'y_' is nil in call to 'Gemv'") }
-  var __tmp_var_9 int32
-  if (transa_ == TRANSPOSE_NO) {
-    __tmp_var_9 = m_
-  }else {
-    __tmp_var_9 = n_
+  return
+}
+func (task *Task) AnalyzeProblem(whichstream_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_analyzeproblem(task.ptr(),C.MSKstreamtypee(whichstream_)))
+    if task.r != 0 { return }
   }
-  if len(y_) < int(__tmp_var_9) { panic("Slice argument 'y_' is too short in call to 'Gemv'") }
-  var _c_y_ *C.MSKrealt = nil
-  if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
-  _res = int32(C.MSK_gemv(env.ptr(),C.MSKtransposee(transa_),_c_m_,_c_n_,_c_alpha_,_c_a_,_c_x_,_c_beta_,_c_y_))
-  if _res != 0 { return }
-  _r_y_ = y_
+  return
+}
+func (task *Task) AnalyzeSolution(whichstream_ int32,whichsol_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_analyzesolution(task.ptr(),C.MSKstreamtypee(whichstream_),C.MSKsoltypee(whichsol_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) AppendBarvars(dim_ []int32) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(dim_) })
+    _c_num_ := C.MSKint32t(num_)
+    if dim_ == nil { panic("Argument 'dim_' is nil in call to 'AppendBarvars'") }
+    var _c_dim_ *C.MSKint32t = nil
+    if len(dim_) > 0 { _c_dim_ = (*C.MSKint32t)(&dim_[0]) }
+    task.r = int32(C.MSK_appendbarvars(task.ptr(),_c_num_,_c_dim_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) AppendCone(conetype_ int32,conepar_ float64,submem_ []int32) () {
+  if task.r == RES_OK {
+    _c_conepar_ := C.MSKrealt(conepar_)
+    nummem_ := minint([]int{ len(submem_) })
+    _c_nummem_ := C.MSKint32t(nummem_)
+    if submem_ == nil { panic("Argument 'submem_' is nil in call to 'AppendCone'") }
+    var _c_submem_ *C.MSKint32t = nil
+    if len(submem_) > 0 { _c_submem_ = (*C.MSKint32t)(&submem_[0]) }
+    task.r = int32(C.MSK_appendcone(task.ptr(),C.MSKconetypee(conetype_),_c_conepar_,_c_nummem_,_c_submem_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) AppendConeSeq(conetype_ int32,conepar_ float64,nummem_ int32,j_ int32) () {
+  if task.r == RES_OK {
+    _c_conepar_ := C.MSKrealt(conepar_)
+    _c_nummem_ := C.MSKint32t(nummem_)
+    _c_j_ := C.MSKint32t(j_)
+    task.r = int32(C.MSK_appendconeseq(task.ptr(),C.MSKconetypee(conetype_),_c_conepar_,_c_nummem_,_c_j_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) AppendConesSeq(conetype_ []int32,conepar_ []float64,nummem_ []int32,j_ int32) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(conetype_),len(conepar_),len(nummem_) })
+    _c_num_ := C.MSKint32t(num_)
+    if conetype_ == nil { panic("Argument 'conetype_' is nil in call to 'AppendConesSeq'") }
+    var _c_conetype_ *C.MSKconetypee = nil
+    if len(conetype_) > 0 { _c_conetype_ = (*C.MSKconetypee)(unsafe.Pointer(&conetype_[0])) }
+    if conepar_ == nil { panic("Argument 'conepar_' is nil in call to 'AppendConesSeq'") }
+    var _c_conepar_ *C.MSKrealt = nil
+    if len(conepar_) > 0 { _c_conepar_ = (*C.MSKrealt)(&conepar_[0]) }
+    if nummem_ == nil { panic("Argument 'nummem_' is nil in call to 'AppendConesSeq'") }
+    var _c_nummem_ *C.MSKint32t = nil
+    if len(nummem_) > 0 { _c_nummem_ = (*C.MSKint32t)(&nummem_[0]) }
+    _c_j_ := C.MSKint32t(j_)
+    task.r = int32(C.MSK_appendconesseq(task.ptr(),_c_num_,_c_conetype_,_c_conepar_,_c_nummem_,_c_j_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) AppendCons(num_ int32) () {
+  if task.r == RES_OK {
+    _c_num_ := C.MSKint32t(num_)
+    task.r = int32(C.MSK_appendcons(task.ptr(),_c_num_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) AppendSparseSymMat(dim_ int32,subi_ []int32,subj_ []int32,valij_ []float64) (_r_idx_ int64) {
+  if task.r == RES_OK {
+    _c_dim_ := C.MSKint32t(dim_)
+    nz_ := minint([]int{ len(subi_),len(subj_),len(valij_) })
+    _c_nz_ := C.MSKint64t(nz_)
+    if subi_ == nil { panic("Argument 'subi_' is nil in call to 'AppendSparseSymMat'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'AppendSparseSymMat'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if valij_ == nil { panic("Argument 'valij_' is nil in call to 'AppendSparseSymMat'") }
+    var _c_valij_ *C.MSKrealt = nil
+    if len(valij_) > 0 { _c_valij_ = (*C.MSKrealt)(&valij_[0]) }
+    var _c_idx_ C.MSKint64t
+    task.r = int32(C.MSK_appendsparsesymmat(task.ptr(),_c_dim_,_c_nz_,_c_subi_,_c_subj_,_c_valij_,&_c_idx_))
+    if task.r != 0 { return }
+    _r_idx_ = int64(_c_idx_)
+  }
+  return
+}
+func (task *Task) AppendStat() () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_appendstat(task.ptr()))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) AppendVars(num_ int32) () {
+  if task.r == RES_OK {
+    _c_num_ := C.MSKint32t(num_)
+    task.r = int32(C.MSK_appendvars(task.ptr(),_c_num_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) BasisCond() (_r_nrmbasis_ float64,_r_nrminvbasis_ float64) {
+  if task.r == RES_OK {
+    var _c_nrmbasis_ C.MSKrealt
+    var _c_nrminvbasis_ C.MSKrealt
+    task.r = int32(C.MSK_basiscond(task.ptr(),&_c_nrmbasis_,&_c_nrminvbasis_))
+    if task.r != 0 { return }
+    _r_nrmbasis_ = float64(_c_nrmbasis_)
+    _r_nrminvbasis_ = float64(_c_nrminvbasis_)
+  }
+  return
+}
+func (task *Task) CheckConvexity() () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_checkconvexity(task.ptr()))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) CheckMem(file_ string,line_ int32) () {
+  if task.r == RES_OK {
+    _c_file_ := C.CString(file_)
+    defer C.free(unsafe.Pointer(_c_file_))
+    _c_line_ := C.MSKint32t(line_)
+    task.r = int32(C.MSK_checkmemtask(task.ptr(),C.MSKstring_t(_c_file_),_c_line_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ChgBound(accmode_ int32,i_ int32,lower_ int32,finite_ int32,value_ float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_lower_ := C.MSKint32t(lower_)
+    _c_finite_ := C.MSKint32t(finite_)
+    _c_value_ := C.MSKrealt(value_)
+    task.r = int32(C.MSK_chgbound(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,_c_lower_,_c_finite_,_c_value_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ChgConBound(i_ int32,lower_ int32,finite_ int32,value_ float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_lower_ := C.MSKint32t(lower_)
+    _c_finite_ := C.MSKint32t(finite_)
+    _c_value_ := C.MSKrealt(value_)
+    task.r = int32(C.MSK_chgconbound(task.ptr(),_c_i_,_c_lower_,_c_finite_,_c_value_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ChgVarBound(j_ int32,lower_ int32,finite_ int32,value_ float64) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    _c_lower_ := C.MSKint32t(lower_)
+    _c_finite_ := C.MSKint32t(finite_)
+    _c_value_ := C.MSKrealt(value_)
+    task.r = int32(C.MSK_chgvarbound(task.ptr(),_c_j_,_c_lower_,_c_finite_,_c_value_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) CommitChanges() () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_commitchanges(task.ptr()))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) DeleteSolution(whichsol_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_deletesolution(task.ptr(),C.MSKsoltypee(whichsol_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) DualSensitivity(subj_ []int32,leftpricej_ []float64,rightpricej_ []float64,leftrangej_ []float64,rightrangej_ []float64) (_r_leftpricej_ []float64,_r_rightpricej_ []float64,_r_leftrangej_ []float64,_r_rightrangej_ []float64) {
+  if task.r == RES_OK {
+    numj_ := minint([]int{ len(subj_) })
+    _c_numj_ := C.MSKint32t(numj_)
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'DualSensitivity'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if leftpricej_ == nil { leftpricej_ = make([]float64,numj_,numj_)
+    } else if len(leftpricej_) < int(numj_) { panic("Slice in 'leftpricej_' is too short in call to 'DualSensitivity'") }
+    var _c_leftpricej_ *C.MSKrealt = nil
+    if len(leftpricej_) > 0 { _c_leftpricej_ = (*C.MSKrealt)(&leftpricej_[0]) }
+    if rightpricej_ == nil { rightpricej_ = make([]float64,numj_,numj_)
+    } else if len(rightpricej_) < int(numj_) { panic("Slice in 'rightpricej_' is too short in call to 'DualSensitivity'") }
+    var _c_rightpricej_ *C.MSKrealt = nil
+    if len(rightpricej_) > 0 { _c_rightpricej_ = (*C.MSKrealt)(&rightpricej_[0]) }
+    if leftrangej_ == nil { leftrangej_ = make([]float64,numj_,numj_)
+    } else if len(leftrangej_) < int(numj_) { panic("Slice in 'leftrangej_' is too short in call to 'DualSensitivity'") }
+    var _c_leftrangej_ *C.MSKrealt = nil
+    if len(leftrangej_) > 0 { _c_leftrangej_ = (*C.MSKrealt)(&leftrangej_[0]) }
+    if rightrangej_ == nil { rightrangej_ = make([]float64,numj_,numj_)
+    } else if len(rightrangej_) < int(numj_) { panic("Slice in 'rightrangej_' is too short in call to 'DualSensitivity'") }
+    var _c_rightrangej_ *C.MSKrealt = nil
+    if len(rightrangej_) > 0 { _c_rightrangej_ = (*C.MSKrealt)(&rightrangej_[0]) }
+    task.r = int32(C.MSK_dualsensitivity(task.ptr(),_c_numj_,_c_subj_,_c_leftpricej_,_c_rightpricej_,_c_leftrangej_,_c_rightrangej_))
+    if task.r != 0 { return }
+    _r_leftpricej_ = leftpricej_
+    _r_rightpricej_ = rightpricej_
+    _r_leftrangej_ = leftrangej_
+    _r_rightrangej_ = rightrangej_
+  }
+  return
+}
+func (task *Task) GetACol(j_ int32,subj_ []int32,valj_ []float64) (_r_nzj_ int32,_r_subj_ []int32,_r_valj_ []float64) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var _c_nzj_ C.MSKint32t
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetAColNumNz(j_)
+    if task.r != RES_OK { return }
+    if subj_ == nil { subj_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(subj_) < int(__tmp_var_1) { panic("Slice in 'subj_' is too short in call to 'GetACol'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    var __tmp_var_4 int32
+    __tmp_var_4 = task.GetAColNumNz(j_)
+    if task.r != RES_OK { return }
+    if valj_ == nil { valj_ = make([]float64,__tmp_var_4,__tmp_var_4)
+    } else if len(valj_) < int(__tmp_var_4) { panic("Slice in 'valj_' is too short in call to 'GetACol'") }
+    var _c_valj_ *C.MSKrealt = nil
+    if len(valj_) > 0 { _c_valj_ = (*C.MSKrealt)(&valj_[0]) }
+    task.r = int32(C.MSK_getacol(task.ptr(),_c_j_,&_c_nzj_,_c_subj_,_c_valj_))
+    if task.r != 0 { return }
+    _r_nzj_ = int32(_c_nzj_)
+    _r_subj_ = subj_
+    _r_valj_ = valj_
+  }
+  return
+}
+func (task *Task) GetAColNumNz(i_ int32) (_r_nzj_ int32) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_nzj_ C.MSKint32t
+    task.r = int32(C.MSK_getacolnumnz(task.ptr(),_c_i_,&_c_nzj_))
+    if task.r != 0 { return }
+    _r_nzj_ = int32(_c_nzj_)
+  }
+  return
+}
+func (task *Task) GetAColSliceTrip(first_ int32,last_ int32,subi_ []int32,subj_ []int32,val_ []float64) (_r_subi_ []int32,_r_subj_ []int32,_r_val_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    maxnumnz_ := minint([]int{ len(subi_),len(subj_),len(val_) })
+    _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
+    var _c_surp_ C.MSKint64t = C.MSKint64t(len(subi_))
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetASliceNumNz(ACC_CON,first_,last_)
+    if task.r != RES_OK { return }
+    if subi_ == nil { subi_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(subi_) < int(__tmp_var_1) { panic("Slice in 'subi_' is too short in call to 'GetAColSliceTrip'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    var __tmp_var_6 int64
+    __tmp_var_6 = task.GetASliceNumNz(ACC_CON,first_,last_)
+    if task.r != RES_OK { return }
+    if subj_ == nil { subj_ = make([]int32,__tmp_var_6,__tmp_var_6)
+    } else if len(subj_) < int(__tmp_var_6) { panic("Slice in 'subj_' is too short in call to 'GetAColSliceTrip'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    var __tmp_var_11 int64
+    __tmp_var_11 = task.GetASliceNumNz(ACC_CON,first_,last_)
+    if task.r != RES_OK { return }
+    if val_ == nil { val_ = make([]float64,__tmp_var_11,__tmp_var_11)
+    } else if len(val_) < int(__tmp_var_11) { panic("Slice in 'val_' is too short in call to 'GetAColSliceTrip'") }
+    var _c_val_ *C.MSKrealt = nil
+    if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
+    task.r = int32(C.MSK_getacolslicetrip(task.ptr(),_c_first_,_c_last_,_c_maxnumnz_,&_c_surp_,_c_subi_,_c_subj_,_c_val_))
+    if task.r != 0 { return }
+    _r_subi_ = subi_
+    _r_subj_ = subj_
+    _r_val_ = val_
+  }
+  return
+}
+func (task *Task) GetAij(i_ int32,j_ int32) (_r_aij_ float64) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_j_ := C.MSKint32t(j_)
+    var _c_aij_ C.MSKrealt
+    task.r = int32(C.MSK_getaij(task.ptr(),_c_i_,_c_j_,&_c_aij_))
+    if task.r != 0 { return }
+    _r_aij_ = float64(_c_aij_)
+  }
+  return
+}
+func (task *Task) GetAPieceNumNz(firsti_ int32,lasti_ int32,firstj_ int32,lastj_ int32) (_r_numnz_ int32) {
+  if task.r == RES_OK {
+    _c_firsti_ := C.MSKint32t(firsti_)
+    _c_lasti_ := C.MSKint32t(lasti_)
+    _c_firstj_ := C.MSKint32t(firstj_)
+    _c_lastj_ := C.MSKint32t(lastj_)
+    var _c_numnz_ C.MSKint32t
+    task.r = int32(C.MSK_getapiecenumnz(task.ptr(),_c_firsti_,_c_lasti_,_c_firstj_,_c_lastj_,&_c_numnz_))
+    if task.r != 0 { return }
+    _r_numnz_ = int32(_c_numnz_)
+  }
+  return
+}
+func (task *Task) GetARow(i_ int32,subi_ []int32,vali_ []float64) (_r_nzi_ int32,_r_subi_ []int32,_r_vali_ []float64) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_nzi_ C.MSKint32t
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetARowNumNz(i_)
+    if task.r != RES_OK { return }
+    if subi_ == nil { subi_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(subi_) < int(__tmp_var_1) { panic("Slice in 'subi_' is too short in call to 'GetARow'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    var __tmp_var_4 int32
+    __tmp_var_4 = task.GetARowNumNz(i_)
+    if task.r != RES_OK { return }
+    if vali_ == nil { vali_ = make([]float64,__tmp_var_4,__tmp_var_4)
+    } else if len(vali_) < int(__tmp_var_4) { panic("Slice in 'vali_' is too short in call to 'GetARow'") }
+    var _c_vali_ *C.MSKrealt = nil
+    if len(vali_) > 0 { _c_vali_ = (*C.MSKrealt)(&vali_[0]) }
+    task.r = int32(C.MSK_getarow(task.ptr(),_c_i_,&_c_nzi_,_c_subi_,_c_vali_))
+    if task.r != 0 { return }
+    _r_nzi_ = int32(_c_nzi_)
+    _r_subi_ = subi_
+    _r_vali_ = vali_
+  }
+  return
+}
+func (task *Task) GetARowNumNz(i_ int32) (_r_nzi_ int32) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_nzi_ C.MSKint32t
+    task.r = int32(C.MSK_getarownumnz(task.ptr(),_c_i_,&_c_nzi_))
+    if task.r != 0 { return }
+    _r_nzi_ = int32(_c_nzi_)
+  }
+  return
+}
+func (task *Task) GetARowSliceTrip(first_ int32,last_ int32,subi_ []int32,subj_ []int32,val_ []float64) (_r_subi_ []int32,_r_subj_ []int32,_r_val_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    maxnumnz_ := minint([]int{ len(subi_),len(subj_),len(val_) })
+    _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
+    var _c_surp_ C.MSKint64t = C.MSKint64t(len(subi_))
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetASliceNumNz(ACC_CON,first_,last_)
+    if task.r != RES_OK { return }
+    if subi_ == nil { subi_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(subi_) < int(__tmp_var_1) { panic("Slice in 'subi_' is too short in call to 'GetARowSliceTrip'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    var __tmp_var_6 int64
+    __tmp_var_6 = task.GetASliceNumNz(ACC_CON,first_,last_)
+    if task.r != RES_OK { return }
+    if subj_ == nil { subj_ = make([]int32,__tmp_var_6,__tmp_var_6)
+    } else if len(subj_) < int(__tmp_var_6) { panic("Slice in 'subj_' is too short in call to 'GetARowSliceTrip'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    var __tmp_var_11 int64
+    __tmp_var_11 = task.GetASliceNumNz(ACC_CON,first_,last_)
+    if task.r != RES_OK { return }
+    if val_ == nil { val_ = make([]float64,__tmp_var_11,__tmp_var_11)
+    } else if len(val_) < int(__tmp_var_11) { panic("Slice in 'val_' is too short in call to 'GetARowSliceTrip'") }
+    var _c_val_ *C.MSKrealt = nil
+    if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
+    task.r = int32(C.MSK_getarowslicetrip(task.ptr(),_c_first_,_c_last_,_c_maxnumnz_,&_c_surp_,_c_subi_,_c_subj_,_c_val_))
+    if task.r != 0 { return }
+    _r_subi_ = subi_
+    _r_subj_ = subj_
+    _r_val_ = val_
+  }
+  return
+}
+func (task *Task) GetASlice(accmode_ int32,first_ int32,last_ int32,ptrb_ []int64,ptre_ []int64,sub_ []int32,val_ []float64) (_r_ptrb_ []int64,_r_ptre_ []int64,_r_sub_ []int32,_r_val_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetASliceNumNz(accmode_,first_,last_)
+    if task.r != RES_OK { return }
+    maxnumnz_ := __tmp_var_1
+    _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
+    var _c_surp_ C.MSKint64t = C.MSKint64t(len(sub_))
+    if ptrb_ == nil { ptrb_ = make([]int64,last_ - first_,last_ - first_)
+    } else if len(ptrb_) < int(last_ - first_) { panic("Slice in 'ptrb_' is too short in call to 'GetASlice'") }
+    var _c_ptrb_ *C.MSKint64t = nil
+    if len(ptrb_) > 0 { _c_ptrb_ = (*C.MSKint64t)(&ptrb_[0]) }
+    if ptre_ == nil { ptre_ = make([]int64,last_ - first_,last_ - first_)
+    } else if len(ptre_) < int(last_ - first_) { panic("Slice in 'ptre_' is too short in call to 'GetASlice'") }
+    var _c_ptre_ *C.MSKint64t = nil
+    if len(ptre_) > 0 { _c_ptre_ = (*C.MSKint64t)(&ptre_[0]) }
+    if sub_ == nil { sub_ = make([]int32,maxnumnz_,maxnumnz_)
+    } else if len(sub_) < int(maxnumnz_) { panic("Slice in 'sub_' is too short in call to 'GetASlice'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if val_ == nil { val_ = make([]float64,maxnumnz_,maxnumnz_)
+    } else if len(val_) < int(maxnumnz_) { panic("Slice in 'val_' is too short in call to 'GetASlice'") }
+    var _c_val_ *C.MSKrealt = nil
+    if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
+    task.r = int32(C.MSK_getaslice64(task.ptr(),C.MSKaccmodee(accmode_),_c_first_,_c_last_,_c_maxnumnz_,&_c_surp_,_c_ptrb_,_c_ptre_,_c_sub_,_c_val_))
+    if task.r != 0 { return }
+    _r_ptrb_ = ptrb_
+    _r_ptre_ = ptre_
+    _r_sub_ = sub_
+    _r_val_ = val_
+  }
+  return
+}
+func (task *Task) GetASliceNumNz(accmode_ int32,first_ int32,last_ int32) (_r_numnz_ int64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    var _c_numnz_ C.MSKint64t
+    task.r = int32(C.MSK_getaslicenumnz64(task.ptr(),C.MSKaccmodee(accmode_),_c_first_,_c_last_,&_c_numnz_))
+    if task.r != 0 { return }
+    _r_numnz_ = int64(_c_numnz_)
+  }
+  return
+}
+func (task *Task) GetBaraBlockTriplet(subi_ []int32,subj_ []int32,subk_ []int32,subl_ []int32,valijkl_ []float64) (_r_num_ int64,_r_subi_ []int32,_r_subj_ []int32,_r_subk_ []int32,_r_subl_ []int32,_r_valijkl_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetNumBaraBlockTriplets()
+    if task.r != RES_OK { return }
+    maxnum_ := __tmp_var_1
+    _c_maxnum_ := C.MSKint64t(maxnum_)
+    var _c_num_ C.MSKint64t
+    if subi_ == nil { subi_ = make([]int32,maxnum_,maxnum_)
+    } else if len(subi_) < int(maxnum_) { panic("Slice in 'subi_' is too short in call to 'GetBaraBlockTriplet'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    if subj_ == nil { subj_ = make([]int32,maxnum_,maxnum_)
+    } else if len(subj_) < int(maxnum_) { panic("Slice in 'subj_' is too short in call to 'GetBaraBlockTriplet'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if subk_ == nil { subk_ = make([]int32,maxnum_,maxnum_)
+    } else if len(subk_) < int(maxnum_) { panic("Slice in 'subk_' is too short in call to 'GetBaraBlockTriplet'") }
+    var _c_subk_ *C.MSKint32t = nil
+    if len(subk_) > 0 { _c_subk_ = (*C.MSKint32t)(&subk_[0]) }
+    if subl_ == nil { subl_ = make([]int32,maxnum_,maxnum_)
+    } else if len(subl_) < int(maxnum_) { panic("Slice in 'subl_' is too short in call to 'GetBaraBlockTriplet'") }
+    var _c_subl_ *C.MSKint32t = nil
+    if len(subl_) > 0 { _c_subl_ = (*C.MSKint32t)(&subl_[0]) }
+    if valijkl_ == nil { valijkl_ = make([]float64,maxnum_,maxnum_)
+    } else if len(valijkl_) < int(maxnum_) { panic("Slice in 'valijkl_' is too short in call to 'GetBaraBlockTriplet'") }
+    var _c_valijkl_ *C.MSKrealt = nil
+    if len(valijkl_) > 0 { _c_valijkl_ = (*C.MSKrealt)(&valijkl_[0]) }
+    task.r = int32(C.MSK_getbarablocktriplet(task.ptr(),_c_maxnum_,&_c_num_,_c_subi_,_c_subj_,_c_subk_,_c_subl_,_c_valijkl_))
+    if task.r != 0 { return }
+    _r_num_ = int64(_c_num_)
+    _r_subi_ = subi_
+    _r_subj_ = subj_
+    _r_subk_ = subk_
+    _r_subl_ = subl_
+    _r_valijkl_ = valijkl_
+  }
+  return
+}
+func (task *Task) GetBaraIdx(idx_ int64,sub_ []int64,weights_ []float64) (_r_i_ int32,_r_j_ int32,_r_num_ int64,_r_sub_ []int64,_r_weights_ []float64) {
+  if task.r == RES_OK {
+    _c_idx_ := C.MSKint64t(idx_)
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetBaraIdxInfo(idx_)
+    if task.r != RES_OK { return }
+    maxnum_ := __tmp_var_1
+    _c_maxnum_ := C.MSKint64t(maxnum_)
+    var _c_i_ C.MSKint32t
+    var _c_j_ C.MSKint32t
+    var _c_num_ C.MSKint64t
+    if sub_ == nil { sub_ = make([]int64,maxnum_,maxnum_)
+    } else if len(sub_) < int(maxnum_) { panic("Slice in 'sub_' is too short in call to 'GetBaraIdx'") }
+    var _c_sub_ *C.MSKint64t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint64t)(&sub_[0]) }
+    if weights_ == nil { weights_ = make([]float64,maxnum_,maxnum_)
+    } else if len(weights_) < int(maxnum_) { panic("Slice in 'weights_' is too short in call to 'GetBaraIdx'") }
+    var _c_weights_ *C.MSKrealt = nil
+    if len(weights_) > 0 { _c_weights_ = (*C.MSKrealt)(&weights_[0]) }
+    task.r = int32(C.MSK_getbaraidx(task.ptr(),_c_idx_,_c_maxnum_,&_c_i_,&_c_j_,&_c_num_,_c_sub_,_c_weights_))
+    if task.r != 0 { return }
+    _r_i_ = int32(_c_i_)
+    _r_j_ = int32(_c_j_)
+    _r_num_ = int64(_c_num_)
+    _r_sub_ = sub_
+    _r_weights_ = weights_
+  }
+  return
+}
+func (task *Task) GetBaraIdxIJ(idx_ int64) (_r_i_ int32,_r_j_ int32) {
+  if task.r == RES_OK {
+    _c_idx_ := C.MSKint64t(idx_)
+    var _c_i_ C.MSKint32t
+    var _c_j_ C.MSKint32t
+    task.r = int32(C.MSK_getbaraidxij(task.ptr(),_c_idx_,&_c_i_,&_c_j_))
+    if task.r != 0 { return }
+    _r_i_ = int32(_c_i_)
+    _r_j_ = int32(_c_j_)
+  }
+  return
+}
+func (task *Task) GetBaraIdxInfo(idx_ int64) (_r_num_ int64) {
+  if task.r == RES_OK {
+    _c_idx_ := C.MSKint64t(idx_)
+    var _c_num_ C.MSKint64t
+    task.r = int32(C.MSK_getbaraidxinfo(task.ptr(),_c_idx_,&_c_num_))
+    if task.r != 0 { return }
+    _r_num_ = int64(_c_num_)
+  }
+  return
+}
+func (task *Task) GetBaraSparsity(idxij_ []int64) (_r_numnz_ int64,_r_idxij_ []int64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetNumBaraNz()
+    if task.r != RES_OK { return }
+    maxnumnz_ := __tmp_var_1
+    _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
+    var _c_numnz_ C.MSKint64t
+    if idxij_ == nil { idxij_ = make([]int64,maxnumnz_,maxnumnz_)
+    } else if len(idxij_) < int(maxnumnz_) { panic("Slice in 'idxij_' is too short in call to 'GetBaraSparsity'") }
+    var _c_idxij_ *C.MSKint64t = nil
+    if len(idxij_) > 0 { _c_idxij_ = (*C.MSKint64t)(&idxij_[0]) }
+    task.r = int32(C.MSK_getbarasparsity(task.ptr(),_c_maxnumnz_,&_c_numnz_,_c_idxij_))
+    if task.r != 0 { return }
+    _r_numnz_ = int64(_c_numnz_)
+    _r_idxij_ = idxij_
+  }
+  return
+}
+func (task *Task) GetBarcBlockTriplet(subj_ []int32,subk_ []int32,subl_ []int32,valijkl_ []float64) (_r_num_ int64,_r_subj_ []int32,_r_subk_ []int32,_r_subl_ []int32,_r_valijkl_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetNumBarcBlockTriplets()
+    if task.r != RES_OK { return }
+    maxnum_ := __tmp_var_1
+    _c_maxnum_ := C.MSKint64t(maxnum_)
+    var _c_num_ C.MSKint64t
+    if subj_ == nil { subj_ = make([]int32,maxnum_,maxnum_)
+    } else if len(subj_) < int(maxnum_) { panic("Slice in 'subj_' is too short in call to 'GetBarcBlockTriplet'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if subk_ == nil { subk_ = make([]int32,maxnum_,maxnum_)
+    } else if len(subk_) < int(maxnum_) { panic("Slice in 'subk_' is too short in call to 'GetBarcBlockTriplet'") }
+    var _c_subk_ *C.MSKint32t = nil
+    if len(subk_) > 0 { _c_subk_ = (*C.MSKint32t)(&subk_[0]) }
+    if subl_ == nil { subl_ = make([]int32,maxnum_,maxnum_)
+    } else if len(subl_) < int(maxnum_) { panic("Slice in 'subl_' is too short in call to 'GetBarcBlockTriplet'") }
+    var _c_subl_ *C.MSKint32t = nil
+    if len(subl_) > 0 { _c_subl_ = (*C.MSKint32t)(&subl_[0]) }
+    if valijkl_ == nil { valijkl_ = make([]float64,maxnum_,maxnum_)
+    } else if len(valijkl_) < int(maxnum_) { panic("Slice in 'valijkl_' is too short in call to 'GetBarcBlockTriplet'") }
+    var _c_valijkl_ *C.MSKrealt = nil
+    if len(valijkl_) > 0 { _c_valijkl_ = (*C.MSKrealt)(&valijkl_[0]) }
+    task.r = int32(C.MSK_getbarcblocktriplet(task.ptr(),_c_maxnum_,&_c_num_,_c_subj_,_c_subk_,_c_subl_,_c_valijkl_))
+    if task.r != 0 { return }
+    _r_num_ = int64(_c_num_)
+    _r_subj_ = subj_
+    _r_subk_ = subk_
+    _r_subl_ = subl_
+    _r_valijkl_ = valijkl_
+  }
+  return
+}
+func (task *Task) GetBarcIdx(idx_ int64,sub_ []int64,weights_ []float64) (_r_j_ int32,_r_num_ int64,_r_sub_ []int64,_r_weights_ []float64) {
+  if task.r == RES_OK {
+    _c_idx_ := C.MSKint64t(idx_)
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetBarcIdxInfo(idx_)
+    if task.r != RES_OK { return }
+    maxnum_ := __tmp_var_1
+    _c_maxnum_ := C.MSKint64t(maxnum_)
+    var _c_j_ C.MSKint32t
+    var _c_num_ C.MSKint64t
+    if sub_ == nil { sub_ = make([]int64,maxnum_,maxnum_)
+    } else if len(sub_) < int(maxnum_) { panic("Slice in 'sub_' is too short in call to 'GetBarcIdx'") }
+    var _c_sub_ *C.MSKint64t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint64t)(&sub_[0]) }
+    if weights_ == nil { weights_ = make([]float64,maxnum_,maxnum_)
+    } else if len(weights_) < int(maxnum_) { panic("Slice in 'weights_' is too short in call to 'GetBarcIdx'") }
+    var _c_weights_ *C.MSKrealt = nil
+    if len(weights_) > 0 { _c_weights_ = (*C.MSKrealt)(&weights_[0]) }
+    task.r = int32(C.MSK_getbarcidx(task.ptr(),_c_idx_,_c_maxnum_,&_c_j_,&_c_num_,_c_sub_,_c_weights_))
+    if task.r != 0 { return }
+    _r_j_ = int32(_c_j_)
+    _r_num_ = int64(_c_num_)
+    _r_sub_ = sub_
+    _r_weights_ = weights_
+  }
+  return
+}
+func (task *Task) GetBarcIdxInfo(idx_ int64) (_r_num_ int64) {
+  if task.r == RES_OK {
+    _c_idx_ := C.MSKint64t(idx_)
+    var _c_num_ C.MSKint64t
+    task.r = int32(C.MSK_getbarcidxinfo(task.ptr(),_c_idx_,&_c_num_))
+    if task.r != 0 { return }
+    _r_num_ = int64(_c_num_)
+  }
+  return
+}
+func (task *Task) GetBarcIdxJ(idx_ int64) (_r_j_ int32) {
+  if task.r == RES_OK {
+    _c_idx_ := C.MSKint64t(idx_)
+    var _c_j_ C.MSKint32t
+    task.r = int32(C.MSK_getbarcidxj(task.ptr(),_c_idx_,&_c_j_))
+    if task.r != 0 { return }
+    _r_j_ = int32(_c_j_)
+  }
+  return
+}
+func (task *Task) GetBarcSparsity(idxj_ []int64) (_r_numnz_ int64,_r_idxj_ []int64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetNumBarcNz()
+    if task.r != RES_OK { return }
+    maxnumnz_ := __tmp_var_1
+    _c_maxnumnz_ := C.MSKint64t(maxnumnz_)
+    var _c_numnz_ C.MSKint64t
+    if idxj_ == nil { idxj_ = make([]int64,maxnumnz_,maxnumnz_)
+    } else if len(idxj_) < int(maxnumnz_) { panic("Slice in 'idxj_' is too short in call to 'GetBarcSparsity'") }
+    var _c_idxj_ *C.MSKint64t = nil
+    if len(idxj_) > 0 { _c_idxj_ = (*C.MSKint64t)(&idxj_[0]) }
+    task.r = int32(C.MSK_getbarcsparsity(task.ptr(),_c_maxnumnz_,&_c_numnz_,_c_idxj_))
+    if task.r != 0 { return }
+    _r_numnz_ = int64(_c_numnz_)
+    _r_idxj_ = idxj_
+  }
+  return
+}
+func (task *Task) GetBarsJ(whichsol_ int32,j_ int32,barsj_ []float64) (_r_barsj_ []float64) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetLenBarvarJ(j_)
+    if task.r != RES_OK { return }
+    if barsj_ == nil { barsj_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(barsj_) < int(__tmp_var_1) { panic("Slice in 'barsj_' is too short in call to 'GetBarsJ'") }
+    var _c_barsj_ *C.MSKrealt = nil
+    if len(barsj_) > 0 { _c_barsj_ = (*C.MSKrealt)(&barsj_[0]) }
+    task.r = int32(C.MSK_getbarsj(task.ptr(),C.MSKsoltypee(whichsol_),_c_j_,_c_barsj_))
+    if task.r != 0 { return }
+    _r_barsj_ = barsj_
+  }
+  return
+}
+func (task *Task) GetBarvarName(i_ int32) (_r_name_ string) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetBarvarNameLen(i_)
+    if task.r != RES_OK { return }
+    maxlen_ := 1 + __tmp_var_3
+    _c_maxlen_ := C.MSKint32t(maxlen_)
+    _c_name_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
+    defer C.free(unsafe.Pointer(_c_name_))
+    task.r = int32(C.MSK_getbarvarname(task.ptr(),_c_i_,_c_maxlen_,C.MSKstring_t(_c_name_)))
+    if task.r != 0 { return }
+    _r_name_ = C.GoStringN(_c_name_,C.int(maxlen_))
+  }
+  return
+}
+func (task *Task) GetBarvarNameIndex(somename_ string) (_r_asgn_ int32,_r_index_ int32) {
+  if task.r == RES_OK {
+    _c_somename_ := C.CString(somename_)
+    defer C.free(unsafe.Pointer(_c_somename_))
+    var _c_asgn_ C.MSKint32t
+    var _c_index_ C.MSKint32t
+    task.r = int32(C.MSK_getbarvarnameindex(task.ptr(),C.MSKstring_t(_c_somename_),&_c_asgn_,&_c_index_))
+    if task.r != 0 { return }
+    _r_asgn_ = int32(_c_asgn_)
+    _r_index_ = int32(_c_index_)
+  }
+  return
+}
+func (task *Task) GetBarvarNameLen(i_ int32) (_r_len_ int32) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_len_ C.MSKint32t
+    task.r = int32(C.MSK_getbarvarnamelen(task.ptr(),_c_i_,&_c_len_))
+    if task.r != 0 { return }
+    _r_len_ = int32(_c_len_)
+  }
+  return
+}
+func (task *Task) GetBarxJ(whichsol_ int32,j_ int32,barxj_ []float64) (_r_barxj_ []float64) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetLenBarvarJ(j_)
+    if task.r != RES_OK { return }
+    if barxj_ == nil { barxj_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(barxj_) < int(__tmp_var_1) { panic("Slice in 'barxj_' is too short in call to 'GetBarxJ'") }
+    var _c_barxj_ *C.MSKrealt = nil
+    if len(barxj_) > 0 { _c_barxj_ = (*C.MSKrealt)(&barxj_[0]) }
+    task.r = int32(C.MSK_getbarxj(task.ptr(),C.MSKsoltypee(whichsol_),_c_j_,_c_barxj_))
+    if task.r != 0 { return }
+    _r_barxj_ = barxj_
+  }
+  return
+}
+func (task *Task) GetBound(accmode_ int32,i_ int32) (_r_bk_ int32,_r_bl_ float64,_r_bu_ float64) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_bk_ C.MSKboundkeye
+    var _c_bl_ C.MSKrealt
+    var _c_bu_ C.MSKrealt
+    task.r = int32(C.MSK_getbound(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,&_c_bk_,&_c_bl_,&_c_bu_))
+    if task.r != 0 { return }
+    _r_bk_ = int32(_c_bk_)
+    _r_bl_ = float64(_c_bl_)
+    _r_bu_ = float64(_c_bu_)
+  }
+  return
+}
+func (task *Task) GetBoundSlice(accmode_ int32,first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_r_bk_ []int32,_r_bl_ []float64,_r_bu_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if bk_ == nil { bk_ = make([]int32,last_ - first_,last_ - first_)
+    } else if len(bk_) < int(last_ - first_) { panic("Slice in 'bk_' is too short in call to 'GetBoundSlice'") }
+    var _c_bk_ *C.MSKboundkeye = nil
+    if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
+    if bl_ == nil { bl_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(bl_) < int(last_ - first_) { panic("Slice in 'bl_' is too short in call to 'GetBoundSlice'") }
+    var _c_bl_ *C.MSKrealt = nil
+    if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
+    if bu_ == nil { bu_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(bu_) < int(last_ - first_) { panic("Slice in 'bu_' is too short in call to 'GetBoundSlice'") }
+    var _c_bu_ *C.MSKrealt = nil
+    if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
+    task.r = int32(C.MSK_getboundslice(task.ptr(),C.MSKaccmodee(accmode_),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+    _r_bk_ = bk_
+    _r_bl_ = bl_
+    _r_bu_ = bu_
+  }
+  return
+}
+func (task *Task) GetC(c_ []float64) (_r_c_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if c_ == nil { c_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(c_) < int(__tmp_var_1) { panic("Slice in 'c_' is too short in call to 'GetC'") }
+    var _c_c_ *C.MSKrealt = nil
+    if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
+    task.r = int32(C.MSK_getc(task.ptr(),_c_c_))
+    if task.r != 0 { return }
+    _r_c_ = c_
+  }
+  return
+}
+func (task *Task) GetCfix() (_r_cfix_ float64) {
+  if task.r == RES_OK {
+    var _c_cfix_ C.MSKrealt
+    task.r = int32(C.MSK_getcfix(task.ptr(),&_c_cfix_))
+    if task.r != 0 { return }
+    _r_cfix_ = float64(_c_cfix_)
+  }
+  return
+}
+func (task *Task) GetCJ(j_ int32) (_r_cj_ float64) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var _c_cj_ C.MSKrealt
+    task.r = int32(C.MSK_getcj(task.ptr(),_c_j_,&_c_cj_))
+    if task.r != 0 { return }
+    _r_cj_ = float64(_c_cj_)
+  }
+  return
+}
+func (task *Task) GetConBound(i_ int32) (_r_bk_ int32,_r_bl_ float64,_r_bu_ float64) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_bk_ C.MSKboundkeye
+    var _c_bl_ C.MSKrealt
+    var _c_bu_ C.MSKrealt
+    task.r = int32(C.MSK_getconbound(task.ptr(),_c_i_,&_c_bk_,&_c_bl_,&_c_bu_))
+    if task.r != 0 { return }
+    _r_bk_ = int32(_c_bk_)
+    _r_bl_ = float64(_c_bl_)
+    _r_bu_ = float64(_c_bu_)
+  }
+  return
+}
+func (task *Task) GetConBoundSlice(first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_r_bk_ []int32,_r_bl_ []float64,_r_bu_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if bk_ == nil { bk_ = make([]int32,last_ - first_,last_ - first_)
+    } else if len(bk_) < int(last_ - first_) { panic("Slice in 'bk_' is too short in call to 'GetConBoundSlice'") }
+    var _c_bk_ *C.MSKboundkeye = nil
+    if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
+    if bl_ == nil { bl_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(bl_) < int(last_ - first_) { panic("Slice in 'bl_' is too short in call to 'GetConBoundSlice'") }
+    var _c_bl_ *C.MSKrealt = nil
+    if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
+    if bu_ == nil { bu_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(bu_) < int(last_ - first_) { panic("Slice in 'bu_' is too short in call to 'GetConBoundSlice'") }
+    var _c_bu_ *C.MSKrealt = nil
+    if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
+    task.r = int32(C.MSK_getconboundslice(task.ptr(),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+    _r_bk_ = bk_
+    _r_bl_ = bl_
+    _r_bu_ = bu_
+  }
+  return
+}
+func (task *Task) GetCone(k_ int32,submem_ []int32) (_r_conetype_ int32,_r_conepar_ float64,_r_nummem_ int32,_r_submem_ []int32) {
+  if task.r == RES_OK {
+    _c_k_ := C.MSKint32t(k_)
+    var _c_conetype_ C.MSKconetypee
+    var _c_conepar_ C.MSKrealt
+    var _c_nummem_ C.MSKint32t
+    var __tmp_var_1 int32
+    _,_,__tmp_var_1 = task.GetConeInfo(k_)
+    if task.r != RES_OK { return }
+    if submem_ == nil { submem_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(submem_) < int(__tmp_var_1) { panic("Slice in 'submem_' is too short in call to 'GetCone'") }
+    var _c_submem_ *C.MSKint32t = nil
+    if len(submem_) > 0 { _c_submem_ = (*C.MSKint32t)(&submem_[0]) }
+    task.r = int32(C.MSK_getcone(task.ptr(),_c_k_,&_c_conetype_,&_c_conepar_,&_c_nummem_,_c_submem_))
+    if task.r != 0 { return }
+    _r_conetype_ = int32(_c_conetype_)
+    _r_conepar_ = float64(_c_conepar_)
+    _r_nummem_ = int32(_c_nummem_)
+    _r_submem_ = submem_
+  }
+  return
+}
+func (task *Task) GetConeInfo(k_ int32) (_r_conetype_ int32,_r_conepar_ float64,_r_nummem_ int32) {
+  if task.r == RES_OK {
+    _c_k_ := C.MSKint32t(k_)
+    var _c_conetype_ C.MSKconetypee
+    var _c_conepar_ C.MSKrealt
+    var _c_nummem_ C.MSKint32t
+    task.r = int32(C.MSK_getconeinfo(task.ptr(),_c_k_,&_c_conetype_,&_c_conepar_,&_c_nummem_))
+    if task.r != 0 { return }
+    _r_conetype_ = int32(_c_conetype_)
+    _r_conepar_ = float64(_c_conepar_)
+    _r_nummem_ = int32(_c_nummem_)
+  }
+  return
+}
+func (task *Task) GetConeName(i_ int32) (_r_name_ string) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetConeNameLen(i_)
+    if task.r != RES_OK { return }
+    maxlen_ := 1 + __tmp_var_3
+    _c_maxlen_ := C.MSKint32t(maxlen_)
+    _c_name_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
+    defer C.free(unsafe.Pointer(_c_name_))
+    task.r = int32(C.MSK_getconename(task.ptr(),_c_i_,_c_maxlen_,C.MSKstring_t(_c_name_)))
+    if task.r != 0 { return }
+    _r_name_ = C.GoStringN(_c_name_,C.int(maxlen_))
+  }
+  return
+}
+func (task *Task) GetConeNameIndex(somename_ string) (_r_asgn_ int32,_r_index_ int32) {
+  if task.r == RES_OK {
+    _c_somename_ := C.CString(somename_)
+    defer C.free(unsafe.Pointer(_c_somename_))
+    var _c_asgn_ C.MSKint32t
+    var _c_index_ C.MSKint32t
+    task.r = int32(C.MSK_getconenameindex(task.ptr(),C.MSKstring_t(_c_somename_),&_c_asgn_,&_c_index_))
+    if task.r != 0 { return }
+    _r_asgn_ = int32(_c_asgn_)
+    _r_index_ = int32(_c_index_)
+  }
+  return
+}
+func (task *Task) GetConeNameLen(i_ int32) (_r_len_ int32) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_len_ C.MSKint32t
+    task.r = int32(C.MSK_getconenamelen(task.ptr(),_c_i_,&_c_len_))
+    if task.r != 0 { return }
+    _r_len_ = int32(_c_len_)
+  }
+  return
+}
+func (task *Task) GetConName(i_ int32) (_r_name_ string) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetConNameLen(i_)
+    if task.r != RES_OK { return }
+    maxlen_ := 1 + __tmp_var_3
+    _c_maxlen_ := C.MSKint32t(maxlen_)
+    _c_name_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
+    defer C.free(unsafe.Pointer(_c_name_))
+    task.r = int32(C.MSK_getconname(task.ptr(),_c_i_,_c_maxlen_,C.MSKstring_t(_c_name_)))
+    if task.r != 0 { return }
+    _r_name_ = C.GoStringN(_c_name_,C.int(maxlen_))
+  }
+  return
+}
+func (task *Task) GetConNameIndex(somename_ string) (_r_asgn_ int32,_r_index_ int32) {
+  if task.r == RES_OK {
+    _c_somename_ := C.CString(somename_)
+    defer C.free(unsafe.Pointer(_c_somename_))
+    var _c_asgn_ C.MSKint32t
+    var _c_index_ C.MSKint32t
+    task.r = int32(C.MSK_getconnameindex(task.ptr(),C.MSKstring_t(_c_somename_),&_c_asgn_,&_c_index_))
+    if task.r != 0 { return }
+    _r_asgn_ = int32(_c_asgn_)
+    _r_index_ = int32(_c_index_)
+  }
+  return
+}
+func (task *Task) GetConNameLen(i_ int32) (_r_len_ int32) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_len_ C.MSKint32t
+    task.r = int32(C.MSK_getconnamelen(task.ptr(),_c_i_,&_c_len_))
+    if task.r != 0 { return }
+    _r_len_ = int32(_c_len_)
+  }
+  return
+}
+func (task *Task) GetCSlice(first_ int32,last_ int32,c_ []float64) (_r_c_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if c_ == nil { c_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(c_) < int(last_ - first_) { panic("Slice in 'c_' is too short in call to 'GetCSlice'") }
+    var _c_c_ *C.MSKrealt = nil
+    if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
+    task.r = int32(C.MSK_getcslice(task.ptr(),_c_first_,_c_last_,_c_c_))
+    if task.r != 0 { return }
+    _r_c_ = c_
+  }
+  return
+}
+func (task *Task) GetDimBarvarJ(j_ int32) (_r_dimbarvarj_ int32) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var _c_dimbarvarj_ C.MSKint32t
+    task.r = int32(C.MSK_getdimbarvarj(task.ptr(),_c_j_,&_c_dimbarvarj_))
+    if task.r != 0 { return }
+    _r_dimbarvarj_ = int32(_c_dimbarvarj_)
+  }
+  return
+}
+func (task *Task) GetDouInf(whichdinf_ int32) (_r_dvalue_ float64) {
+  if task.r == RES_OK {
+    var _c_dvalue_ C.MSKrealt
+    task.r = int32(C.MSK_getdouinf(task.ptr(),C.MSKdinfiteme(whichdinf_),&_c_dvalue_))
+    if task.r != 0 { return }
+    _r_dvalue_ = float64(_c_dvalue_)
+  }
+  return
+}
+func (task *Task) GetDouParam(param_ int32) (_r_parvalue_ float64) {
+  if task.r == RES_OK {
+    var _c_parvalue_ C.MSKrealt
+    task.r = int32(C.MSK_getdouparam(task.ptr(),C.MSKdparame(param_),&_c_parvalue_))
+    if task.r != 0 { return }
+    _r_parvalue_ = float64(_c_parvalue_)
+  }
+  return
+}
+func (task *Task) GetDualObj(whichsol_ int32) (_r_dualobj_ float64) {
+  if task.r == RES_OK {
+    var _c_dualobj_ C.MSKrealt
+    task.r = int32(C.MSK_getdualobj(task.ptr(),C.MSKsoltypee(whichsol_),&_c_dualobj_))
+    if task.r != 0 { return }
+    _r_dualobj_ = float64(_c_dualobj_)
+  }
+  return
+}
+func (task *Task) GetDviolBarvar(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetDviolBarvar'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if viol_ == nil { viol_ = make([]float64,num_,num_)
+    } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetDviolBarvar'") }
+    var _c_viol_ *C.MSKrealt = nil
+    if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
+    task.r = int32(C.MSK_getdviolbarvar(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
+    if task.r != 0 { return }
+    _r_viol_ = viol_
+  }
+  return
+}
+func (task *Task) GetDviolCon(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetDviolCon'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if viol_ == nil { viol_ = make([]float64,num_,num_)
+    } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetDviolCon'") }
+    var _c_viol_ *C.MSKrealt = nil
+    if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
+    task.r = int32(C.MSK_getdviolcon(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
+    if task.r != 0 { return }
+    _r_viol_ = viol_
+  }
+  return
+}
+func (task *Task) GetDviolCones(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetDviolCones'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if viol_ == nil { viol_ = make([]float64,num_,num_)
+    } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetDviolCones'") }
+    var _c_viol_ *C.MSKrealt = nil
+    if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
+    task.r = int32(C.MSK_getdviolcones(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
+    if task.r != 0 { return }
+    _r_viol_ = viol_
+  }
+  return
+}
+func (task *Task) GetDviolVar(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetDviolVar'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if viol_ == nil { viol_ = make([]float64,num_,num_)
+    } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetDviolVar'") }
+    var _c_viol_ *C.MSKrealt = nil
+    if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
+    task.r = int32(C.MSK_getdviolvar(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
+    if task.r != 0 { return }
+    _r_viol_ = viol_
+  }
+  return
+}
+func (task *Task) GetInfeasibleSubProblem(whichsol_ int32) (_r_inftask_ Task) {
+  if task.r == RES_OK {
+    var _c_inftask_ C.MSKtask_t
+    task.r = int32(C.MSK_getinfeasiblesubproblem(task.ptr(),C.MSKsoltypee(whichsol_),&_c_inftask_))
+    if task.r != 0 { return }
+    _r_inftask_.cptr = unsafe.Pointer(_c_inftask_)
+  }
+  return
+}
+func (task *Task) GetInfIndex(inftype_ int32,infname_ string) (_r_infindex_ int32) {
+  if task.r == RES_OK {
+    _c_infname_ := C.CString(infname_)
+    defer C.free(unsafe.Pointer(_c_infname_))
+    var _c_infindex_ C.MSKint32t
+    task.r = int32(C.MSK_getinfindex(task.ptr(),C.MSKinftypee(inftype_),C.MSKstring_t(_c_infname_),&_c_infindex_))
+    if task.r != 0 { return }
+    _r_infindex_ = int32(_c_infindex_)
+  }
+  return
+}
+func (task *Task) GetInfMax(inftype_ int32,infmax_ []int32) (_r_infmax_ []int32) {
+  if task.r == RES_OK {
+    if infmax_ == nil { infmax_ = make([]int32,MAX_STR_LEN,MAX_STR_LEN)
+    } else if len(infmax_) < int(MAX_STR_LEN) { panic("Slice in 'infmax_' is too short in call to 'GetInfMax'") }
+    var _c_infmax_ *C.MSKint32t = nil
+    if len(infmax_) > 0 { _c_infmax_ = (*C.MSKint32t)(&infmax_[0]) }
+    task.r = int32(C.MSK_getinfmax(task.ptr(),C.MSKinftypee(inftype_),_c_infmax_))
+    if task.r != 0 { return }
+    _r_infmax_ = infmax_
+  }
+  return
+}
+func (task *Task) GetInfName(inftype_ int32,whichinf_ int32) (_r_infname_ string) {
+  if task.r == RES_OK {
+    _c_whichinf_ := C.MSKint32t(whichinf_)
+    _c_infname_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
+    defer C.free(unsafe.Pointer(_c_infname_))
+    task.r = int32(C.MSK_getinfname(task.ptr(),C.MSKinftypee(inftype_),_c_whichinf_,C.MSKstring_t(_c_infname_)))
+    if task.r != 0 { return }
+    _r_infname_ = C.GoStringN(_c_infname_,C.int(MAX_STR_LEN))
+  }
+  return
+}
+func (task *Task) GetIntInf(whichiinf_ int32) (_r_ivalue_ int32) {
+  if task.r == RES_OK {
+    var _c_ivalue_ C.MSKint32t
+    task.r = int32(C.MSK_getintinf(task.ptr(),C.MSKiinfiteme(whichiinf_),&_c_ivalue_))
+    if task.r != 0 { return }
+    _r_ivalue_ = int32(_c_ivalue_)
+  }
+  return
+}
+func (task *Task) GetIntParam(param_ int32) (_r_parvalue_ int32) {
+  if task.r == RES_OK {
+    var _c_parvalue_ C.MSKint32t
+    task.r = int32(C.MSK_getintparam(task.ptr(),C.MSKiparame(param_),&_c_parvalue_))
+    if task.r != 0 { return }
+    _r_parvalue_ = int32(_c_parvalue_)
+  }
+  return
+}
+func (task *Task) GetLenBarvarJ(j_ int32) (_r_lenbarvarj_ int64) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var _c_lenbarvarj_ C.MSKint64t
+    task.r = int32(C.MSK_getlenbarvarj(task.ptr(),_c_j_,&_c_lenbarvarj_))
+    if task.r != 0 { return }
+    _r_lenbarvarj_ = int64(_c_lenbarvarj_)
+  }
+  return
+}
+func (task *Task) GetLintInf(whichliinf_ int32) (_r_ivalue_ int64) {
+  if task.r == RES_OK {
+    var _c_ivalue_ C.MSKint64t
+    task.r = int32(C.MSK_getlintinf(task.ptr(),C.MSKliinfiteme(whichliinf_),&_c_ivalue_))
+    if task.r != 0 { return }
+    _r_ivalue_ = int64(_c_ivalue_)
+  }
+  return
+}
+func (task *Task) GetMaxNumANz() (_r_maxnumanz_ int64) {
+  if task.r == RES_OK {
+    var _c_maxnumanz_ C.MSKint64t
+    task.r = int32(C.MSK_getmaxnumanz64(task.ptr(),&_c_maxnumanz_))
+    if task.r != 0 { return }
+    _r_maxnumanz_ = int64(_c_maxnumanz_)
+  }
+  return
+}
+func (task *Task) GetMaxNumBarvar() (_r_maxnumbarvar_ int32) {
+  if task.r == RES_OK {
+    var _c_maxnumbarvar_ C.MSKint32t
+    task.r = int32(C.MSK_getmaxnumbarvar(task.ptr(),&_c_maxnumbarvar_))
+    if task.r != 0 { return }
+    _r_maxnumbarvar_ = int32(_c_maxnumbarvar_)
+  }
+  return
+}
+func (task *Task) GetMaxNumCon() (_r_maxnumcon_ int32) {
+  if task.r == RES_OK {
+    var _c_maxnumcon_ C.MSKint32t
+    task.r = int32(C.MSK_getmaxnumcon(task.ptr(),&_c_maxnumcon_))
+    if task.r != 0 { return }
+    _r_maxnumcon_ = int32(_c_maxnumcon_)
+  }
+  return
+}
+func (task *Task) GetMaxNumCone() (_r_maxnumcone_ int32) {
+  if task.r == RES_OK {
+    var _c_maxnumcone_ C.MSKint32t
+    task.r = int32(C.MSK_getmaxnumcone(task.ptr(),&_c_maxnumcone_))
+    if task.r != 0 { return }
+    _r_maxnumcone_ = int32(_c_maxnumcone_)
+  }
+  return
+}
+func (task *Task) GetMaxNumQNz() (_r_maxnumqnz_ int64) {
+  if task.r == RES_OK {
+    var _c_maxnumqnz_ C.MSKint64t
+    task.r = int32(C.MSK_getmaxnumqnz64(task.ptr(),&_c_maxnumqnz_))
+    if task.r != 0 { return }
+    _r_maxnumqnz_ = int64(_c_maxnumqnz_)
+  }
+  return
+}
+func (task *Task) GetMaxNumVar() (_r_maxnumvar_ int32) {
+  if task.r == RES_OK {
+    var _c_maxnumvar_ C.MSKint32t
+    task.r = int32(C.MSK_getmaxnumvar(task.ptr(),&_c_maxnumvar_))
+    if task.r != 0 { return }
+    _r_maxnumvar_ = int32(_c_maxnumvar_)
+  }
+  return
+}
+func (task *Task) GetMemUsage() (_r_meminuse_ int64,_r_maxmemuse_ int64) {
+  if task.r == RES_OK {
+    var _c_meminuse_ C.MSKint64t
+    var _c_maxmemuse_ C.MSKint64t
+    task.r = int32(C.MSK_getmemusagetask(task.ptr(),&_c_meminuse_,&_c_maxmemuse_))
+    if task.r != 0 { return }
+    _r_meminuse_ = int64(_c_meminuse_)
+    _r_maxmemuse_ = int64(_c_maxmemuse_)
+  }
+  return
+}
+func (task *Task) GetNumANz() (_r_numanz_ int32) {
+  if task.r == RES_OK {
+    var _c_numanz_ C.MSKint32t
+    task.r = int32(C.MSK_getnumanz(task.ptr(),&_c_numanz_))
+    if task.r != 0 { return }
+    _r_numanz_ = int32(_c_numanz_)
+  }
+  return
+}
+func (task *Task) GetNumANz64() (_r_numanz_ int64) {
+  if task.r == RES_OK {
+    var _c_numanz_ C.MSKint64t
+    task.r = int32(C.MSK_getnumanz64(task.ptr(),&_c_numanz_))
+    if task.r != 0 { return }
+    _r_numanz_ = int64(_c_numanz_)
+  }
+  return
+}
+func (task *Task) GetNumBaraBlockTriplets() (_r_num_ int64) {
+  if task.r == RES_OK {
+    var _c_num_ C.MSKint64t
+    task.r = int32(C.MSK_getnumbarablocktriplets(task.ptr(),&_c_num_))
+    if task.r != 0 { return }
+    _r_num_ = int64(_c_num_)
+  }
+  return
+}
+func (task *Task) GetNumBaraNz() (_r_nz_ int64) {
+  if task.r == RES_OK {
+    var _c_nz_ C.MSKint64t
+    task.r = int32(C.MSK_getnumbaranz(task.ptr(),&_c_nz_))
+    if task.r != 0 { return }
+    _r_nz_ = int64(_c_nz_)
+  }
+  return
+}
+func (task *Task) GetNumBarcBlockTriplets() (_r_num_ int64) {
+  if task.r == RES_OK {
+    var _c_num_ C.MSKint64t
+    task.r = int32(C.MSK_getnumbarcblocktriplets(task.ptr(),&_c_num_))
+    if task.r != 0 { return }
+    _r_num_ = int64(_c_num_)
+  }
+  return
+}
+func (task *Task) GetNumBarcNz() (_r_nz_ int64) {
+  if task.r == RES_OK {
+    var _c_nz_ C.MSKint64t
+    task.r = int32(C.MSK_getnumbarcnz(task.ptr(),&_c_nz_))
+    if task.r != 0 { return }
+    _r_nz_ = int64(_c_nz_)
+  }
+  return
+}
+func (task *Task) GetNumBarvar() (_r_numbarvar_ int32) {
+  if task.r == RES_OK {
+    var _c_numbarvar_ C.MSKint32t
+    task.r = int32(C.MSK_getnumbarvar(task.ptr(),&_c_numbarvar_))
+    if task.r != 0 { return }
+    _r_numbarvar_ = int32(_c_numbarvar_)
+  }
+  return
+}
+func (task *Task) GetNumCon() (_r_numcon_ int32) {
+  if task.r == RES_OK {
+    var _c_numcon_ C.MSKint32t
+    task.r = int32(C.MSK_getnumcon(task.ptr(),&_c_numcon_))
+    if task.r != 0 { return }
+    _r_numcon_ = int32(_c_numcon_)
+  }
+  return
+}
+func (task *Task) GetNumCone() (_r_numcone_ int32) {
+  if task.r == RES_OK {
+    var _c_numcone_ C.MSKint32t
+    task.r = int32(C.MSK_getnumcone(task.ptr(),&_c_numcone_))
+    if task.r != 0 { return }
+    _r_numcone_ = int32(_c_numcone_)
+  }
+  return
+}
+func (task *Task) GetNumConeMem(k_ int32) (_r_nummem_ int32) {
+  if task.r == RES_OK {
+    _c_k_ := C.MSKint32t(k_)
+    var _c_nummem_ C.MSKint32t
+    task.r = int32(C.MSK_getnumconemem(task.ptr(),_c_k_,&_c_nummem_))
+    if task.r != 0 { return }
+    _r_nummem_ = int32(_c_nummem_)
+  }
+  return
+}
+func (task *Task) GetNumIntVar() (_r_numintvar_ int32) {
+  if task.r == RES_OK {
+    var _c_numintvar_ C.MSKint32t
+    task.r = int32(C.MSK_getnumintvar(task.ptr(),&_c_numintvar_))
+    if task.r != 0 { return }
+    _r_numintvar_ = int32(_c_numintvar_)
+  }
+  return
+}
+func (task *Task) GetNumParam(partype_ int32) (_r_numparam_ int32) {
+  if task.r == RES_OK {
+    var _c_numparam_ C.MSKint32t
+    task.r = int32(C.MSK_getnumparam(task.ptr(),C.MSKparametertypee(partype_),&_c_numparam_))
+    if task.r != 0 { return }
+    _r_numparam_ = int32(_c_numparam_)
+  }
+  return
+}
+func (task *Task) GetNumQConKNz(k_ int32) (_r_numqcnz_ int64) {
+  if task.r == RES_OK {
+    _c_k_ := C.MSKint32t(k_)
+    var _c_numqcnz_ C.MSKint64t
+    task.r = int32(C.MSK_getnumqconknz64(task.ptr(),_c_k_,&_c_numqcnz_))
+    if task.r != 0 { return }
+    _r_numqcnz_ = int64(_c_numqcnz_)
+  }
+  return
+}
+func (task *Task) GetNumQObjNz() (_r_numqonz_ int64) {
+  if task.r == RES_OK {
+    var _c_numqonz_ C.MSKint64t
+    task.r = int32(C.MSK_getnumqobjnz64(task.ptr(),&_c_numqonz_))
+    if task.r != 0 { return }
+    _r_numqonz_ = int64(_c_numqonz_)
+  }
+  return
+}
+func (task *Task) GetNumSymMat() (_r_num_ int64) {
+  if task.r == RES_OK {
+    var _c_num_ C.MSKint64t
+    task.r = int32(C.MSK_getnumsymmat(task.ptr(),&_c_num_))
+    if task.r != 0 { return }
+    _r_num_ = int64(_c_num_)
+  }
+  return
+}
+func (task *Task) GetNumVar() (_r_numvar_ int32) {
+  if task.r == RES_OK {
+    var _c_numvar_ C.MSKint32t
+    task.r = int32(C.MSK_getnumvar(task.ptr(),&_c_numvar_))
+    if task.r != 0 { return }
+    _r_numvar_ = int32(_c_numvar_)
+  }
+  return
+}
+func (task *Task) GetObjName() (_r_objname_ string) {
+  if task.r == RES_OK {
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetObjNameLen()
+    if task.r != RES_OK { return }
+    maxlen_ := 1 + __tmp_var_3
+    _c_maxlen_ := C.MSKint32t(maxlen_)
+    _c_objname_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
+    defer C.free(unsafe.Pointer(_c_objname_))
+    task.r = int32(C.MSK_getobjname(task.ptr(),_c_maxlen_,C.MSKstring_t(_c_objname_)))
+    if task.r != 0 { return }
+    _r_objname_ = C.GoStringN(_c_objname_,C.int(maxlen_))
+  }
+  return
+}
+func (task *Task) GetObjNameLen() (_r_len_ int32) {
+  if task.r == RES_OK {
+    var _c_len_ C.MSKint32t
+    task.r = int32(C.MSK_getobjnamelen(task.ptr(),&_c_len_))
+    if task.r != 0 { return }
+    _r_len_ = int32(_c_len_)
+  }
+  return
+}
+func (task *Task) GetObjSense() (_r_sense_ int32) {
+  if task.r == RES_OK {
+    var _c_sense_ C.MSKobjsensee
+    task.r = int32(C.MSK_getobjsense(task.ptr(),&_c_sense_))
+    if task.r != 0 { return }
+    _r_sense_ = int32(_c_sense_)
+  }
+  return
+}
+func (task *Task) GetParamMax(partype_ int32) (_r_parammax_ int32) {
+  if task.r == RES_OK {
+    var _c_parammax_ C.MSKint32t
+    task.r = int32(C.MSK_getparammax(task.ptr(),C.MSKparametertypee(partype_),&_c_parammax_))
+    if task.r != 0 { return }
+    _r_parammax_ = int32(_c_parammax_)
+  }
+  return
+}
+func (task *Task) GetParamName(partype_ int32,param_ int32) (_r_parname_ string) {
+  if task.r == RES_OK {
+    _c_param_ := C.MSKint32t(param_)
+    _c_parname_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
+    defer C.free(unsafe.Pointer(_c_parname_))
+    task.r = int32(C.MSK_getparamname(task.ptr(),C.MSKparametertypee(partype_),_c_param_,C.MSKstring_t(_c_parname_)))
+    if task.r != 0 { return }
+    _r_parname_ = C.GoStringN(_c_parname_,C.int(MAX_STR_LEN))
+  }
+  return
+}
+func (task *Task) GetPrimalObj(whichsol_ int32) (_r_primalobj_ float64) {
+  if task.r == RES_OK {
+    var _c_primalobj_ C.MSKrealt
+    task.r = int32(C.MSK_getprimalobj(task.ptr(),C.MSKsoltypee(whichsol_),&_c_primalobj_))
+    if task.r != 0 { return }
+    _r_primalobj_ = float64(_c_primalobj_)
+  }
+  return
+}
+func (task *Task) GetProbType() (_r_probtype_ int32) {
+  if task.r == RES_OK {
+    var _c_probtype_ C.MSKproblemtypee
+    task.r = int32(C.MSK_getprobtype(task.ptr(),&_c_probtype_))
+    if task.r != 0 { return }
+    _r_probtype_ = int32(_c_probtype_)
+  }
+  return
+}
+func (task *Task) GetProSta(whichsol_ int32) (_r_prosta_ int32) {
+  if task.r == RES_OK {
+    var _c_prosta_ C.MSKprostae
+    task.r = int32(C.MSK_getprosta(task.ptr(),C.MSKsoltypee(whichsol_),&_c_prosta_))
+    if task.r != 0 { return }
+    _r_prosta_ = int32(_c_prosta_)
+  }
+  return
+}
+func (task *Task) GetPviolBarvar(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetPviolBarvar'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if viol_ == nil { viol_ = make([]float64,num_,num_)
+    } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetPviolBarvar'") }
+    var _c_viol_ *C.MSKrealt = nil
+    if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
+    task.r = int32(C.MSK_getpviolbarvar(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
+    if task.r != 0 { return }
+    _r_viol_ = viol_
+  }
+  return
+}
+func (task *Task) GetPviolCon(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetPviolCon'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if viol_ == nil { viol_ = make([]float64,num_,num_)
+    } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetPviolCon'") }
+    var _c_viol_ *C.MSKrealt = nil
+    if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
+    task.r = int32(C.MSK_getpviolcon(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
+    if task.r != 0 { return }
+    _r_viol_ = viol_
+  }
+  return
+}
+func (task *Task) GetPviolCones(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetPviolCones'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if viol_ == nil { viol_ = make([]float64,num_,num_)
+    } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetPviolCones'") }
+    var _c_viol_ *C.MSKrealt = nil
+    if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
+    task.r = int32(C.MSK_getpviolcones(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
+    if task.r != 0 { return }
+    _r_viol_ = viol_
+  }
+  return
+}
+func (task *Task) GetPviolVar(whichsol_ int32,sub_ []int32,viol_ []float64) (_r_viol_ []float64) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'GetPviolVar'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if viol_ == nil { viol_ = make([]float64,num_,num_)
+    } else if len(viol_) < int(num_) { panic("Slice in 'viol_' is too short in call to 'GetPviolVar'") }
+    var _c_viol_ *C.MSKrealt = nil
+    if len(viol_) > 0 { _c_viol_ = (*C.MSKrealt)(&viol_[0]) }
+    task.r = int32(C.MSK_getpviolvar(task.ptr(),C.MSKsoltypee(whichsol_),_c_num_,_c_sub_,_c_viol_))
+    if task.r != 0 { return }
+    _r_viol_ = viol_
+  }
+  return
+}
+func (task *Task) GetQConK(k_ int32,qcsubi_ []int32,qcsubj_ []int32,qcval_ []float64) (_r_numqcnz_ int64,_r_qcsubi_ []int32,_r_qcsubj_ []int32,_r_qcval_ []float64) {
+  if task.r == RES_OK {
+    _c_k_ := C.MSKint32t(k_)
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetNumQConKNz(k_)
+    if task.r != RES_OK { return }
+    maxnumqcnz_ := __tmp_var_1
+    _c_maxnumqcnz_ := C.MSKint64t(maxnumqcnz_)
+    var _c_qcsurp_ C.MSKint64t = C.MSKint64t(len(qcsubi_))
+    var _c_numqcnz_ C.MSKint64t
+    var __tmp_var_4 int64
+    __tmp_var_4 = task.GetNumQConKNz(k_)
+    if task.r != RES_OK { return }
+    if qcsubi_ == nil { qcsubi_ = make([]int32,__tmp_var_4,__tmp_var_4)
+    } else if len(qcsubi_) < int(__tmp_var_4) { panic("Slice in 'qcsubi_' is too short in call to 'GetQConK'") }
+    var _c_qcsubi_ *C.MSKint32t = nil
+    if len(qcsubi_) > 0 { _c_qcsubi_ = (*C.MSKint32t)(&qcsubi_[0]) }
+    var __tmp_var_7 int64
+    __tmp_var_7 = task.GetNumQConKNz(k_)
+    if task.r != RES_OK { return }
+    if qcsubj_ == nil { qcsubj_ = make([]int32,__tmp_var_7,__tmp_var_7)
+    } else if len(qcsubj_) < int(__tmp_var_7) { panic("Slice in 'qcsubj_' is too short in call to 'GetQConK'") }
+    var _c_qcsubj_ *C.MSKint32t = nil
+    if len(qcsubj_) > 0 { _c_qcsubj_ = (*C.MSKint32t)(&qcsubj_[0]) }
+    var __tmp_var_10 int64
+    __tmp_var_10 = task.GetNumQConKNz(k_)
+    if task.r != RES_OK { return }
+    if qcval_ == nil { qcval_ = make([]float64,__tmp_var_10,__tmp_var_10)
+    } else if len(qcval_) < int(__tmp_var_10) { panic("Slice in 'qcval_' is too short in call to 'GetQConK'") }
+    var _c_qcval_ *C.MSKrealt = nil
+    if len(qcval_) > 0 { _c_qcval_ = (*C.MSKrealt)(&qcval_[0]) }
+    task.r = int32(C.MSK_getqconk64(task.ptr(),_c_k_,_c_maxnumqcnz_,&_c_qcsurp_,&_c_numqcnz_,_c_qcsubi_,_c_qcsubj_,_c_qcval_))
+    if task.r != 0 { return }
+    _r_numqcnz_ = int64(_c_numqcnz_)
+    _r_qcsubi_ = qcsubi_
+    _r_qcsubj_ = qcsubj_
+    _r_qcval_ = qcval_
+  }
+  return
+}
+func (task *Task) GetQObj(qosubi_ []int32,qosubj_ []int32,qoval_ []float64) (_r_numqonz_ int32,_r_qosubi_ []int32,_r_qosubj_ []int32,_r_qoval_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetNumQObjNz()
+    if task.r != RES_OK { return }
+    maxnumqonz_ := __tmp_var_1
+    _c_maxnumqonz_ := C.MSKint32t(maxnumqonz_)
+    var _c_qosurp_ C.MSKint32t = C.MSKint32t(len(qosubi_))
+    var _c_numqonz_ C.MSKint32t
+    if qosubi_ == nil { qosubi_ = make([]int32,maxnumqonz_,maxnumqonz_)
+    } else if len(qosubi_) < int(maxnumqonz_) { panic("Slice in 'qosubi_' is too short in call to 'GetQObj'") }
+    var _c_qosubi_ *C.MSKint32t = nil
+    if len(qosubi_) > 0 { _c_qosubi_ = (*C.MSKint32t)(&qosubi_[0]) }
+    if qosubj_ == nil { qosubj_ = make([]int32,maxnumqonz_,maxnumqonz_)
+    } else if len(qosubj_) < int(maxnumqonz_) { panic("Slice in 'qosubj_' is too short in call to 'GetQObj'") }
+    var _c_qosubj_ *C.MSKint32t = nil
+    if len(qosubj_) > 0 { _c_qosubj_ = (*C.MSKint32t)(&qosubj_[0]) }
+    if qoval_ == nil { qoval_ = make([]float64,maxnumqonz_,maxnumqonz_)
+    } else if len(qoval_) < int(maxnumqonz_) { panic("Slice in 'qoval_' is too short in call to 'GetQObj'") }
+    var _c_qoval_ *C.MSKrealt = nil
+    if len(qoval_) > 0 { _c_qoval_ = (*C.MSKrealt)(&qoval_[0]) }
+    task.r = int32(C.MSK_getqobj(task.ptr(),_c_maxnumqonz_,&_c_qosurp_,&_c_numqonz_,_c_qosubi_,_c_qosubj_,_c_qoval_))
+    if task.r != 0 { return }
+    _r_numqonz_ = int32(_c_numqonz_)
+    _r_qosubi_ = qosubi_
+    _r_qosubj_ = qosubj_
+    _r_qoval_ = qoval_
+  }
+  return
+}
+func (task *Task) GetQObj64(qosubi_ []int32,qosubj_ []int32,qoval_ []float64) (_r_numqonz_ int64,_r_qosubi_ []int32,_r_qosubj_ []int32,_r_qoval_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetNumQObjNz()
+    if task.r != RES_OK { return }
+    maxnumqonz_ := __tmp_var_1
+    _c_maxnumqonz_ := C.MSKint64t(maxnumqonz_)
+    var _c_qosurp_ C.MSKint64t = C.MSKint64t(len(qosubi_))
+    var _c_numqonz_ C.MSKint64t
+    if qosubi_ == nil { qosubi_ = make([]int32,maxnumqonz_,maxnumqonz_)
+    } else if len(qosubi_) < int(maxnumqonz_) { panic("Slice in 'qosubi_' is too short in call to 'GetQObj64'") }
+    var _c_qosubi_ *C.MSKint32t = nil
+    if len(qosubi_) > 0 { _c_qosubi_ = (*C.MSKint32t)(&qosubi_[0]) }
+    if qosubj_ == nil { qosubj_ = make([]int32,maxnumqonz_,maxnumqonz_)
+    } else if len(qosubj_) < int(maxnumqonz_) { panic("Slice in 'qosubj_' is too short in call to 'GetQObj64'") }
+    var _c_qosubj_ *C.MSKint32t = nil
+    if len(qosubj_) > 0 { _c_qosubj_ = (*C.MSKint32t)(&qosubj_[0]) }
+    if qoval_ == nil { qoval_ = make([]float64,maxnumqonz_,maxnumqonz_)
+    } else if len(qoval_) < int(maxnumqonz_) { panic("Slice in 'qoval_' is too short in call to 'GetQObj64'") }
+    var _c_qoval_ *C.MSKrealt = nil
+    if len(qoval_) > 0 { _c_qoval_ = (*C.MSKrealt)(&qoval_[0]) }
+    task.r = int32(C.MSK_getqobj64(task.ptr(),_c_maxnumqonz_,&_c_qosurp_,&_c_numqonz_,_c_qosubi_,_c_qosubj_,_c_qoval_))
+    if task.r != 0 { return }
+    _r_numqonz_ = int64(_c_numqonz_)
+    _r_qosubi_ = qosubi_
+    _r_qosubj_ = qosubj_
+    _r_qoval_ = qoval_
+  }
+  return
+}
+func (task *Task) GetQObjIJ(i_ int32,j_ int32) (_r_qoij_ float64) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_j_ := C.MSKint32t(j_)
+    var _c_qoij_ C.MSKrealt
+    task.r = int32(C.MSK_getqobjij(task.ptr(),_c_i_,_c_j_,&_c_qoij_))
+    if task.r != 0 { return }
+    _r_qoij_ = float64(_c_qoij_)
+  }
+  return
+}
+func (task *Task) GetReducedCosts(whichsol_ int32,first_ int32,last_ int32,redcosts_ []float64) (_r_redcosts_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if redcosts_ == nil { redcosts_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(redcosts_) < int(last_ - first_) { panic("Slice in 'redcosts_' is too short in call to 'GetReducedCosts'") }
+    var _c_redcosts_ *C.MSKrealt = nil
+    if len(redcosts_) > 0 { _c_redcosts_ = (*C.MSKrealt)(&redcosts_[0]) }
+    task.r = int32(C.MSK_getreducedcosts(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_redcosts_))
+    if task.r != 0 { return }
+    _r_redcosts_ = redcosts_
+  }
+  return
+}
+func (task *Task) GetSkc(whichsol_ int32,skc_ []int32) (_r_skc_ []int32) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if skc_ == nil { skc_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(skc_) < int(__tmp_var_1) { panic("Slice in 'skc_' is too short in call to 'GetSkc'") }
+    var _c_skc_ *C.MSKstakeye = nil
+    if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
+    task.r = int32(C.MSK_getskc(task.ptr(),C.MSKsoltypee(whichsol_),_c_skc_))
+    if task.r != 0 { return }
+    _r_skc_ = skc_
+  }
+  return
+}
+func (task *Task) GetSkcSlice(whichsol_ int32,first_ int32,last_ int32,skc_ []int32) (_r_skc_ []int32) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if skc_ == nil { skc_ = make([]int32,last_ - first_,last_ - first_)
+    } else if len(skc_) < int(last_ - first_) { panic("Slice in 'skc_' is too short in call to 'GetSkcSlice'") }
+    var _c_skc_ *C.MSKstakeye = nil
+    if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
+    task.r = int32(C.MSK_getskcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_skc_))
+    if task.r != 0 { return }
+    _r_skc_ = skc_
+  }
+  return
+}
+func (task *Task) GetSkx(whichsol_ int32,skx_ []int32) (_r_skx_ []int32) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if skx_ == nil { skx_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(skx_) < int(__tmp_var_1) { panic("Slice in 'skx_' is too short in call to 'GetSkx'") }
+    var _c_skx_ *C.MSKstakeye = nil
+    if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
+    task.r = int32(C.MSK_getskx(task.ptr(),C.MSKsoltypee(whichsol_),_c_skx_))
+    if task.r != 0 { return }
+    _r_skx_ = skx_
+  }
+  return
+}
+func (task *Task) GetSkxSlice(whichsol_ int32,first_ int32,last_ int32,skx_ []int32) (_r_skx_ []int32) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if skx_ == nil { skx_ = make([]int32,last_ - first_,last_ - first_)
+    } else if len(skx_) < int(last_ - first_) { panic("Slice in 'skx_' is too short in call to 'GetSkxSlice'") }
+    var _c_skx_ *C.MSKstakeye = nil
+    if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
+    task.r = int32(C.MSK_getskxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_skx_))
+    if task.r != 0 { return }
+    _r_skx_ = skx_
+  }
+  return
+}
+func (task *Task) GetSlc(whichsol_ int32,slc_ []float64) (_r_slc_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if slc_ == nil { slc_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(slc_) < int(__tmp_var_1) { panic("Slice in 'slc_' is too short in call to 'GetSlc'") }
+    var _c_slc_ *C.MSKrealt = nil
+    if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
+    task.r = int32(C.MSK_getslc(task.ptr(),C.MSKsoltypee(whichsol_),_c_slc_))
+    if task.r != 0 { return }
+    _r_slc_ = slc_
+  }
+  return
+}
+func (task *Task) GetSlcSlice(whichsol_ int32,first_ int32,last_ int32,slc_ []float64) (_r_slc_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if slc_ == nil { slc_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(slc_) < int(last_ - first_) { panic("Slice in 'slc_' is too short in call to 'GetSlcSlice'") }
+    var _c_slc_ *C.MSKrealt = nil
+    if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
+    task.r = int32(C.MSK_getslcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_slc_))
+    if task.r != 0 { return }
+    _r_slc_ = slc_
+  }
+  return
+}
+func (task *Task) GetSlx(whichsol_ int32,slx_ []float64) (_r_slx_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if slx_ == nil { slx_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(slx_) < int(__tmp_var_1) { panic("Slice in 'slx_' is too short in call to 'GetSlx'") }
+    var _c_slx_ *C.MSKrealt = nil
+    if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
+    task.r = int32(C.MSK_getslx(task.ptr(),C.MSKsoltypee(whichsol_),_c_slx_))
+    if task.r != 0 { return }
+    _r_slx_ = slx_
+  }
+  return
+}
+func (task *Task) GetSlxSlice(whichsol_ int32,first_ int32,last_ int32,slx_ []float64) (_r_slx_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if slx_ == nil { slx_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(slx_) < int(last_ - first_) { panic("Slice in 'slx_' is too short in call to 'GetSlxSlice'") }
+    var _c_slx_ *C.MSKrealt = nil
+    if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
+    task.r = int32(C.MSK_getslxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_slx_))
+    if task.r != 0 { return }
+    _r_slx_ = slx_
+  }
+  return
+}
+func (task *Task) GetSnx(whichsol_ int32,snx_ []float64) (_r_snx_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if snx_ == nil { snx_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(snx_) < int(__tmp_var_1) { panic("Slice in 'snx_' is too short in call to 'GetSnx'") }
+    var _c_snx_ *C.MSKrealt = nil
+    if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
+    task.r = int32(C.MSK_getsnx(task.ptr(),C.MSKsoltypee(whichsol_),_c_snx_))
+    if task.r != 0 { return }
+    _r_snx_ = snx_
+  }
+  return
+}
+func (task *Task) GetSnxSlice(whichsol_ int32,first_ int32,last_ int32,snx_ []float64) (_r_snx_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if snx_ == nil { snx_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(snx_) < int(last_ - first_) { panic("Slice in 'snx_' is too short in call to 'GetSnxSlice'") }
+    var _c_snx_ *C.MSKrealt = nil
+    if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
+    task.r = int32(C.MSK_getsnxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_snx_))
+    if task.r != 0 { return }
+    _r_snx_ = snx_
+  }
+  return
+}
+func (task *Task) GetSolSta(whichsol_ int32) (_r_solsta_ int32) {
+  if task.r == RES_OK {
+    var _c_solsta_ C.MSKsolstae
+    task.r = int32(C.MSK_getsolsta(task.ptr(),C.MSKsoltypee(whichsol_),&_c_solsta_))
+    if task.r != 0 { return }
+    _r_solsta_ = int32(_c_solsta_)
+  }
+  return
+}
+func (task *Task) GetSolution(whichsol_ int32,skc_ []int32,skx_ []int32,skn_ []int32,xc_ []float64,xx_ []float64,y_ []float64,slc_ []float64,suc_ []float64,slx_ []float64,sux_ []float64,snx_ []float64) (_r_prosta_ int32,_r_solsta_ int32,_r_skc_ []int32,_r_skx_ []int32,_r_skn_ []int32,_r_xc_ []float64,_r_xx_ []float64,_r_y_ []float64,_r_slc_ []float64,_r_suc_ []float64,_r_slx_ []float64,_r_sux_ []float64,_r_snx_ []float64) {
+  if task.r == RES_OK {
+    var _c_prosta_ C.MSKprostae
+    var _c_solsta_ C.MSKsolstae
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if skc_ == nil { skc_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(skc_) < int(__tmp_var_1) { panic("Slice in 'skc_' is too short in call to 'GetSolution'") }
+    var _c_skc_ *C.MSKstakeye = nil
+    if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if skx_ == nil { skx_ = make([]int32,__tmp_var_3,__tmp_var_3)
+    } else if len(skx_) < int(__tmp_var_3) { panic("Slice in 'skx_' is too short in call to 'GetSolution'") }
+    var _c_skx_ *C.MSKstakeye = nil
+    if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
+    var __tmp_var_5 int32
+    __tmp_var_5 = task.GetNumCone()
+    if task.r != RES_OK { return }
+    if skn_ == nil { skn_ = make([]int32,__tmp_var_5,__tmp_var_5)
+    } else if len(skn_) < int(__tmp_var_5) { panic("Slice in 'skn_' is too short in call to 'GetSolution'") }
+    var _c_skn_ *C.MSKstakeye = nil
+    if len(skn_) > 0 { _c_skn_ = (*C.MSKstakeye)(unsafe.Pointer(&skn_[0])) }
+    var __tmp_var_7 int32
+    __tmp_var_7 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if xc_ == nil { xc_ = make([]float64,__tmp_var_7,__tmp_var_7)
+    } else if len(xc_) < int(__tmp_var_7) { panic("Slice in 'xc_' is too short in call to 'GetSolution'") }
+    var _c_xc_ *C.MSKrealt = nil
+    if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
+    var __tmp_var_9 int32
+    __tmp_var_9 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if xx_ == nil { xx_ = make([]float64,__tmp_var_9,__tmp_var_9)
+    } else if len(xx_) < int(__tmp_var_9) { panic("Slice in 'xx_' is too short in call to 'GetSolution'") }
+    var _c_xx_ *C.MSKrealt = nil
+    if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
+    var __tmp_var_11 int32
+    __tmp_var_11 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if y_ == nil { y_ = make([]float64,__tmp_var_11,__tmp_var_11)
+    } else if len(y_) < int(__tmp_var_11) { panic("Slice in 'y_' is too short in call to 'GetSolution'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    var __tmp_var_13 int32
+    __tmp_var_13 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if slc_ == nil { slc_ = make([]float64,__tmp_var_13,__tmp_var_13)
+    } else if len(slc_) < int(__tmp_var_13) { panic("Slice in 'slc_' is too short in call to 'GetSolution'") }
+    var _c_slc_ *C.MSKrealt = nil
+    if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
+    var __tmp_var_15 int32
+    __tmp_var_15 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if suc_ == nil { suc_ = make([]float64,__tmp_var_15,__tmp_var_15)
+    } else if len(suc_) < int(__tmp_var_15) { panic("Slice in 'suc_' is too short in call to 'GetSolution'") }
+    var _c_suc_ *C.MSKrealt = nil
+    if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
+    var __tmp_var_17 int32
+    __tmp_var_17 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if slx_ == nil { slx_ = make([]float64,__tmp_var_17,__tmp_var_17)
+    } else if len(slx_) < int(__tmp_var_17) { panic("Slice in 'slx_' is too short in call to 'GetSolution'") }
+    var _c_slx_ *C.MSKrealt = nil
+    if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
+    var __tmp_var_19 int32
+    __tmp_var_19 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if sux_ == nil { sux_ = make([]float64,__tmp_var_19,__tmp_var_19)
+    } else if len(sux_) < int(__tmp_var_19) { panic("Slice in 'sux_' is too short in call to 'GetSolution'") }
+    var _c_sux_ *C.MSKrealt = nil
+    if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
+    var __tmp_var_21 int32
+    __tmp_var_21 = task.GetNumCone()
+    if task.r != RES_OK { return }
+    if snx_ == nil { snx_ = make([]float64,__tmp_var_21,__tmp_var_21)
+    } else if len(snx_) < int(__tmp_var_21) { panic("Slice in 'snx_' is too short in call to 'GetSolution'") }
+    var _c_snx_ *C.MSKrealt = nil
+    if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
+    task.r = int32(C.MSK_getsolution(task.ptr(),C.MSKsoltypee(whichsol_),&_c_prosta_,&_c_solsta_,_c_skc_,_c_skx_,_c_skn_,_c_xc_,_c_xx_,_c_y_,_c_slc_,_c_suc_,_c_slx_,_c_sux_,_c_snx_))
+    if task.r != 0 { return }
+    _r_prosta_ = int32(_c_prosta_)
+    _r_solsta_ = int32(_c_solsta_)
+    _r_skc_ = skc_
+    _r_skx_ = skx_
+    _r_skn_ = skn_
+    _r_xc_ = xc_
+    _r_xx_ = xx_
+    _r_y_ = y_
+    _r_slc_ = slc_
+    _r_suc_ = suc_
+    _r_slx_ = slx_
+    _r_sux_ = sux_
+    _r_snx_ = snx_
+  }
+  return
+}
+func (task *Task) GetSolutionI(accmode_ int32,i_ int32,whichsol_ int32) (_r_sk_ int32,_r_x_ float64,_r_sl_ float64,_r_su_ float64,_r_sn_ float64) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_sk_ C.MSKstakeye
+    var _c_x_ C.MSKrealt
+    var _c_sl_ C.MSKrealt
+    var _c_su_ C.MSKrealt
+    var _c_sn_ C.MSKrealt
+    task.r = int32(C.MSK_getsolutioni(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,C.MSKsoltypee(whichsol_),&_c_sk_,&_c_x_,&_c_sl_,&_c_su_,&_c_sn_))
+    if task.r != 0 { return }
+    _r_sk_ = int32(_c_sk_)
+    _r_x_ = float64(_c_x_)
+    _r_sl_ = float64(_c_sl_)
+    _r_su_ = float64(_c_su_)
+    _r_sn_ = float64(_c_sn_)
+  }
+  return
+}
+func (task *Task) GetSolutionInfo(whichsol_ int32) (_r_pobj_ float64,_r_pviolcon_ float64,_r_pviolvar_ float64,_r_pviolbarvar_ float64,_r_pviolcone_ float64,_r_pviolitg_ float64,_r_dobj_ float64,_r_dviolcon_ float64,_r_dviolvar_ float64,_r_dviolbarvar_ float64,_r_dviolcone_ float64) {
+  if task.r == RES_OK {
+    var _c_pobj_ C.MSKrealt
+    var _c_pviolcon_ C.MSKrealt
+    var _c_pviolvar_ C.MSKrealt
+    var _c_pviolbarvar_ C.MSKrealt
+    var _c_pviolcone_ C.MSKrealt
+    var _c_pviolitg_ C.MSKrealt
+    var _c_dobj_ C.MSKrealt
+    var _c_dviolcon_ C.MSKrealt
+    var _c_dviolvar_ C.MSKrealt
+    var _c_dviolbarvar_ C.MSKrealt
+    var _c_dviolcone_ C.MSKrealt
+    task.r = int32(C.MSK_getsolutioninfo(task.ptr(),C.MSKsoltypee(whichsol_),&_c_pobj_,&_c_pviolcon_,&_c_pviolvar_,&_c_pviolbarvar_,&_c_pviolcone_,&_c_pviolitg_,&_c_dobj_,&_c_dviolcon_,&_c_dviolvar_,&_c_dviolbarvar_,&_c_dviolcone_))
+    if task.r != 0 { return }
+    _r_pobj_ = float64(_c_pobj_)
+    _r_pviolcon_ = float64(_c_pviolcon_)
+    _r_pviolvar_ = float64(_c_pviolvar_)
+    _r_pviolbarvar_ = float64(_c_pviolbarvar_)
+    _r_pviolcone_ = float64(_c_pviolcone_)
+    _r_pviolitg_ = float64(_c_pviolitg_)
+    _r_dobj_ = float64(_c_dobj_)
+    _r_dviolcon_ = float64(_c_dviolcon_)
+    _r_dviolvar_ = float64(_c_dviolvar_)
+    _r_dviolbarvar_ = float64(_c_dviolbarvar_)
+    _r_dviolcone_ = float64(_c_dviolcone_)
+  }
+  return
+}
+func (task *Task) GetSolutionSlice(whichsol_ int32,solitem_ int32,first_ int32,last_ int32,values_ []float64) (_r_values_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if values_ == nil { values_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(values_) < int(last_ - first_) { panic("Slice in 'values_' is too short in call to 'GetSolutionSlice'") }
+    var _c_values_ *C.MSKrealt = nil
+    if len(values_) > 0 { _c_values_ = (*C.MSKrealt)(&values_[0]) }
+    task.r = int32(C.MSK_getsolutionslice(task.ptr(),C.MSKsoltypee(whichsol_),C.MSKsoliteme(solitem_),_c_first_,_c_last_,_c_values_))
+    if task.r != 0 { return }
+    _r_values_ = values_
+  }
+  return
+}
+func (task *Task) GetSparseSymMat(idx_ int64,subi_ []int32,subj_ []int32,valij_ []float64) (_r_subi_ []int32,_r_subj_ []int32,_r_valij_ []float64) {
+  if task.r == RES_OK {
+    _c_idx_ := C.MSKint64t(idx_)
+    var __tmp_var_1 int64
+    _,__tmp_var_1,_ = task.GetSymMatInfo(idx_)
+    if task.r != RES_OK { return }
+    maxlen_ := __tmp_var_1
+    _c_maxlen_ := C.MSKint64t(maxlen_)
+    if subi_ == nil { subi_ = make([]int32,maxlen_,maxlen_)
+    } else if len(subi_) < int(maxlen_) { panic("Slice in 'subi_' is too short in call to 'GetSparseSymMat'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    if subj_ == nil { subj_ = make([]int32,maxlen_,maxlen_)
+    } else if len(subj_) < int(maxlen_) { panic("Slice in 'subj_' is too short in call to 'GetSparseSymMat'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if valij_ == nil { valij_ = make([]float64,maxlen_,maxlen_)
+    } else if len(valij_) < int(maxlen_) { panic("Slice in 'valij_' is too short in call to 'GetSparseSymMat'") }
+    var _c_valij_ *C.MSKrealt = nil
+    if len(valij_) > 0 { _c_valij_ = (*C.MSKrealt)(&valij_[0]) }
+    task.r = int32(C.MSK_getsparsesymmat(task.ptr(),_c_idx_,_c_maxlen_,_c_subi_,_c_subj_,_c_valij_))
+    if task.r != 0 { return }
+    _r_subi_ = subi_
+    _r_subj_ = subj_
+    _r_valij_ = valij_
+  }
+  return
+}
+func (task *Task) GetStrParam(param_ int32) (_r_len_ int32,_r_parvalue_ string) {
+  if task.r == RES_OK {
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetStrParamLen(param_)
+    if task.r != RES_OK { return }
+    maxlen_ := 1 + __tmp_var_3
+    _c_maxlen_ := C.MSKint32t(maxlen_)
+    var _c_len_ C.MSKint32t
+    _c_parvalue_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
+    defer C.free(unsafe.Pointer(_c_parvalue_))
+    task.r = int32(C.MSK_getstrparam(task.ptr(),C.MSKsparame(param_),_c_maxlen_,&_c_len_,C.MSKstring_t(_c_parvalue_)))
+    if task.r != 0 { return }
+    _r_len_ = int32(_c_len_)
+    _r_parvalue_ = C.GoStringN(_c_parvalue_,C.int(maxlen_))
+  }
+  return
+}
+func (task *Task) GetStrParamLen(param_ int32) (_r_len_ int32) {
+  if task.r == RES_OK {
+    var _c_len_ C.MSKint32t
+    task.r = int32(C.MSK_getstrparamlen(task.ptr(),C.MSKsparame(param_),&_c_len_))
+    if task.r != 0 { return }
+    _r_len_ = int32(_c_len_)
+  }
+  return
+}
+func (task *Task) GetSuc(whichsol_ int32,suc_ []float64) (_r_suc_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if suc_ == nil { suc_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(suc_) < int(__tmp_var_1) { panic("Slice in 'suc_' is too short in call to 'GetSuc'") }
+    var _c_suc_ *C.MSKrealt = nil
+    if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
+    task.r = int32(C.MSK_getsuc(task.ptr(),C.MSKsoltypee(whichsol_),_c_suc_))
+    if task.r != 0 { return }
+    _r_suc_ = suc_
+  }
+  return
+}
+func (task *Task) GetSucSlice(whichsol_ int32,first_ int32,last_ int32,suc_ []float64) (_r_suc_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if suc_ == nil { suc_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(suc_) < int(last_ - first_) { panic("Slice in 'suc_' is too short in call to 'GetSucSlice'") }
+    var _c_suc_ *C.MSKrealt = nil
+    if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
+    task.r = int32(C.MSK_getsucslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_suc_))
+    if task.r != 0 { return }
+    _r_suc_ = suc_
+  }
+  return
+}
+func (task *Task) GetSux(whichsol_ int32,sux_ []float64) (_r_sux_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if sux_ == nil { sux_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(sux_) < int(__tmp_var_1) { panic("Slice in 'sux_' is too short in call to 'GetSux'") }
+    var _c_sux_ *C.MSKrealt = nil
+    if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
+    task.r = int32(C.MSK_getsux(task.ptr(),C.MSKsoltypee(whichsol_),_c_sux_))
+    if task.r != 0 { return }
+    _r_sux_ = sux_
+  }
+  return
+}
+func (task *Task) GetSuxSlice(whichsol_ int32,first_ int32,last_ int32,sux_ []float64) (_r_sux_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if sux_ == nil { sux_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(sux_) < int(last_ - first_) { panic("Slice in 'sux_' is too short in call to 'GetSuxSlice'") }
+    var _c_sux_ *C.MSKrealt = nil
+    if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
+    task.r = int32(C.MSK_getsuxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_sux_))
+    if task.r != 0 { return }
+    _r_sux_ = sux_
+  }
+  return
+}
+func (task *Task) GetSymMatInfo(idx_ int64) (_r_dim_ int32,_r_nz_ int64,_r_type_ int32) {
+  if task.r == RES_OK {
+    _c_idx_ := C.MSKint64t(idx_)
+    var _c_dim_ C.MSKint32t
+    var _c_nz_ C.MSKint64t
+    var _c_type_ C.MSKsymmattypee
+    task.r = int32(C.MSK_getsymmatinfo(task.ptr(),_c_idx_,&_c_dim_,&_c_nz_,&_c_type_))
+    if task.r != 0 { return }
+    _r_dim_ = int32(_c_dim_)
+    _r_nz_ = int64(_c_nz_)
+    _r_type_ = int32(_c_type_)
+  }
+  return
+}
+func (task *Task) GetTaskName() (_r_taskname_ string) {
+  if task.r == RES_OK {
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetTaskNameLen()
+    if task.r != RES_OK { return }
+    maxlen_ := 1 + __tmp_var_3
+    _c_maxlen_ := C.MSKint32t(maxlen_)
+    _c_taskname_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
+    defer C.free(unsafe.Pointer(_c_taskname_))
+    task.r = int32(C.MSK_gettaskname(task.ptr(),_c_maxlen_,C.MSKstring_t(_c_taskname_)))
+    if task.r != 0 { return }
+    _r_taskname_ = C.GoStringN(_c_taskname_,C.int(maxlen_))
+  }
+  return
+}
+func (task *Task) GetTaskNameLen() (_r_len_ int32) {
+  if task.r == RES_OK {
+    var _c_len_ C.MSKint32t
+    task.r = int32(C.MSK_gettasknamelen(task.ptr(),&_c_len_))
+    if task.r != 0 { return }
+    _r_len_ = int32(_c_len_)
+  }
+  return
+}
+func (task *Task) GetVarBound(i_ int32) (_r_bk_ int32,_r_bl_ float64,_r_bu_ float64) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_bk_ C.MSKboundkeye
+    var _c_bl_ C.MSKrealt
+    var _c_bu_ C.MSKrealt
+    task.r = int32(C.MSK_getvarbound(task.ptr(),_c_i_,&_c_bk_,&_c_bl_,&_c_bu_))
+    if task.r != 0 { return }
+    _r_bk_ = int32(_c_bk_)
+    _r_bl_ = float64(_c_bl_)
+    _r_bu_ = float64(_c_bu_)
+  }
+  return
+}
+func (task *Task) GetVarBoundSlice(first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) (_r_bk_ []int32,_r_bl_ []float64,_r_bu_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if bk_ == nil { bk_ = make([]int32,last_ - first_,last_ - first_)
+    } else if len(bk_) < int(last_ - first_) { panic("Slice in 'bk_' is too short in call to 'GetVarBoundSlice'") }
+    var _c_bk_ *C.MSKboundkeye = nil
+    if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
+    if bl_ == nil { bl_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(bl_) < int(last_ - first_) { panic("Slice in 'bl_' is too short in call to 'GetVarBoundSlice'") }
+    var _c_bl_ *C.MSKrealt = nil
+    if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
+    if bu_ == nil { bu_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(bu_) < int(last_ - first_) { panic("Slice in 'bu_' is too short in call to 'GetVarBoundSlice'") }
+    var _c_bu_ *C.MSKrealt = nil
+    if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
+    task.r = int32(C.MSK_getvarboundslice(task.ptr(),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+    _r_bk_ = bk_
+    _r_bl_ = bl_
+    _r_bu_ = bu_
+  }
+  return
+}
+func (task *Task) GetVarBranchDir(j_ int32) (_r_direction_ int32) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var _c_direction_ C.MSKbranchdire
+    task.r = int32(C.MSK_getvarbranchdir(task.ptr(),_c_j_,&_c_direction_))
+    if task.r != 0 { return }
+    _r_direction_ = int32(_c_direction_)
+  }
+  return
+}
+func (task *Task) GetVarBranchOrder(j_ int32) (_r_priority_ int32,_r_direction_ int32) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var _c_priority_ C.MSKint32t
+    var _c_direction_ C.MSKbranchdire
+    task.r = int32(C.MSK_getvarbranchorder(task.ptr(),_c_j_,&_c_priority_,&_c_direction_))
+    if task.r != 0 { return }
+    _r_priority_ = int32(_c_priority_)
+    _r_direction_ = int32(_c_direction_)
+  }
+  return
+}
+func (task *Task) GetVarBranchPri(j_ int32) (_r_priority_ int32) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var _c_priority_ C.MSKint32t
+    task.r = int32(C.MSK_getvarbranchpri(task.ptr(),_c_j_,&_c_priority_))
+    if task.r != 0 { return }
+    _r_priority_ = int32(_c_priority_)
+  }
+  return
+}
+func (task *Task) GetVarName(j_ int32) (_r_name_ string) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetVarNameLen(j_)
+    if task.r != RES_OK { return }
+    maxlen_ := 1 + __tmp_var_3
+    _c_maxlen_ := C.MSKint32t(maxlen_)
+    _c_name_ := (*C.char)(C.malloc(C.size_t(maxlen_+1)))
+    defer C.free(unsafe.Pointer(_c_name_))
+    task.r = int32(C.MSK_getvarname(task.ptr(),_c_j_,_c_maxlen_,C.MSKstring_t(_c_name_)))
+    if task.r != 0 { return }
+    _r_name_ = C.GoStringN(_c_name_,C.int(maxlen_))
+  }
+  return
+}
+func (task *Task) GetVarNameIndex(somename_ string) (_r_asgn_ int32,_r_index_ int32) {
+  if task.r == RES_OK {
+    _c_somename_ := C.CString(somename_)
+    defer C.free(unsafe.Pointer(_c_somename_))
+    var _c_asgn_ C.MSKint32t
+    var _c_index_ C.MSKint32t
+    task.r = int32(C.MSK_getvarnameindex(task.ptr(),C.MSKstring_t(_c_somename_),&_c_asgn_,&_c_index_))
+    if task.r != 0 { return }
+    _r_asgn_ = int32(_c_asgn_)
+    _r_index_ = int32(_c_index_)
+  }
+  return
+}
+func (task *Task) GetVarNameLen(i_ int32) (_r_len_ int32) {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    var _c_len_ C.MSKint32t
+    task.r = int32(C.MSK_getvarnamelen(task.ptr(),_c_i_,&_c_len_))
+    if task.r != 0 { return }
+    _r_len_ = int32(_c_len_)
+  }
+  return
+}
+func (task *Task) GetVarType(j_ int32) (_r_vartype_ int32) {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    var _c_vartype_ C.MSKvariabletypee
+    task.r = int32(C.MSK_getvartype(task.ptr(),_c_j_,&_c_vartype_))
+    if task.r != 0 { return }
+    _r_vartype_ = int32(_c_vartype_)
+  }
+  return
+}
+func (task *Task) GetVarTypeList(subj_ []int32,vartype_ []int32) (_r_vartype_ []int32) {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(subj_) })
+    _c_num_ := C.MSKint32t(num_)
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'GetVarTypeList'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if vartype_ == nil { vartype_ = make([]int32,num_,num_)
+    } else if len(vartype_) < int(num_) { panic("Slice in 'vartype_' is too short in call to 'GetVarTypeList'") }
+    var _c_vartype_ *C.MSKvariabletypee = nil
+    if len(vartype_) > 0 { _c_vartype_ = (*C.MSKvariabletypee)(unsafe.Pointer(&vartype_[0])) }
+    task.r = int32(C.MSK_getvartypelist(task.ptr(),_c_num_,_c_subj_,_c_vartype_))
+    if task.r != 0 { return }
+    _r_vartype_ = vartype_
+  }
+  return
+}
+func (task *Task) GetXc(whichsol_ int32,xc_ []float64) (_r_xc_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if xc_ == nil { xc_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(xc_) < int(__tmp_var_1) { panic("Slice in 'xc_' is too short in call to 'GetXc'") }
+    var _c_xc_ *C.MSKrealt = nil
+    if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
+    task.r = int32(C.MSK_getxc(task.ptr(),C.MSKsoltypee(whichsol_),_c_xc_))
+    if task.r != 0 { return }
+    _r_xc_ = xc_
+  }
+  return
+}
+func (task *Task) GetXcSlice(whichsol_ int32,first_ int32,last_ int32,xc_ []float64) (_r_xc_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if xc_ == nil { xc_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(xc_) < int(last_ - first_) { panic("Slice in 'xc_' is too short in call to 'GetXcSlice'") }
+    var _c_xc_ *C.MSKrealt = nil
+    if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
+    task.r = int32(C.MSK_getxcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_xc_))
+    if task.r != 0 { return }
+    _r_xc_ = xc_
+  }
+  return
+}
+func (task *Task) GetXx(whichsol_ int32,xx_ []float64) (_r_xx_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if xx_ == nil { xx_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(xx_) < int(__tmp_var_1) { panic("Slice in 'xx_' is too short in call to 'GetXx'") }
+    var _c_xx_ *C.MSKrealt = nil
+    if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
+    task.r = int32(C.MSK_getxx(task.ptr(),C.MSKsoltypee(whichsol_),_c_xx_))
+    if task.r != 0 { return }
+    _r_xx_ = xx_
+  }
+  return
+}
+func (task *Task) GetXxSlice(whichsol_ int32,first_ int32,last_ int32,xx_ []float64) (_r_xx_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if xx_ == nil { xx_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(xx_) < int(last_ - first_) { panic("Slice in 'xx_' is too short in call to 'GetXxSlice'") }
+    var _c_xx_ *C.MSKrealt = nil
+    if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
+    task.r = int32(C.MSK_getxxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_xx_))
+    if task.r != 0 { return }
+    _r_xx_ = xx_
+  }
+  return
+}
+func (task *Task) GetY(whichsol_ int32,y_ []float64) (_r_y_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if y_ == nil { y_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(y_) < int(__tmp_var_1) { panic("Slice in 'y_' is too short in call to 'GetY'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    task.r = int32(C.MSK_gety(task.ptr(),C.MSKsoltypee(whichsol_),_c_y_))
+    if task.r != 0 { return }
+    _r_y_ = y_
+  }
+  return
+}
+func (task *Task) GetYSlice(whichsol_ int32,first_ int32,last_ int32,y_ []float64) (_r_y_ []float64) {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if y_ == nil { y_ = make([]float64,last_ - first_,last_ - first_)
+    } else if len(y_) < int(last_ - first_) { panic("Slice in 'y_' is too short in call to 'GetYSlice'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    task.r = int32(C.MSK_getyslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_y_))
+    if task.r != 0 { return }
+    _r_y_ = y_
+  }
+  return
+}
+func (task *Task) InitBasisSolve(basis_ []int32) (_r_basis_ []int32) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if basis_ == nil { basis_ = make([]int32,__tmp_var_1,__tmp_var_1)
+    } else if len(basis_) < int(__tmp_var_1) { panic("Slice in 'basis_' is too short in call to 'InitBasisSolve'") }
+    var _c_basis_ *C.MSKint32t = nil
+    if len(basis_) > 0 { _c_basis_ = (*C.MSKint32t)(&basis_[0]) }
+    task.r = int32(C.MSK_initbasissolve(task.ptr(),_c_basis_))
+    if task.r != 0 { return }
+    _r_basis_ = basis_
+  }
+  return
+}
+func (task *Task) InputData(maxnumcon_ int32,maxnumvar_ int32,c_ []float64,cfix_ float64,aptrb_ []int64,aptre_ []int64,asub_ []int32,aval_ []float64,bkc_ []int32,blc_ []float64,buc_ []float64,bkx_ []int32,blx_ []float64,bux_ []float64) () {
+  if task.r == RES_OK {
+    _c_maxnumcon_ := C.MSKint32t(maxnumcon_)
+    _c_maxnumvar_ := C.MSKint32t(maxnumvar_)
+    numcon_ := minint([]int{ len(buc_),len(blc_),len(bkc_) })
+    _c_numcon_ := C.MSKint32t(numcon_)
+    numvar_ := minint([]int{ len(c_),len(bux_),len(blx_),len(bkx_),len(aptrb_),len(aptre_) })
+    _c_numvar_ := C.MSKint32t(numvar_)
+    if c_ == nil { panic("Argument 'c_' is nil in call to 'InputData'") }
+    var _c_c_ *C.MSKrealt = nil
+    if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
+    _c_cfix_ := C.MSKrealt(cfix_)
+    if aptrb_ == nil { panic("Argument 'aptrb_' is nil in call to 'InputData'") }
+    var _c_aptrb_ *C.MSKint64t = nil
+    if len(aptrb_) > 0 { _c_aptrb_ = (*C.MSKint64t)(&aptrb_[0]) }
+    if aptre_ == nil { panic("Argument 'aptre_' is nil in call to 'InputData'") }
+    var _c_aptre_ *C.MSKint64t = nil
+    if len(aptre_) > 0 { _c_aptre_ = (*C.MSKint64t)(&aptre_[0]) }
+    if asub_ == nil { panic("Argument 'asub_' is nil in call to 'InputData'") }
+    var _c_asub_ *C.MSKint32t = nil
+    if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
+    if aval_ == nil { panic("Argument 'aval_' is nil in call to 'InputData'") }
+    var _c_aval_ *C.MSKrealt = nil
+    if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
+    if bkc_ == nil { panic("Argument 'bkc_' is nil in call to 'InputData'") }
+    var _c_bkc_ *C.MSKboundkeye = nil
+    if len(bkc_) > 0 { _c_bkc_ = (*C.MSKboundkeye)(unsafe.Pointer(&bkc_[0])) }
+    if blc_ == nil { panic("Argument 'blc_' is nil in call to 'InputData'") }
+    var _c_blc_ *C.MSKrealt = nil
+    if len(blc_) > 0 { _c_blc_ = (*C.MSKrealt)(&blc_[0]) }
+    if buc_ == nil { panic("Argument 'buc_' is nil in call to 'InputData'") }
+    var _c_buc_ *C.MSKrealt = nil
+    if len(buc_) > 0 { _c_buc_ = (*C.MSKrealt)(&buc_[0]) }
+    if bkx_ == nil { panic("Argument 'bkx_' is nil in call to 'InputData'") }
+    var _c_bkx_ *C.MSKboundkeye = nil
+    if len(bkx_) > 0 { _c_bkx_ = (*C.MSKboundkeye)(unsafe.Pointer(&bkx_[0])) }
+    if blx_ == nil { panic("Argument 'blx_' is nil in call to 'InputData'") }
+    var _c_blx_ *C.MSKrealt = nil
+    if len(blx_) > 0 { _c_blx_ = (*C.MSKrealt)(&blx_[0]) }
+    if bux_ == nil { panic("Argument 'bux_' is nil in call to 'InputData'") }
+    var _c_bux_ *C.MSKrealt = nil
+    if len(bux_) > 0 { _c_bux_ = (*C.MSKrealt)(&bux_[0]) }
+    task.r = int32(C.MSK_inputdata64(task.ptr(),_c_maxnumcon_,_c_maxnumvar_,_c_numcon_,_c_numvar_,_c_c_,_c_cfix_,_c_aptrb_,_c_aptre_,_c_asub_,_c_aval_,_c_bkc_,_c_blc_,_c_buc_,_c_bkx_,_c_blx_,_c_bux_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) IsDouParName(parname_ string) (_r_param_ int32) {
+  if task.r == RES_OK {
+    _c_parname_ := C.CString(parname_)
+    defer C.free(unsafe.Pointer(_c_parname_))
+    var _c_param_ C.MSKdparame
+    task.r = int32(C.MSK_isdouparname(task.ptr(),C.MSKstring_t(_c_parname_),&_c_param_))
+    if task.r != 0 { return }
+    _r_param_ = int32(_c_param_)
+  }
+  return
+}
+func (task *Task) IsIntParName(parname_ string) (_r_param_ int32) {
+  if task.r == RES_OK {
+    _c_parname_ := C.CString(parname_)
+    defer C.free(unsafe.Pointer(_c_parname_))
+    var _c_param_ C.MSKiparame
+    task.r = int32(C.MSK_isintparname(task.ptr(),C.MSKstring_t(_c_parname_),&_c_param_))
+    if task.r != 0 { return }
+    _r_param_ = int32(_c_param_)
+  }
+  return
+}
+func (task *Task) IsStrParName(parname_ string) (_r_param_ int32) {
+  if task.r == RES_OK {
+    _c_parname_ := C.CString(parname_)
+    defer C.free(unsafe.Pointer(_c_parname_))
+    var _c_param_ C.MSKsparame
+    task.r = int32(C.MSK_isstrparname(task.ptr(),C.MSKstring_t(_c_parname_),&_c_param_))
+    if task.r != 0 { return }
+    _r_param_ = int32(_c_param_)
+  }
+  return
+}
+func (task *Task) LinkFileToStream(whichstream_ int32,filename_ string,append_ int32) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    _c_append_ := C.MSKint32t(append_)
+    task.r = int32(C.MSK_linkfiletotaskstream(task.ptr(),C.MSKstreamtypee(whichstream_),C.MSKstring_t(_c_filename_),_c_append_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) OneSolutionSummary(whichstream_ int32,whichsol_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_onesolutionsummary(task.ptr(),C.MSKstreamtypee(whichstream_),C.MSKsoltypee(whichsol_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) OptimizerSummary(whichstream_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_optimizersummary(task.ptr(),C.MSKstreamtypee(whichstream_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) Optimize() (_r_trmcode_ int32) {
+  if task.r == RES_OK {
+    var _c_trmcode_ C.MSKrescodee
+    task.r = int32(C.MSK_optimizetrm(task.ptr(),&_c_trmcode_))
+    if task.r != 0 { return }
+    _r_trmcode_ = int32(_c_trmcode_)
+  }
+  return
+}
+func (task *Task) PrimalRepair(wlc_ []float64,wuc_ []float64,wlx_ []float64,wux_ []float64) () {
+  if task.r == RES_OK {
+    if wlc_ == nil { panic("Argument 'wlc_' is nil in call to 'PrimalRepair'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if len(wlc_) < int(__tmp_var_1) { panic("Slice argument 'wlc_' is too short in call to 'PrimalRepair'") }
+    var _c_wlc_ *C.MSKrealt = nil
+    if len(wlc_) > 0 { _c_wlc_ = (*C.MSKrealt)(&wlc_[0]) }
+    if wuc_ == nil { panic("Argument 'wuc_' is nil in call to 'PrimalRepair'") }
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if len(wuc_) < int(__tmp_var_3) { panic("Slice argument 'wuc_' is too short in call to 'PrimalRepair'") }
+    var _c_wuc_ *C.MSKrealt = nil
+    if len(wuc_) > 0 { _c_wuc_ = (*C.MSKrealt)(&wuc_[0]) }
+    if wlx_ == nil { panic("Argument 'wlx_' is nil in call to 'PrimalRepair'") }
+    var __tmp_var_5 int32
+    __tmp_var_5 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if len(wlx_) < int(__tmp_var_5) { panic("Slice argument 'wlx_' is too short in call to 'PrimalRepair'") }
+    var _c_wlx_ *C.MSKrealt = nil
+    if len(wlx_) > 0 { _c_wlx_ = (*C.MSKrealt)(&wlx_[0]) }
+    if wux_ == nil { panic("Argument 'wux_' is nil in call to 'PrimalRepair'") }
+    var __tmp_var_7 int32
+    __tmp_var_7 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if len(wux_) < int(__tmp_var_7) { panic("Slice argument 'wux_' is too short in call to 'PrimalRepair'") }
+    var _c_wux_ *C.MSKrealt = nil
+    if len(wux_) > 0 { _c_wux_ = (*C.MSKrealt)(&wux_[0]) }
+    task.r = int32(C.MSK_primalrepair(task.ptr(),_c_wlc_,_c_wuc_,_c_wlx_,_c_wux_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PrimalSensitivity(subi_ []int32,marki_ []int32,subj_ []int32,markj_ []int32,leftpricei_ []float64,rightpricei_ []float64,leftrangei_ []float64,rightrangei_ []float64,leftpricej_ []float64,rightpricej_ []float64,leftrangej_ []float64,rightrangej_ []float64) (_r_leftpricei_ []float64,_r_rightpricei_ []float64,_r_leftrangei_ []float64,_r_rightrangei_ []float64,_r_leftpricej_ []float64,_r_rightpricej_ []float64,_r_leftrangej_ []float64,_r_rightrangej_ []float64) {
+  if task.r == RES_OK {
+    numi_ := minint([]int{ len(subi_),len(marki_) })
+    _c_numi_ := C.MSKint32t(numi_)
+    if subi_ == nil { panic("Argument 'subi_' is nil in call to 'PrimalSensitivity'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    if marki_ == nil { panic("Argument 'marki_' is nil in call to 'PrimalSensitivity'") }
+    var _c_marki_ *C.MSKmarke = nil
+    if len(marki_) > 0 { _c_marki_ = (*C.MSKmarke)(unsafe.Pointer(&marki_[0])) }
+    numj_ := minint([]int{ len(subj_),len(markj_) })
+    _c_numj_ := C.MSKint32t(numj_)
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PrimalSensitivity'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if markj_ == nil { panic("Argument 'markj_' is nil in call to 'PrimalSensitivity'") }
+    var _c_markj_ *C.MSKmarke = nil
+    if len(markj_) > 0 { _c_markj_ = (*C.MSKmarke)(unsafe.Pointer(&markj_[0])) }
+    if leftpricei_ == nil { leftpricei_ = make([]float64,numi_,numi_)
+    } else if len(leftpricei_) < int(numi_) { panic("Slice in 'leftpricei_' is too short in call to 'PrimalSensitivity'") }
+    var _c_leftpricei_ *C.MSKrealt = nil
+    if len(leftpricei_) > 0 { _c_leftpricei_ = (*C.MSKrealt)(&leftpricei_[0]) }
+    if rightpricei_ == nil { rightpricei_ = make([]float64,numi_,numi_)
+    } else if len(rightpricei_) < int(numi_) { panic("Slice in 'rightpricei_' is too short in call to 'PrimalSensitivity'") }
+    var _c_rightpricei_ *C.MSKrealt = nil
+    if len(rightpricei_) > 0 { _c_rightpricei_ = (*C.MSKrealt)(&rightpricei_[0]) }
+    if leftrangei_ == nil { leftrangei_ = make([]float64,numi_,numi_)
+    } else if len(leftrangei_) < int(numi_) { panic("Slice in 'leftrangei_' is too short in call to 'PrimalSensitivity'") }
+    var _c_leftrangei_ *C.MSKrealt = nil
+    if len(leftrangei_) > 0 { _c_leftrangei_ = (*C.MSKrealt)(&leftrangei_[0]) }
+    if rightrangei_ == nil { rightrangei_ = make([]float64,numi_,numi_)
+    } else if len(rightrangei_) < int(numi_) { panic("Slice in 'rightrangei_' is too short in call to 'PrimalSensitivity'") }
+    var _c_rightrangei_ *C.MSKrealt = nil
+    if len(rightrangei_) > 0 { _c_rightrangei_ = (*C.MSKrealt)(&rightrangei_[0]) }
+    if leftpricej_ == nil { leftpricej_ = make([]float64,numj_,numj_)
+    } else if len(leftpricej_) < int(numj_) { panic("Slice in 'leftpricej_' is too short in call to 'PrimalSensitivity'") }
+    var _c_leftpricej_ *C.MSKrealt = nil
+    if len(leftpricej_) > 0 { _c_leftpricej_ = (*C.MSKrealt)(&leftpricej_[0]) }
+    if rightpricej_ == nil { rightpricej_ = make([]float64,numj_,numj_)
+    } else if len(rightpricej_) < int(numj_) { panic("Slice in 'rightpricej_' is too short in call to 'PrimalSensitivity'") }
+    var _c_rightpricej_ *C.MSKrealt = nil
+    if len(rightpricej_) > 0 { _c_rightpricej_ = (*C.MSKrealt)(&rightpricej_[0]) }
+    if leftrangej_ == nil { leftrangej_ = make([]float64,numj_,numj_)
+    } else if len(leftrangej_) < int(numj_) { panic("Slice in 'leftrangej_' is too short in call to 'PrimalSensitivity'") }
+    var _c_leftrangej_ *C.MSKrealt = nil
+    if len(leftrangej_) > 0 { _c_leftrangej_ = (*C.MSKrealt)(&leftrangej_[0]) }
+    if rightrangej_ == nil { rightrangej_ = make([]float64,numj_,numj_)
+    } else if len(rightrangej_) < int(numj_) { panic("Slice in 'rightrangej_' is too short in call to 'PrimalSensitivity'") }
+    var _c_rightrangej_ *C.MSKrealt = nil
+    if len(rightrangej_) > 0 { _c_rightrangej_ = (*C.MSKrealt)(&rightrangej_[0]) }
+    task.r = int32(C.MSK_primalsensitivity(task.ptr(),_c_numi_,_c_subi_,_c_marki_,_c_numj_,_c_subj_,_c_markj_,_c_leftpricei_,_c_rightpricei_,_c_leftrangei_,_c_rightrangei_,_c_leftpricej_,_c_rightpricej_,_c_leftrangej_,_c_rightrangej_))
+    if task.r != 0 { return }
+    _r_leftpricei_ = leftpricei_
+    _r_rightpricei_ = rightpricei_
+    _r_leftrangei_ = leftrangei_
+    _r_rightrangei_ = rightrangei_
+    _r_leftpricej_ = leftpricej_
+    _r_rightpricej_ = rightpricej_
+    _r_leftrangej_ = leftrangej_
+    _r_rightrangej_ = rightrangej_
+  }
+  return
+}
+func (task *Task) ProbTypeToStr(probtype_ int32) (_r_str_ string) {
+  if task.r == RES_OK {
+    _c_str_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
+    defer C.free(unsafe.Pointer(_c_str_))
+    task.r = int32(C.MSK_probtypetostr(task.ptr(),C.MSKproblemtypee(probtype_),C.MSKstring_t(_c_str_)))
+    if task.r != 0 { return }
+    _r_str_ = C.GoStringN(_c_str_,C.int(MAX_STR_LEN))
+  }
+  return
+}
+func (task *Task) ProStaToStr(prosta_ int32) (_r_str_ string) {
+  if task.r == RES_OK {
+    _c_str_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
+    defer C.free(unsafe.Pointer(_c_str_))
+    task.r = int32(C.MSK_prostatostr(task.ptr(),C.MSKprostae(prosta_),C.MSKstring_t(_c_str_)))
+    if task.r != 0 { return }
+    _r_str_ = C.GoStringN(_c_str_,C.int(MAX_STR_LEN))
+  }
+  return
+}
+func (task *Task) PutACol(j_ int32,subj_ []int32,valj_ []float64) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    nzj_ := minint([]int{ len(subj_),len(valj_) })
+    _c_nzj_ := C.MSKint32t(nzj_)
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutACol'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if valj_ == nil { panic("Argument 'valj_' is nil in call to 'PutACol'") }
+    var _c_valj_ *C.MSKrealt = nil
+    if len(valj_) > 0 { _c_valj_ = (*C.MSKrealt)(&valj_[0]) }
+    task.r = int32(C.MSK_putacol(task.ptr(),_c_j_,_c_nzj_,_c_subj_,_c_valj_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutAColList(sub_ []int32,ptrb_ []int32,ptre_ []int32,asub_ []int32,aval_ []float64) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_),len(ptrb_),len(ptre_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutAColList'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if ptrb_ == nil { panic("Argument 'ptrb_' is nil in call to 'PutAColList'") }
+    var _c_ptrb_ *C.MSKint32t = nil
+    if len(ptrb_) > 0 { _c_ptrb_ = (*C.MSKint32t)(&ptrb_[0]) }
+    if ptre_ == nil { panic("Argument 'ptre_' is nil in call to 'PutAColList'") }
+    var _c_ptre_ *C.MSKint32t = nil
+    if len(ptre_) > 0 { _c_ptre_ = (*C.MSKint32t)(&ptre_[0]) }
+    if asub_ == nil { panic("Argument 'asub_' is nil in call to 'PutAColList'") }
+    var _c_asub_ *C.MSKint32t = nil
+    if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
+    if aval_ == nil { panic("Argument 'aval_' is nil in call to 'PutAColList'") }
+    var _c_aval_ *C.MSKrealt = nil
+    if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
+    task.r = int32(C.MSK_putacollist(task.ptr(),_c_num_,_c_sub_,_c_ptrb_,_c_ptre_,_c_asub_,_c_aval_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutAColSlice(first_ int32,last_ int32,ptrb_ []int64,ptre_ []int64,asub_ []int32,aval_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if ptrb_ == nil { panic("Argument 'ptrb_' is nil in call to 'PutAColSlice'") }
+    if len(ptrb_) < int(last_ - first_) { panic("Slice argument 'ptrb_' is too short in call to 'PutAColSlice'") }
+    var _c_ptrb_ *C.MSKint64t = nil
+    if len(ptrb_) > 0 { _c_ptrb_ = (*C.MSKint64t)(&ptrb_[0]) }
+    if ptre_ == nil { panic("Argument 'ptre_' is nil in call to 'PutAColSlice'") }
+    if len(ptre_) < int(last_ - first_) { panic("Slice argument 'ptre_' is too short in call to 'PutAColSlice'") }
+    var _c_ptre_ *C.MSKint64t = nil
+    if len(ptre_) > 0 { _c_ptre_ = (*C.MSKint64t)(&ptre_[0]) }
+    if asub_ == nil { panic("Argument 'asub_' is nil in call to 'PutAColSlice'") }
+    var _c_asub_ *C.MSKint32t = nil
+    if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
+    if aval_ == nil { panic("Argument 'aval_' is nil in call to 'PutAColSlice'") }
+    var _c_aval_ *C.MSKrealt = nil
+    if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
+    task.r = int32(C.MSK_putacolslice64(task.ptr(),_c_first_,_c_last_,_c_ptrb_,_c_ptre_,_c_asub_,_c_aval_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutAij(i_ int32,j_ int32,aij_ float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_j_ := C.MSKint32t(j_)
+    _c_aij_ := C.MSKrealt(aij_)
+    task.r = int32(C.MSK_putaij(task.ptr(),_c_i_,_c_j_,_c_aij_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutAijList(subi_ []int32,subj_ []int32,valij_ []float64) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(subi_),len(subj_),len(valij_) })
+    _c_num_ := C.MSKint64t(num_)
+    if subi_ == nil { panic("Argument 'subi_' is nil in call to 'PutAijList'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutAijList'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if valij_ == nil { panic("Argument 'valij_' is nil in call to 'PutAijList'") }
+    var _c_valij_ *C.MSKrealt = nil
+    if len(valij_) > 0 { _c_valij_ = (*C.MSKrealt)(&valij_[0]) }
+    task.r = int32(C.MSK_putaijlist64(task.ptr(),_c_num_,_c_subi_,_c_subj_,_c_valij_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutARow(i_ int32,subi_ []int32,vali_ []float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    nzi_ := minint([]int{ len(subi_),len(vali_) })
+    _c_nzi_ := C.MSKint32t(nzi_)
+    if subi_ == nil { panic("Argument 'subi_' is nil in call to 'PutARow'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    if vali_ == nil { panic("Argument 'vali_' is nil in call to 'PutARow'") }
+    var _c_vali_ *C.MSKrealt = nil
+    if len(vali_) > 0 { _c_vali_ = (*C.MSKrealt)(&vali_[0]) }
+    task.r = int32(C.MSK_putarow(task.ptr(),_c_i_,_c_nzi_,_c_subi_,_c_vali_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutARowList(sub_ []int32,aptrb_ []int32,aptre_ []int32,asub_ []int32,aval_ []float64) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_),len(aptrb_),len(aptre_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutARowList'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if aptrb_ == nil { panic("Argument 'aptrb_' is nil in call to 'PutARowList'") }
+    var _c_aptrb_ *C.MSKint32t = nil
+    if len(aptrb_) > 0 { _c_aptrb_ = (*C.MSKint32t)(&aptrb_[0]) }
+    if aptre_ == nil { panic("Argument 'aptre_' is nil in call to 'PutARowList'") }
+    var _c_aptre_ *C.MSKint32t = nil
+    if len(aptre_) > 0 { _c_aptre_ = (*C.MSKint32t)(&aptre_[0]) }
+    if asub_ == nil { panic("Argument 'asub_' is nil in call to 'PutARowList'") }
+    var _c_asub_ *C.MSKint32t = nil
+    if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
+    if aval_ == nil { panic("Argument 'aval_' is nil in call to 'PutARowList'") }
+    var _c_aval_ *C.MSKrealt = nil
+    if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
+    task.r = int32(C.MSK_putarowlist(task.ptr(),_c_num_,_c_sub_,_c_aptrb_,_c_aptre_,_c_asub_,_c_aval_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutARowSlice(first_ int32,last_ int32,ptrb_ []int64,ptre_ []int64,asub_ []int32,aval_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if ptrb_ == nil { panic("Argument 'ptrb_' is nil in call to 'PutARowSlice'") }
+    if len(ptrb_) < int(last_ - first_) { panic("Slice argument 'ptrb_' is too short in call to 'PutARowSlice'") }
+    var _c_ptrb_ *C.MSKint64t = nil
+    if len(ptrb_) > 0 { _c_ptrb_ = (*C.MSKint64t)(&ptrb_[0]) }
+    if ptre_ == nil { panic("Argument 'ptre_' is nil in call to 'PutARowSlice'") }
+    if len(ptre_) < int(last_ - first_) { panic("Slice argument 'ptre_' is too short in call to 'PutARowSlice'") }
+    var _c_ptre_ *C.MSKint64t = nil
+    if len(ptre_) > 0 { _c_ptre_ = (*C.MSKint64t)(&ptre_[0]) }
+    if asub_ == nil { panic("Argument 'asub_' is nil in call to 'PutARowSlice'") }
+    var _c_asub_ *C.MSKint32t = nil
+    if len(asub_) > 0 { _c_asub_ = (*C.MSKint32t)(&asub_[0]) }
+    if aval_ == nil { panic("Argument 'aval_' is nil in call to 'PutARowSlice'") }
+    var _c_aval_ *C.MSKrealt = nil
+    if len(aval_) > 0 { _c_aval_ = (*C.MSKrealt)(&aval_[0]) }
+    task.r = int32(C.MSK_putarowslice64(task.ptr(),_c_first_,_c_last_,_c_ptrb_,_c_ptre_,_c_asub_,_c_aval_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBaraBlockTriplet(num_ int64,subi_ []int32,subj_ []int32,subk_ []int32,subl_ []int32,valijkl_ []float64) () {
+  if task.r == RES_OK {
+    _c_num_ := C.MSKint64t(num_)
+    if subi_ == nil { panic("Argument 'subi_' is nil in call to 'PutBaraBlockTriplet'") }
+    if len(subi_) < int(num_) { panic("Slice argument 'subi_' is too short in call to 'PutBaraBlockTriplet'") }
+    var _c_subi_ *C.MSKint32t = nil
+    if len(subi_) > 0 { _c_subi_ = (*C.MSKint32t)(&subi_[0]) }
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutBaraBlockTriplet'") }
+    if len(subj_) < int(num_) { panic("Slice argument 'subj_' is too short in call to 'PutBaraBlockTriplet'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if subk_ == nil { panic("Argument 'subk_' is nil in call to 'PutBaraBlockTriplet'") }
+    if len(subk_) < int(num_) { panic("Slice argument 'subk_' is too short in call to 'PutBaraBlockTriplet'") }
+    var _c_subk_ *C.MSKint32t = nil
+    if len(subk_) > 0 { _c_subk_ = (*C.MSKint32t)(&subk_[0]) }
+    if subl_ == nil { panic("Argument 'subl_' is nil in call to 'PutBaraBlockTriplet'") }
+    if len(subl_) < int(num_) { panic("Slice argument 'subl_' is too short in call to 'PutBaraBlockTriplet'") }
+    var _c_subl_ *C.MSKint32t = nil
+    if len(subl_) > 0 { _c_subl_ = (*C.MSKint32t)(&subl_[0]) }
+    if valijkl_ == nil { panic("Argument 'valijkl_' is nil in call to 'PutBaraBlockTriplet'") }
+    if len(valijkl_) < int(num_) { panic("Slice argument 'valijkl_' is too short in call to 'PutBaraBlockTriplet'") }
+    var _c_valijkl_ *C.MSKrealt = nil
+    if len(valijkl_) > 0 { _c_valijkl_ = (*C.MSKrealt)(&valijkl_[0]) }
+    task.r = int32(C.MSK_putbarablocktriplet(task.ptr(),_c_num_,_c_subi_,_c_subj_,_c_subk_,_c_subl_,_c_valijkl_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBarAij(i_ int32,j_ int32,sub_ []int64,weights_ []float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_j_ := C.MSKint32t(j_)
+    num_ := minint([]int{ len(sub_),len(weights_) })
+    _c_num_ := C.MSKint64t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutBarAij'") }
+    var _c_sub_ *C.MSKint64t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint64t)(&sub_[0]) }
+    if weights_ == nil { panic("Argument 'weights_' is nil in call to 'PutBarAij'") }
+    var _c_weights_ *C.MSKrealt = nil
+    if len(weights_) > 0 { _c_weights_ = (*C.MSKrealt)(&weights_[0]) }
+    task.r = int32(C.MSK_putbaraij(task.ptr(),_c_i_,_c_j_,_c_num_,_c_sub_,_c_weights_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBarcBlockTriplet(num_ int64,subj_ []int32,subk_ []int32,subl_ []int32,valjkl_ []float64) () {
+  if task.r == RES_OK {
+    _c_num_ := C.MSKint64t(num_)
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutBarcBlockTriplet'") }
+    if len(subj_) < int(num_) { panic("Slice argument 'subj_' is too short in call to 'PutBarcBlockTriplet'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if subk_ == nil { panic("Argument 'subk_' is nil in call to 'PutBarcBlockTriplet'") }
+    if len(subk_) < int(num_) { panic("Slice argument 'subk_' is too short in call to 'PutBarcBlockTriplet'") }
+    var _c_subk_ *C.MSKint32t = nil
+    if len(subk_) > 0 { _c_subk_ = (*C.MSKint32t)(&subk_[0]) }
+    if subl_ == nil { panic("Argument 'subl_' is nil in call to 'PutBarcBlockTriplet'") }
+    if len(subl_) < int(num_) { panic("Slice argument 'subl_' is too short in call to 'PutBarcBlockTriplet'") }
+    var _c_subl_ *C.MSKint32t = nil
+    if len(subl_) > 0 { _c_subl_ = (*C.MSKint32t)(&subl_[0]) }
+    if valjkl_ == nil { panic("Argument 'valjkl_' is nil in call to 'PutBarcBlockTriplet'") }
+    if len(valjkl_) < int(num_) { panic("Slice argument 'valjkl_' is too short in call to 'PutBarcBlockTriplet'") }
+    var _c_valjkl_ *C.MSKrealt = nil
+    if len(valjkl_) > 0 { _c_valjkl_ = (*C.MSKrealt)(&valjkl_[0]) }
+    task.r = int32(C.MSK_putbarcblocktriplet(task.ptr(),_c_num_,_c_subj_,_c_subk_,_c_subl_,_c_valjkl_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBarcJ(j_ int32,sub_ []int64,weights_ []float64) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    num_ := minint([]int{ len(sub_),len(weights_) })
+    _c_num_ := C.MSKint64t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutBarcJ'") }
+    var _c_sub_ *C.MSKint64t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint64t)(&sub_[0]) }
+    if weights_ == nil { panic("Argument 'weights_' is nil in call to 'PutBarcJ'") }
+    var _c_weights_ *C.MSKrealt = nil
+    if len(weights_) > 0 { _c_weights_ = (*C.MSKrealt)(&weights_[0]) }
+    task.r = int32(C.MSK_putbarcj(task.ptr(),_c_j_,_c_num_,_c_sub_,_c_weights_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBarsJ(whichsol_ int32,j_ int32,barsj_ []float64) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    if barsj_ == nil { panic("Argument 'barsj_' is nil in call to 'PutBarsJ'") }
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetLenBarvarJ(j_)
+    if task.r != RES_OK { return }
+    if len(barsj_) < int(__tmp_var_1) { panic("Slice argument 'barsj_' is too short in call to 'PutBarsJ'") }
+    var _c_barsj_ *C.MSKrealt = nil
+    if len(barsj_) > 0 { _c_barsj_ = (*C.MSKrealt)(&barsj_[0]) }
+    task.r = int32(C.MSK_putbarsj(task.ptr(),C.MSKsoltypee(whichsol_),_c_j_,_c_barsj_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBarvarName(j_ int32,name_ string) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    _c_name_ := C.CString(name_)
+    defer C.free(unsafe.Pointer(_c_name_))
+    task.r = int32(C.MSK_putbarvarname(task.ptr(),_c_j_,C.MSKstring_t(_c_name_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBarxJ(whichsol_ int32,j_ int32,barxj_ []float64) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    if barxj_ == nil { panic("Argument 'barxj_' is nil in call to 'PutBarxJ'") }
+    var __tmp_var_1 int64
+    __tmp_var_1 = task.GetLenBarvarJ(j_)
+    if task.r != RES_OK { return }
+    if len(barxj_) < int(__tmp_var_1) { panic("Slice argument 'barxj_' is too short in call to 'PutBarxJ'") }
+    var _c_barxj_ *C.MSKrealt = nil
+    if len(barxj_) > 0 { _c_barxj_ = (*C.MSKrealt)(&barxj_[0]) }
+    task.r = int32(C.MSK_putbarxj(task.ptr(),C.MSKsoltypee(whichsol_),_c_j_,_c_barxj_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBound(accmode_ int32,i_ int32,bk_ int32,bl_ float64,bu_ float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_bl_ := C.MSKrealt(bl_)
+    _c_bu_ := C.MSKrealt(bu_)
+    task.r = int32(C.MSK_putbound(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,C.MSKboundkeye(bk_),_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBoundList(accmode_ int32,sub_ []int32,bk_ []int32,bl_ []float64,bu_ []float64) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_),len(bk_),len(bl_),len(bu_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutBoundList'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if bk_ == nil { panic("Argument 'bk_' is nil in call to 'PutBoundList'") }
+    var _c_bk_ *C.MSKboundkeye = nil
+    if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
+    if bl_ == nil { panic("Argument 'bl_' is nil in call to 'PutBoundList'") }
+    var _c_bl_ *C.MSKrealt = nil
+    if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
+    if bu_ == nil { panic("Argument 'bu_' is nil in call to 'PutBoundList'") }
+    var _c_bu_ *C.MSKrealt = nil
+    if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
+    task.r = int32(C.MSK_putboundlist(task.ptr(),C.MSKaccmodee(accmode_),_c_num_,_c_sub_,_c_bk_,_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutBoundSlice(con_ int32,first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if bk_ == nil { panic("Argument 'bk_' is nil in call to 'PutBoundSlice'") }
+    if len(bk_) < int(last_ - first_) { panic("Slice argument 'bk_' is too short in call to 'PutBoundSlice'") }
+    var _c_bk_ *C.MSKboundkeye = nil
+    if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
+    if bl_ == nil { panic("Argument 'bl_' is nil in call to 'PutBoundSlice'") }
+    if len(bl_) < int(last_ - first_) { panic("Slice argument 'bl_' is too short in call to 'PutBoundSlice'") }
+    var _c_bl_ *C.MSKrealt = nil
+    if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
+    if bu_ == nil { panic("Argument 'bu_' is nil in call to 'PutBoundSlice'") }
+    if len(bu_) < int(last_ - first_) { panic("Slice argument 'bu_' is too short in call to 'PutBoundSlice'") }
+    var _c_bu_ *C.MSKrealt = nil
+    if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
+    task.r = int32(C.MSK_putboundslice(task.ptr(),C.MSKaccmodee(con_),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutCfix(cfix_ float64) () {
+  if task.r == RES_OK {
+    _c_cfix_ := C.MSKrealt(cfix_)
+    task.r = int32(C.MSK_putcfix(task.ptr(),_c_cfix_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutCJ(j_ int32,cj_ float64) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    _c_cj_ := C.MSKrealt(cj_)
+    task.r = int32(C.MSK_putcj(task.ptr(),_c_j_,_c_cj_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutCList(subj_ []int32,val_ []float64) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(subj_),len(val_) })
+    _c_num_ := C.MSKint32t(num_)
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutCList'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if val_ == nil { panic("Argument 'val_' is nil in call to 'PutCList'") }
+    var _c_val_ *C.MSKrealt = nil
+    if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
+    task.r = int32(C.MSK_putclist(task.ptr(),_c_num_,_c_subj_,_c_val_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutConBound(i_ int32,bk_ int32,bl_ float64,bu_ float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_bl_ := C.MSKrealt(bl_)
+    _c_bu_ := C.MSKrealt(bu_)
+    task.r = int32(C.MSK_putconbound(task.ptr(),_c_i_,C.MSKboundkeye(bk_),_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutConBoundList(sub_ []int32,bkc_ []int32,blc_ []float64,buc_ []float64) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_),len(bkc_),len(blc_),len(buc_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutConBoundList'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if bkc_ == nil { panic("Argument 'bkc_' is nil in call to 'PutConBoundList'") }
+    var _c_bkc_ *C.MSKboundkeye = nil
+    if len(bkc_) > 0 { _c_bkc_ = (*C.MSKboundkeye)(unsafe.Pointer(&bkc_[0])) }
+    if blc_ == nil { panic("Argument 'blc_' is nil in call to 'PutConBoundList'") }
+    var _c_blc_ *C.MSKrealt = nil
+    if len(blc_) > 0 { _c_blc_ = (*C.MSKrealt)(&blc_[0]) }
+    if buc_ == nil { panic("Argument 'buc_' is nil in call to 'PutConBoundList'") }
+    var _c_buc_ *C.MSKrealt = nil
+    if len(buc_) > 0 { _c_buc_ = (*C.MSKrealt)(&buc_[0]) }
+    task.r = int32(C.MSK_putconboundlist(task.ptr(),_c_num_,_c_sub_,_c_bkc_,_c_blc_,_c_buc_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutConBoundSlice(first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if bk_ == nil { panic("Argument 'bk_' is nil in call to 'PutConBoundSlice'") }
+    if len(bk_) < int(last_ - first_) { panic("Slice argument 'bk_' is too short in call to 'PutConBoundSlice'") }
+    var _c_bk_ *C.MSKboundkeye = nil
+    if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
+    if bl_ == nil { panic("Argument 'bl_' is nil in call to 'PutConBoundSlice'") }
+    if len(bl_) < int(last_ - first_) { panic("Slice argument 'bl_' is too short in call to 'PutConBoundSlice'") }
+    var _c_bl_ *C.MSKrealt = nil
+    if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
+    if bu_ == nil { panic("Argument 'bu_' is nil in call to 'PutConBoundSlice'") }
+    if len(bu_) < int(last_ - first_) { panic("Slice argument 'bu_' is too short in call to 'PutConBoundSlice'") }
+    var _c_bu_ *C.MSKrealt = nil
+    if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
+    task.r = int32(C.MSK_putconboundslice(task.ptr(),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutCone(k_ int32,conetype_ int32,conepar_ float64,submem_ []int32) () {
+  if task.r == RES_OK {
+    _c_k_ := C.MSKint32t(k_)
+    _c_conepar_ := C.MSKrealt(conepar_)
+    nummem_ := minint([]int{ len(submem_) })
+    _c_nummem_ := C.MSKint32t(nummem_)
+    if submem_ == nil { panic("Argument 'submem_' is nil in call to 'PutCone'") }
+    var _c_submem_ *C.MSKint32t = nil
+    if len(submem_) > 0 { _c_submem_ = (*C.MSKint32t)(&submem_[0]) }
+    task.r = int32(C.MSK_putcone(task.ptr(),_c_k_,C.MSKconetypee(conetype_),_c_conepar_,_c_nummem_,_c_submem_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutConeName(j_ int32,name_ string) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    _c_name_ := C.CString(name_)
+    defer C.free(unsafe.Pointer(_c_name_))
+    task.r = int32(C.MSK_putconename(task.ptr(),_c_j_,C.MSKstring_t(_c_name_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutConName(i_ int32,name_ string) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_name_ := C.CString(name_)
+    defer C.free(unsafe.Pointer(_c_name_))
+    task.r = int32(C.MSK_putconname(task.ptr(),_c_i_,C.MSKstring_t(_c_name_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutCSlice(first_ int32,last_ int32,slice_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if slice_ == nil { panic("Argument 'slice_' is nil in call to 'PutCSlice'") }
+    if len(slice_) < int(last_ - first_) { panic("Slice argument 'slice_' is too short in call to 'PutCSlice'") }
+    var _c_slice_ *C.MSKrealt = nil
+    if len(slice_) > 0 { _c_slice_ = (*C.MSKrealt)(&slice_[0]) }
+    task.r = int32(C.MSK_putcslice(task.ptr(),_c_first_,_c_last_,_c_slice_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutDouParam(param_ int32,parvalue_ float64) () {
+  if task.r == RES_OK {
+    _c_parvalue_ := C.MSKrealt(parvalue_)
+    task.r = int32(C.MSK_putdouparam(task.ptr(),C.MSKdparame(param_),_c_parvalue_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutIntParam(param_ int32,parvalue_ int32) () {
+  if task.r == RES_OK {
+    _c_parvalue_ := C.MSKint32t(parvalue_)
+    task.r = int32(C.MSK_putintparam(task.ptr(),C.MSKiparame(param_),_c_parvalue_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutMaxNumANz(maxnumanz_ int64) () {
+  if task.r == RES_OK {
+    _c_maxnumanz_ := C.MSKint64t(maxnumanz_)
+    task.r = int32(C.MSK_putmaxnumanz(task.ptr(),_c_maxnumanz_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutMaxNumBarvar(maxnumbarvar_ int32) () {
+  if task.r == RES_OK {
+    _c_maxnumbarvar_ := C.MSKint32t(maxnumbarvar_)
+    task.r = int32(C.MSK_putmaxnumbarvar(task.ptr(),_c_maxnumbarvar_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutMaxNumCon(maxnumcon_ int32) () {
+  if task.r == RES_OK {
+    _c_maxnumcon_ := C.MSKint32t(maxnumcon_)
+    task.r = int32(C.MSK_putmaxnumcon(task.ptr(),_c_maxnumcon_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutMaxNumCone(maxnumcone_ int32) () {
+  if task.r == RES_OK {
+    _c_maxnumcone_ := C.MSKint32t(maxnumcone_)
+    task.r = int32(C.MSK_putmaxnumcone(task.ptr(),_c_maxnumcone_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutMaxNumQNz(maxnumqnz_ int64) () {
+  if task.r == RES_OK {
+    _c_maxnumqnz_ := C.MSKint64t(maxnumqnz_)
+    task.r = int32(C.MSK_putmaxnumqnz(task.ptr(),_c_maxnumqnz_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutMaxNumVar(maxnumvar_ int32) () {
+  if task.r == RES_OK {
+    _c_maxnumvar_ := C.MSKint32t(maxnumvar_)
+    task.r = int32(C.MSK_putmaxnumvar(task.ptr(),_c_maxnumvar_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutNaDouParam(paramname_ string,parvalue_ float64) () {
+  if task.r == RES_OK {
+    _c_paramname_ := C.CString(paramname_)
+    defer C.free(unsafe.Pointer(_c_paramname_))
+    _c_parvalue_ := C.MSKrealt(parvalue_)
+    task.r = int32(C.MSK_putnadouparam(task.ptr(),C.MSKstring_t(_c_paramname_),_c_parvalue_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutNaIntParam(paramname_ string,parvalue_ int32) () {
+  if task.r == RES_OK {
+    _c_paramname_ := C.CString(paramname_)
+    defer C.free(unsafe.Pointer(_c_paramname_))
+    _c_parvalue_ := C.MSKint32t(parvalue_)
+    task.r = int32(C.MSK_putnaintparam(task.ptr(),C.MSKstring_t(_c_paramname_),_c_parvalue_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutNaStrParam(paramname_ string,parvalue_ string) () {
+  if task.r == RES_OK {
+    _c_paramname_ := C.CString(paramname_)
+    defer C.free(unsafe.Pointer(_c_paramname_))
+    _c_parvalue_ := C.CString(parvalue_)
+    defer C.free(unsafe.Pointer(_c_parvalue_))
+    task.r = int32(C.MSK_putnastrparam(task.ptr(),C.MSKstring_t(_c_paramname_),C.MSKstring_t(_c_parvalue_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutObjName(objname_ string) () {
+  if task.r == RES_OK {
+    _c_objname_ := C.CString(objname_)
+    defer C.free(unsafe.Pointer(_c_objname_))
+    task.r = int32(C.MSK_putobjname(task.ptr(),C.MSKstring_t(_c_objname_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutObjSense(sense_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_putobjsense(task.ptr(),C.MSKobjsensee(sense_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutParam(parname_ string,parvalue_ string) () {
+  if task.r == RES_OK {
+    _c_parname_ := C.CString(parname_)
+    defer C.free(unsafe.Pointer(_c_parname_))
+    _c_parvalue_ := C.CString(parvalue_)
+    defer C.free(unsafe.Pointer(_c_parvalue_))
+    task.r = int32(C.MSK_putparam(task.ptr(),C.MSKstring_t(_c_parname_),C.MSKstring_t(_c_parvalue_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutQCon(qcsubk_ []int32,qcsubi_ []int32,qcsubj_ []int32,qcval_ []float64) () {
+  if task.r == RES_OK {
+    numqcnz_ := minint([]int{ len(qcsubi_),len(qcsubj_),len(qcval_) })
+    _c_numqcnz_ := C.MSKint32t(numqcnz_)
+    if qcsubk_ == nil { panic("Argument 'qcsubk_' is nil in call to 'PutQCon'") }
+    var _c_qcsubk_ *C.MSKint32t = nil
+    if len(qcsubk_) > 0 { _c_qcsubk_ = (*C.MSKint32t)(&qcsubk_[0]) }
+    if qcsubi_ == nil { panic("Argument 'qcsubi_' is nil in call to 'PutQCon'") }
+    var _c_qcsubi_ *C.MSKint32t = nil
+    if len(qcsubi_) > 0 { _c_qcsubi_ = (*C.MSKint32t)(&qcsubi_[0]) }
+    if qcsubj_ == nil { panic("Argument 'qcsubj_' is nil in call to 'PutQCon'") }
+    var _c_qcsubj_ *C.MSKint32t = nil
+    if len(qcsubj_) > 0 { _c_qcsubj_ = (*C.MSKint32t)(&qcsubj_[0]) }
+    if qcval_ == nil { panic("Argument 'qcval_' is nil in call to 'PutQCon'") }
+    var _c_qcval_ *C.MSKrealt = nil
+    if len(qcval_) > 0 { _c_qcval_ = (*C.MSKrealt)(&qcval_[0]) }
+    task.r = int32(C.MSK_putqcon(task.ptr(),_c_numqcnz_,_c_qcsubk_,_c_qcsubi_,_c_qcsubj_,_c_qcval_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutQConK(k_ int32,qcsubi_ []int32,qcsubj_ []int32,qcval_ []float64) () {
+  if task.r == RES_OK {
+    _c_k_ := C.MSKint32t(k_)
+    numqcnz_ := minint([]int{ len(qcsubi_),len(qcsubj_),len(qcval_) })
+    _c_numqcnz_ := C.MSKint32t(numqcnz_)
+    if qcsubi_ == nil { panic("Argument 'qcsubi_' is nil in call to 'PutQConK'") }
+    var _c_qcsubi_ *C.MSKint32t = nil
+    if len(qcsubi_) > 0 { _c_qcsubi_ = (*C.MSKint32t)(&qcsubi_[0]) }
+    if qcsubj_ == nil { panic("Argument 'qcsubj_' is nil in call to 'PutQConK'") }
+    var _c_qcsubj_ *C.MSKint32t = nil
+    if len(qcsubj_) > 0 { _c_qcsubj_ = (*C.MSKint32t)(&qcsubj_[0]) }
+    if qcval_ == nil { panic("Argument 'qcval_' is nil in call to 'PutQConK'") }
+    var _c_qcval_ *C.MSKrealt = nil
+    if len(qcval_) > 0 { _c_qcval_ = (*C.MSKrealt)(&qcval_[0]) }
+    task.r = int32(C.MSK_putqconk(task.ptr(),_c_k_,_c_numqcnz_,_c_qcsubi_,_c_qcsubj_,_c_qcval_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutQObj(qosubi_ []int32,qosubj_ []int32,qoval_ []float64) () {
+  if task.r == RES_OK {
+    numqonz_ := minint([]int{ len(qosubi_),len(qosubj_),len(qoval_) })
+    _c_numqonz_ := C.MSKint32t(numqonz_)
+    if qosubi_ == nil { panic("Argument 'qosubi_' is nil in call to 'PutQObj'") }
+    var _c_qosubi_ *C.MSKint32t = nil
+    if len(qosubi_) > 0 { _c_qosubi_ = (*C.MSKint32t)(&qosubi_[0]) }
+    if qosubj_ == nil { panic("Argument 'qosubj_' is nil in call to 'PutQObj'") }
+    var _c_qosubj_ *C.MSKint32t = nil
+    if len(qosubj_) > 0 { _c_qosubj_ = (*C.MSKint32t)(&qosubj_[0]) }
+    if qoval_ == nil { panic("Argument 'qoval_' is nil in call to 'PutQObj'") }
+    var _c_qoval_ *C.MSKrealt = nil
+    if len(qoval_) > 0 { _c_qoval_ = (*C.MSKrealt)(&qoval_[0]) }
+    task.r = int32(C.MSK_putqobj(task.ptr(),_c_numqonz_,_c_qosubi_,_c_qosubj_,_c_qoval_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutQObjIJ(i_ int32,j_ int32,qoij_ float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_j_ := C.MSKint32t(j_)
+    _c_qoij_ := C.MSKrealt(qoij_)
+    task.r = int32(C.MSK_putqobjij(task.ptr(),_c_i_,_c_j_,_c_qoij_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSkc(whichsol_ int32,skc_ []int32) () {
+  if task.r == RES_OK {
+    if skc_ == nil { panic("Argument 'skc_' is nil in call to 'PutSkc'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if len(skc_) < int(__tmp_var_1) { panic("Slice argument 'skc_' is too short in call to 'PutSkc'") }
+    var _c_skc_ *C.MSKstakeye = nil
+    if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
+    task.r = int32(C.MSK_putskc(task.ptr(),C.MSKsoltypee(whichsol_),_c_skc_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSkcSlice(whichsol_ int32,first_ int32,last_ int32,skc_ []int32) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if skc_ == nil { panic("Argument 'skc_' is nil in call to 'PutSkcSlice'") }
+    if len(skc_) < int(last_ - first_) { panic("Slice argument 'skc_' is too short in call to 'PutSkcSlice'") }
+    var _c_skc_ *C.MSKstakeye = nil
+    if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
+    task.r = int32(C.MSK_putskcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_skc_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSkx(whichsol_ int32,skx_ []int32) () {
+  if task.r == RES_OK {
+    if skx_ == nil { panic("Argument 'skx_' is nil in call to 'PutSkx'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if len(skx_) < int(__tmp_var_1) { panic("Slice argument 'skx_' is too short in call to 'PutSkx'") }
+    var _c_skx_ *C.MSKstakeye = nil
+    if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
+    task.r = int32(C.MSK_putskx(task.ptr(),C.MSKsoltypee(whichsol_),_c_skx_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSkxSlice(whichsol_ int32,first_ int32,last_ int32,skx_ []int32) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if skx_ == nil { panic("Argument 'skx_' is nil in call to 'PutSkxSlice'") }
+    if len(skx_) < int(last_ - first_) { panic("Slice argument 'skx_' is too short in call to 'PutSkxSlice'") }
+    var _c_skx_ *C.MSKstakeye = nil
+    if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
+    task.r = int32(C.MSK_putskxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_skx_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSlc(whichsol_ int32,slc_ []float64) () {
+  if task.r == RES_OK {
+    if slc_ == nil { panic("Argument 'slc_' is nil in call to 'PutSlc'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if len(slc_) < int(__tmp_var_1) { panic("Slice argument 'slc_' is too short in call to 'PutSlc'") }
+    var _c_slc_ *C.MSKrealt = nil
+    if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
+    task.r = int32(C.MSK_putslc(task.ptr(),C.MSKsoltypee(whichsol_),_c_slc_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSlcSlice(whichsol_ int32,first_ int32,last_ int32,slc_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if slc_ == nil { panic("Argument 'slc_' is nil in call to 'PutSlcSlice'") }
+    if len(slc_) < int(last_ - first_) { panic("Slice argument 'slc_' is too short in call to 'PutSlcSlice'") }
+    var _c_slc_ *C.MSKrealt = nil
+    if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
+    task.r = int32(C.MSK_putslcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_slc_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSlx(whichsol_ int32,slx_ []float64) () {
+  if task.r == RES_OK {
+    if slx_ == nil { panic("Argument 'slx_' is nil in call to 'PutSlx'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if len(slx_) < int(__tmp_var_1) { panic("Slice argument 'slx_' is too short in call to 'PutSlx'") }
+    var _c_slx_ *C.MSKrealt = nil
+    if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
+    task.r = int32(C.MSK_putslx(task.ptr(),C.MSKsoltypee(whichsol_),_c_slx_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSlxSlice(whichsol_ int32,first_ int32,last_ int32,slx_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if slx_ == nil { panic("Argument 'slx_' is nil in call to 'PutSlxSlice'") }
+    if len(slx_) < int(last_ - first_) { panic("Slice argument 'slx_' is too short in call to 'PutSlxSlice'") }
+    var _c_slx_ *C.MSKrealt = nil
+    if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
+    task.r = int32(C.MSK_putslxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_slx_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSnx(whichsol_ int32,sux_ []float64) () {
+  if task.r == RES_OK {
+    if sux_ == nil { panic("Argument 'sux_' is nil in call to 'PutSnx'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if len(sux_) < int(__tmp_var_1) { panic("Slice argument 'sux_' is too short in call to 'PutSnx'") }
+    var _c_sux_ *C.MSKrealt = nil
+    if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
+    task.r = int32(C.MSK_putsnx(task.ptr(),C.MSKsoltypee(whichsol_),_c_sux_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSnxSlice(whichsol_ int32,first_ int32,last_ int32,snx_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if snx_ == nil { panic("Argument 'snx_' is nil in call to 'PutSnxSlice'") }
+    if len(snx_) < int(last_ - first_) { panic("Slice argument 'snx_' is too short in call to 'PutSnxSlice'") }
+    var _c_snx_ *C.MSKrealt = nil
+    if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
+    task.r = int32(C.MSK_putsnxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_snx_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSolution(whichsol_ int32,skc_ []int32,skx_ []int32,skn_ []int32,xc_ []float64,xx_ []float64,y_ []float64,slc_ []float64,suc_ []float64,slx_ []float64,sux_ []float64,snx_ []float64) () {
+  if task.r == RES_OK {
+    if skc_ == nil { panic("Argument 'skc_' is nil in call to 'PutSolution'") }
+    var _c_skc_ *C.MSKstakeye = nil
+    if len(skc_) > 0 { _c_skc_ = (*C.MSKstakeye)(unsafe.Pointer(&skc_[0])) }
+    if skx_ == nil { panic("Argument 'skx_' is nil in call to 'PutSolution'") }
+    var _c_skx_ *C.MSKstakeye = nil
+    if len(skx_) > 0 { _c_skx_ = (*C.MSKstakeye)(unsafe.Pointer(&skx_[0])) }
+    if skn_ == nil { panic("Argument 'skn_' is nil in call to 'PutSolution'") }
+    var _c_skn_ *C.MSKstakeye = nil
+    if len(skn_) > 0 { _c_skn_ = (*C.MSKstakeye)(unsafe.Pointer(&skn_[0])) }
+    if xc_ == nil { panic("Argument 'xc_' is nil in call to 'PutSolution'") }
+    var _c_xc_ *C.MSKrealt = nil
+    if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
+    if xx_ == nil { panic("Argument 'xx_' is nil in call to 'PutSolution'") }
+    var _c_xx_ *C.MSKrealt = nil
+    if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
+    if y_ == nil { panic("Argument 'y_' is nil in call to 'PutSolution'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    if slc_ == nil { panic("Argument 'slc_' is nil in call to 'PutSolution'") }
+    var _c_slc_ *C.MSKrealt = nil
+    if len(slc_) > 0 { _c_slc_ = (*C.MSKrealt)(&slc_[0]) }
+    if suc_ == nil { panic("Argument 'suc_' is nil in call to 'PutSolution'") }
+    var _c_suc_ *C.MSKrealt = nil
+    if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
+    if slx_ == nil { panic("Argument 'slx_' is nil in call to 'PutSolution'") }
+    var _c_slx_ *C.MSKrealt = nil
+    if len(slx_) > 0 { _c_slx_ = (*C.MSKrealt)(&slx_[0]) }
+    if sux_ == nil { panic("Argument 'sux_' is nil in call to 'PutSolution'") }
+    var _c_sux_ *C.MSKrealt = nil
+    if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
+    if snx_ == nil { panic("Argument 'snx_' is nil in call to 'PutSolution'") }
+    var _c_snx_ *C.MSKrealt = nil
+    if len(snx_) > 0 { _c_snx_ = (*C.MSKrealt)(&snx_[0]) }
+    task.r = int32(C.MSK_putsolution(task.ptr(),C.MSKsoltypee(whichsol_),_c_skc_,_c_skx_,_c_skn_,_c_xc_,_c_xx_,_c_y_,_c_slc_,_c_suc_,_c_slx_,_c_sux_,_c_snx_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSolutionI(accmode_ int32,i_ int32,whichsol_ int32,sk_ int32,x_ float64,sl_ float64,su_ float64,sn_ float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_x_ := C.MSKrealt(x_)
+    _c_sl_ := C.MSKrealt(sl_)
+    _c_su_ := C.MSKrealt(su_)
+    _c_sn_ := C.MSKrealt(sn_)
+    task.r = int32(C.MSK_putsolutioni(task.ptr(),C.MSKaccmodee(accmode_),_c_i_,C.MSKsoltypee(whichsol_),C.MSKstakeye(sk_),_c_x_,_c_sl_,_c_su_,_c_sn_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSolutionYI(i_ int32,whichsol_ int32,y_ float64) () {
+  if task.r == RES_OK {
+    _c_i_ := C.MSKint32t(i_)
+    _c_y_ := C.MSKrealt(y_)
+    task.r = int32(C.MSK_putsolutionyi(task.ptr(),_c_i_,C.MSKsoltypee(whichsol_),_c_y_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutStrParam(param_ int32,parvalue_ string) () {
+  if task.r == RES_OK {
+    _c_parvalue_ := C.CString(parvalue_)
+    defer C.free(unsafe.Pointer(_c_parvalue_))
+    task.r = int32(C.MSK_putstrparam(task.ptr(),C.MSKsparame(param_),C.MSKstring_t(_c_parvalue_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSuc(whichsol_ int32,suc_ []float64) () {
+  if task.r == RES_OK {
+    if suc_ == nil { panic("Argument 'suc_' is nil in call to 'PutSuc'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if len(suc_) < int(__tmp_var_1) { panic("Slice argument 'suc_' is too short in call to 'PutSuc'") }
+    var _c_suc_ *C.MSKrealt = nil
+    if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
+    task.r = int32(C.MSK_putsuc(task.ptr(),C.MSKsoltypee(whichsol_),_c_suc_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSucSlice(whichsol_ int32,first_ int32,last_ int32,suc_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if suc_ == nil { panic("Argument 'suc_' is nil in call to 'PutSucSlice'") }
+    if len(suc_) < int(last_ - first_) { panic("Slice argument 'suc_' is too short in call to 'PutSucSlice'") }
+    var _c_suc_ *C.MSKrealt = nil
+    if len(suc_) > 0 { _c_suc_ = (*C.MSKrealt)(&suc_[0]) }
+    task.r = int32(C.MSK_putsucslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_suc_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSux(whichsol_ int32,sux_ []float64) () {
+  if task.r == RES_OK {
+    if sux_ == nil { panic("Argument 'sux_' is nil in call to 'PutSux'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if len(sux_) < int(__tmp_var_1) { panic("Slice argument 'sux_' is too short in call to 'PutSux'") }
+    var _c_sux_ *C.MSKrealt = nil
+    if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
+    task.r = int32(C.MSK_putsux(task.ptr(),C.MSKsoltypee(whichsol_),_c_sux_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutSuxSlice(whichsol_ int32,first_ int32,last_ int32,sux_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if sux_ == nil { panic("Argument 'sux_' is nil in call to 'PutSuxSlice'") }
+    if len(sux_) < int(last_ - first_) { panic("Slice argument 'sux_' is too short in call to 'PutSuxSlice'") }
+    var _c_sux_ *C.MSKrealt = nil
+    if len(sux_) > 0 { _c_sux_ = (*C.MSKrealt)(&sux_[0]) }
+    task.r = int32(C.MSK_putsuxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_sux_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutTaskName(taskname_ string) () {
+  if task.r == RES_OK {
+    _c_taskname_ := C.CString(taskname_)
+    defer C.free(unsafe.Pointer(_c_taskname_))
+    task.r = int32(C.MSK_puttaskname(task.ptr(),C.MSKstring_t(_c_taskname_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutVarBound(j_ int32,bk_ int32,bl_ float64,bu_ float64) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    _c_bl_ := C.MSKrealt(bl_)
+    _c_bu_ := C.MSKrealt(bu_)
+    task.r = int32(C.MSK_putvarbound(task.ptr(),_c_j_,C.MSKboundkeye(bk_),_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutVarBoundList(sub_ []int32,bkx_ []int32,blx_ []float64,bux_ []float64) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(sub_),len(bkx_),len(blx_),len(bux_) })
+    _c_num_ := C.MSKint32t(num_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'PutVarBoundList'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if bkx_ == nil { panic("Argument 'bkx_' is nil in call to 'PutVarBoundList'") }
+    var _c_bkx_ *C.MSKboundkeye = nil
+    if len(bkx_) > 0 { _c_bkx_ = (*C.MSKboundkeye)(unsafe.Pointer(&bkx_[0])) }
+    if blx_ == nil { panic("Argument 'blx_' is nil in call to 'PutVarBoundList'") }
+    var _c_blx_ *C.MSKrealt = nil
+    if len(blx_) > 0 { _c_blx_ = (*C.MSKrealt)(&blx_[0]) }
+    if bux_ == nil { panic("Argument 'bux_' is nil in call to 'PutVarBoundList'") }
+    var _c_bux_ *C.MSKrealt = nil
+    if len(bux_) > 0 { _c_bux_ = (*C.MSKrealt)(&bux_[0]) }
+    task.r = int32(C.MSK_putvarboundlist(task.ptr(),_c_num_,_c_sub_,_c_bkx_,_c_blx_,_c_bux_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutVarBoundSlice(first_ int32,last_ int32,bk_ []int32,bl_ []float64,bu_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if bk_ == nil { panic("Argument 'bk_' is nil in call to 'PutVarBoundSlice'") }
+    if len(bk_) < int(last_ - first_) { panic("Slice argument 'bk_' is too short in call to 'PutVarBoundSlice'") }
+    var _c_bk_ *C.MSKboundkeye = nil
+    if len(bk_) > 0 { _c_bk_ = (*C.MSKboundkeye)(unsafe.Pointer(&bk_[0])) }
+    if bl_ == nil { panic("Argument 'bl_' is nil in call to 'PutVarBoundSlice'") }
+    if len(bl_) < int(last_ - first_) { panic("Slice argument 'bl_' is too short in call to 'PutVarBoundSlice'") }
+    var _c_bl_ *C.MSKrealt = nil
+    if len(bl_) > 0 { _c_bl_ = (*C.MSKrealt)(&bl_[0]) }
+    if bu_ == nil { panic("Argument 'bu_' is nil in call to 'PutVarBoundSlice'") }
+    if len(bu_) < int(last_ - first_) { panic("Slice argument 'bu_' is too short in call to 'PutVarBoundSlice'") }
+    var _c_bu_ *C.MSKrealt = nil
+    if len(bu_) > 0 { _c_bu_ = (*C.MSKrealt)(&bu_[0]) }
+    task.r = int32(C.MSK_putvarboundslice(task.ptr(),_c_first_,_c_last_,_c_bk_,_c_bl_,_c_bu_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutVarBranchOrder(j_ int32,priority_ int32,direction_ int32) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    _c_priority_ := C.MSKint32t(priority_)
+    task.r = int32(C.MSK_putvarbranchorder(task.ptr(),_c_j_,_c_priority_,C.int(direction_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutVarName(j_ int32,name_ string) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    _c_name_ := C.CString(name_)
+    defer C.free(unsafe.Pointer(_c_name_))
+    task.r = int32(C.MSK_putvarname(task.ptr(),_c_j_,C.MSKstring_t(_c_name_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutVarType(j_ int32,vartype_ int32) () {
+  if task.r == RES_OK {
+    _c_j_ := C.MSKint32t(j_)
+    task.r = int32(C.MSK_putvartype(task.ptr(),_c_j_,C.MSKvariabletypee(vartype_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutVarTypeList(subj_ []int32,vartype_ []int32) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(subj_),len(vartype_) })
+    _c_num_ := C.MSKint32t(num_)
+    if subj_ == nil { panic("Argument 'subj_' is nil in call to 'PutVarTypeList'") }
+    var _c_subj_ *C.MSKint32t = nil
+    if len(subj_) > 0 { _c_subj_ = (*C.MSKint32t)(&subj_[0]) }
+    if vartype_ == nil { panic("Argument 'vartype_' is nil in call to 'PutVarTypeList'") }
+    var _c_vartype_ *C.MSKvariabletypee = nil
+    if len(vartype_) > 0 { _c_vartype_ = (*C.MSKvariabletypee)(unsafe.Pointer(&vartype_[0])) }
+    task.r = int32(C.MSK_putvartypelist(task.ptr(),_c_num_,_c_subj_,_c_vartype_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutXc(whichsol_ int32,xc_ []float64) (_r_xc_ []float64) {
+  if task.r == RES_OK {
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if xc_ == nil { xc_ = make([]float64,__tmp_var_1,__tmp_var_1)
+    } else if len(xc_) < int(__tmp_var_1) { panic("Slice in 'xc_' is too short in call to 'PutXc'") }
+    var _c_xc_ *C.MSKrealt = nil
+    if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
+    task.r = int32(C.MSK_putxc(task.ptr(),C.MSKsoltypee(whichsol_),_c_xc_))
+    if task.r != 0 { return }
+    _r_xc_ = xc_
+  }
+  return
+}
+func (task *Task) PutXcSlice(whichsol_ int32,first_ int32,last_ int32,xc_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if xc_ == nil { panic("Argument 'xc_' is nil in call to 'PutXcSlice'") }
+    if len(xc_) < int(last_ - first_) { panic("Slice argument 'xc_' is too short in call to 'PutXcSlice'") }
+    var _c_xc_ *C.MSKrealt = nil
+    if len(xc_) > 0 { _c_xc_ = (*C.MSKrealt)(&xc_[0]) }
+    task.r = int32(C.MSK_putxcslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_xc_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutXx(whichsol_ int32,xx_ []float64) () {
+  if task.r == RES_OK {
+    if xx_ == nil { panic("Argument 'xx_' is nil in call to 'PutXx'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumVar()
+    if task.r != RES_OK { return }
+    if len(xx_) < int(__tmp_var_1) { panic("Slice argument 'xx_' is too short in call to 'PutXx'") }
+    var _c_xx_ *C.MSKrealt = nil
+    if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
+    task.r = int32(C.MSK_putxx(task.ptr(),C.MSKsoltypee(whichsol_),_c_xx_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutXxSlice(whichsol_ int32,first_ int32,last_ int32,xx_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if xx_ == nil { panic("Argument 'xx_' is nil in call to 'PutXxSlice'") }
+    if len(xx_) < int(last_ - first_) { panic("Slice argument 'xx_' is too short in call to 'PutXxSlice'") }
+    var _c_xx_ *C.MSKrealt = nil
+    if len(xx_) > 0 { _c_xx_ = (*C.MSKrealt)(&xx_[0]) }
+    task.r = int32(C.MSK_putxxslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_xx_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutY(whichsol_ int32,y_ []float64) () {
+  if task.r == RES_OK {
+    if y_ == nil { panic("Argument 'y_' is nil in call to 'PutY'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if len(y_) < int(__tmp_var_1) { panic("Slice argument 'y_' is too short in call to 'PutY'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    task.r = int32(C.MSK_puty(task.ptr(),C.MSKsoltypee(whichsol_),_c_y_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) PutYSlice(whichsol_ int32,first_ int32,last_ int32,y_ []float64) () {
+  if task.r == RES_OK {
+    _c_first_ := C.MSKint32t(first_)
+    _c_last_ := C.MSKint32t(last_)
+    if y_ == nil { panic("Argument 'y_' is nil in call to 'PutYSlice'") }
+    if len(y_) < int(last_ - first_) { panic("Slice argument 'y_' is too short in call to 'PutYSlice'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    task.r = int32(C.MSK_putyslice(task.ptr(),C.MSKsoltypee(whichsol_),_c_first_,_c_last_,_c_y_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ReadBranchPriorities(filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_readbranchpriorities(task.ptr(),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ReadData(filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_readdataautoformat(task.ptr(),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ReadDataFormat(filename_ string,format_ int32,compress_ int32) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_readdataformat(task.ptr(),C.MSKstring_t(_c_filename_),C.int(format_),C.int(compress_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ReadParamFile(filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_readparamfile(task.ptr(),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ReadSolution(whichsol_ int32,filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_readsolution(task.ptr(),C.MSKsoltypee(whichsol_),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ReadSummary(whichstream_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_readsummary(task.ptr(),C.MSKstreamtypee(whichstream_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ReadTask(filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_readtask(task.ptr(),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) RemoveBarvars(subset_ []int32) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(subset_) })
+    _c_num_ := C.MSKint32t(num_)
+    if subset_ == nil { panic("Argument 'subset_' is nil in call to 'RemoveBarvars'") }
+    var _c_subset_ *C.MSKint32t = nil
+    if len(subset_) > 0 { _c_subset_ = (*C.MSKint32t)(&subset_[0]) }
+    task.r = int32(C.MSK_removebarvars(task.ptr(),_c_num_,_c_subset_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) RemoveCones(subset_ []int32) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(subset_) })
+    _c_num_ := C.MSKint32t(num_)
+    if subset_ == nil { panic("Argument 'subset_' is nil in call to 'RemoveCones'") }
+    var _c_subset_ *C.MSKint32t = nil
+    if len(subset_) > 0 { _c_subset_ = (*C.MSKint32t)(&subset_[0]) }
+    task.r = int32(C.MSK_removecones(task.ptr(),_c_num_,_c_subset_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) RemoveCons(subset_ []int32) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(subset_) })
+    _c_num_ := C.MSKint32t(num_)
+    if subset_ == nil { panic("Argument 'subset_' is nil in call to 'RemoveCons'") }
+    var _c_subset_ *C.MSKint32t = nil
+    if len(subset_) > 0 { _c_subset_ = (*C.MSKint32t)(&subset_[0]) }
+    task.r = int32(C.MSK_removecons(task.ptr(),_c_num_,_c_subset_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) RemoveVars(subset_ []int32) () {
+  if task.r == RES_OK {
+    num_ := minint([]int{ len(subset_) })
+    _c_num_ := C.MSKint32t(num_)
+    if subset_ == nil { panic("Argument 'subset_' is nil in call to 'RemoveVars'") }
+    var _c_subset_ *C.MSKint32t = nil
+    if len(subset_) > 0 { _c_subset_ = (*C.MSKint32t)(&subset_[0]) }
+    task.r = int32(C.MSK_removevars(task.ptr(),_c_num_,_c_subset_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) ResizeTask(maxnumcon_ int32,maxnumvar_ int32,maxnumcone_ int32,maxnumanz_ int64,maxnumqnz_ int64) () {
+  if task.r == RES_OK {
+    _c_maxnumcon_ := C.MSKint32t(maxnumcon_)
+    _c_maxnumvar_ := C.MSKint32t(maxnumvar_)
+    _c_maxnumcone_ := C.MSKint32t(maxnumcone_)
+    _c_maxnumanz_ := C.MSKint64t(maxnumanz_)
+    _c_maxnumqnz_ := C.MSKint64t(maxnumqnz_)
+    task.r = int32(C.MSK_resizetask(task.ptr(),_c_maxnumcon_,_c_maxnumvar_,_c_maxnumcone_,_c_maxnumanz_,_c_maxnumqnz_))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) SensitivityReport(whichstream_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_sensitivityreport(task.ptr(),C.MSKstreamtypee(whichstream_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) SetDefaults() () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_setdefaults(task.ptr()))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) SkToStr(sk_ int32) (_r_str_ string) {
+  if task.r == RES_OK {
+    _c_str_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
+    defer C.free(unsafe.Pointer(_c_str_))
+    task.r = int32(C.MSK_sktostr(task.ptr(),C.MSKstakeye(sk_),C.MSKstring_t(_c_str_)))
+    if task.r != 0 { return }
+    _r_str_ = C.GoStringN(_c_str_,C.int(MAX_STR_LEN))
+  }
+  return
+}
+func (task *Task) SolStaToStr(solsta_ int32) (_r_str_ string) {
+  if task.r == RES_OK {
+    _c_str_ := (*C.char)(C.malloc(C.size_t(MAX_STR_LEN+1)))
+    defer C.free(unsafe.Pointer(_c_str_))
+    task.r = int32(C.MSK_solstatostr(task.ptr(),C.MSKsolstae(solsta_),C.MSKstring_t(_c_str_)))
+    if task.r != 0 { return }
+    _r_str_ = C.GoStringN(_c_str_,C.int(MAX_STR_LEN))
+  }
+  return
+}
+func (task *Task) SolutionDef(whichsol_ int32) (_r_isdef_ bool) {
+  if task.r == RES_OK {
+    var _c_isdef_ C.MSKbooleant
+    task.r = int32(C.MSK_solutiondef(task.ptr(),C.MSKsoltypee(whichsol_),&_c_isdef_))
+    if task.r != 0 { return }
+    _r_isdef_ = int(_c_isdef_)!=0
+  }
+  return
+}
+func (task *Task) SolutionSummary(whichstream_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_solutionsummary(task.ptr(),C.MSKstreamtypee(whichstream_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) SolveWithBasis(transp_ int32,numnz_ int32,sub_ []int32,val_ []float64) (_r_numnz_ int32,_r_sub_ []int32,_r_val_ []float64) {
+  if task.r == RES_OK {
+    _c_transp_ := C.MSKint32t(transp_)
+    var _c_numnz_ C.MSKint32t = C.MSKint32t(numnz_)
+    if sub_ == nil { panic("Argument 'sub_' is nil in call to 'SolveWithBasis'") }
+    var __tmp_var_1 int32
+    __tmp_var_1 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if len(sub_) < int(__tmp_var_1) { panic("Slice argument 'sub_' is too short in call to 'SolveWithBasis'") }
+    var _c_sub_ *C.MSKint32t = nil
+    if len(sub_) > 0 { _c_sub_ = (*C.MSKint32t)(&sub_[0]) }
+    if val_ == nil { panic("Argument 'val_' is nil in call to 'SolveWithBasis'") }
+    var __tmp_var_3 int32
+    __tmp_var_3 = task.GetNumCon()
+    if task.r != RES_OK { return }
+    if len(val_) < int(__tmp_var_3) { panic("Slice argument 'val_' is too short in call to 'SolveWithBasis'") }
+    var _c_val_ *C.MSKrealt = nil
+    if len(val_) > 0 { _c_val_ = (*C.MSKrealt)(&val_[0]) }
+    task.r = int32(C.MSK_solvewithbasis(task.ptr(),_c_transp_,& _c_numnz_,_c_sub_,_c_val_))
+    if task.r != 0 { return }
+    _r_numnz_ = int32(_c_numnz_)
+    _r_sub_ = sub_
+    _r_val_ = val_
+  }
+  return
+}
+func (task *Task) StartStat() () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_startstat(task.ptr()))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) StopStat() () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_stopstat(task.ptr()))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) StrToConeType(str_ string) (_r_conetype_ int32) {
+  if task.r == RES_OK {
+    _c_str_ := C.CString(str_)
+    defer C.free(unsafe.Pointer(_c_str_))
+    var _c_conetype_ C.MSKconetypee
+    task.r = int32(C.MSK_strtoconetype(task.ptr(),C.MSKstring_t(_c_str_),&_c_conetype_))
+    if task.r != 0 { return }
+    _r_conetype_ = int32(_c_conetype_)
+  }
+  return
+}
+func (task *Task) StrToSk(str_ string) (_r_sk_ int32) {
+  if task.r == RES_OK {
+    _c_str_ := C.CString(str_)
+    defer C.free(unsafe.Pointer(_c_str_))
+    var _c_sk_ C.MSKint32t
+    task.r = int32(C.MSK_strtosk(task.ptr(),C.MSKstring_t(_c_str_),&_c_sk_))
+    if task.r != 0 { return }
+    _r_sk_ = int32(_c_sk_)
+  }
+  return
+}
+func (task *Task) Toconic() () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_toconic(task.ptr()))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) UpdateSolutionInfo(whichsol_ int32) () {
+  if task.r == RES_OK {
+    task.r = int32(C.MSK_updatesolutioninfo(task.ptr(),C.MSKsoltypee(whichsol_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) WriteBranchPriorities(filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_writebranchpriorities(task.ptr(),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) WriteData(filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_writedata(task.ptr(),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) WriteParamFile(filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_writeparamfile(task.ptr(),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) WriteSolution(whichsol_ int32,filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_writesolution(task.ptr(),C.MSKsoltypee(whichsol_),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (task *Task) WriteTask(filename_ string) () {
+  if task.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    task.r = int32(C.MSK_writetask(task.ptr(),C.MSKstring_t(_c_filename_)))
+    if task.r != 0 { return }
+  }
+  return
+}
+func (env *Env) Axpy(n_ int32,alpha_ float64,x_ []float64,y_ []float64) (_r_y_ []float64) {
+  if env.r == RES_OK {
+    _c_n_ := C.MSKint32t(n_)
+    _c_alpha_ := C.MSKrealt(alpha_)
+    if x_ == nil { panic("Argument 'x_' is nil in call to 'Axpy'") }
+    if len(x_) < int(n_) { panic("Slice argument 'x_' is too short in call to 'Axpy'") }
+    var _c_x_ *C.MSKrealt = nil
+    if len(x_) > 0 { _c_x_ = (*C.MSKrealt)(&x_[0]) }
+    if y_ == nil { panic("Argument 'y_' is nil in call to 'Axpy'") }
+    if len(y_) < int(n_) { panic("Slice argument 'y_' is too short in call to 'Axpy'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    env.r = int32(C.MSK_axpy(env.ptr(),_c_n_,_c_alpha_,_c_x_,_c_y_))
+    if env.r != 0 { return }
+    _r_y_ = y_
+  }
+  return
+}
+func (env *Env) CheckInLicense(feature_ int32) () {
+  if env.r == RES_OK {
+    env.r = int32(C.MSK_checkinlicense(env.ptr(),C.MSKfeaturee(feature_)))
+    if env.r != 0 { return }
+  }
+  return
+}
+func (env *Env) CheckoutLicense(feature_ int32) () {
+  if env.r == RES_OK {
+    env.r = int32(C.MSK_checkoutlicense(env.ptr(),C.MSKfeaturee(feature_)))
+    if env.r != 0 { return }
+  }
+  return
+}
+func (env *Env) Dot(n_ int32,x_ []float64,y_ []float64) (_r_xty_ float64) {
+  if env.r == RES_OK {
+    _c_n_ := C.MSKint32t(n_)
+    if x_ == nil { panic("Argument 'x_' is nil in call to 'Dot'") }
+    if len(x_) < int(n_) { panic("Slice argument 'x_' is too short in call to 'Dot'") }
+    var _c_x_ *C.MSKrealt = nil
+    if len(x_) > 0 { _c_x_ = (*C.MSKrealt)(&x_[0]) }
+    if y_ == nil { panic("Argument 'y_' is nil in call to 'Dot'") }
+    if len(y_) < int(n_) { panic("Slice argument 'y_' is too short in call to 'Dot'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    var _c_xty_ C.MSKrealt
+    env.r = int32(C.MSK_dot(env.ptr(),_c_n_,_c_x_,_c_y_,&_c_xty_))
+    if env.r != 0 { return }
+    _r_xty_ = float64(_c_xty_)
+  }
+  return
+}
+func (env *Env) EchoIntro(longver_ int32) () {
+  if env.r == RES_OK {
+    _c_longver_ := C.MSKint32t(longver_)
+    env.r = int32(C.MSK_echointro(env.ptr(),_c_longver_))
+    if env.r != 0 { return }
+  }
+  return
+}
+func (env *Env) Gemm(transa_ int32,transb_ int32,m_ int32,n_ int32,k_ int32,alpha_ float64,a_ []float64,b_ []float64,beta_ float64,c_ []float64) (_r_c_ []float64) {
+  if env.r == RES_OK {
+    _c_m_ := C.MSKint32t(m_)
+    _c_n_ := C.MSKint32t(n_)
+    _c_k_ := C.MSKint32t(k_)
+    _c_alpha_ := C.MSKrealt(alpha_)
+    if a_ == nil { panic("Argument 'a_' is nil in call to 'Gemm'") }
+    if len(a_) < int(m_ * k_) { panic("Slice argument 'a_' is too short in call to 'Gemm'") }
+    var _c_a_ *C.MSKrealt = nil
+    if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
+    if b_ == nil { panic("Argument 'b_' is nil in call to 'Gemm'") }
+    if len(b_) < int(k_ * n_) { panic("Slice argument 'b_' is too short in call to 'Gemm'") }
+    var _c_b_ *C.MSKrealt = nil
+    if len(b_) > 0 { _c_b_ = (*C.MSKrealt)(&b_[0]) }
+    _c_beta_ := C.MSKrealt(beta_)
+    if c_ == nil { panic("Argument 'c_' is nil in call to 'Gemm'") }
+    if len(c_) < int(m_ * n_) { panic("Slice argument 'c_' is too short in call to 'Gemm'") }
+    var _c_c_ *C.MSKrealt = nil
+    if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
+    env.r = int32(C.MSK_gemm(env.ptr(),C.MSKtransposee(transa_),C.MSKtransposee(transb_),_c_m_,_c_n_,_c_k_,_c_alpha_,_c_a_,_c_b_,_c_beta_,_c_c_))
+    if env.r != 0 { return }
+    _r_c_ = c_
+  }
+  return
+}
+func (env *Env) Gemv(transa_ int32,m_ int32,n_ int32,alpha_ float64,a_ []float64,x_ []float64,beta_ float64,y_ []float64) (_r_y_ []float64) {
+  if env.r == RES_OK {
+    _c_m_ := C.MSKint32t(m_)
+    _c_n_ := C.MSKint32t(n_)
+    _c_alpha_ := C.MSKrealt(alpha_)
+    if a_ == nil { panic("Argument 'a_' is nil in call to 'Gemv'") }
+    if len(a_) < int(n_ * m_) { panic("Slice argument 'a_' is too short in call to 'Gemv'") }
+    var _c_a_ *C.MSKrealt = nil
+    if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
+    if x_ == nil { panic("Argument 'x_' is nil in call to 'Gemv'") }
+    var __tmp_var_3 int32
+    if (transa_ == TRANSPOSE_NO) {
+      __tmp_var_3 = n_
+    }else {
+      __tmp_var_3 = m_
+    }
+    if len(x_) < int(__tmp_var_3) { panic("Slice argument 'x_' is too short in call to 'Gemv'") }
+    var _c_x_ *C.MSKrealt = nil
+    if len(x_) > 0 { _c_x_ = (*C.MSKrealt)(&x_[0]) }
+    _c_beta_ := C.MSKrealt(beta_)
+    if y_ == nil { panic("Argument 'y_' is nil in call to 'Gemv'") }
+    var __tmp_var_9 int32
+    if (transa_ == TRANSPOSE_NO) {
+      __tmp_var_9 = m_
+    }else {
+      __tmp_var_9 = n_
+    }
+    if len(y_) < int(__tmp_var_9) { panic("Slice argument 'y_' is too short in call to 'Gemv'") }
+    var _c_y_ *C.MSKrealt = nil
+    if len(y_) > 0 { _c_y_ = (*C.MSKrealt)(&y_[0]) }
+    env.r = int32(C.MSK_gemv(env.ptr(),C.MSKtransposee(transa_),_c_m_,_c_n_,_c_alpha_,_c_a_,_c_x_,_c_beta_,_c_y_))
+    if env.r != 0 { return }
+    _r_y_ = y_
+  }
   return
 }
 func GetCodeDesc(code_ int32) (_r_symname_ string,_r_str_ string,_res int32) {
@@ -5162,105 +5742,125 @@ func Licensecleanup() (_res int32) {
   if _res != 0 { return }
   return
 }
-func (env *Env) Linkfiletostream(whichstream_ int32,filename_ string,append_ int32) (_res int32) {
-  _c_filename_ := C.CString(filename_)
-  defer C.free(unsafe.Pointer(_c_filename_))
-  _c_append_ := C.MSKint32t(append_)
-  _res = int32(C.MSK_linkfiletoenvstream(env.ptr(),C.MSKstreamtypee(whichstream_),C.MSKstring_t(_c_filename_),_c_append_))
-  if _res != 0 { return }
+func (env *Env) Linkfiletostream(whichstream_ int32,filename_ string,append_ int32) () {
+  if env.r == RES_OK {
+    _c_filename_ := C.CString(filename_)
+    defer C.free(unsafe.Pointer(_c_filename_))
+    _c_append_ := C.MSKint32t(append_)
+    env.r = int32(C.MSK_linkfiletoenvstream(env.ptr(),C.MSKstreamtypee(whichstream_),C.MSKstring_t(_c_filename_),_c_append_))
+    if env.r != 0 { return }
+  }
   return
 }
-func (env *Env) Potrf(uplo_ int32,n_ int32,a_ []float64) (_r_a_ []float64,_res int32) {
-  _c_n_ := C.MSKint32t(n_)
-  if a_ == nil { panic("Argument 'a_' is nil in call to 'Potrf'") }
-  if len(a_) < int(n_ * n_) { panic("Slice argument 'a_' is too short in call to 'Potrf'") }
-  var _c_a_ *C.MSKrealt = nil
-  if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
-  _res = int32(C.MSK_potrf(env.ptr(),C.MSKuploe(uplo_),_c_n_,_c_a_))
-  if _res != 0 { return }
-  _r_a_ = a_
+func (env *Env) Potrf(uplo_ int32,n_ int32,a_ []float64) (_r_a_ []float64) {
+  if env.r == RES_OK {
+    _c_n_ := C.MSKint32t(n_)
+    if a_ == nil { panic("Argument 'a_' is nil in call to 'Potrf'") }
+    if len(a_) < int(n_ * n_) { panic("Slice argument 'a_' is too short in call to 'Potrf'") }
+    var _c_a_ *C.MSKrealt = nil
+    if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
+    env.r = int32(C.MSK_potrf(env.ptr(),C.MSKuploe(uplo_),_c_n_,_c_a_))
+    if env.r != 0 { return }
+    _r_a_ = a_
+  }
   return
 }
-func (env *Env) PutKeepDlls(keepdlls_ int32) (_res int32) {
-  _c_keepdlls_ := C.MSKint32t(keepdlls_)
-  _res = int32(C.MSK_putkeepdlls(env.ptr(),_c_keepdlls_))
-  if _res != 0 { return }
+func (env *Env) PutKeepDlls(keepdlls_ int32) () {
+  if env.r == RES_OK {
+    _c_keepdlls_ := C.MSKint32t(keepdlls_)
+    env.r = int32(C.MSK_putkeepdlls(env.ptr(),_c_keepdlls_))
+    if env.r != 0 { return }
+  }
   return
 }
-func (env *Env) PutLicenseCode(code_ []int32) (_res int32) {
-  if code_ == nil { panic("Argument 'code_' is nil in call to 'PutLicenseCode'") }
-  if len(code_) < int(LICENSE_BUFFER_LENGTH) { panic("Slice argument 'code_' is too short in call to 'PutLicenseCode'") }
-  var _c_code_ *C.MSKint32t = nil
-  if len(code_) > 0 { _c_code_ = (*C.MSKint32t)(&code_[0]) }
-  _res = int32(C.MSK_putlicensecode(env.ptr(),_c_code_))
-  if _res != 0 { return }
+func (env *Env) PutLicenseCode(code_ []int32) () {
+  if env.r == RES_OK {
+    if code_ == nil { panic("Argument 'code_' is nil in call to 'PutLicenseCode'") }
+    if len(code_) < int(LICENSE_BUFFER_LENGTH) { panic("Slice argument 'code_' is too short in call to 'PutLicenseCode'") }
+    var _c_code_ *C.MSKint32t = nil
+    if len(code_) > 0 { _c_code_ = (*C.MSKint32t)(&code_[0]) }
+    env.r = int32(C.MSK_putlicensecode(env.ptr(),_c_code_))
+    if env.r != 0 { return }
+  }
   return
 }
-func (env *Env) PutLicenseDebug(licdebug_ int32) (_res int32) {
-  _c_licdebug_ := C.MSKint32t(licdebug_)
-  _res = int32(C.MSK_putlicensedebug(env.ptr(),_c_licdebug_))
-  if _res != 0 { return }
+func (env *Env) PutLicenseDebug(licdebug_ int32) () {
+  if env.r == RES_OK {
+    _c_licdebug_ := C.MSKint32t(licdebug_)
+    env.r = int32(C.MSK_putlicensedebug(env.ptr(),_c_licdebug_))
+    if env.r != 0 { return }
+  }
   return
 }
-func (env *Env) PutLicensePath(licensepath_ string) (_res int32) {
-  _c_licensepath_ := C.CString(licensepath_)
-  defer C.free(unsafe.Pointer(_c_licensepath_))
-  _res = int32(C.MSK_putlicensepath(env.ptr(),C.MSKstring_t(_c_licensepath_)))
-  if _res != 0 { return }
+func (env *Env) PutLicensePath(licensepath_ string) () {
+  if env.r == RES_OK {
+    _c_licensepath_ := C.CString(licensepath_)
+    defer C.free(unsafe.Pointer(_c_licensepath_))
+    env.r = int32(C.MSK_putlicensepath(env.ptr(),C.MSKstring_t(_c_licensepath_)))
+    if env.r != 0 { return }
+  }
   return
 }
-func (env *Env) PutLicenseWait(licwait_ int32) (_res int32) {
-  _c_licwait_ := C.MSKint32t(licwait_)
-  _res = int32(C.MSK_putlicensewait(env.ptr(),_c_licwait_))
-  if _res != 0 { return }
+func (env *Env) PutLicenseWait(licwait_ int32) () {
+  if env.r == RES_OK {
+    _c_licwait_ := C.MSKint32t(licwait_)
+    env.r = int32(C.MSK_putlicensewait(env.ptr(),_c_licwait_))
+    if env.r != 0 { return }
+  }
   return
 }
-func (env *Env) Syeig(uplo_ int32,n_ int32,a_ []float64,w_ []float64) (_r_w_ []float64,_res int32) {
-  _c_n_ := C.MSKint32t(n_)
-  if a_ == nil { panic("Argument 'a_' is nil in call to 'Syeig'") }
-  if len(a_) < int(n_ * n_) { panic("Slice argument 'a_' is too short in call to 'Syeig'") }
-  var _c_a_ *C.MSKrealt = nil
-  if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
-  if w_ == nil { w_ = make([]float64,n_,n_)
-  } else if len(w_) < int(n_) { panic("Slice in 'w_' is too short in call to 'Syeig'") }
-  var _c_w_ *C.MSKrealt = nil
-  if len(w_) > 0 { _c_w_ = (*C.MSKrealt)(&w_[0]) }
-  _res = int32(C.MSK_syeig(env.ptr(),C.MSKuploe(uplo_),_c_n_,_c_a_,_c_w_))
-  if _res != 0 { return }
-  _r_w_ = w_
+func (env *Env) Syeig(uplo_ int32,n_ int32,a_ []float64,w_ []float64) (_r_w_ []float64) {
+  if env.r == RES_OK {
+    _c_n_ := C.MSKint32t(n_)
+    if a_ == nil { panic("Argument 'a_' is nil in call to 'Syeig'") }
+    if len(a_) < int(n_ * n_) { panic("Slice argument 'a_' is too short in call to 'Syeig'") }
+    var _c_a_ *C.MSKrealt = nil
+    if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
+    if w_ == nil { w_ = make([]float64,n_,n_)
+    } else if len(w_) < int(n_) { panic("Slice in 'w_' is too short in call to 'Syeig'") }
+    var _c_w_ *C.MSKrealt = nil
+    if len(w_) > 0 { _c_w_ = (*C.MSKrealt)(&w_[0]) }
+    env.r = int32(C.MSK_syeig(env.ptr(),C.MSKuploe(uplo_),_c_n_,_c_a_,_c_w_))
+    if env.r != 0 { return }
+    _r_w_ = w_
+  }
   return
 }
-func (env *Env) Syevd(uplo_ int32,n_ int32,a_ []float64,w_ []float64) (_r_a_ []float64,_r_w_ []float64,_res int32) {
-  _c_n_ := C.MSKint32t(n_)
-  if a_ == nil { panic("Argument 'a_' is nil in call to 'Syevd'") }
-  if len(a_) < int(n_ * n_) { panic("Slice argument 'a_' is too short in call to 'Syevd'") }
-  var _c_a_ *C.MSKrealt = nil
-  if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
-  if w_ == nil { w_ = make([]float64,n_,n_)
-  } else if len(w_) < int(n_) { panic("Slice in 'w_' is too short in call to 'Syevd'") }
-  var _c_w_ *C.MSKrealt = nil
-  if len(w_) > 0 { _c_w_ = (*C.MSKrealt)(&w_[0]) }
-  _res = int32(C.MSK_syevd(env.ptr(),C.MSKuploe(uplo_),_c_n_,_c_a_,_c_w_))
-  if _res != 0 { return }
-  _r_a_ = a_
-  _r_w_ = w_
+func (env *Env) Syevd(uplo_ int32,n_ int32,a_ []float64,w_ []float64) (_r_a_ []float64,_r_w_ []float64) {
+  if env.r == RES_OK {
+    _c_n_ := C.MSKint32t(n_)
+    if a_ == nil { panic("Argument 'a_' is nil in call to 'Syevd'") }
+    if len(a_) < int(n_ * n_) { panic("Slice argument 'a_' is too short in call to 'Syevd'") }
+    var _c_a_ *C.MSKrealt = nil
+    if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
+    if w_ == nil { w_ = make([]float64,n_,n_)
+    } else if len(w_) < int(n_) { panic("Slice in 'w_' is too short in call to 'Syevd'") }
+    var _c_w_ *C.MSKrealt = nil
+    if len(w_) > 0 { _c_w_ = (*C.MSKrealt)(&w_[0]) }
+    env.r = int32(C.MSK_syevd(env.ptr(),C.MSKuploe(uplo_),_c_n_,_c_a_,_c_w_))
+    if env.r != 0 { return }
+    _r_a_ = a_
+    _r_w_ = w_
+  }
   return
 }
-func (env *Env) Syrk(uplo_ int32,trans_ int32,n_ int32,k_ int32,alpha_ float64,a_ []float64,beta_ float64,c_ []float64) (_r_c_ []float64,_res int32) {
-  _c_n_ := C.MSKint32t(n_)
-  _c_k_ := C.MSKint32t(k_)
-  _c_alpha_ := C.MSKrealt(alpha_)
-  if a_ == nil { panic("Argument 'a_' is nil in call to 'Syrk'") }
-  if len(a_) < int(n_ * k_) { panic("Slice argument 'a_' is too short in call to 'Syrk'") }
-  var _c_a_ *C.MSKrealt = nil
-  if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
-  _c_beta_ := C.MSKrealt(beta_)
-  if c_ == nil { panic("Argument 'c_' is nil in call to 'Syrk'") }
-  if len(c_) < int(n_ * n_) { panic("Slice argument 'c_' is too short in call to 'Syrk'") }
-  var _c_c_ *C.MSKrealt = nil
-  if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
-  _res = int32(C.MSK_syrk(env.ptr(),C.MSKuploe(uplo_),C.MSKtransposee(trans_),_c_n_,_c_k_,_c_alpha_,_c_a_,_c_beta_,_c_c_))
-  if _res != 0 { return }
-  _r_c_ = c_
+func (env *Env) Syrk(uplo_ int32,trans_ int32,n_ int32,k_ int32,alpha_ float64,a_ []float64,beta_ float64,c_ []float64) (_r_c_ []float64) {
+  if env.r == RES_OK {
+    _c_n_ := C.MSKint32t(n_)
+    _c_k_ := C.MSKint32t(k_)
+    _c_alpha_ := C.MSKrealt(alpha_)
+    if a_ == nil { panic("Argument 'a_' is nil in call to 'Syrk'") }
+    if len(a_) < int(n_ * k_) { panic("Slice argument 'a_' is too short in call to 'Syrk'") }
+    var _c_a_ *C.MSKrealt = nil
+    if len(a_) > 0 { _c_a_ = (*C.MSKrealt)(&a_[0]) }
+    _c_beta_ := C.MSKrealt(beta_)
+    if c_ == nil { panic("Argument 'c_' is nil in call to 'Syrk'") }
+    if len(c_) < int(n_ * n_) { panic("Slice argument 'c_' is too short in call to 'Syrk'") }
+    var _c_c_ *C.MSKrealt = nil
+    if len(c_) > 0 { _c_c_ = (*C.MSKrealt)(&c_[0]) }
+    env.r = int32(C.MSK_syrk(env.ptr(),C.MSKuploe(uplo_),C.MSKtransposee(trans_),_c_n_,_c_k_,_c_alpha_,_c_a_,_c_beta_,_c_c_))
+    if env.r != 0 { return }
+    _r_c_ = c_
+  }
   return
 }

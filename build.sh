@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-if [ -z "$@" ] ; then
+if [ -z "$1" ] ; then
   echo "Examples:"
   echo "  $1 install mosek"
   echo "  $1 install examples/..."

@@ -57,37 +57,36 @@ func main() {
 
 	/* Append 'numcon' empty constraints. The constraints will
 	/* initially have no bounds. */
-	if mosek.RES_OK != task.AppendCons(numcon) { os.Exit(1) }
+	task.AppendCons(numcon)
 
 	/* Append 'numvar' variables. The variables will initially be
 	/* fixed at zero (x=0). */
-	if mosek.RES_OK != task.AppendVars(numvar) { os.Exit(1) }
+	task.AppendVars(numvar)
 
-	for j := int32(0) ; j < numvar && r == mosek.RES_OK ; j++ {
+	for j := int32(0) ; j < numvar ; j++ {
 		/* Set the linear term c_j in the objective.*/  
-		if mosek.RES_OK != task.PutCJ(j,c[j]) { os.Exit(1) }
+		task.PutCJ(j,c[j])
 		
 		/* Set the bounds on variable j. blx[j] <= x_j <=
 		/* bux[j] */
-		if mosek.RES_OK != task.PutVarBound(j,bkx[j], blx[j], bux[j]) { os.Exit(1) }
+		task.PutVarBound(j,bkx[j], blx[j], bux[j])
 		/* Input column j of A */   
-		if mosek.RES_OK != task.PutACol(j, asub[aptrb[j]:aptre[j]], aval[aptrb[j]:aptre[j]]) { os.Exit(1) }
+		task.PutACol(j, asub[aptrb[j]:aptre[j]], aval[aptrb[j]:aptre[j]])
 	}
 
 	/* Set the bounds on constraints. for i=1, ...,numcon : blc[i]
 	/* <= constraint i <= buc[i] */
 	for i := int32(0) ; i < numcon; i++ {
-		if mosek.RES_OK != task.PutConBound(i, bkc[i], blc[i], buc[i]) { os.Exit(1) }
+		task.PutConBound(i, bkc[i], blc[i], buc[i])
 	}
 	
 	/* Maximize objective function. */
-	if mosek.RES_OK != task.PutObjSense( mosek.OBJECTIVE_SENSE_MAXIMIZE) { os.Exit(1) }
+	task.PutObjSense( mosek.OBJECTIVE_SENSE_MAXIMIZE)
 	
 	/* Run optimizer */
-	var trmcode int32
-	trmcode,r = task.Optimize()
-	if r != mosek.RES_OK { os.Exit(1) }
-	
+	trmcode := task.Optimize()
+
+	if task.GetRes() != mosek.RES_OK { os.Exit(1) }
 
 	/* Print a summary containing information about the solution
 	/* for debugging purposes. */
@@ -95,13 +94,13 @@ func main() {
      
 	var solsta int32
 
-	solsta,r = task.GetSolSta (mosek.SOL_BAS)
-	if mosek.RES_OK != r { os.Exit(1) }
+	solsta = task.GetSolSta (mosek.SOL_BAS)
+	if task.GetRes() != mosek.RES_OK { os.Exit(1) }
 
         switch solsta {
 	case mosek.SOL_STA_OPTIMAL: fallthrough
 	case mosek.SOL_STA_NEAR_OPTIMAL:
-		xx,_ := task.GetXx(mosek.SOL_BAS, nil)
+		xx := task.GetXx(mosek.SOL_BAS, nil)
         
 		fmt.Println("Optimal primal solution")
 		fmt.Println("  x = ",xx)

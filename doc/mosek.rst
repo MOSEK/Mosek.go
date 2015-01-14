@@ -42,8 +42,7 @@ AnalyzeNames
 
 ..::
 
-    func (*Task) AnalyzeNames ( whichstream int32, nametype int32 ) ( res int32 )
-
+    func (*Task) AnalyzeNames ( whichstream int32, nametype int32 )
 `nametype int32`
     The type of names e.g. valid in MPS or LP files.
 
@@ -55,8 +54,7 @@ AnalyzeProblem
 
 ..::
 
-    func (*Task) AnalyzeProblem ( whichstream int32 ) ( res int32 )
-
+    func (*Task) AnalyzeProblem ( whichstream int32 )
 
 Analyze the data of a task.
 
@@ -66,8 +64,7 @@ AnalyzeSolution
 
 ..::
 
-    func (*Task) AnalyzeSolution ( whichstream int32, whichsol int32 ) ( res int32 )
-
+    func (*Task) AnalyzeSolution ( whichstream int32, whichsol int32 )
 
 Print information related to the quality of the solution.
 
@@ -77,8 +74,7 @@ AppendBarvars
 
 ..::
 
-    func (*Task) AppendBarvars ( dim []int32 ) ( res int32 )
-
+    func (*Task) AppendBarvars ( dim []int32 )
 `dim []int32`
     Dimension of symmetric matrix variables to be added.
 
@@ -94,7 +90,6 @@ AppendCone
         ( conetype int32,
           conepar float64,
           submem []int32 )
-        ( res int32 )
 
 
 Appends a new cone constraint to the problem.
@@ -110,7 +105,6 @@ AppendConeSeq
           conepar float64,
           nummem int32,
           j int32 )
-        ( res int32 )
 
 `nummem int32`
     Dimension of the conic constraint.
@@ -130,7 +124,6 @@ AppendConesSeq
           conepar []float64,
           nummem []int32,
           j int32 )
-        ( res int32 )
 
 `j int32`
     Index of the first variable in the first cone to be appended.
@@ -143,8 +136,7 @@ AppendCons
 
 ..::
 
-    func (*Task) AppendCons ( num int32 ) ( res int32 )
-
+    func (*Task) AppendCons ( num int32 )
 `num int32`
     Number of constraints which should be appended.
 
@@ -161,8 +153,7 @@ AppendSparseSymMat
           subi []int32,
           subj []int32,
           valij []float64 )
-        ( idx int64,
-          res int32 )
+        ( idx int64 )
 
 `dim int32`
     Dimension of the symmetric matrix that is appended.
@@ -181,8 +172,7 @@ AppendStat
 
 ..::
 
-    func (*Task) AppendStat (  ) ( res int32 )
-
+    func (*Task) AppendStat (  )
 
 Appends a record the statistics file.
 
@@ -192,8 +182,7 @@ AppendVars
 
 ..::
 
-    func (*Task) AppendVars ( num int32 ) ( res int32 )
-
+    func (*Task) AppendVars ( num int32 )
 `num int32`
     Number of variables which should be appended.
 
@@ -210,8 +199,7 @@ Axpy
           alpha float64,
           x []float64,
           y []float64 )
-        ( y []float64,
-          res int32 )
+        ( y []float64 )
 
 `n int32`
     Length of the vectors.
@@ -230,11 +218,7 @@ BasisCond
 
 ..::
 
-    func (*Task) BasisCond
-        (  )
-        ( nrmbasis float64,
-          nrminvbasis float64,
-          res int32 )
+    func (*Task) BasisCond (  ) ( nrmbasis float64, nrminvbasis float64 )
 
 
 Computes conditioning information for the basis matrix.
@@ -245,8 +229,7 @@ CheckConvexity
 
 ..::
 
-    func (*Task) CheckConvexity (  ) ( res int32 )
-
+    func (*Task) CheckConvexity (  )
 
 Checks if a quadratic optimization problem is convex.
 
@@ -256,8 +239,7 @@ CheckInLicense
 
 ..::
 
-    func (*Env) CheckInLicense ( feature int32 ) ( res int32 )
-
+    func (*Env) CheckInLicense ( feature int32 )
 `feature int32`
     Feature to check in to the license system.
 
@@ -269,8 +251,7 @@ CheckMem
 
 ..::
 
-    func (*Task) CheckMem ( file string, line int32 ) ( res int32 )
-
+    func (*Task) CheckMem ( file string, line int32 )
 `file string`
     File from which the function is called.
 `line int32`
@@ -284,8 +265,7 @@ CheckoutLicense
 
 ..::
 
-    func (*Env) CheckoutLicense ( feature int32 ) ( res int32 )
-
+    func (*Env) CheckoutLicense ( feature int32 )
 `feature int32`
     Feature to check out from the license system.
 
@@ -303,7 +283,6 @@ ChgBound
           lower int32,
           finite int32,
           value float64 )
-        ( res int32 )
 
 `i int32`
     Index of the constraint or variable for which the bounds should be changed.
@@ -327,7 +306,6 @@ ChgConBound
           lower int32,
           finite int32,
           value float64 )
-        ( res int32 )
 
 `i int32`
     Index of the constraint for which the bounds should be changed.
@@ -351,7 +329,6 @@ ChgVarBound
           lower int32,
           finite int32,
           value float64 )
-        ( res int32 )
 
 `j int32`
     Index of the variable for which the bounds should be changed.
@@ -370,8 +347,7 @@ CommitChanges
 
 ..::
 
-    func (*Task) CommitChanges (  ) ( res int32 )
-
+    func (*Task) CommitChanges (  )
 
 Commits all cached problem changes.
 
@@ -381,8 +357,7 @@ DeleteSolution
 
 ..::
 
-    func (*Task) DeleteSolution ( whichsol int32 ) ( res int32 )
-
+    func (*Task) DeleteSolution ( whichsol int32 )
 
 Undefine a solution and frees the memory it uses.
 
@@ -396,8 +371,7 @@ Dot
         ( n int32,
           x []float64,
           y []float64 )
-        ( xty float64,
-          res int32 )
+        ( xty float64 )
 
 `n int32`
     Length of the vectors.
@@ -423,8 +397,7 @@ DualSensitivity
         ( leftpricej []float64,
           rightpricej []float64,
           leftrangej []float64,
-          rightrangej []float64,
-          res int32 )
+          rightrangej []float64 )
 
 `subj []int32`
     Index of objective coefficients to analyze.
@@ -445,8 +418,7 @@ EchoIntro
 
 ..::
 
-    func (*Env) EchoIntro ( longver int32 ) ( res int32 )
-
+    func (*Env) EchoIntro ( longver int32 )
 `longver int32`
     If non-zero, then the intro is slightly longer.
 
@@ -469,8 +441,7 @@ Gemm
           b []float64,
           beta float64,
           c []float64 )
-        ( c []float64,
-          res int32 )
+        ( c []float64 )
 
 `transa int32`
     Indicates whether the matrix A must be transposed.
@@ -510,8 +481,7 @@ Gemv
           x []float64,
           beta float64,
           y []float64 )
-        ( y []float64,
-          res int32 )
+        ( y []float64 )
 
 `transa int32`
     Indicates whether the matrix A must be transposed.
@@ -544,8 +514,7 @@ GetACol
           valj []float64 )
         ( nzj int32,
           subj []int32,
-          valj []float64,
-          res int32 )
+          valj []float64 )
 
 `j int32`
     Index of the column.
@@ -562,7 +531,7 @@ GetAColNumNz
 
 ..::
 
-    func (*Task) GetAColNumNz ( i int32 ) ( nzj int32, res int32 )
+    func (*Task) GetAColNumNz ( i int32 ) ( nzj int32 )
 
 `i int32`
     Index of the column.
@@ -583,8 +552,7 @@ GetAColSliceTrip
           val []float64 )
         ( subi []int32,
           subj []int32,
-          val []float64,
-          res int32 )
+          val []float64 )
 
 `first int32`
     Index of the first column in the sequence.
@@ -610,8 +578,7 @@ GetAPieceNumNz
           lasti int32,
           firstj int32,
           lastj int32 )
-        ( numnz int32,
-          res int32 )
+        ( numnz int32 )
 
 `firsti int32`
     Index of the first row in the rectangular piece.
@@ -636,8 +603,7 @@ GetARow
           vali []float64 )
         ( nzi int32,
           subi []int32,
-          vali []float64,
-          res int32 )
+          vali []float64 )
 
 `i int32`
     Index of the row or column.
@@ -654,7 +620,7 @@ GetARowNumNz
 
 ..::
 
-    func (*Task) GetARowNumNz ( i int32 ) ( nzi int32, res int32 )
+    func (*Task) GetARowNumNz ( i int32 ) ( nzi int32 )
 
 `i int32`
     Index of the row or column.
@@ -675,8 +641,7 @@ GetARowSliceTrip
           val []float64 )
         ( subi []int32,
           subj []int32,
-          val []float64,
-          res int32 )
+          val []float64 )
 
 `first int32`
     Index of the first row or column in the sequence.
@@ -708,8 +673,7 @@ GetASlice
         ( ptrb []int64,
           ptre []int64,
           sub []int32,
-          val []float64,
-          res int32 )
+          val []float64 )
 
 `accmode int32`
     Defines whether a column slice or a row slice is requested.
@@ -738,8 +702,7 @@ GetASliceNumNz
         ( accmode int32,
           first int32,
           last int32 )
-        ( numnz int64,
-          res int32 )
+        ( numnz int64 )
 
 `accmode int32`
     Defines whether non-zeros are counted in a column slice or a row slice.
@@ -756,7 +719,7 @@ GetAij
 
 ..::
 
-    func (*Task) GetAij ( i int32, j int32 ) ( aij float64, res int32 )
+    func (*Task) GetAij ( i int32, j int32 ) ( aij float64 )
 
 `i int32`
     Row index of the coefficient to be returned.
@@ -782,8 +745,7 @@ GetBaraBlockTriplet
           subj []int32,
           subk []int32,
           subl []int32,
-          valijkl []float64,
-          res int32 )
+          valijkl []float64 )
 
 `subi []int32`
     Constraint index.
@@ -812,8 +774,7 @@ GetBaraIdx
           j int32,
           num int64,
           sub []int64,
-          weights []float64,
-          res int32 )
+          weights []float64 )
 
 `idx int64`
     Position of the element in the vectorized form.
@@ -830,11 +791,7 @@ GetBaraIdxIJ
 
 ..::
 
-    func (*Task) GetBaraIdxIJ
-        ( idx int64 )
-        ( i int32,
-          j int32,
-          res int32 )
+    func (*Task) GetBaraIdxIJ ( idx int64 ) ( i int32, j int32 )
 
 `idx int64`
     Position of the element in the vectorized form.
@@ -847,7 +804,7 @@ GetBaraIdxInfo
 
 ..::
 
-    func (*Task) GetBaraIdxInfo ( idx int64 ) ( num int64, res int32 )
+    func (*Task) GetBaraIdxInfo ( idx int64 ) ( num int64 )
 
 `idx int64`
     The internal position of the element that should be obtained information for.
@@ -860,11 +817,7 @@ GetBaraSparsity
 
 ..::
 
-    func (*Task) GetBaraSparsity
-        ( idxij []int64 )
-        ( numnz int64,
-          idxij []int64,
-          res int32 )
+    func (*Task) GetBaraSparsity ( idxij []int64 ) ( numnz int64, idxij []int64 )
 
 `idxij []int64`
     Position of each nonzero element in the vector representation of barA.
@@ -886,8 +839,7 @@ GetBarcBlockTriplet
           subj []int32,
           subk []int32,
           subl []int32,
-          valijkl []float64,
-          res int32 )
+          valijkl []float64 )
 
 `subj []int32`
     Symmetric matrix variable index.
@@ -913,8 +865,7 @@ GetBarcIdx
         ( j int32,
           num int64,
           sub []int64,
-          weights []float64,
-          res int32 )
+          weights []float64 )
 
 `idx int64`
     Index of the element that should be obtained information about.
@@ -931,7 +882,7 @@ GetBarcIdxInfo
 
 ..::
 
-    func (*Task) GetBarcIdxInfo ( idx int64 ) ( num int64, res int32 )
+    func (*Task) GetBarcIdxInfo ( idx int64 ) ( num int64 )
 
 `idx int64`
     Index of element that should be obtained information about. The value is an index of a symmetric sparse variable.
@@ -944,7 +895,7 @@ GetBarcIdxJ
 
 ..::
 
-    func (*Task) GetBarcIdxJ ( idx int64 ) ( j int32, res int32 )
+    func (*Task) GetBarcIdxJ ( idx int64 ) ( j int32 )
 
 `idx int64`
     Index of the element that should be obtained information about.
@@ -957,11 +908,7 @@ GetBarcSparsity
 
 ..::
 
-    func (*Task) GetBarcSparsity
-        ( idxj []int64 )
-        ( numnz int64,
-          idxj []int64,
-          res int32 )
+    func (*Task) GetBarcSparsity ( idxj []int64 ) ( numnz int64, idxj []int64 )
 
 `idxj []int64`
     Internal positions of the nonzeros elements in barc.
@@ -978,8 +925,7 @@ GetBarsJ
         ( whichsol int32,
           j int32,
           barsj []float64 )
-        ( barsj []float64,
-          res int32 )
+        ( barsj []float64 )
 
 `j int32`
     Index of the semidefinite variable.
@@ -994,7 +940,7 @@ GetBarvarName
 
 ..::
 
-    func (*Task) GetBarvarName ( i int32 ) ( name string, res int32 )
+    func (*Task) GetBarvarName ( i int32 ) ( name string )
 
 `i int32`
     Index.
@@ -1007,11 +953,7 @@ GetBarvarNameIndex
 
 ..::
 
-    func (*Task) GetBarvarNameIndex
-        ( somename string )
-        ( asgn int32,
-          index int32,
-          res int32 )
+    func (*Task) GetBarvarNameIndex ( somename string ) ( asgn int32, index int32 )
 
 `somename string`
     The requested name is copied to this buffer.
@@ -1024,7 +966,7 @@ GetBarvarNameLen
 
 ..::
 
-    func (*Task) GetBarvarNameLen ( i int32 ) ( len int32, res int32 )
+    func (*Task) GetBarvarNameLen ( i int32 ) ( len int32 )
 
 `i int32`
     Index.
@@ -1041,8 +983,7 @@ GetBarxJ
         ( whichsol int32,
           j int32,
           barxj []float64 )
-        ( barxj []float64,
-          res int32 )
+        ( barxj []float64 )
 
 `j int32`
     Index of the semidefinite variable.
@@ -1062,8 +1003,7 @@ GetBound
           i int32 )
         ( bk int32,
           bl float64,
-          bu float64,
-          res int32 )
+          bu float64 )
 
 `i int32`
     Index of the constraint or variable for which the bound information should be obtained.
@@ -1085,8 +1025,7 @@ GetBoundSlice
           bu []float64 )
         ( bk []int32,
           bl []float64,
-          bu []float64,
-          res int32 )
+          bu []float64 )
 
 
 Obtains bounds information for a sequence of variables or constraints.
@@ -1097,7 +1036,7 @@ GetC
 
 ..::
 
-    func (*Task) GetC ( c []float64 ) ( c []float64, res int32 )
+    func (*Task) GetC ( c []float64 ) ( c []float64 )
 
 
 Obtains all objective coefficients.
@@ -1108,7 +1047,7 @@ GetCJ
 
 ..::
 
-    func (*Task) GetCJ ( j int32 ) ( cj float64, res int32 )
+    func (*Task) GetCJ ( j int32 ) ( cj float64 )
 
 `j int32`
     Index of the variable for which c coefficient should be obtained.
@@ -1125,8 +1064,7 @@ GetCSlice
         ( first int32,
           last int32,
           c []float64 )
-        ( c []float64,
-          res int32 )
+        ( c []float64 )
 
 
 Obtains a sequence of coefficients from the objective.
@@ -1137,7 +1075,7 @@ GetCfix
 
 ..::
 
-    func (*Task) GetCfix (  ) ( cfix float64, res int32 )
+    func (*Task) GetCfix (  ) ( cfix float64 )
 
 
 Obtains the fixed term in the objective.
@@ -1169,8 +1107,7 @@ GetConBound
         ( i int32 )
         ( bk int32,
           bl float64,
-          bu float64,
-          res int32 )
+          bu float64 )
 
 `i int32`
     Index of the constraint for which the bound information should be obtained.
@@ -1191,8 +1128,7 @@ GetConBoundSlice
           bu []float64 )
         ( bk []int32,
           bl []float64,
-          bu []float64,
-          res int32 )
+          bu []float64 )
 
 
 Obtains bounds information for a slice of the constraints.
@@ -1203,7 +1139,7 @@ GetConName
 
 ..::
 
-    func (*Task) GetConName ( i int32 ) ( name string, res int32 )
+    func (*Task) GetConName ( i int32 ) ( name string )
 
 `i int32`
     Index.
@@ -1216,11 +1152,7 @@ GetConNameIndex
 
 ..::
 
-    func (*Task) GetConNameIndex
-        ( somename string )
-        ( asgn int32,
-          index int32,
-          res int32 )
+    func (*Task) GetConNameIndex ( somename string ) ( asgn int32, index int32 )
 
 `somename string`
     The name which should be checked.
@@ -1233,7 +1165,7 @@ GetConNameLen
 
 ..::
 
-    func (*Task) GetConNameLen ( i int32 ) ( len int32, res int32 )
+    func (*Task) GetConNameLen ( i int32 ) ( len int32 )
 
 `i int32`
     Index.
@@ -1252,8 +1184,7 @@ GetCone
         ( conetype int32,
           conepar float64,
           nummem int32,
-          submem []int32,
-          res int32 )
+          submem []int32 )
 
 `k int32`
     Index of the cone constraint.
@@ -1270,8 +1201,7 @@ GetConeInfo
         ( k int32 )
         ( conetype int32,
           conepar float64,
-          nummem int32,
-          res int32 )
+          nummem int32 )
 
 `k int32`
     Index of the conic constraint.
@@ -1284,7 +1214,7 @@ GetConeName
 
 ..::
 
-    func (*Task) GetConeName ( i int32 ) ( name string, res int32 )
+    func (*Task) GetConeName ( i int32 ) ( name string )
 
 `i int32`
     Index.
@@ -1297,11 +1227,7 @@ GetConeNameIndex
 
 ..::
 
-    func (*Task) GetConeNameIndex
-        ( somename string )
-        ( asgn int32,
-          index int32,
-          res int32 )
+    func (*Task) GetConeNameIndex ( somename string ) ( asgn int32, index int32 )
 
 `somename string`
     The name which should be checked.
@@ -1314,7 +1240,7 @@ GetConeNameLen
 
 ..::
 
-    func (*Task) GetConeNameLen ( i int32 ) ( len int32, res int32 )
+    func (*Task) GetConeNameLen ( i int32 ) ( len int32 )
 
 `i int32`
     Index.
@@ -1327,7 +1253,7 @@ GetDimBarvarJ
 
 ..::
 
-    func (*Task) GetDimBarvarJ ( j int32 ) ( dimbarvarj int32, res int32 )
+    func (*Task) GetDimBarvarJ ( j int32 ) ( dimbarvarj int32 )
 
 `j int32`
     Index of the semidefinite variable whose dimension is requested.
@@ -1340,7 +1266,7 @@ GetDouInf
 
 ..::
 
-    func (*Task) GetDouInf ( whichdinf int32 ) ( dvalue float64, res int32 )
+    func (*Task) GetDouInf ( whichdinf int32 ) ( dvalue float64 )
 
 
 Obtains a double information item.
@@ -1351,7 +1277,7 @@ GetDouParam
 
 ..::
 
-    func (*Task) GetDouParam ( param int32 ) ( parvalue float64, res int32 )
+    func (*Task) GetDouParam ( param int32 ) ( parvalue float64 )
 
 
 Obtains a double parameter.
@@ -1362,7 +1288,7 @@ GetDualObj
 
 ..::
 
-    func (*Task) GetDualObj ( whichsol int32 ) ( dualobj float64, res int32 )
+    func (*Task) GetDualObj ( whichsol int32 ) ( dualobj float64 )
 
 
 Computes the dual objective value associated with the solution.
@@ -1377,8 +1303,7 @@ GetDviolBarvar
         ( whichsol int32,
           sub []int32,
           viol []float64 )
-        ( viol []float64,
-          res int32 )
+        ( viol []float64 )
 
 `sub []int32`
     An array of indexes of barx variables.
@@ -1397,8 +1322,7 @@ GetDviolCon
         ( whichsol int32,
           sub []int32,
           viol []float64 )
-        ( viol []float64,
-          res int32 )
+        ( viol []float64 )
 
 `sub []int32`
     An array of indexes of constraints.
@@ -1417,8 +1341,7 @@ GetDviolCones
         ( whichsol int32,
           sub []int32,
           viol []float64 )
-        ( viol []float64,
-          res int32 )
+        ( viol []float64 )
 
 `sub []int32`
     An array of indexes of barx variables.
@@ -1437,8 +1360,7 @@ GetDviolVar
         ( whichsol int32,
           sub []int32,
           viol []float64 )
-        ( viol []float64,
-          res int32 )
+        ( viol []float64 )
 
 `sub []int32`
     An array of indexes of x variables.
@@ -1453,7 +1375,7 @@ GetInfIndex
 
 ..::
 
-    func (*Task) GetInfIndex ( inftype int32, infname string ) ( infindex int32, res int32 )
+    func (*Task) GetInfIndex ( inftype int32, infname string ) ( infindex int32 )
 
 
 Obtains the index of a named information item.
@@ -1464,7 +1386,7 @@ GetInfMax
 
 ..::
 
-    func (*Task) GetInfMax ( inftype int32, infmax []int32 ) ( infmax []int32, res int32 )
+    func (*Task) GetInfMax ( inftype int32, infmax []int32 ) ( infmax []int32 )
 
 
 Obtains the maximum index of an information of a given type inftype plus 1.
@@ -1475,7 +1397,7 @@ GetInfName
 
 ..::
 
-    func (*Task) GetInfName ( inftype int32, whichinf int32 ) ( infname string, res int32 )
+    func (*Task) GetInfName ( inftype int32, whichinf int32 ) ( infname string )
 
 
 Obtains the name of an information item.
@@ -1486,7 +1408,7 @@ GetInfeasibleSubProblem
 
 ..::
 
-    func (*Task) GetInfeasibleSubProblem ( whichsol int32 ) ( inftask Task, res int32 )
+    func (*Task) GetInfeasibleSubProblem ( whichsol int32 ) ( inftask Task )
 
 `whichsol int32`
     Which solution to use when determining the infeasible subproblem.
@@ -1499,7 +1421,7 @@ GetIntInf
 
 ..::
 
-    func (*Task) GetIntInf ( whichiinf int32 ) ( ivalue int32, res int32 )
+    func (*Task) GetIntInf ( whichiinf int32 ) ( ivalue int32 )
 
 
 Obtains an integer information item.
@@ -1510,7 +1432,7 @@ GetIntParam
 
 ..::
 
-    func (*Task) GetIntParam ( param int32 ) ( parvalue int32, res int32 )
+    func (*Task) GetIntParam ( param int32 ) ( parvalue int32 )
 
 
 Obtains an integer parameter.
@@ -1521,7 +1443,7 @@ GetLenBarvarJ
 
 ..::
 
-    func (*Task) GetLenBarvarJ ( j int32 ) ( lenbarvarj int64, res int32 )
+    func (*Task) GetLenBarvarJ ( j int32 ) ( lenbarvarj int64 )
 
 `j int32`
     Index of the semidefinite variable whose length if requested.
@@ -1534,7 +1456,7 @@ GetLintInf
 
 ..::
 
-    func (*Task) GetLintInf ( whichliinf int32 ) ( ivalue int64, res int32 )
+    func (*Task) GetLintInf ( whichliinf int32 ) ( ivalue int64 )
 
 
 Obtains an integer information item.
@@ -1545,7 +1467,7 @@ GetMaxNumANz
 
 ..::
 
-    func (*Task) GetMaxNumANz (  ) ( maxnumanz int64, res int32 )
+    func (*Task) GetMaxNumANz (  ) ( maxnumanz int64 )
 
 
 Obtains number of preallocated non-zeros in the linear constraint matrix.
@@ -1556,7 +1478,7 @@ GetMaxNumBarvar
 
 ..::
 
-    func (*Task) GetMaxNumBarvar (  ) ( maxnumbarvar int32, res int32 )
+    func (*Task) GetMaxNumBarvar (  ) ( maxnumbarvar int32 )
 
 
 Obtains the number of semidefinite variables.
@@ -1567,7 +1489,7 @@ GetMaxNumCon
 
 ..::
 
-    func (*Task) GetMaxNumCon (  ) ( maxnumcon int32, res int32 )
+    func (*Task) GetMaxNumCon (  ) ( maxnumcon int32 )
 
 
 Obtains the number of preallocated constraints in the optimization task.
@@ -1578,7 +1500,7 @@ GetMaxNumCone
 
 ..::
 
-    func (*Task) GetMaxNumCone (  ) ( maxnumcone int32, res int32 )
+    func (*Task) GetMaxNumCone (  ) ( maxnumcone int32 )
 
 
 Obtains the number of preallocated cones in the optimization task.
@@ -1589,7 +1511,7 @@ GetMaxNumQNz
 
 ..::
 
-    func (*Task) GetMaxNumQNz (  ) ( maxnumqnz int64, res int32 )
+    func (*Task) GetMaxNumQNz (  ) ( maxnumqnz int64 )
 
 
 Obtains the number of preallocated non-zeros for all quadratic terms in objective and constraints.
@@ -1600,7 +1522,7 @@ GetMaxNumVar
 
 ..::
 
-    func (*Task) GetMaxNumVar (  ) ( maxnumvar int32, res int32 )
+    func (*Task) GetMaxNumVar (  ) ( maxnumvar int32 )
 
 
 Obtains the maximum number variables allowed.
@@ -1611,11 +1533,7 @@ GetMemUsage
 
 ..::
 
-    func (*Task) GetMemUsage
-        (  )
-        ( meminuse int64,
-          maxmemuse int64,
-          res int32 )
+    func (*Task) GetMemUsage (  ) ( meminuse int64, maxmemuse int64 )
 
 
 Obtains information about the amount of memory used by a task.
@@ -1626,7 +1544,7 @@ GetNumANz
 
 ..::
 
-    func (*Task) GetNumANz (  ) ( numanz int32, res int32 )
+    func (*Task) GetNumANz (  ) ( numanz int32 )
 
 
 Obtains the number of non-zeros in the coefficient matrix.
@@ -1637,7 +1555,7 @@ GetNumANz64
 
 ..::
 
-    func (*Task) GetNumANz64 (  ) ( numanz int64, res int32 )
+    func (*Task) GetNumANz64 (  ) ( numanz int64 )
 
 
 Obtains the number of non-zeros in the coefficient matrix.
@@ -1648,7 +1566,7 @@ GetNumBaraBlockTriplets
 
 ..::
 
-    func (*Task) GetNumBaraBlockTriplets (  ) ( num int64, res int32 )
+    func (*Task) GetNumBaraBlockTriplets (  ) ( num int64 )
 
 
 Obtains an upper bound on the number of scalar elements in the block triplet form of bara.
@@ -1659,7 +1577,7 @@ GetNumBaraNz
 
 ..::
 
-    func (*Task) GetNumBaraNz (  ) ( nz int64, res int32 )
+    func (*Task) GetNumBaraNz (  ) ( nz int64 )
 
 
 Get the number of nonzero elements in barA.
@@ -1670,7 +1588,7 @@ GetNumBarcBlockTriplets
 
 ..::
 
-    func (*Task) GetNumBarcBlockTriplets (  ) ( num int64, res int32 )
+    func (*Task) GetNumBarcBlockTriplets (  ) ( num int64 )
 
 
 Obtains an upper bound on the number of elements in the block triplet form of barc.
@@ -1681,7 +1599,7 @@ GetNumBarcNz
 
 ..::
 
-    func (*Task) GetNumBarcNz (  ) ( nz int64, res int32 )
+    func (*Task) GetNumBarcNz (  ) ( nz int64 )
 
 
 Obtains the number of nonzero elements in barc.
@@ -1692,7 +1610,7 @@ GetNumBarvar
 
 ..::
 
-    func (*Task) GetNumBarvar (  ) ( numbarvar int32, res int32 )
+    func (*Task) GetNumBarvar (  ) ( numbarvar int32 )
 
 
 Obtains the number of semidefinite variables.
@@ -1703,7 +1621,7 @@ GetNumCon
 
 ..::
 
-    func (*Task) GetNumCon (  ) ( numcon int32, res int32 )
+    func (*Task) GetNumCon (  ) ( numcon int32 )
 
 
 Obtains the number of constraints.
@@ -1714,7 +1632,7 @@ GetNumCone
 
 ..::
 
-    func (*Task) GetNumCone (  ) ( numcone int32, res int32 )
+    func (*Task) GetNumCone (  ) ( numcone int32 )
 
 
 Obtains the number of cones.
@@ -1725,7 +1643,7 @@ GetNumConeMem
 
 ..::
 
-    func (*Task) GetNumConeMem ( k int32 ) ( nummem int32, res int32 )
+    func (*Task) GetNumConeMem ( k int32 ) ( nummem int32 )
 
 `k int32`
     Index of the cone.
@@ -1738,7 +1656,7 @@ GetNumIntVar
 
 ..::
 
-    func (*Task) GetNumIntVar (  ) ( numintvar int32, res int32 )
+    func (*Task) GetNumIntVar (  ) ( numintvar int32 )
 
 
 Obtains the number of integer-constrained variables.
@@ -1749,7 +1667,7 @@ GetNumParam
 
 ..::
 
-    func (*Task) GetNumParam ( partype int32 ) ( numparam int32, res int32 )
+    func (*Task) GetNumParam ( partype int32 ) ( numparam int32 )
 
 
 Obtains the number of parameters of a given type.
@@ -1760,7 +1678,7 @@ GetNumQConKNz
 
 ..::
 
-    func (*Task) GetNumQConKNz ( k int32 ) ( numqcnz int64, res int32 )
+    func (*Task) GetNumQConKNz ( k int32 ) ( numqcnz int64 )
 
 `k int32`
     Index of the constraint for which the number quadratic terms should be obtained.
@@ -1773,7 +1691,7 @@ GetNumQObjNz
 
 ..::
 
-    func (*Task) GetNumQObjNz (  ) ( numqonz int64, res int32 )
+    func (*Task) GetNumQObjNz (  ) ( numqonz int64 )
 
 
 Obtains the number of non-zero quadratic terms in the objective.
@@ -1784,7 +1702,7 @@ GetNumSymMat
 
 ..::
 
-    func (*Task) GetNumSymMat (  ) ( num int64, res int32 )
+    func (*Task) GetNumSymMat (  ) ( num int64 )
 
 
 Get the number of symmetric matrixes stored.
@@ -1795,7 +1713,7 @@ GetNumVar
 
 ..::
 
-    func (*Task) GetNumVar (  ) ( numvar int32, res int32 )
+    func (*Task) GetNumVar (  ) ( numvar int32 )
 
 
 Obtains the number of variables.
@@ -1806,7 +1724,7 @@ GetObjName
 
 ..::
 
-    func (*Task) GetObjName (  ) ( objname string, res int32 )
+    func (*Task) GetObjName (  ) ( objname string )
 
 
 Obtains the name assigned to the objective function.
@@ -1817,7 +1735,7 @@ GetObjNameLen
 
 ..::
 
-    func (*Task) GetObjNameLen (  ) ( len int32, res int32 )
+    func (*Task) GetObjNameLen (  ) ( len int32 )
 
 
 Obtains the length of the name assigned to the objective function.
@@ -1828,7 +1746,7 @@ GetObjSense
 
 ..::
 
-    func (*Task) GetObjSense (  ) ( sense int32, res int32 )
+    func (*Task) GetObjSense (  ) ( sense int32 )
 
 
 Gets the objective sense.
@@ -1839,7 +1757,7 @@ GetParamMax
 
 ..::
 
-    func (*Task) GetParamMax ( partype int32 ) ( parammax int32, res int32 )
+    func (*Task) GetParamMax ( partype int32 ) ( parammax int32 )
 
 
 Obtains the maximum index of a parameter of a given type plus 1.
@@ -1850,7 +1768,7 @@ GetParamName
 
 ..::
 
-    func (*Task) GetParamName ( partype int32, param int32 ) ( parname string, res int32 )
+    func (*Task) GetParamName ( partype int32, param int32 ) ( parname string )
 
 
 Obtains the name of a parameter.
@@ -1861,7 +1779,7 @@ GetPrimalObj
 
 ..::
 
-    func (*Task) GetPrimalObj ( whichsol int32 ) ( primalobj float64, res int32 )
+    func (*Task) GetPrimalObj ( whichsol int32 ) ( primalobj float64 )
 
 
 Computes the primal objective value for the desired solution.
@@ -1872,7 +1790,7 @@ GetProSta
 
 ..::
 
-    func (*Task) GetProSta ( whichsol int32 ) ( prosta int32, res int32 )
+    func (*Task) GetProSta ( whichsol int32 ) ( prosta int32 )
 
 
 Obtains the problem status.
@@ -1883,7 +1801,7 @@ GetProbType
 
 ..::
 
-    func (*Task) GetProbType (  ) ( probtype int32, res int32 )
+    func (*Task) GetProbType (  ) ( probtype int32 )
 
 
 Obtains the problem type.
@@ -1898,8 +1816,7 @@ GetPviolBarvar
         ( whichsol int32,
           sub []int32,
           viol []float64 )
-        ( viol []float64,
-          res int32 )
+        ( viol []float64 )
 
 `sub []int32`
     An array of indexes of barx variables.
@@ -1918,8 +1835,7 @@ GetPviolCon
         ( whichsol int32,
           sub []int32,
           viol []float64 )
-        ( viol []float64,
-          res int32 )
+        ( viol []float64 )
 
 `sub []int32`
     An array of indexes of constraints.
@@ -1938,8 +1854,7 @@ GetPviolCones
         ( whichsol int32,
           sub []int32,
           viol []float64 )
-        ( viol []float64,
-          res int32 )
+        ( viol []float64 )
 
 `sub []int32`
     An array of indexes of barx variables.
@@ -1958,8 +1873,7 @@ GetPviolVar
         ( whichsol int32,
           sub []int32,
           viol []float64 )
-        ( viol []float64,
-          res int32 )
+        ( viol []float64 )
 
 `sub []int32`
     An array of indexes of x variables.
@@ -1982,8 +1896,7 @@ GetQConK
         ( numqcnz int64,
           qcsubi []int32,
           qcsubj []int32,
-          qcval []float64,
-          res int32 )
+          qcval []float64 )
 
 `k int32`
     Which constraint.
@@ -2003,8 +1916,7 @@ GetQObj
         ( numqonz int32,
           qosubi []int32,
           qosubj []int32,
-          qoval []float64,
-          res int32 )
+          qoval []float64 )
 
 
 Obtains all the quadratic terms in the objective.
@@ -2022,8 +1934,7 @@ GetQObj64
         ( numqonz int64,
           qosubi []int32,
           qosubj []int32,
-          qoval []float64,
-          res int32 )
+          qoval []float64 )
 
 
 Obtains all the quadratic terms in the objective.
@@ -2034,7 +1945,7 @@ GetQObjIJ
 
 ..::
 
-    func (*Task) GetQObjIJ ( i int32, j int32 ) ( qoij float64, res int32 )
+    func (*Task) GetQObjIJ ( i int32, j int32 ) ( qoij float64 )
 
 `i int32`
     Row index of the coefficient.
@@ -2054,8 +1965,7 @@ GetReducedCosts
           first int32,
           last int32,
           redcosts []float64 )
-        ( redcosts []float64,
-          res int32 )
+        ( redcosts []float64 )
 
 `first int32`
     See the documentation for a full description.
@@ -2072,7 +1982,7 @@ GetSkc
 
 ..::
 
-    func (*Task) GetSkc ( whichsol int32, skc []int32 ) ( skc []int32, res int32 )
+    func (*Task) GetSkc ( whichsol int32, skc []int32 ) ( skc []int32 )
 
 
 Obtains the status keys for the constraints.
@@ -2088,8 +1998,7 @@ GetSkcSlice
           first int32,
           last int32,
           skc []int32 )
-        ( skc []int32,
-          res int32 )
+        ( skc []int32 )
 
 
 Obtains the status keys for the constraints.
@@ -2100,7 +2009,7 @@ GetSkx
 
 ..::
 
-    func (*Task) GetSkx ( whichsol int32, skx []int32 ) ( skx []int32, res int32 )
+    func (*Task) GetSkx ( whichsol int32, skx []int32 ) ( skx []int32 )
 
 
 Obtains the status keys for the scalar variables.
@@ -2116,8 +2025,7 @@ GetSkxSlice
           first int32,
           last int32,
           skx []int32 )
-        ( skx []int32,
-          res int32 )
+        ( skx []int32 )
 
 
 Obtains the status keys for the variables.
@@ -2128,7 +2036,7 @@ GetSlc
 
 ..::
 
-    func (*Task) GetSlc ( whichsol int32, slc []float64 ) ( slc []float64, res int32 )
+    func (*Task) GetSlc ( whichsol int32, slc []float64 ) ( slc []float64 )
 
 `slc []float64`
     The slc vector.
@@ -2146,8 +2054,7 @@ GetSlcSlice
           first int32,
           last int32,
           slc []float64 )
-        ( slc []float64,
-          res int32 )
+        ( slc []float64 )
 
 
 Obtains a slice of the slc vector for a solution.
@@ -2158,7 +2065,7 @@ GetSlx
 
 ..::
 
-    func (*Task) GetSlx ( whichsol int32, slx []float64 ) ( slx []float64, res int32 )
+    func (*Task) GetSlx ( whichsol int32, slx []float64 ) ( slx []float64 )
 
 `slx []float64`
     The slx vector.
@@ -2176,8 +2083,7 @@ GetSlxSlice
           first int32,
           last int32,
           slx []float64 )
-        ( slx []float64,
-          res int32 )
+        ( slx []float64 )
 
 
 Obtains a slice of the slx vector for a solution.
@@ -2188,7 +2094,7 @@ GetSnx
 
 ..::
 
-    func (*Task) GetSnx ( whichsol int32, snx []float64 ) ( snx []float64, res int32 )
+    func (*Task) GetSnx ( whichsol int32, snx []float64 ) ( snx []float64 )
 
 `snx []float64`
     The snx vector.
@@ -2206,8 +2112,7 @@ GetSnxSlice
           first int32,
           last int32,
           snx []float64 )
-        ( snx []float64,
-          res int32 )
+        ( snx []float64 )
 
 
 Obtains a slice of the snx vector for a solution.
@@ -2218,7 +2123,7 @@ GetSolSta
 
 ..::
 
-    func (*Task) GetSolSta ( whichsol int32 ) ( solsta int32, res int32 )
+    func (*Task) GetSolSta ( whichsol int32 ) ( solsta int32 )
 
 
 Obtains the solution status.
@@ -2254,8 +2159,7 @@ GetSolution
           suc []float64,
           slx []float64,
           sux []float64,
-          snx []float64,
-          res int32 )
+          snx []float64 )
 
 
 Obtains the complete solution.
@@ -2274,8 +2178,7 @@ GetSolutionI
           x float64,
           sl float64,
           su float64,
-          sn float64,
-          res int32 )
+          sn float64 )
 
 `accmode int32`
     Defines whether solution information for a constraint or for a variable is retrieved.
@@ -2302,8 +2205,7 @@ GetSolutionInfo
           dviolcon float64,
           dviolvar float64,
           dviolbarvar float64,
-          dviolcone float64,
-          res int32 )
+          dviolcone float64 )
 
 
 Obtains information about of a solution.
@@ -2320,8 +2222,7 @@ GetSolutionSlice
           first int32,
           last int32,
           values []float64 )
-        ( values []float64,
-          res int32 )
+        ( values []float64 )
 
 `first int32`
     Index of the first value in the slice.
@@ -2345,8 +2246,7 @@ GetSparseSymMat
           valij []float64 )
         ( subi []int32,
           subj []int32,
-          valij []float64,
-          res int32 )
+          valij []float64 )
 
 `idx int64`
     Index of the matrix to get.
@@ -2365,11 +2265,7 @@ GetStrParam
 
 ..::
 
-    func (*Task) GetStrParam
-        ( param int32 )
-        ( len int32,
-          parvalue string,
-          res int32 )
+    func (*Task) GetStrParam ( param int32 ) ( len int32, parvalue string )
 
 
 Obtains the value of a string parameter.
@@ -2380,7 +2276,7 @@ GetStrParamLen
 
 ..::
 
-    func (*Task) GetStrParamLen ( param int32 ) ( len int32, res int32 )
+    func (*Task) GetStrParamLen ( param int32 ) ( len int32 )
 
 
 Obtains the length of a string parameter.
@@ -2391,7 +2287,7 @@ GetSuc
 
 ..::
 
-    func (*Task) GetSuc ( whichsol int32, suc []float64 ) ( suc []float64, res int32 )
+    func (*Task) GetSuc ( whichsol int32, suc []float64 ) ( suc []float64 )
 
 `suc []float64`
     The suc vector.
@@ -2409,8 +2305,7 @@ GetSucSlice
           first int32,
           last int32,
           suc []float64 )
-        ( suc []float64,
-          res int32 )
+        ( suc []float64 )
 
 
 Obtains a slice of the suc vector for a solution.
@@ -2421,7 +2316,7 @@ GetSux
 
 ..::
 
-    func (*Task) GetSux ( whichsol int32, sux []float64 ) ( sux []float64, res int32 )
+    func (*Task) GetSux ( whichsol int32, sux []float64 ) ( sux []float64 )
 
 `sux []float64`
     The sux vector.
@@ -2439,8 +2334,7 @@ GetSuxSlice
           first int32,
           last int32,
           sux []float64 )
-        ( sux []float64,
-          res int32 )
+        ( sux []float64 )
 
 
 Obtains a slice of the sux vector for a solution.
@@ -2455,8 +2349,7 @@ GetSymMatInfo
         ( idx int64 )
         ( dim int32,
           nz int64,
-          type int32,
-          res int32 )
+          type int32 )
 
 `idx int64`
     Index of the matrix that is requested information about.
@@ -2469,7 +2362,7 @@ GetTaskName
 
 ..::
 
-    func (*Task) GetTaskName (  ) ( taskname string, res int32 )
+    func (*Task) GetTaskName (  ) ( taskname string )
 
 
 Obtains the task name.
@@ -2480,7 +2373,7 @@ GetTaskNameLen
 
 ..::
 
-    func (*Task) GetTaskNameLen (  ) ( len int32, res int32 )
+    func (*Task) GetTaskNameLen (  ) ( len int32 )
 
 
 Obtains the length the task name.
@@ -2495,8 +2388,7 @@ GetVarBound
         ( i int32 )
         ( bk int32,
           bl float64,
-          bu float64,
-          res int32 )
+          bu float64 )
 
 `i int32`
     Index of the variable for which the bound information should be obtained.
@@ -2517,8 +2409,7 @@ GetVarBoundSlice
           bu []float64 )
         ( bk []int32,
           bl []float64,
-          bu []float64,
-          res int32 )
+          bu []float64 )
 
 
 Obtains bounds information for a slice of the variables.
@@ -2529,7 +2420,7 @@ GetVarBranchDir
 
 ..::
 
-    func (*Task) GetVarBranchDir ( j int32 ) ( direction int32, res int32 )
+    func (*Task) GetVarBranchDir ( j int32 ) ( direction int32 )
 
 `j int32`
     Index of the variable.
@@ -2542,11 +2433,7 @@ GetVarBranchOrder
 
 ..::
 
-    func (*Task) GetVarBranchOrder
-        ( j int32 )
-        ( priority int32,
-          direction int32,
-          res int32 )
+    func (*Task) GetVarBranchOrder ( j int32 ) ( priority int32, direction int32 )
 
 `j int32`
     Index of the variable.
@@ -2559,7 +2446,7 @@ GetVarBranchPri
 
 ..::
 
-    func (*Task) GetVarBranchPri ( j int32 ) ( priority int32, res int32 )
+    func (*Task) GetVarBranchPri ( j int32 ) ( priority int32 )
 
 `j int32`
     Index of the variable.
@@ -2572,7 +2459,7 @@ GetVarName
 
 ..::
 
-    func (*Task) GetVarName ( j int32 ) ( name string, res int32 )
+    func (*Task) GetVarName ( j int32 ) ( name string )
 
 `j int32`
     Index.
@@ -2585,11 +2472,7 @@ GetVarNameIndex
 
 ..::
 
-    func (*Task) GetVarNameIndex
-        ( somename string )
-        ( asgn int32,
-          index int32,
-          res int32 )
+    func (*Task) GetVarNameIndex ( somename string ) ( asgn int32, index int32 )
 
 `somename string`
     The name which should be checked.
@@ -2602,7 +2485,7 @@ GetVarNameLen
 
 ..::
 
-    func (*Task) GetVarNameLen ( i int32 ) ( len int32, res int32 )
+    func (*Task) GetVarNameLen ( i int32 ) ( len int32 )
 
 `i int32`
     Index.
@@ -2615,7 +2498,7 @@ GetVarType
 
 ..::
 
-    func (*Task) GetVarType ( j int32 ) ( vartype int32, res int32 )
+    func (*Task) GetVarType ( j int32 ) ( vartype int32 )
 
 `j int32`
     Index of the variable.
@@ -2628,7 +2511,7 @@ GetVarTypeList
 
 ..::
 
-    func (*Task) GetVarTypeList ( subj []int32, vartype []int32 ) ( vartype []int32, res int32 )
+    func (*Task) GetVarTypeList ( subj []int32, vartype []int32 ) ( vartype []int32 )
 
 `subj []int32`
     A list of variable indexes.
@@ -2660,7 +2543,7 @@ GetXc
 
 ..::
 
-    func (*Task) GetXc ( whichsol int32, xc []float64 ) ( xc []float64, res int32 )
+    func (*Task) GetXc ( whichsol int32, xc []float64 ) ( xc []float64 )
 
 `xc []float64`
     The xc vector.
@@ -2678,8 +2561,7 @@ GetXcSlice
           first int32,
           last int32,
           xc []float64 )
-        ( xc []float64,
-          res int32 )
+        ( xc []float64 )
 
 
 Obtains a slice of the xc vector for a solution.
@@ -2690,7 +2572,7 @@ GetXx
 
 ..::
 
-    func (*Task) GetXx ( whichsol int32, xx []float64 ) ( xx []float64, res int32 )
+    func (*Task) GetXx ( whichsol int32, xx []float64 ) ( xx []float64 )
 
 `xx []float64`
     The xx vector.
@@ -2708,8 +2590,7 @@ GetXxSlice
           first int32,
           last int32,
           xx []float64 )
-        ( xx []float64,
-          res int32 )
+        ( xx []float64 )
 
 
 Obtains a slice of the xx vector for a solution.
@@ -2720,7 +2601,7 @@ GetY
 
 ..::
 
-    func (*Task) GetY ( whichsol int32, y []float64 ) ( y []float64, res int32 )
+    func (*Task) GetY ( whichsol int32, y []float64 ) ( y []float64 )
 
 `y []float64`
     The y vector.
@@ -2738,8 +2619,7 @@ GetYSlice
           first int32,
           last int32,
           y []float64 )
-        ( y []float64,
-          res int32 )
+        ( y []float64 )
 
 
 Obtains a slice of the y vector for a solution.
@@ -2750,7 +2630,7 @@ InitBasisSolve
 
 ..::
 
-    func (*Task) InitBasisSolve ( basis []int32 ) ( basis []int32, res int32 )
+    func (*Task) InitBasisSolve ( basis []int32 ) ( basis []int32 )
 
 `basis []int32`
     The array of basis indexes to use.
@@ -2778,7 +2658,6 @@ InputData
           bkx []int32,
           blx []float64,
           bux []float64 )
-        ( res int32 )
 
 
 Input the linear part of an optimization task in one function call.
@@ -2789,7 +2668,7 @@ IsDouParName
 
 ..::
 
-    func (*Task) IsDouParName ( parname string ) ( param int32, res int32 )
+    func (*Task) IsDouParName ( parname string ) ( param int32 )
 
 
 Checks a double parameter name.
@@ -2800,7 +2679,7 @@ IsIntParName
 
 ..::
 
-    func (*Task) IsIntParName ( parname string ) ( param int32, res int32 )
+    func (*Task) IsIntParName ( parname string ) ( param int32 )
 
 
 Checks an integer parameter name.
@@ -2811,7 +2690,7 @@ IsStrParName
 
 ..::
 
-    func (*Task) IsStrParName ( parname string ) ( param int32, res int32 )
+    func (*Task) IsStrParName ( parname string ) ( param int32 )
 
 
 Checks a string parameter name.
@@ -2837,7 +2716,6 @@ LinkFileToStream
         ( whichstream int32,
           filename string,
           append int32 )
-        ( res int32 )
 
 `filename string`
     The name of the file where the stream is written.
@@ -2856,7 +2734,6 @@ Linkfiletostream
         ( whichstream int32,
           filename string,
           append int32 )
-        ( res int32 )
 
 `filename string`
     Name of the file to write stream data to.
@@ -2871,8 +2748,7 @@ OneSolutionSummary
 
 ..::
 
-    func (*Task) OneSolutionSummary ( whichstream int32, whichsol int32 ) ( res int32 )
-
+    func (*Task) OneSolutionSummary ( whichstream int32, whichsol int32 )
 
 Prints a short summary for the specified solution.
 
@@ -2882,7 +2758,7 @@ Optimize
 
 ..::
 
-    func (*Task) Optimize (  ) ( trmcode int32, res int32 )
+    func (*Task) Optimize (  ) ( trmcode int32 )
 
 
 Optimizes the problem.
@@ -2893,8 +2769,7 @@ OptimizerSummary
 
 ..::
 
-    func (*Task) OptimizerSummary ( whichstream int32 ) ( res int32 )
-
+    func (*Task) OptimizerSummary ( whichstream int32 )
 
 Prints a short summary with optimizer statistics for last optimization.
 
@@ -2908,8 +2783,7 @@ Potrf
         ( uplo int32,
           n int32,
           a []float64 )
-        ( a []float64,
-          res int32 )
+        ( a []float64 )
 
 `uplo int32`
     Indicates whether the upper or lower triangular part of the matrix is stored.
@@ -2931,7 +2805,6 @@ PrimalRepair
           wuc []float64,
           wlx []float64,
           wux []float64 )
-        ( res int32 )
 
 `wlc []float64`
     Weights associated with relaxing lower bounds on the constraints.
@@ -2970,8 +2843,7 @@ PrimalSensitivity
           leftpricej []float64,
           rightpricej []float64,
           leftrangej []float64,
-          rightrangej []float64,
-          res int32 )
+          rightrangej []float64 )
 
 `subi []int32`
     Indexes of bounds on constraints to analyze.
@@ -3006,7 +2878,7 @@ ProStaToStr
 
 ..::
 
-    func (*Task) ProStaToStr ( prosta int32 ) ( str string, res int32 )
+    func (*Task) ProStaToStr ( prosta int32 ) ( str string )
 
 
 Obtains a string containing the name of a problem status given.
@@ -3017,7 +2889,7 @@ ProbTypeToStr
 
 ..::
 
-    func (*Task) ProbTypeToStr ( probtype int32 ) ( str string, res int32 )
+    func (*Task) ProbTypeToStr ( probtype int32 ) ( str string )
 
 
 Obtains a string containing the name of a problem type given.
@@ -3032,7 +2904,6 @@ PutACol
         ( j int32,
           subj []int32,
           valj []float64 )
-        ( res int32 )
 
 `j int32`
     Column index.
@@ -3055,7 +2926,6 @@ PutAColList
           ptre []int32,
           asub []int32,
           aval []float64 )
-        ( res int32 )
 
 `sub []int32`
     Indexes of columns that should be replaced.
@@ -3081,7 +2951,6 @@ PutAColSlice
           ptre []int64,
           asub []int32,
           aval []float64 )
-        ( res int32 )
 
 `first int32`
     First column in the slice.
@@ -3106,7 +2975,6 @@ PutARow
         ( i int32,
           subi []int32,
           vali []float64 )
-        ( res int32 )
 
 `i int32`
     row index.
@@ -3129,7 +2997,6 @@ PutARowList
           aptre []int32,
           asub []int32,
           aval []float64 )
-        ( res int32 )
 
 `sub []int32`
     Indexes of rows or columns that should be replaced.
@@ -3155,7 +3022,6 @@ PutARowSlice
           ptre []int64,
           asub []int32,
           aval []float64 )
-        ( res int32 )
 
 `first int32`
     First row in the slice.
@@ -3180,7 +3046,6 @@ PutAij
         ( i int32,
           j int32,
           aij float64 )
-        ( res int32 )
 
 `i int32`
     Index of the constraint in which the change should occur.
@@ -3201,7 +3066,6 @@ PutAijList
         ( subi []int32,
           subj []int32,
           valij []float64 )
-        ( res int32 )
 
 `subi []int32`
     Constraint indexes in which the change should occur.
@@ -3223,7 +3087,6 @@ PutBarAij
           j int32,
           sub []int64,
           weights []float64 )
-        ( res int32 )
 
 `i int32`
     Row index of barA.
@@ -3249,7 +3112,6 @@ PutBaraBlockTriplet
           subk []int32,
           subl []int32,
           valijkl []float64 )
-        ( res int32 )
 
 `num int64`
     Number of elements in the block triplet form.
@@ -3278,7 +3140,6 @@ PutBarcBlockTriplet
           subk []int32,
           subl []int32,
           valjkl []float64 )
-        ( res int32 )
 
 `num int64`
     Number of elements in the block triplet form.
@@ -3303,7 +3164,6 @@ PutBarcJ
         ( j int32,
           sub []int64,
           weights []float64 )
-        ( res int32 )
 
 `j int32`
     Index of the element in barc$ that should be changed.
@@ -3324,7 +3184,6 @@ PutBarsJ
         ( whichsol int32,
           j int32,
           barsj []float64 )
-        ( res int32 )
 
 `j int32`
     Index of the semidefinite variable.
@@ -3339,8 +3198,7 @@ PutBarvarName
 
 ..::
 
-    func (*Task) PutBarvarName ( j int32, name string ) ( res int32 )
-
+    func (*Task) PutBarvarName ( j int32, name string )
 `j int32`
     Index of the variable.
 `name string`
@@ -3358,7 +3216,6 @@ PutBarxJ
         ( whichsol int32,
           j int32,
           barxj []float64 )
-        ( res int32 )
 
 `j int32`
     Index of the semidefinite variable.
@@ -3379,7 +3236,6 @@ PutBound
           bk int32,
           bl float64,
           bu float64 )
-        ( res int32 )
 
 `accmode int32`
     Defines whether the bound for a constraint or a variable is changed.
@@ -3406,7 +3262,6 @@ PutBoundList
           bk []int32,
           bl []float64,
           bu []float64 )
-        ( res int32 )
 
 `accmode int32`
     Defines whether to access bounds on variables or constraints.
@@ -3434,7 +3289,6 @@ PutBoundSlice
           bk []int32,
           bl []float64,
           bu []float64 )
-        ( res int32 )
 
 `con int32`
     Determines whether variables or constraints are modified.
@@ -3447,8 +3301,7 @@ PutCJ
 
 ..::
 
-    func (*Task) PutCJ ( j int32, cj float64 ) ( res int32 )
-
+    func (*Task) PutCJ ( j int32, cj float64 )
 `j int32`
     Index of the variable whose objective coefficient should be changed.
 `cj float64`
@@ -3462,8 +3315,7 @@ PutCList
 
 ..::
 
-    func (*Task) PutCList ( subj []int32, val []float64 ) ( res int32 )
-
+    func (*Task) PutCList ( subj []int32, val []float64 )
 `subj []int32`
     Index of variables for which objective coefficients should be changed.
 `val []float64`
@@ -3481,7 +3333,6 @@ PutCSlice
         ( first int32,
           last int32,
           slice []float64 )
-        ( res int32 )
 
 `first int32`
     First element in the slice of c.
@@ -3513,8 +3364,7 @@ PutCfix
 
 ..::
 
-    func (*Task) PutCfix ( cfix float64 ) ( res int32 )
-
+    func (*Task) PutCfix ( cfix float64 )
 
 Replaces the fixed term in the objective.
 
@@ -3529,7 +3379,6 @@ PutConBound
           bk int32,
           bl float64,
           bu float64 )
-        ( res int32 )
 
 `i int32`
     Index of the constraint.
@@ -3553,7 +3402,6 @@ PutConBoundList
           bkc []int32,
           blc []float64,
           buc []float64 )
-        ( res int32 )
 
 `sub []int32`
     List constraints indexes.
@@ -3578,7 +3426,6 @@ PutConBoundSlice
           bk []int32,
           bl []float64,
           bu []float64 )
-        ( res int32 )
 
 `first int32`
     Index of the first constraint in the slice.
@@ -3599,8 +3446,7 @@ PutConName
 
 ..::
 
-    func (*Task) PutConName ( i int32, name string ) ( res int32 )
-
+    func (*Task) PutConName ( i int32, name string )
 `i int32`
     Index of the variable.
 `name string`
@@ -3619,7 +3465,6 @@ PutCone
           conetype int32,
           conepar float64,
           submem []int32 )
-        ( res int32 )
 
 `k int32`
     Index of the cone.
@@ -3632,8 +3477,7 @@ PutConeName
 
 ..::
 
-    func (*Task) PutConeName ( j int32, name string ) ( res int32 )
-
+    func (*Task) PutConeName ( j int32, name string )
 `j int32`
     Index of the variable.
 `name string`
@@ -3647,8 +3491,7 @@ PutDouParam
 
 ..::
 
-    func (*Task) PutDouParam ( param int32, parvalue float64 ) ( res int32 )
-
+    func (*Task) PutDouParam ( param int32, parvalue float64 )
 
 Sets a double parameter.
 
@@ -3684,8 +3527,7 @@ PutIntParam
 
 ..::
 
-    func (*Task) PutIntParam ( param int32, parvalue int32 ) ( res int32 )
-
+    func (*Task) PutIntParam ( param int32, parvalue int32 )
 
 Sets an integer parameter.
 
@@ -3695,8 +3537,7 @@ PutKeepDlls
 
 ..::
 
-    func (*Env) PutKeepDlls ( keepdlls int32 ) ( res int32 )
-
+    func (*Env) PutKeepDlls ( keepdlls int32 )
 `keepdlls int32`
     Controls whether explicitly loaded DLLs should be kept.
 
@@ -3708,8 +3549,7 @@ PutLicenseCode
 
 ..::
 
-    func (*Env) PutLicenseCode ( code []int32 ) ( res int32 )
-
+    func (*Env) PutLicenseCode ( code []int32 )
 `code []int32`
     A license key string.
 
@@ -3721,8 +3561,7 @@ PutLicenseDebug
 
 ..::
 
-    func (*Env) PutLicenseDebug ( licdebug int32 ) ( res int32 )
-
+    func (*Env) PutLicenseDebug ( licdebug int32 )
 `licdebug int32`
     Enable output of license check-out debug information.
 
@@ -3734,8 +3573,7 @@ PutLicensePath
 
 ..::
 
-    func (*Env) PutLicensePath ( licensepath string ) ( res int32 )
-
+    func (*Env) PutLicensePath ( licensepath string )
 `licensepath string`
     A path specifycing where to search for the license.
 
@@ -3747,8 +3585,7 @@ PutLicenseWait
 
 ..::
 
-    func (*Env) PutLicenseWait ( licwait int32 ) ( res int32 )
-
+    func (*Env) PutLicenseWait ( licwait int32 )
 `licwait int32`
     Enable waiting for a license.
 
@@ -3760,8 +3597,7 @@ PutMaxNumANz
 
 ..::
 
-    func (*Task) PutMaxNumANz ( maxnumanz int64 ) ( res int32 )
-
+    func (*Task) PutMaxNumANz ( maxnumanz int64 )
 `maxnumanz int64`
     New size of the storage reserved for storing the linear coefficient matrix.
 
@@ -3773,8 +3609,7 @@ PutMaxNumBarvar
 
 ..::
 
-    func (*Task) PutMaxNumBarvar ( maxnumbarvar int32 ) ( res int32 )
-
+    func (*Task) PutMaxNumBarvar ( maxnumbarvar int32 )
 `maxnumbarvar int32`
     The maximum number of semidefinite variables.
 
@@ -3786,8 +3621,7 @@ PutMaxNumCon
 
 ..::
 
-    func (*Task) PutMaxNumCon ( maxnumcon int32 ) ( res int32 )
-
+    func (*Task) PutMaxNumCon ( maxnumcon int32 )
 
 Sets the number of preallocated constraints in the optimization task.
 
@@ -3797,8 +3631,7 @@ PutMaxNumCone
 
 ..::
 
-    func (*Task) PutMaxNumCone ( maxnumcone int32 ) ( res int32 )
-
+    func (*Task) PutMaxNumCone ( maxnumcone int32 )
 
 Sets the number of preallocated conic constraints in the optimization task.
 
@@ -3808,8 +3641,7 @@ PutMaxNumQNz
 
 ..::
 
-    func (*Task) PutMaxNumQNz ( maxnumqnz int64 ) ( res int32 )
-
+    func (*Task) PutMaxNumQNz ( maxnumqnz int64 )
 
 Changes the size of the preallocated storage for quadratic terms.
 
@@ -3819,8 +3651,7 @@ PutMaxNumVar
 
 ..::
 
-    func (*Task) PutMaxNumVar ( maxnumvar int32 ) ( res int32 )
-
+    func (*Task) PutMaxNumVar ( maxnumvar int32 )
 
 Sets the number of preallocated variables in the optimization task.
 
@@ -3830,8 +3661,7 @@ PutNaDouParam
 
 ..::
 
-    func (*Task) PutNaDouParam ( paramname string, parvalue float64 ) ( res int32 )
-
+    func (*Task) PutNaDouParam ( paramname string, parvalue float64 )
 
 Sets a double parameter.
 
@@ -3841,8 +3671,7 @@ PutNaIntParam
 
 ..::
 
-    func (*Task) PutNaIntParam ( paramname string, parvalue int32 ) ( res int32 )
-
+    func (*Task) PutNaIntParam ( paramname string, parvalue int32 )
 
 Sets an integer parameter.
 
@@ -3852,8 +3681,7 @@ PutNaStrParam
 
 ..::
 
-    func (*Task) PutNaStrParam ( paramname string, parvalue string ) ( res int32 )
-
+    func (*Task) PutNaStrParam ( paramname string, parvalue string )
 
 Sets a string parameter.
 
@@ -3863,8 +3691,7 @@ PutObjName
 
 ..::
 
-    func (*Task) PutObjName ( objname string ) ( res int32 )
-
+    func (*Task) PutObjName ( objname string )
 
 Assigns a new name to the objective.
 
@@ -3874,8 +3701,7 @@ PutObjSense
 
 ..::
 
-    func (*Task) PutObjSense ( sense int32 ) ( res int32 )
-
+    func (*Task) PutObjSense ( sense int32 )
 `sense int32`
     The objective sense of the task
 
@@ -3887,8 +3713,7 @@ PutParam
 
 ..::
 
-    func (*Task) PutParam ( parname string, parvalue string ) ( res int32 )
-
+    func (*Task) PutParam ( parname string, parvalue string )
 
 Modifies the value of parameter.
 
@@ -3903,7 +3728,6 @@ PutQCon
           qcsubi []int32,
           qcsubj []int32,
           qcval []float64 )
-        ( res int32 )
 
 
 Replaces all quadratic terms in constraints.
@@ -3919,7 +3743,6 @@ PutQConK
           qcsubi []int32,
           qcsubj []int32,
           qcval []float64 )
-        ( res int32 )
 
 `k int32`
     The constraint in which the new quadratic elements are inserted.
@@ -3936,7 +3759,6 @@ PutQObj
         ( qosubi []int32,
           qosubj []int32,
           qoval []float64 )
-        ( res int32 )
 
 
 Replaces all quadratic terms in the objective.
@@ -3951,7 +3773,6 @@ PutQObjIJ
         ( i int32,
           j int32,
           qoij float64 )
-        ( res int32 )
 
 `i int32`
     Row index for the coefficient to be replaced.
@@ -3968,8 +3789,7 @@ PutSkc
 
 ..::
 
-    func (*Task) PutSkc ( whichsol int32, skc []int32 ) ( res int32 )
-
+    func (*Task) PutSkc ( whichsol int32, skc []int32 )
 
 Sets the status keys for the constraints.
 
@@ -3984,7 +3804,6 @@ PutSkcSlice
           first int32,
           last int32,
           skc []int32 )
-        ( res int32 )
 
 
 Sets the status keys for the constraints.
@@ -3995,8 +3814,7 @@ PutSkx
 
 ..::
 
-    func (*Task) PutSkx ( whichsol int32, skx []int32 ) ( res int32 )
-
+    func (*Task) PutSkx ( whichsol int32, skx []int32 )
 
 Sets the status keys for the scalar variables.
 
@@ -4011,7 +3829,6 @@ PutSkxSlice
           first int32,
           last int32,
           skx []int32 )
-        ( res int32 )
 
 
 Sets the status keys for the variables.
@@ -4022,8 +3839,7 @@ PutSlc
 
 ..::
 
-    func (*Task) PutSlc ( whichsol int32, slc []float64 ) ( res int32 )
-
+    func (*Task) PutSlc ( whichsol int32, slc []float64 )
 `slc []float64`
     The slc vector.
 
@@ -4040,7 +3856,6 @@ PutSlcSlice
           first int32,
           last int32,
           slc []float64 )
-        ( res int32 )
 
 
 Sets a slice of the slc vector for a solution.
@@ -4051,8 +3866,7 @@ PutSlx
 
 ..::
 
-    func (*Task) PutSlx ( whichsol int32, slx []float64 ) ( res int32 )
-
+    func (*Task) PutSlx ( whichsol int32, slx []float64 )
 `slx []float64`
     The slx vector.
 
@@ -4069,7 +3883,6 @@ PutSlxSlice
           first int32,
           last int32,
           slx []float64 )
-        ( res int32 )
 
 
 Sets a slice of the slx vector for a solution.
@@ -4080,8 +3893,7 @@ PutSnx
 
 ..::
 
-    func (*Task) PutSnx ( whichsol int32, sux []float64 ) ( res int32 )
-
+    func (*Task) PutSnx ( whichsol int32, sux []float64 )
 `sux []float64`
     The snx vector.
 
@@ -4098,7 +3910,6 @@ PutSnxSlice
           first int32,
           last int32,
           snx []float64 )
-        ( res int32 )
 
 
 Sets a slice of the snx vector for a solution.
@@ -4122,7 +3933,6 @@ PutSolution
           slx []float64,
           sux []float64,
           snx []float64 )
-        ( res int32 )
 
 
 Inserts a solution.
@@ -4142,7 +3952,6 @@ PutSolutionI
           sl float64,
           su float64,
           sn float64 )
-        ( res int32 )
 
 `accmode int32`
     Defines whether solution information for a constraint or for a variable is modified.
@@ -4171,7 +3980,6 @@ PutSolutionYI
         ( i int32,
           whichsol int32,
           y float64 )
-        ( res int32 )
 
 `i int32`
     Index of the dual variable.
@@ -4186,8 +3994,7 @@ PutStrParam
 
 ..::
 
-    func (*Task) PutStrParam ( param int32, parvalue string ) ( res int32 )
-
+    func (*Task) PutStrParam ( param int32, parvalue string )
 
 Sets a string parameter.
 
@@ -4207,8 +4014,7 @@ PutSuc
 
 ..::
 
-    func (*Task) PutSuc ( whichsol int32, suc []float64 ) ( res int32 )
-
+    func (*Task) PutSuc ( whichsol int32, suc []float64 )
 `suc []float64`
     The suc vector.
 
@@ -4225,7 +4031,6 @@ PutSucSlice
           first int32,
           last int32,
           suc []float64 )
-        ( res int32 )
 
 
 Sets a slice of the suc vector for a solution.
@@ -4236,8 +4041,7 @@ PutSux
 
 ..::
 
-    func (*Task) PutSux ( whichsol int32, sux []float64 ) ( res int32 )
-
+    func (*Task) PutSux ( whichsol int32, sux []float64 )
 `sux []float64`
     The sux vector.
 
@@ -4254,7 +4058,6 @@ PutSuxSlice
           first int32,
           last int32,
           sux []float64 )
-        ( res int32 )
 
 
 Sets a slice of the sux vector for a solution.
@@ -4265,8 +4068,7 @@ PutTaskName
 
 ..::
 
-    func (*Task) PutTaskName ( taskname string ) ( res int32 )
-
+    func (*Task) PutTaskName ( taskname string )
 
 Assigns a new name to the task.
 
@@ -4281,7 +4083,6 @@ PutVarBound
           bk int32,
           bl float64,
           bu float64 )
-        ( res int32 )
 
 `j int32`
     Index of the variable.
@@ -4305,7 +4106,6 @@ PutVarBoundList
           bkx []int32,
           blx []float64,
           bux []float64 )
-        ( res int32 )
 
 `sub []int32`
     List of variable indexes.
@@ -4330,7 +4130,6 @@ PutVarBoundSlice
           bk []int32,
           bl []float64,
           bu []float64 )
-        ( res int32 )
 
 `first int32`
     Index of the first variable in the slice.
@@ -4355,7 +4154,6 @@ PutVarBranchOrder
         ( j int32,
           priority int32,
           direction int32 )
-        ( res int32 )
 
 `j int32`
     Index of the variable.
@@ -4372,8 +4170,7 @@ PutVarName
 
 ..::
 
-    func (*Task) PutVarName ( j int32, name string ) ( res int32 )
-
+    func (*Task) PutVarName ( j int32, name string )
 `j int32`
     Index of the variable.
 `name string`
@@ -4387,8 +4184,7 @@ PutVarType
 
 ..::
 
-    func (*Task) PutVarType ( j int32, vartype int32 ) ( res int32 )
-
+    func (*Task) PutVarType ( j int32, vartype int32 )
 `j int32`
     Index of the variable.
 `vartype int32`
@@ -4402,8 +4198,7 @@ PutVarTypeList
 
 ..::
 
-    func (*Task) PutVarTypeList ( subj []int32, vartype []int32 ) ( res int32 )
-
+    func (*Task) PutVarTypeList ( subj []int32, vartype []int32 )
 `subj []int32`
     A list of variable indexes for which the variable type should be changed.
 `vartype []int32`
@@ -4417,7 +4212,7 @@ PutXc
 
 ..::
 
-    func (*Task) PutXc ( whichsol int32, xc []float64 ) ( xc []float64, res int32 )
+    func (*Task) PutXc ( whichsol int32, xc []float64 ) ( xc []float64 )
 
 `xc []float64`
     The xc vector.
@@ -4435,7 +4230,6 @@ PutXcSlice
           first int32,
           last int32,
           xc []float64 )
-        ( res int32 )
 
 
 Sets a slice of the xc vector for a solution.
@@ -4446,8 +4240,7 @@ PutXx
 
 ..::
 
-    func (*Task) PutXx ( whichsol int32, xx []float64 ) ( res int32 )
-
+    func (*Task) PutXx ( whichsol int32, xx []float64 )
 `xx []float64`
     The xx vector.
 
@@ -4464,7 +4257,6 @@ PutXxSlice
           first int32,
           last int32,
           xx []float64 )
-        ( res int32 )
 
 
 Obtains a slice of the xx vector for a solution.
@@ -4475,8 +4267,7 @@ PutY
 
 ..::
 
-    func (*Task) PutY ( whichsol int32, y []float64 ) ( res int32 )
-
+    func (*Task) PutY ( whichsol int32, y []float64 )
 `y []float64`
     The y vector.
 
@@ -4493,7 +4284,6 @@ PutYSlice
           first int32,
           last int32,
           y []float64 )
-        ( res int32 )
 
 
 Sets a slice of the y vector for a solution.
@@ -4504,8 +4294,7 @@ ReadBranchPriorities
 
 ..::
 
-    func (*Task) ReadBranchPriorities ( filename string ) ( res int32 )
-
+    func (*Task) ReadBranchPriorities ( filename string )
 `filename string`
     Input file name.
 
@@ -4517,8 +4306,7 @@ ReadData
 
 ..::
 
-    func (*Task) ReadData ( filename string ) ( res int32 )
-
+    func (*Task) ReadData ( filename string )
 `filename string`
     Input data file name.
 
@@ -4534,7 +4322,6 @@ ReadDataFormat
         ( filename string,
           format int32,
           compress int32 )
-        ( res int32 )
 
 `filename string`
     Input data file name.
@@ -4551,8 +4338,7 @@ ReadParamFile
 
 ..::
 
-    func (*Task) ReadParamFile ( filename string ) ( res int32 )
-
+    func (*Task) ReadParamFile ( filename string )
 `filename string`
     Input data file name.
 
@@ -4564,8 +4350,7 @@ ReadSolution
 
 ..::
 
-    func (*Task) ReadSolution ( whichsol int32, filename string ) ( res int32 )
-
+    func (*Task) ReadSolution ( whichsol int32, filename string )
 
 Reads a solution from a file.
 
@@ -4575,8 +4360,7 @@ ReadSummary
 
 ..::
 
-    func (*Task) ReadSummary ( whichstream int32 ) ( res int32 )
-
+    func (*Task) ReadSummary ( whichstream int32 )
 
 Prints information about last file read.
 
@@ -4586,8 +4370,7 @@ ReadTask
 
 ..::
 
-    func (*Task) ReadTask ( filename string ) ( res int32 )
-
+    func (*Task) ReadTask ( filename string )
 `filename string`
     Input file name.
 
@@ -4599,8 +4382,7 @@ RemoveBarvars
 
 ..::
 
-    func (*Task) RemoveBarvars ( subset []int32 ) ( res int32 )
-
+    func (*Task) RemoveBarvars ( subset []int32 )
 `subset []int32`
     Indexes of symmetric matrix which should be removed.
 
@@ -4612,8 +4394,7 @@ RemoveCones
 
 ..::
 
-    func (*Task) RemoveCones ( subset []int32 ) ( res int32 )
-
+    func (*Task) RemoveCones ( subset []int32 )
 `subset []int32`
     Indexes of cones which should be removed.
 
@@ -4625,8 +4406,7 @@ RemoveCons
 
 ..::
 
-    func (*Task) RemoveCons ( subset []int32 ) ( res int32 )
-
+    func (*Task) RemoveCons ( subset []int32 )
 `subset []int32`
     Indexes of constraints which should be removed.
 
@@ -4638,8 +4418,7 @@ RemoveVars
 
 ..::
 
-    func (*Task) RemoveVars ( subset []int32 ) ( res int32 )
-
+    func (*Task) RemoveVars ( subset []int32 )
 `subset []int32`
     Indexes of variables which should be removed.
 
@@ -4657,7 +4436,6 @@ ResizeTask
           maxnumcone int32,
           maxnumanz int64,
           maxnumqnz int64 )
-        ( res int32 )
 
 `maxnumcon int32`
     New maximum number of constraints.
@@ -4678,8 +4456,7 @@ SensitivityReport
 
 ..::
 
-    func (*Task) SensitivityReport ( whichstream int32 ) ( res int32 )
-
+    func (*Task) SensitivityReport ( whichstream int32 )
 
 Creates a sensitivity report.
 
@@ -4689,8 +4466,7 @@ SetDefaults
 
 ..::
 
-    func (*Task) SetDefaults (  ) ( res int32 )
-
+    func (*Task) SetDefaults (  )
 
 Resets all parameters values.
 
@@ -4700,7 +4476,7 @@ SkToStr
 
 ..::
 
-    func (*Task) SkToStr ( sk int32 ) ( str string, res int32 )
+    func (*Task) SkToStr ( sk int32 ) ( str string )
 
 `sk int32`
     A valid status key.
@@ -4713,7 +4489,7 @@ SolStaToStr
 
 ..::
 
-    func (*Task) SolStaToStr ( solsta int32 ) ( str string, res int32 )
+    func (*Task) SolStaToStr ( solsta int32 ) ( str string )
 
 
 Obtains a solution status string.
@@ -4724,7 +4500,7 @@ SolutionDef
 
 ..::
 
-    func (*Task) SolutionDef ( whichsol int32 ) ( isdef bool, res int32 )
+    func (*Task) SolutionDef ( whichsol int32 ) ( isdef bool )
 
 
 Checks whether a solution is defined.
@@ -4735,8 +4511,7 @@ SolutionSummary
 
 ..::
 
-    func (*Task) SolutionSummary ( whichstream int32 ) ( res int32 )
-
+    func (*Task) SolutionSummary ( whichstream int32 )
 
 Prints a short summary of the current solutions.
 
@@ -4753,8 +4528,7 @@ SolveWithBasis
           val []float64 )
         ( numnz int32,
           sub []int32,
-          val []float64,
-          res int32 )
+          val []float64 )
 
 `transp int32`
     Controls which problem formulation is solved.
@@ -4773,8 +4547,7 @@ StartStat
 
 ..::
 
-    func (*Task) StartStat (  ) ( res int32 )
-
+    func (*Task) StartStat (  )
 
 Starts the statistics file.
 
@@ -4784,8 +4557,7 @@ StopStat
 
 ..::
 
-    func (*Task) StopStat (  ) ( res int32 )
-
+    func (*Task) StopStat (  )
 
 Stops the statistics file.
 
@@ -4795,7 +4567,7 @@ StrToConeType
 
 ..::
 
-    func (*Task) StrToConeType ( str string ) ( conetype int32, res int32 )
+    func (*Task) StrToConeType ( str string ) ( conetype int32 )
 
 `str string`
     String corresponding to the cone type code.
@@ -4808,7 +4580,7 @@ StrToSk
 
 ..::
 
-    func (*Task) StrToSk ( str string ) ( sk int32, res int32 )
+    func (*Task) StrToSk ( str string ) ( sk int32 )
 
 `str string`
     Status key string.
@@ -4826,8 +4598,7 @@ Syeig
           n int32,
           a []float64,
           w []float64 )
-        ( w []float64,
-          res int32 )
+        ( w []float64 )
 
 `uplo int32`
     Indicates whether the upper or lower triangular part is used.
@@ -4852,8 +4623,7 @@ Syevd
           a []float64,
           w []float64 )
         ( a []float64,
-          w []float64,
-          res int32 )
+          w []float64 )
 
 `uplo int32`
     Indicates whether the upper or lower triangular part is used.
@@ -4881,8 +4651,7 @@ Syrk
           a []float64,
           beta float64,
           c []float64 )
-        ( c []float64,
-          res int32 )
+        ( c []float64 )
 
 `uplo int32`
     Indicates whether the upper or lower triangular part of C is stored.
@@ -4909,8 +4678,7 @@ Toconic
 
 ..::
 
-    func (*Task) Toconic (  ) ( res int32 )
-
+    func (*Task) Toconic (  )
 
 Inplace reformulation of a QCQP to a COP
 
@@ -4920,8 +4688,7 @@ UpdateSolutionInfo
 
 ..::
 
-    func (*Task) UpdateSolutionInfo ( whichsol int32 ) ( res int32 )
-
+    func (*Task) UpdateSolutionInfo ( whichsol int32 )
 
 Update the information items related to the solution.
 
@@ -4931,8 +4698,7 @@ WriteBranchPriorities
 
 ..::
 
-    func (*Task) WriteBranchPriorities ( filename string ) ( res int32 )
-
+    func (*Task) WriteBranchPriorities ( filename string )
 `filename string`
     Output file name.
 
@@ -4944,8 +4710,7 @@ WriteData
 
 ..::
 
-    func (*Task) WriteData ( filename string ) ( res int32 )
-
+    func (*Task) WriteData ( filename string )
 `filename string`
     Output file name.
 
@@ -4957,8 +4722,7 @@ WriteParamFile
 
 ..::
 
-    func (*Task) WriteParamFile ( filename string ) ( res int32 )
-
+    func (*Task) WriteParamFile ( filename string )
 `filename string`
     The name of parameter file.
 
@@ -4970,8 +4734,7 @@ WriteSolution
 
 ..::
 
-    func (*Task) WriteSolution ( whichsol int32, filename string ) ( res int32 )
-
+    func (*Task) WriteSolution ( whichsol int32, filename string )
 
 Write a solution to a file.
 
@@ -4981,8 +4744,7 @@ WriteTask
 
 ..::
 
-    func (*Task) WriteTask ( filename string ) ( res int32 )
-
+    func (*Task) WriteTask ( filename string )
 `filename string`
     Output file name.
 
