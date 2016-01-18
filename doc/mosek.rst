@@ -87,7 +87,7 @@ AppendCone
 ..::
 
     func (*Task) AppendCone
-        ( conetype int32,
+        ( ct int32,
           conepar float64,
           submem []int32 )
 
@@ -101,7 +101,7 @@ AppendConeSeq
 ..::
 
     func (*Task) AppendConeSeq
-        ( conetype int32,
+        ( ct int32,
           conepar float64,
           nummem int32,
           j int32 )
@@ -120,7 +120,7 @@ AppendConesSeq
 ..::
 
     func (*Task) AppendConesSeq
-        ( conetype []int32,
+        ( ct []int32,
           conepar []float64,
           nummem []int32,
           j int32 )
@@ -206,9 +206,9 @@ Axpy
 `alpha float64`
     The scalar that multiplies x.
 `x []float64`
-    The  vector.
+    The :math:`x` vector.
 `y []float64`
-    The  vector.
+    The :math:`y` vector.
 
 Adds alpha times x to y.
 
@@ -1181,7 +1181,7 @@ GetCone
     func (*Task) GetCone
         ( k int32,
           submem []int32 )
-        ( conetype int32,
+        ( ct int32,
           conepar float64,
           nummem int32,
           submem []int32 )
@@ -1199,7 +1199,7 @@ GetConeInfo
 
     func (*Task) GetConeInfo
         ( k int32 )
-        ( conetype int32,
+        ( ct int32,
           conepar float64,
           nummem int32 )
 
@@ -1913,24 +1913,6 @@ GetQObj
         ( qosubi []int32,
           qosubj []int32,
           qoval []float64 )
-        ( numqonz int32,
-          qosubi []int32,
-          qosubj []int32,
-          qoval []float64 )
-
-
-Obtains all the quadratic terms in the objective.
-
-
-GetQObj64
-~~~~~~~~~
-
-..::
-
-    func (*Task) GetQObj64
-        ( qosubi []int32,
-          qosubj []int32,
-          qoval []float64 )
         ( numqonz int64,
           qosubi []int32,
           qosubj []int32,
@@ -2415,45 +2397,6 @@ GetVarBoundSlice
 Obtains bounds information for a slice of the variables.
 
 
-GetVarBranchDir
-~~~~~~~~~~~~~~~
-
-..::
-
-    func (*Task) GetVarBranchDir ( j int32 ) ( direction int32 )
-
-`j int32`
-    Index of the variable.
-
-Obtains the branching direction for a variable.
-
-
-GetVarBranchOrder
-~~~~~~~~~~~~~~~~~
-
-..::
-
-    func (*Task) GetVarBranchOrder ( j int32 ) ( priority int32, direction int32 )
-
-`j int32`
-    Index of the variable.
-
-Obtains the branching priority for a variable.
-
-
-GetVarBranchPri
-~~~~~~~~~~~~~~~
-
-..::
-
-    func (*Task) GetVarBranchPri ( j int32 ) ( priority int32 )
-
-`j int32`
-    Index of the variable.
-
-Obtains the branching priority for a variable.
-
-
 GetVarName
 ~~~~~~~~~~
 
@@ -2535,7 +2478,7 @@ GetVersion
           res int32 )
 
 
-Obtains MOSEK version information.
+Obtains |mosek| version information.
 
 
 GetXc
@@ -3077,29 +3020,6 @@ PutAijList
 Changes one or more coefficients in the linear constraint matrix.
 
 
-PutBarAij
-~~~~~~~~~
-
-..::
-
-    func (*Task) PutBarAij
-        ( i int32,
-          j int32,
-          sub []int64,
-          weights []float64 )
-
-`i int32`
-    Row index of barA.
-`j int32`
-    Column index of barA.
-`sub []int64`
-    See argument weights for an explanation.
-`weights []float64`
-    Weights in the weighted sum.
-
-Inputs an element of barA.
-
-
 PutBaraBlockTriplet
 ~~~~~~~~~~~~~~~~~~~
 
@@ -3127,6 +3047,29 @@ PutBaraBlockTriplet
     The numerical value associated with the block triplet.
 
 Inputs barA in block triplet form.
+
+
+PutBaraIj
+~~~~~~~~~
+
+..::
+
+    func (*Task) PutBaraIj
+        ( i int32,
+          j int32,
+          sub []int64,
+          weights []float64 )
+
+`i int32`
+    Row index of barA.
+`j int32`
+    Column index of barA.
+`sub []int64`
+    See argument weights for an explanation.
+`weights []float64`
+    Weights in the weighted sum.
+
+Inputs an element of barA.
 
 
 PutBarcBlockTriplet
@@ -3166,7 +3109,7 @@ PutBarcJ
           weights []float64 )
 
 `j int32`
-    Index of the element in barc$ that should be changed.
+    Index of the element in barc` that should be changed.
 `sub []int64`
     sub is list of indexes of those symmetric matrices appearing in sum.
 `weights []float64`
@@ -3448,7 +3391,7 @@ PutConName
 
     func (*Task) PutConName ( i int32, name string )
 `i int32`
-    Index of the variable.
+    Index of the constraint.
 `name string`
     The variable name.
 
@@ -3462,7 +3405,7 @@ PutCone
 
     func (*Task) PutCone
         ( k int32,
-          conetype int32,
+          ct int32,
           conepar float64,
           submem []int32 )
 
@@ -3479,7 +3422,7 @@ PutConeName
 
     func (*Task) PutConeName ( j int32, name string )
 `j int32`
-    Index of the variable.
+    Index of the cone.
 `name string`
     The variable name.
 
@@ -4145,26 +4088,6 @@ PutVarBoundSlice
 Changes the bounds for a slice of the variables.
 
 
-PutVarBranchOrder
-~~~~~~~~~~~~~~~~~
-
-..::
-
-    func (*Task) PutVarBranchOrder
-        ( j int32,
-          priority int32,
-          direction int32 )
-
-`j int32`
-    Index of the variable.
-`priority int32`
-    The branching priority that should be assigned to the j'th variable.
-`direction int32`
-    Specifies the preferred branching direction for the j'th variable.
-
-Assigns a branching priority and direction to a variable.
-
-
 PutVarName
 ~~~~~~~~~~
 
@@ -4287,18 +4210,6 @@ PutYSlice
 
 
 Sets a slice of the y vector for a solution.
-
-
-ReadBranchPriorities
-~~~~~~~~~~~~~~~~~~~~
-
-..::
-
-    func (*Task) ReadBranchPriorities ( filename string )
-`filename string`
-    Input file name.
-
-Reads branching priority data from a file.
 
 
 ReadData
@@ -4693,18 +4604,6 @@ UpdateSolutionInfo
 Update the information items related to the solution.
 
 
-WriteBranchPriorities
-~~~~~~~~~~~~~~~~~~~~~
-
-..::
-
-    func (*Task) WriteBranchPriorities ( filename string )
-`filename string`
-    Output file name.
-
-Writes branching priority data to a file.
-
-
 WriteData
 ~~~~~~~~~
 
@@ -4715,6 +4614,16 @@ WriteData
     Output file name.
 
 Writes problem data to a file.
+
+
+WriteJsonSol
+~~~~~~~~~~~~
+
+..::
+
+    func (*Task) WriteJsonSol ( filename string )
+
+Write a solution to a file.
 
 
 WriteParamFile
