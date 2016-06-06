@@ -167,16 +167,6 @@ AppendSparseSymMat
 Appends a general sparse symmetric matrix to the vector E of symmetric matrixes.
 
 
-AppendStat
-~~~~~~~~~~
-
-..::
-
-    func (*Task) AppendStat (  )
-
-Appends a record the statistics file.
-
-
 AppendVars
 ~~~~~~~~~~
 
@@ -232,6 +222,16 @@ CheckConvexity
     func (*Task) CheckConvexity (  )
 
 Checks if a quadratic optimization problem is convex.
+
+
+CheckInAll
+~~~~~~~~~~
+
+..::
+
+    func (*Env) CheckInAll (  )
+
+Check in all unsued license features to the license token server.
 
 
 CheckInLicense
@@ -1294,6 +1294,25 @@ GetDualObj
 Computes the dual objective value associated with the solution.
 
 
+GetDualSolutionNorms
+~~~~~~~~~~~~~~~~~~~~
+
+..::
+
+    func (*Task) GetDualSolutionNorms
+        ( whichsol int32 )
+        ( nrmy float64,
+          nrmslc float64,
+          nrmsuc float64,
+          nrmslx float64,
+          nrmsux float64,
+          nrmsnx float64,
+          nrmbars float64 )
+
+
+Compute norms of the primal solution.
+
+
 GetDviolBarvar
 ~~~~~~~~~~~~~~
 
@@ -1783,6 +1802,21 @@ GetPrimalObj
 
 
 Computes the primal objective value for the desired solution.
+
+
+GetPrimalSolutionNorms
+~~~~~~~~~~~~~~~~~~~~~~
+
+..::
+
+    func (*Task) GetPrimalSolutionNorms
+        ( whichsol int32 )
+        ( nrmxc float64,
+          nrmxx float64,
+          nrmbarx float64 )
+
+
+Compute norms of the primal solution.
 
 
 GetProSta
@@ -3475,18 +3509,6 @@ PutIntParam
 Sets an integer parameter.
 
 
-PutKeepDlls
-~~~~~~~~~~~
-
-..::
-
-    func (*Env) PutKeepDlls ( keepdlls int32 )
-`keepdlls int32`
-    Controls whether explicitly loaded DLLs should be kept.
-
-Controls whether explicitly loaded DLLs should be kept.
-
-
 PutLicenseCode
 ~~~~~~~~~~~~~~
 
@@ -4451,26 +4473,6 @@ SolveWithBasis
     Input (right-hand side values) and output (solution vector values).
 
 Solve a linear equation system involving a basis matrix.
-
-
-StartStat
-~~~~~~~~~
-
-..::
-
-    func (*Task) StartStat (  )
-
-Starts the statistics file.
-
-
-StopStat
-~~~~~~~~
-
-..::
-
-    func (*Task) StopStat (  )
-
-Stops the statistics file.
 
 
 StrToConeType
