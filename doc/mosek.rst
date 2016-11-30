@@ -46,7 +46,7 @@ AnalyzeNames
 `nametype int32`
     The type of names e.g. valid in MPS or LP files.
 
-Analyze the names and issue an error for the first invalid name.
+ Analyze the names and issue an error for the first invalid name. 
 
 
 AnalyzeProblem
@@ -56,7 +56,7 @@ AnalyzeProblem
 
     func (*Task) AnalyzeProblem ( whichstream int32 )
 
-Analyze the data of a task.
+ Analyze the data of a task. 
 
 
 AnalyzeSolution
@@ -66,7 +66,7 @@ AnalyzeSolution
 
     func (*Task) AnalyzeSolution ( whichstream int32, whichsol int32 )
 
-Print information related to the quality of the solution.
+ Print information related to the quality of the solution. 
 
 
 AppendBarvars
@@ -76,9 +76,9 @@ AppendBarvars
 
     func (*Task) AppendBarvars ( dim []int32 )
 `dim []int32`
-    Dimension of symmetric matrix variables to be added.
+     Dimension of symmetric matrix variables to be added.
 
-Appends a semidefinite  variable of dimension dim to the problem.
+Appends a semidefinite  variable of dimension dim to the problem. 
 
 
 AppendCone
@@ -92,7 +92,7 @@ AppendCone
           submem []int32 )
 
 
-Appends a new cone constraint to the problem.
+Appends a new cone constraint to the problem. 
 
 
 AppendConeSeq
@@ -111,7 +111,7 @@ AppendConeSeq
 `j int32`
     Index of the first variable in the conic constraint.
 
-Appends a new conic constraint to the problem.
+Appends a new conic constraint to the problem. 
 
 
 AppendConesSeq
@@ -128,7 +128,7 @@ AppendConesSeq
 `j int32`
     Index of the first variable in the first cone to be appended.
 
-Appends a multiple conic constraints to the problem.
+Appends a multiple conic constraints to the problem. 
 
 
 AppendCons
@@ -138,9 +138,9 @@ AppendCons
 
     func (*Task) AppendCons ( num int32 )
 `num int32`
-    Number of constraints which should be appended.
+     Number of constraints which should be appended.
 
-Appends a number of constraints to the optimization task.
+ Appends a number of constraints to the optimization task. 
 
 
 AppendSparseSymMat
@@ -156,15 +156,15 @@ AppendSparseSymMat
         ( idx int64 )
 
 `dim int32`
-    Dimension of the symmetric matrix that is appended.
+     Dimension of the symmetric matrix that is appended.
 `subi []int32`
-    Row subscript in the triplets.
+     Row subscript in the triplets.
 `subj []int32`
-    Column subscripts in the triplets.
+     Column subscripts in the triplets.
 `valij []float64`
-    Values of each triplet.
+     Values of each triplet.
 
-Appends a general sparse symmetric matrix to the vector E of symmetric matrixes.
+Appends a general sparse symmetric matrix to the vector E of symmetric matrixes. 
 
 
 AppendVars
@@ -174,9 +174,9 @@ AppendVars
 
     func (*Task) AppendVars ( num int32 )
 `num int32`
-    Number of variables which should be appended.
+     Number of variables which should be appended.
 
-Appends a number of variables to the optimization task.
+ Appends a number of variables to the optimization task. 
 
 
 Axpy
@@ -192,15 +192,15 @@ Axpy
         ( y []float64 )
 
 `n int32`
-    Length of the vectors.
+     Length of the vectors.
 `alpha float64`
-    The scalar that multiplies x.
+     The scalar that multiplies x.
 `x []float64`
-    The :math:`x` vector.
+     The :math:`x` vector.
 `y []float64`
-    The :math:`y` vector.
+     The :math:`y` vector.
 
-Adds alpha times x to y.
+Adds alpha times x to y. 
 
 
 BasisCond
@@ -211,7 +211,7 @@ BasisCond
     func (*Task) BasisCond (  ) ( nrmbasis float64, nrminvbasis float64 )
 
 
-Computes conditioning information for the basis matrix.
+ Computes conditioning information for the basis matrix. 
 
 
 CheckConvexity
@@ -221,7 +221,7 @@ CheckConvexity
 
     func (*Task) CheckConvexity (  )
 
-Checks if a quadratic optimization problem is convex.
+ Checks if a quadratic optimization problem is convex. 
 
 
 CheckInAll
@@ -231,7 +231,7 @@ CheckInAll
 
     func (*Env) CheckInAll (  )
 
-Check in all unsued license features to the license token server.
+Check in all unsued license features to the license token server.  
 
 
 CheckInLicense
@@ -241,9 +241,9 @@ CheckInLicense
 
     func (*Env) CheckInLicense ( feature int32 )
 `feature int32`
-    Feature to check in to the license system.
+     Feature to check in to the license system.
 
-Check in a license feature from the license server ahead of time.
+Check in a license feature from the license server ahead of time. 
 
 
 CheckMem
@@ -255,9 +255,9 @@ CheckMem
 `file string`
     File from which the function is called.
 `line int32`
-    Line in the file from which the function is called.
+     Line in the file from which the function is called.
 
-Checks the memory allocated by the task.
+Checks the memory allocated by the task. 
 
 
 CheckoutLicense
@@ -267,9 +267,9 @@ CheckoutLicense
 
     func (*Env) CheckoutLicense ( feature int32 )
 `feature int32`
-    Feature to check out from the license system.
+     Feature to check out from the license system.
 
-Check out a license feature from the license server ahead of time.
+Check out a license feature from the license server ahead of time. 
 
 
 ChgBound
@@ -285,15 +285,15 @@ ChgBound
           value float64 )
 
 `i int32`
-    Index of the constraint or variable for which the bounds should be changed.
+     Index of the constraint or variable for which the bounds should be changed.
 `lower int32`
-    If non-zero, then the lower bound is changed, otherwise the upper bound is changed.
+     If non-zero, then the lower bound is changed, otherwise the upper bound is changed.
 `finite int32`
     If non-zero, then the given value is assumed to be finite.
 `value float64`
     New value for the bound.
 
-Changes the bounds for one constraint or variable.
+ Changes the bounds for one constraint or variable. 
 
 
 ChgConBound
@@ -308,15 +308,15 @@ ChgConBound
           value float64 )
 
 `i int32`
-    Index of the constraint for which the bounds should be changed.
+     Index of the constraint for which the bounds should be changed.
 `lower int32`
-    If non-zero, then the lower bound is changed, otherwise the upper bound is changed.
+     If non-zero, then the lower bound is changed, otherwise the upper bound is changed.
 `finite int32`
     If non-zero, then the given value is assumed to be finite.
 `value float64`
     New value for the bound.
 
-Changes the bounds for one constraint.
+ Changes the bounds for one constraint. 
 
 
 ChgVarBound
@@ -331,15 +331,15 @@ ChgVarBound
           value float64 )
 
 `j int32`
-    Index of the variable for which the bounds should be changed.
+     Index of the variable for which the bounds should be changed.
 `lower int32`
-    If non-zero, then the lower bound is changed, otherwise the upper bound is changed.
+     If non-zero, then the lower bound is changed, otherwise the upper bound is changed.
 `finite int32`
     If non-zero, then the given value is assumed to be finite.
 `value float64`
     New value for the bound.
 
-Changes the bounds for one variable.
+ Changes the bounds for one variable. 
 
 
 CommitChanges
@@ -349,7 +349,7 @@ CommitChanges
 
     func (*Task) CommitChanges (  )
 
-Commits all cached problem changes.
+Commits all cached problem changes. 
 
 
 DeleteSolution
@@ -359,7 +359,7 @@ DeleteSolution
 
     func (*Task) DeleteSolution ( whichsol int32 )
 
-Undefine a solution and frees the memory it uses.
+Undefine a solution and frees the memory it uses. 
 
 
 Dot
@@ -374,13 +374,13 @@ Dot
         ( xty float64 )
 
 `n int32`
-    Length of the vectors.
+     Length of the vectors.
 `x []float64`
     The x vector.
 `y []float64`
     The y vector.
 
-Computes the inner product of two vectors.
+Computes the inner product of two vectors. 
 
 
 DualSensitivity
@@ -410,7 +410,7 @@ DualSensitivity
 `rightrangej []float64`
     Right range for requested coefficients.
 
-Performs sensitivity analysis on objective coefficients.
+ Performs sensitivity analysis on objective coefficients. 
 
 
 EchoIntro
@@ -422,7 +422,7 @@ EchoIntro
 `longver int32`
     If non-zero, then the intro is slightly longer.
 
-Prints an intro to message stream.
+Prints an intro to message stream. 
 
 
 Gemm
@@ -486,9 +486,9 @@ Gemv
 `transa int32`
     Indicates whether the matrix A must be transposed.
 `m int32`
-    Specifies the number of rows of the matrix A.
+     Specifies the number of rows of the matrix A.
 `n int32`
-    Specifies the number of columns of the matrix A.
+     Specifies the number of columns of the matrix A.
 `alpha float64`
     A scalar value multipling the matrix A.
 `a []float64`
@@ -523,7 +523,7 @@ GetACol
 `valj []float64`
     Numerical values of the column obtained.
 
-Obtains one column of the linear constraint matrix.
+Obtains one column of the linear constraint matrix. 
 
 
 GetAColNumNz
@@ -536,7 +536,7 @@ GetAColNumNz
 `i int32`
     Index of the column.
 
-Obtains the number of non-zero elements in one column of the linear constraint matrix
+ Obtains the number of non-zero elements in one column of the linear constraint matrix 
 
 
 GetAColSliceTrip
@@ -555,7 +555,7 @@ GetAColSliceTrip
           val []float64 )
 
 `first int32`
-    Index of the first column in the sequence.
+     Index of the first column in the sequence.
 `last int32`
     Index of the last column in the sequence plus one.
 `subi []int32`
@@ -565,7 +565,7 @@ GetAColSliceTrip
 `val []float64`
     Values.
 
-Obtains a sequence of columns from the coefficient matrix in triplet format.
+ Obtains a sequence of columns from the coefficient matrix in triplet format. 
 
 
 GetAPieceNumNz
@@ -583,13 +583,13 @@ GetAPieceNumNz
 `firsti int32`
     Index of the first row in the rectangular piece.
 `lasti int32`
-    Index of the last row plus one in the rectangular piece.
+     Index of the last row plus one in the rectangular piece.
 `firstj int32`
-    Index of the first column in the rectangular piece.
+     Index of the first column in the rectangular piece.
 `lastj int32`
-    Index of the last column plus one in the rectangular piece.
+     Index of the last column plus one in the rectangular piece.
 
-Obtains the number non-zeros in a rectangular piece of the linear constraint matrix.
+ Obtains the number non-zeros in a rectangular piece of the linear constraint matrix. 
 
 
 GetARow
@@ -612,7 +612,7 @@ GetARow
 `vali []float64`
     Numerical values of the row obtained.
 
-Obtains one row of the linear constraint matrix.
+Obtains one row of the linear constraint matrix. 
 
 
 GetARowNumNz
@@ -625,7 +625,7 @@ GetARowNumNz
 `i int32`
     Index of the row or column.
 
-Obtains the number of non-zero elements in one row of the linear constraint matrix
+ Obtains the number of non-zero elements in one row of the linear constraint matrix 
 
 
 GetARowSliceTrip
@@ -644,7 +644,7 @@ GetARowSliceTrip
           val []float64 )
 
 `first int32`
-    Index of the first row or column in the sequence.
+     Index of the first row or column in the sequence.
 `last int32`
     Index of the last row or column in the sequence plus one.
 `subi []int32`
@@ -654,7 +654,7 @@ GetARowSliceTrip
 `val []float64`
     Values.
 
-Obtains a sequence of rows from the coefficient matrix in triplet format.
+ Obtains a sequence of rows from the coefficient matrix in triplet format. 
 
 
 GetASlice
@@ -676,21 +676,21 @@ GetASlice
           val []float64 )
 
 `accmode int32`
-    Defines whether a column slice or a row slice is requested.
+     Defines whether a column slice or a row slice is requested.
 `first int32`
-    Index of the first row or column in the sequence.
+     Index of the first row or column in the sequence.
 `last int32`
-    Index of the last row or column in the sequence plus one.
+     Index of the last row or column in the sequence plus one.
 `ptrb []int64`
-    Row or column start pointers.
+     Row or column start pointers.
 `ptre []int64`
-    Row or column end pointers.
+     Row or column end pointers.
 `sub []int32`
     Contains the row or column subscripts.
 `val []float64`
     Contains the coefficient values.
 
-Obtains a sequence of rows or columns from the coefficient matrix.
+Obtains a sequence of rows or columns from the coefficient matrix. 
 
 
 GetASliceNumNz
@@ -705,13 +705,13 @@ GetASliceNumNz
         ( numnz int64 )
 
 `accmode int32`
-    Defines whether non-zeros are counted in a column slice or a row slice.
+     Defines whether non-zeros are counted in a column slice or a row slice.
 `first int32`
-    Index of the first row or column in the sequence.
+     Index of the first row or column in the sequence.
 `last int32`
     Index of the last row or column plus one in the sequence.
 
-Obtains the number of non-zeros in a slice of rows or columns of the coefficient matrix.
+ Obtains the number of non-zeros in a slice of rows or columns of the coefficient matrix. 
 
 
 GetAij
@@ -726,7 +726,7 @@ GetAij
 `j int32`
     Column index of the coefficient to be returned.
 
-Obtains a single coefficient in linear constraint matrix.
+Obtains a single coefficient in linear constraint matrix. 
 
 
 GetBaraBlockTriplet
@@ -748,17 +748,17 @@ GetBaraBlockTriplet
           valijkl []float64 )
 
 `subi []int32`
-    Constraint index.
+     Constraint index.
 `subj []int32`
-    Symmetric matrix variable index.
+     Symmetric matrix variable index.
 `subk []int32`
-    Block row index.
+     Block row index.
 `subl []int32`
-    Block column index.
+     Block column index.
 `valijkl []float64`
     A list indexes of the elements from symmetric matrix storage that appears in the weighted sum.
 
-Obtains barA in block triplet form.
+Obtains barA in block triplet form. 
 
 
 GetBaraIdx
@@ -777,13 +777,13 @@ GetBaraIdx
           weights []float64 )
 
 `idx int64`
-    Position of the element in the vectorized form.
+     Position of the element in the vectorized form.
 `sub []int64`
-    A list indexes   of the elements from symmetric matrix storage that appears in the weighted sum.
+     A list indexes   of the elements from symmetric matrix storage that appears in the weighted sum.
 `weights []float64`
-    The weights associated with each term in the weighted sum.
+     The weights associated with each term in the weighted sum.
 
-Obtains information about an element barA.
+Obtains information about an element barA. 
 
 
 GetBaraIdxIJ
@@ -794,9 +794,9 @@ GetBaraIdxIJ
     func (*Task) GetBaraIdxIJ ( idx int64 ) ( i int32, j int32 )
 
 `idx int64`
-    Position of the element in the vectorized form.
+     Position of the element in the vectorized form.
 
-Obtains information about an element barA.
+Obtains information about an element barA. 
 
 
 GetBaraIdxInfo
@@ -807,9 +807,9 @@ GetBaraIdxInfo
     func (*Task) GetBaraIdxInfo ( idx int64 ) ( num int64 )
 
 `idx int64`
-    The internal position of the element that should be obtained information for.
+     The internal position of the element that should be obtained information for.
 
-Obtains the number terms in the weighted sum that forms a particular element in barA.
+Obtains the number terms in the weighted sum that forms a particular element in barA. 
 
 
 GetBaraSparsity
@@ -822,7 +822,7 @@ GetBaraSparsity
 `idxij []int64`
     Position of each nonzero element in the vector representation of barA.
 
-Obtains the sparsity pattern of the barA matrix.
+Obtains the sparsity pattern of the barA matrix. 
 
 
 GetBarcBlockTriplet
@@ -842,15 +842,15 @@ GetBarcBlockTriplet
           valijkl []float64 )
 
 `subj []int32`
-    Symmetric matrix variable index.
+     Symmetric matrix variable index.
 `subk []int32`
-    Block row index.
+     Block row index.
 `subl []int32`
-    Block column index.
+     Block column index.
 `valijkl []float64`
-    A list indexes of the elements from symmetric matrix storage that appears in the weighted sum.
+     A list indexes of the elements from symmetric matrix storage that appears in the weighted sum.
 
-Obtains barc in block triplet form.
+Obtains barc in block triplet form. 
 
 
 GetBarcIdx
@@ -868,11 +868,11 @@ GetBarcIdx
           weights []float64 )
 
 `idx int64`
-    Index of the element that should be obtained information about.
+     Index of the element that should be obtained information about.
 `sub []int64`
-    Elements appearing the weighted sum.
+     Elements appearing the weighted sum.
 `weights []float64`
-    Weights of terms in the weighted sum.
+     Weights of terms in the weighted sum.
 
 Obtains information about an element in barc.
 
@@ -885,9 +885,9 @@ GetBarcIdxInfo
     func (*Task) GetBarcIdxInfo ( idx int64 ) ( num int64 )
 
 `idx int64`
-    Index of element that should be obtained information about. The value is an index of a symmetric sparse variable.
+     Index of element that should be obtained information about. The value is an index of a symmetric sparse variable.
 
-Obtains information about an element in barc.
+Obtains information about an element in barc. 
 
 
 GetBarcIdxJ
@@ -898,9 +898,9 @@ GetBarcIdxJ
     func (*Task) GetBarcIdxJ ( idx int64 ) ( j int32 )
 
 `idx int64`
-    Index of the element that should be obtained information about.
+     Index of the element that should be obtained information about.
 
-Obtains the row index of an element in barc.
+Obtains the row index of an element in barc. 
 
 
 GetBarcSparsity
@@ -913,7 +913,7 @@ GetBarcSparsity
 `idxj []int64`
     Internal positions of the nonzeros elements in barc.
 
-Get the positions of the nonzero elements in barc.
+Get the positions of the nonzero elements in barc. 
 
 
 GetBarsJ
@@ -932,7 +932,7 @@ GetBarsJ
 `barsj []float64`
     Value of the j'th variable of barx.
 
-Obtains the dual solution for a semidefinite variable.
+ Obtains the dual solution for a semidefinite variable. 
 
 
 GetBarvarName
@@ -945,7 +945,7 @@ GetBarvarName
 `i int32`
     Index.
 
-Obtains a name of a semidefinite variable.
+ Obtains a name of a semidefinite variable. 
 
 
 GetBarvarNameIndex
@@ -958,7 +958,7 @@ GetBarvarNameIndex
 `somename string`
     The requested name is copied to this buffer.
 
-Obtains the index of name of semidefinite variable.
+ Obtains the index of name of semidefinite variable. 
 
 
 GetBarvarNameLen
@@ -971,7 +971,7 @@ GetBarvarNameLen
 `i int32`
     Index.
 
-Obtains the length of a name of a semidefinite variable.
+ Obtains the length of a name of a semidefinite variable. 
 
 
 GetBarxJ
@@ -990,7 +990,7 @@ GetBarxJ
 `barxj []float64`
     Value of the j'th variable of barx.
 
-Obtains the primal solution for a semidefinite variable.
+ Obtains the primal solution for a semidefinite variable. 
 
 
 GetBound
@@ -1006,9 +1006,9 @@ GetBound
           bu float64 )
 
 `i int32`
-    Index of the constraint or variable for which the bound information should be obtained.
+     Index of the constraint or variable for which the bound information should be obtained.
 
-Obtains bound information for one constraint or variable.
+ Obtains bound information for one constraint or variable. 
 
 
 GetBoundSlice
@@ -1028,7 +1028,7 @@ GetBoundSlice
           bu []float64 )
 
 
-Obtains bounds information for a sequence of variables or constraints.
+ Obtains bounds information for a sequence of variables or constraints. 
 
 
 GetC
@@ -1039,7 +1039,7 @@ GetC
     func (*Task) GetC ( c []float64 ) ( c []float64 )
 
 
-Obtains all objective coefficients.
+Obtains all objective coefficients. 
 
 
 GetCJ
@@ -1052,7 +1052,7 @@ GetCJ
 `j int32`
     Index of the variable for which c coefficient should be obtained.
 
-Obtains one coefficient of c.
+Obtains one coefficient of c. 
 
 
 GetCSlice
@@ -1067,7 +1067,7 @@ GetCSlice
         ( c []float64 )
 
 
-Obtains a sequence of coefficients from the objective.
+Obtains a sequence of coefficients from the objective. 
 
 
 GetCfix
@@ -1078,7 +1078,7 @@ GetCfix
     func (*Task) GetCfix (  ) ( cfix float64 )
 
 
-Obtains the fixed term in the objective.
+Obtains the fixed term in the objective. 
 
 
 GetCodeDesc
@@ -1095,7 +1095,7 @@ GetCodeDesc
 `code int32`
     A valid response code.
 
-Obtains a short description of a response code.
+Obtains a short description of a response code. 
 
 
 GetConBound
@@ -1110,9 +1110,9 @@ GetConBound
           bu float64 )
 
 `i int32`
-    Index of the constraint for which the bound information should be obtained.
+     Index of the constraint for which the bound information should be obtained.
 
-Obtains bound information for one constraint.
+ Obtains bound information for one constraint. 
 
 
 GetConBoundSlice
@@ -1131,7 +1131,7 @@ GetConBoundSlice
           bu []float64 )
 
 
-Obtains bounds information for a slice of the constraints.
+ Obtains bounds information for a slice of the constraints. 
 
 
 GetConName
@@ -1144,7 +1144,7 @@ GetConName
 `i int32`
     Index.
 
-Obtains a name of a constraint.
+ Obtains a name of a constraint. 
 
 
 GetConNameIndex
@@ -1157,7 +1157,7 @@ GetConNameIndex
 `somename string`
     The name which should be checked.
 
-Checks whether the name somename has been assigned  to any constraint.
+ Checks whether the name somename has been assigned  to any constraint. 
 
 
 GetConNameLen
@@ -1170,7 +1170,7 @@ GetConNameLen
 `i int32`
     Index.
 
-Obtains the length of a name of a constraint variable.
+ Obtains the length of a name of a constraint variable. 
 
 
 GetCone
@@ -1189,7 +1189,7 @@ GetCone
 `k int32`
     Index of the cone constraint.
 
-Obtains a conic constraint.
+Obtains a conic constraint. 
 
 
 GetConeInfo
@@ -1206,7 +1206,7 @@ GetConeInfo
 `k int32`
     Index of the conic constraint.
 
-Obtains information about a conic constraint.
+Obtains information about a conic constraint. 
 
 
 GetConeName
@@ -1219,7 +1219,7 @@ GetConeName
 `i int32`
     Index.
 
-Obtains a name of a cone.
+ Obtains a name of a cone. 
 
 
 GetConeNameIndex
@@ -1232,7 +1232,7 @@ GetConeNameIndex
 `somename string`
     The name which should be checked.
 
-Checks whether the name somename has been assigned  to any cone.
+ Checks whether the name somename has been assigned  to any cone. 
 
 
 GetConeNameLen
@@ -1245,7 +1245,7 @@ GetConeNameLen
 `i int32`
     Index.
 
-Obtains the length of a name of a cone.
+ Obtains the length of a name of a cone. 
 
 
 GetDimBarvarJ
@@ -1269,7 +1269,7 @@ GetDouInf
     func (*Task) GetDouInf ( whichdinf int32 ) ( dvalue float64 )
 
 
-Obtains a double information item.
+Obtains a double information item. 
 
 
 GetDouParam
@@ -1280,7 +1280,7 @@ GetDouParam
     func (*Task) GetDouParam ( param int32 ) ( parvalue float64 )
 
 
-Obtains a double parameter.
+Obtains a double parameter. 
 
 
 GetDualObj
@@ -1291,7 +1291,7 @@ GetDualObj
     func (*Task) GetDualObj ( whichsol int32 ) ( dualobj float64 )
 
 
-Computes the dual objective value associated with the solution.
+Computes the dual objective value associated with the solution. 
 
 
 GetDualSolutionNorms
@@ -1310,7 +1310,7 @@ GetDualSolutionNorms
           nrmbars float64 )
 
 
-Compute norms of the primal solution.
+Compute norms of the primal solution. 
 
 
 GetDviolBarvar
@@ -1329,7 +1329,7 @@ GetDviolBarvar
 `viol []float64`
     List of violations corresponding to sub.
 
-Computes the violation of dual solution for a set of barx variables.
+Computes the violation of dual solution for a set of barx variables. 
 
 
 GetDviolCon
@@ -1348,7 +1348,7 @@ GetDviolCon
 `viol []float64`
     List of violations corresponding to sub.
 
-Computes the violation of a dual solution associated with a set of constraints.
+Computes the violation of a dual solution associated with a set of constraints. 
 
 
 GetDviolCones
@@ -1367,7 +1367,7 @@ GetDviolCones
 `viol []float64`
     List of violations corresponding to sub.
 
-Computes the violation of a solution for set of dual conic constraints.
+Computes the violation of a solution for set of dual conic constraints. 
 
 
 GetDviolVar
@@ -1386,7 +1386,7 @@ GetDviolVar
 `viol []float64`
     List of violations corresponding to sub.
 
-Computes the violation of a dual solution associated with a set of x variables.
+Computes the violation of a dual solution associated with a set of x variables. 
 
 
 GetInfIndex
@@ -1397,7 +1397,7 @@ GetInfIndex
     func (*Task) GetInfIndex ( inftype int32, infname string ) ( infindex int32 )
 
 
-Obtains the index of a named information item.
+Obtains the index of a named information item. 
 
 
 GetInfMax
@@ -1407,8 +1407,10 @@ GetInfMax
 
     func (*Task) GetInfMax ( inftype int32, infmax []int32 ) ( infmax []int32 )
 
+`infmax []int32`
+    The maximum index requested.
 
-Obtains the maximum index of an information of a given type inftype plus 1.
+ Obtains the maximum index of an information of a given type inftype plus 1. 
 
 
 GetInfName
@@ -1419,7 +1421,7 @@ GetInfName
     func (*Task) GetInfName ( inftype int32, whichinf int32 ) ( infname string )
 
 
-Obtains the name of an information item.
+Obtains the name of an information item. 
 
 
 GetInfeasibleSubProblem
@@ -1430,9 +1432,9 @@ GetInfeasibleSubProblem
     func (*Task) GetInfeasibleSubProblem ( whichsol int32 ) ( inftask Task )
 
 `whichsol int32`
-    Which solution to use when determining the infeasible subproblem.
+     Which solution to use when determining the infeasible subproblem.
 
-Obtains an infeasible sub problem.
+Obtains an infeasible sub problem. 
 
 
 GetIntInf
@@ -1443,7 +1445,7 @@ GetIntInf
     func (*Task) GetIntInf ( whichiinf int32 ) ( ivalue int32 )
 
 
-Obtains an integer information item.
+Obtains an integer information item. 
 
 
 GetIntParam
@@ -1454,7 +1456,7 @@ GetIntParam
     func (*Task) GetIntParam ( param int32 ) ( parvalue int32 )
 
 
-Obtains an integer parameter.
+Obtains an integer parameter. 
 
 
 GetLenBarvarJ
@@ -1467,7 +1469,7 @@ GetLenBarvarJ
 `j int32`
     Index of the semidefinite variable whose length if requested.
 
-Obtains the length if the j'th semidefinite variables.
+Obtains the length if the j'th semidefinite variables. 
 
 
 GetLintInf
@@ -1478,7 +1480,7 @@ GetLintInf
     func (*Task) GetLintInf ( whichliinf int32 ) ( ivalue int64 )
 
 
-Obtains an integer information item.
+Obtains an integer information item. 
 
 
 GetMaxNumANz
@@ -1489,7 +1491,7 @@ GetMaxNumANz
     func (*Task) GetMaxNumANz (  ) ( maxnumanz int64 )
 
 
-Obtains number of preallocated non-zeros in the linear constraint matrix.
+ Obtains number of preallocated non-zeros in the linear constraint matrix. 
 
 
 GetMaxNumBarvar
@@ -1500,7 +1502,7 @@ GetMaxNumBarvar
     func (*Task) GetMaxNumBarvar (  ) ( maxnumbarvar int32 )
 
 
-Obtains the number of semidefinite variables.
+Obtains the number of semidefinite variables. 
 
 
 GetMaxNumCon
@@ -1511,7 +1513,7 @@ GetMaxNumCon
     func (*Task) GetMaxNumCon (  ) ( maxnumcon int32 )
 
 
-Obtains the number of preallocated constraints in the optimization task.
+Obtains the number of preallocated constraints in the optimization task. 
 
 
 GetMaxNumCone
@@ -1522,7 +1524,7 @@ GetMaxNumCone
     func (*Task) GetMaxNumCone (  ) ( maxnumcone int32 )
 
 
-Obtains the number of preallocated cones in the optimization task.
+Obtains the number of preallocated cones in the optimization task. 
 
 
 GetMaxNumQNz
@@ -1533,7 +1535,7 @@ GetMaxNumQNz
     func (*Task) GetMaxNumQNz (  ) ( maxnumqnz int64 )
 
 
-Obtains the number of preallocated non-zeros for all quadratic terms in objective and constraints.
+ Obtains the number of preallocated non-zeros for all quadratic terms in objective and constraints. 
 
 
 GetMaxNumVar
@@ -1544,7 +1546,7 @@ GetMaxNumVar
     func (*Task) GetMaxNumVar (  ) ( maxnumvar int32 )
 
 
-Obtains the maximum number variables allowed.
+Obtains the maximum number variables allowed. 
 
 
 GetMemUsage
@@ -1555,7 +1557,7 @@ GetMemUsage
     func (*Task) GetMemUsage (  ) ( meminuse int64, maxmemuse int64 )
 
 
-Obtains information about the amount of memory used by a task.
+Obtains information about the amount of memory used by a task. 
 
 
 GetNumANz
@@ -1566,7 +1568,7 @@ GetNumANz
     func (*Task) GetNumANz (  ) ( numanz int32 )
 
 
-Obtains the number of non-zeros in the coefficient matrix.
+Obtains the number of non-zeros in the coefficient matrix. 
 
 
 GetNumANz64
@@ -1577,7 +1579,7 @@ GetNumANz64
     func (*Task) GetNumANz64 (  ) ( numanz int64 )
 
 
-Obtains the number of non-zeros in the coefficient matrix.
+Obtains the number of non-zeros in the coefficient matrix. 
 
 
 GetNumBaraBlockTriplets
@@ -1588,7 +1590,7 @@ GetNumBaraBlockTriplets
     func (*Task) GetNumBaraBlockTriplets (  ) ( num int64 )
 
 
-Obtains an upper bound on the number of scalar elements in the block triplet form of bara.
+Obtains an upper bound on the number of scalar elements in the block triplet form of bara. 
 
 
 GetNumBaraNz
@@ -1599,7 +1601,7 @@ GetNumBaraNz
     func (*Task) GetNumBaraNz (  ) ( nz int64 )
 
 
-Get the number of nonzero elements in barA.
+Get the number of nonzero elements in barA. 
 
 
 GetNumBarcBlockTriplets
@@ -1610,7 +1612,7 @@ GetNumBarcBlockTriplets
     func (*Task) GetNumBarcBlockTriplets (  ) ( num int64 )
 
 
-Obtains an upper bound on the number of elements in the block triplet form of barc.
+Obtains an upper bound on the number of elements in the block triplet form of barc. 
 
 
 GetNumBarcNz
@@ -1632,7 +1634,7 @@ GetNumBarvar
     func (*Task) GetNumBarvar (  ) ( numbarvar int32 )
 
 
-Obtains the number of semidefinite variables.
+Obtains the number of semidefinite variables. 
 
 
 GetNumCon
@@ -1643,7 +1645,7 @@ GetNumCon
     func (*Task) GetNumCon (  ) ( numcon int32 )
 
 
-Obtains the number of constraints.
+Obtains the number of constraints. 
 
 
 GetNumCone
@@ -1654,7 +1656,7 @@ GetNumCone
     func (*Task) GetNumCone (  ) ( numcone int32 )
 
 
-Obtains the number of cones.
+Obtains the number of cones. 
 
 
 GetNumConeMem
@@ -1667,7 +1669,7 @@ GetNumConeMem
 `k int32`
     Index of the cone.
 
-Obtains the number of members in a cone.
+Obtains the number of members in a cone. 
 
 
 GetNumIntVar
@@ -1678,7 +1680,7 @@ GetNumIntVar
     func (*Task) GetNumIntVar (  ) ( numintvar int32 )
 
 
-Obtains the number of integer-constrained variables.
+ Obtains the number of integer-constrained variables. 
 
 
 GetNumParam
@@ -1689,7 +1691,7 @@ GetNumParam
     func (*Task) GetNumParam ( partype int32 ) ( numparam int32 )
 
 
-Obtains the number of parameters of a given type.
+Obtains the number of parameters of a given type. 
 
 
 GetNumQConKNz
@@ -1700,9 +1702,9 @@ GetNumQConKNz
     func (*Task) GetNumQConKNz ( k int32 ) ( numqcnz int64 )
 
 `k int32`
-    Index of the constraint for which the number quadratic terms should be obtained.
+     Index of the constraint for which the number quadratic terms should be obtained.
 
-Obtains the number of non-zero quadratic terms in a constraint.
+ Obtains the number of non-zero quadratic terms in a constraint. 
 
 
 GetNumQObjNz
@@ -1713,7 +1715,7 @@ GetNumQObjNz
     func (*Task) GetNumQObjNz (  ) ( numqonz int64 )
 
 
-Obtains the number of non-zero quadratic terms in the objective.
+ Obtains the number of non-zero quadratic terms in the objective. 
 
 
 GetNumSymMat
@@ -1724,7 +1726,7 @@ GetNumSymMat
     func (*Task) GetNumSymMat (  ) ( num int64 )
 
 
-Get the number of symmetric matrixes stored.
+Get the number of symmetric matrixes stored. 
 
 
 GetNumVar
@@ -1735,7 +1737,7 @@ GetNumVar
     func (*Task) GetNumVar (  ) ( numvar int32 )
 
 
-Obtains the number of variables.
+Obtains the number of variables. 
 
 
 GetObjName
@@ -1746,7 +1748,7 @@ GetObjName
     func (*Task) GetObjName (  ) ( objname string )
 
 
-Obtains the name assigned to the objective function.
+ Obtains the name assigned to the objective function. 
 
 
 GetObjNameLen
@@ -1757,7 +1759,7 @@ GetObjNameLen
     func (*Task) GetObjNameLen (  ) ( len int32 )
 
 
-Obtains the length of the name assigned to the objective function.
+ Obtains the length of the name assigned to the objective function. 
 
 
 GetObjSense
@@ -1768,7 +1770,7 @@ GetObjSense
     func (*Task) GetObjSense (  ) ( sense int32 )
 
 
-Gets the objective sense.
+Gets the objective sense. 
 
 
 GetParamMax
@@ -1779,7 +1781,7 @@ GetParamMax
     func (*Task) GetParamMax ( partype int32 ) ( parammax int32 )
 
 
-Obtains the maximum index of a parameter of a given type plus 1.
+ Obtains the maximum index of a parameter of a given type plus 1. 
 
 
 GetParamName
@@ -1790,7 +1792,7 @@ GetParamName
     func (*Task) GetParamName ( partype int32, param int32 ) ( parname string )
 
 
-Obtains the name of a parameter.
+Obtains the name of a parameter. 
 
 
 GetPrimalObj
@@ -1801,7 +1803,7 @@ GetPrimalObj
     func (*Task) GetPrimalObj ( whichsol int32 ) ( primalobj float64 )
 
 
-Computes the primal objective value for the desired solution.
+ Computes the primal objective value for the desired solution. 
 
 
 GetPrimalSolutionNorms
@@ -1816,7 +1818,7 @@ GetPrimalSolutionNorms
           nrmbarx float64 )
 
 
-Compute norms of the primal solution.
+Compute norms of the primal solution. 
 
 
 GetProSta
@@ -1827,7 +1829,7 @@ GetProSta
     func (*Task) GetProSta ( whichsol int32 ) ( prosta int32 )
 
 
-Obtains the problem status.
+ Obtains the problem status. 
 
 
 GetProbType
@@ -1838,7 +1840,7 @@ GetProbType
     func (*Task) GetProbType (  ) ( probtype int32 )
 
 
-Obtains the problem type.
+ Obtains the problem type. 
 
 
 GetPviolBarvar
@@ -1857,7 +1859,7 @@ GetPviolBarvar
 `viol []float64`
     List of violations corresponding to sub.
 
-Computes the violation of a primal solution for a list of barx variables.
+Computes the violation of a primal solution for a list of barx variables. 
 
 
 GetPviolCon
@@ -1876,7 +1878,7 @@ GetPviolCon
 `viol []float64`
     List of violations corresponding to sub.
 
-Computes the violation of a primal solution for a list of xc variables.
+Computes the violation of a primal solution for a list of xc variables. 
 
 
 GetPviolCones
@@ -1895,7 +1897,7 @@ GetPviolCones
 `viol []float64`
     List of violations corresponding to sub.
 
-Computes the violation of a solution for set of conic constraints.
+Computes the violation of a solution for set of conic constraints. 
 
 
 GetPviolVar
@@ -1914,7 +1916,7 @@ GetPviolVar
 `viol []float64`
     List of violations corresponding to sub.
 
-Computes the violation of a primal solution for a list of x variables.
+Computes the violation of a primal solution for a list of x variables. 
 
 
 GetQConK
@@ -1935,7 +1937,7 @@ GetQConK
 `k int32`
     Which constraint.
 
-Obtains all the quadratic terms in a constraint.
+Obtains all the quadratic terms in a constraint. 
 
 
 GetQObj
@@ -1953,7 +1955,7 @@ GetQObj
           qoval []float64 )
 
 
-Obtains all the quadratic terms in the objective.
+Obtains all the quadratic terms in the objective. 
 
 
 GetQObjIJ
@@ -1968,7 +1970,7 @@ GetQObjIJ
 `j int32`
     Column index of coefficient.
 
-Obtains one coefficient from the quadratic term of the objective
+ Obtains one coefficient from the quadratic term of the objective 
 
 
 GetReducedCosts
@@ -1990,7 +1992,7 @@ GetReducedCosts
 `redcosts []float64`
     Returns the requested reduced costs. See documentation for a full description.
 
-Obtains the difference of (slx-sux) for a sequence of variables.
+Obtains the difference of (slx-sux) for a sequence of variables. 
 
 
 GetSkc
@@ -2001,7 +2003,7 @@ GetSkc
     func (*Task) GetSkc ( whichsol int32, skc []int32 ) ( skc []int32 )
 
 
-Obtains the status keys for the constraints.
+ Obtains the status keys for the constraints. 
 
 
 GetSkcSlice
@@ -2017,7 +2019,7 @@ GetSkcSlice
         ( skc []int32 )
 
 
-Obtains the status keys for the constraints.
+ Obtains the status keys for the constraints. 
 
 
 GetSkx
@@ -2028,7 +2030,7 @@ GetSkx
     func (*Task) GetSkx ( whichsol int32, skx []int32 ) ( skx []int32 )
 
 
-Obtains the status keys for the scalar variables.
+ Obtains the status keys for the scalar variables. 
 
 
 GetSkxSlice
@@ -2044,7 +2046,7 @@ GetSkxSlice
         ( skx []int32 )
 
 
-Obtains the status keys for the variables.
+ Obtains the status keys for the variables. 
 
 
 GetSlc
@@ -2057,7 +2059,7 @@ GetSlc
 `slc []float64`
     The slc vector.
 
-Obtains the slc vector for a solution.
+ Obtains the slc vector for a solution. 
 
 
 GetSlcSlice
@@ -2073,7 +2075,7 @@ GetSlcSlice
         ( slc []float64 )
 
 
-Obtains a slice of the slc vector for a solution.
+ Obtains a slice of the slc vector for a solution. 
 
 
 GetSlx
@@ -2086,7 +2088,7 @@ GetSlx
 `slx []float64`
     The slx vector.
 
-Obtains the slx vector for a solution.
+ Obtains the slx vector for a solution. 
 
 
 GetSlxSlice
@@ -2102,7 +2104,7 @@ GetSlxSlice
         ( slx []float64 )
 
 
-Obtains a slice of the slx vector for a solution.
+ Obtains a slice of the slx vector for a solution. 
 
 
 GetSnx
@@ -2115,7 +2117,7 @@ GetSnx
 `snx []float64`
     The snx vector.
 
-Obtains the snx vector for a solution.
+ Obtains the snx vector for a solution. 
 
 
 GetSnxSlice
@@ -2131,7 +2133,7 @@ GetSnxSlice
         ( snx []float64 )
 
 
-Obtains a slice of the snx vector for a solution.
+ Obtains a slice of the snx vector for a solution. 
 
 
 GetSolSta
@@ -2142,7 +2144,7 @@ GetSolSta
     func (*Task) GetSolSta ( whichsol int32 ) ( solsta int32 )
 
 
-Obtains the solution status.
+ Obtains the solution status. 
 
 
 GetSolution
@@ -2178,7 +2180,7 @@ GetSolution
           snx []float64 )
 
 
-Obtains the complete solution.
+Obtains the complete solution. 
 
 
 GetSolutionI
@@ -2197,11 +2199,11 @@ GetSolutionI
           sn float64 )
 
 `accmode int32`
-    Defines whether solution information for a constraint or for a variable is retrieved.
+     Defines whether solution information for a constraint or for a variable is retrieved.
 `i int32`
     Index of the constraint or variable.
 
-Obtains the solution for a single constraint or variable.
+ Obtains the solution for a single constraint or variable. 
 
 
 GetSolutionInfo
@@ -2224,7 +2226,7 @@ GetSolutionInfo
           dviolcone float64 )
 
 
-Obtains information about of a solution.
+Obtains information about of a solution. 
 
 
 GetSolutionSlice
@@ -2243,11 +2245,11 @@ GetSolutionSlice
 `first int32`
     Index of the first value in the slice.
 `last int32`
-    Value of the last index+1 in the slice.
+     Value of the last index+1 in the slice.
 `values []float64`
-    The values of the requested solution elements.
+     The values of the requested solution elements.
 
-Obtains a slice of the solution.
+Obtains a slice of the solution. 
 
 
 GetSparseSymMat
@@ -2265,15 +2267,15 @@ GetSparseSymMat
           valij []float64 )
 
 `idx int64`
-    Index of the matrix to get.
+     Index of the matrix to get.
 `subi []int32`
-    Row subscripts of the matrix non-zero elements.
+     Row subscripts of the matrix non-zero elements.
 `subj []int32`
-    Column subscripts of the matrix non-zero elements.
+     Column subscripts of the matrix non-zero elements.
 `valij []float64`
-    Coefficients of the matrix non-zero elements.
+     Coefficients of the matrix non-zero elements.
 
-Gets a single symmetric matrix from the matrix store.
+Gets a single symmetric matrix from the matrix store. 
 
 
 GetStrParam
@@ -2284,7 +2286,7 @@ GetStrParam
     func (*Task) GetStrParam ( param int32 ) ( len int32, parvalue string )
 
 
-Obtains the value of a string parameter.
+Obtains the value of a string parameter. 
 
 
 GetStrParamLen
@@ -2295,7 +2297,7 @@ GetStrParamLen
     func (*Task) GetStrParamLen ( param int32 ) ( len int32 )
 
 
-Obtains the length of a string parameter.
+Obtains the length of a string parameter. 
 
 
 GetSuc
@@ -2308,7 +2310,7 @@ GetSuc
 `suc []float64`
     The suc vector.
 
-Obtains the suc vector for a solution.
+ Obtains the suc vector for a solution. 
 
 
 GetSucSlice
@@ -2324,7 +2326,7 @@ GetSucSlice
         ( suc []float64 )
 
 
-Obtains a slice of the suc vector for a solution.
+ Obtains a slice of the suc vector for a solution. 
 
 
 GetSux
@@ -2337,7 +2339,7 @@ GetSux
 `sux []float64`
     The sux vector.
 
-Obtains the sux vector for a solution.
+ Obtains the sux vector for a solution. 
 
 
 GetSuxSlice
@@ -2353,7 +2355,7 @@ GetSuxSlice
         ( sux []float64 )
 
 
-Obtains a slice of the sux vector for a solution.
+ Obtains a slice of the sux vector for a solution. 
 
 
 GetSymMatInfo
@@ -2368,9 +2370,9 @@ GetSymMatInfo
           type int32 )
 
 `idx int64`
-    Index of the matrix that is requested information about.
+     Index of the matrix that is requested information about.
 
-Obtains information of  a matrix from the symmetric matrix storage E.
+Obtains information of  a matrix from the symmetric matrix storage E. 
 
 
 GetTaskName
@@ -2381,7 +2383,7 @@ GetTaskName
     func (*Task) GetTaskName (  ) ( taskname string )
 
 
-Obtains the task name.
+Obtains the task name. 
 
 
 GetTaskNameLen
@@ -2392,7 +2394,7 @@ GetTaskNameLen
     func (*Task) GetTaskNameLen (  ) ( len int32 )
 
 
-Obtains the length the task name.
+ Obtains the length the task name. 
 
 
 GetVarBound
@@ -2407,9 +2409,9 @@ GetVarBound
           bu float64 )
 
 `i int32`
-    Index of the variable for which the bound information should be obtained.
+     Index of the variable for which the bound information should be obtained.
 
-Obtains bound information for one variable.
+ Obtains bound information for one variable. 
 
 
 GetVarBoundSlice
@@ -2428,7 +2430,7 @@ GetVarBoundSlice
           bu []float64 )
 
 
-Obtains bounds information for a slice of the variables.
+ Obtains bounds information for a slice of the variables. 
 
 
 GetVarName
@@ -2441,7 +2443,7 @@ GetVarName
 `j int32`
     Index.
 
-Obtains a name of a variable.
+ Obtains a name of a variable. 
 
 
 GetVarNameIndex
@@ -2454,7 +2456,7 @@ GetVarNameIndex
 `somename string`
     The name which should be checked.
 
-Checks whether the name somename has been assigned  to any variable.
+Checks whether the name somename has been assigned  to any variable.  
 
 
 GetVarNameLen
@@ -2467,7 +2469,7 @@ GetVarNameLen
 `i int32`
     Index.
 
-Obtains the length of a name of a variable variable.
+ Obtains the length of a name of a variable variable. 
 
 
 GetVarType
@@ -2480,7 +2482,7 @@ GetVarType
 `j int32`
     Index of the variable.
 
-Gets the variable type of one variable.
+Gets the variable type of one variable. 
 
 
 GetVarTypeList
@@ -2495,7 +2497,7 @@ GetVarTypeList
 `vartype []int32`
     Returns the variables types corresponding the variable indexes requested.
 
-Obtains the variable type for one or more variables.
+ Obtains the variable type for one or more variables. 
 
 
 GetVersion
@@ -2512,7 +2514,7 @@ GetVersion
           res int32 )
 
 
-Obtains |mosek| version information.
+Obtains MOSEK version information. 
 
 
 GetXc
@@ -2525,7 +2527,7 @@ GetXc
 `xc []float64`
     The xc vector.
 
-Obtains the xc vector for a solution.
+ Obtains the xc vector for a solution. 
 
 
 GetXcSlice
@@ -2541,7 +2543,7 @@ GetXcSlice
         ( xc []float64 )
 
 
-Obtains a slice of the xc vector for a solution.
+ Obtains a slice of the xc vector for a solution. 
 
 
 GetXx
@@ -2554,7 +2556,7 @@ GetXx
 `xx []float64`
     The xx vector.
 
-Obtains the xx vector for a solution.
+ Obtains the xx vector for a solution. 
 
 
 GetXxSlice
@@ -2570,7 +2572,7 @@ GetXxSlice
         ( xx []float64 )
 
 
-Obtains a slice of the xx vector for a solution.
+ Obtains a slice of the xx vector for a solution. 
 
 
 GetY
@@ -2583,7 +2585,7 @@ GetY
 `y []float64`
     The y vector.
 
-Obtains the y vector for a solution.
+ Obtains the y vector for a solution. 
 
 
 GetYSlice
@@ -2599,7 +2601,7 @@ GetYSlice
         ( y []float64 )
 
 
-Obtains a slice of the y vector for a solution.
+ Obtains a slice of the y vector for a solution. 
 
 
 InitBasisSolve
@@ -2610,9 +2612,9 @@ InitBasisSolve
     func (*Task) InitBasisSolve ( basis []int32 ) ( basis []int32 )
 
 `basis []int32`
-    The array of basis indexes to use.
+     The array of basis indexes to use.
 
-Prepare a task for basis solver.
+ Prepare a task for basis solver. 
 
 
 InputData
@@ -2637,7 +2639,7 @@ InputData
           bux []float64 )
 
 
-Input the linear part of an optimization task in one function call.
+Input the linear part of an optimization task in one function call. 
 
 
 IsDouParName
@@ -2648,7 +2650,7 @@ IsDouParName
     func (*Task) IsDouParName ( parname string ) ( param int32 )
 
 
-Checks a double parameter name.
+Checks a double parameter name. 
 
 
 IsIntParName
@@ -2659,7 +2661,7 @@ IsIntParName
     func (*Task) IsIntParName ( parname string ) ( param int32 )
 
 
-Checks an integer parameter name.
+Checks an integer parameter name. 
 
 
 IsStrParName
@@ -2670,7 +2672,7 @@ IsStrParName
     func (*Task) IsStrParName ( parname string ) ( param int32 )
 
 
-Checks a string parameter name.
+Checks a string parameter name. 
 
 
 Licensecleanup
@@ -2681,7 +2683,7 @@ Licensecleanup
     func Licensecleanup (  ) ( res int32 )
 
 
-Stops all threads and delete all handles used by the license system.
+Stops all threads and delete all handles used by the license system. 
 
 
 LinkFileToStream
@@ -2697,9 +2699,9 @@ LinkFileToStream
 `filename string`
     The name of the file where the stream is written.
 `append int32`
-    If this argument is 0 the output file will be overwritten, otherwise text is append to the output file.
+     If this argument is 0 the output file will be overwritten, otherwise text is append to the output file.
 
-Directs all output from a task stream to a file.
+Directs all output from a task stream to a file. 
 
 
 Linkfiletostream
@@ -2715,9 +2717,9 @@ Linkfiletostream
 `filename string`
     Name of the file to write stream data to.
 `append int32`
-    If this argument is non-zero, the output is appended to the file.
+     If this argument is non-zero, the output is appended to the file.
 
-Directs all output from a stream to a file.
+Directs all output from a stream to a file. 
 
 
 OneSolutionSummary
@@ -2727,7 +2729,7 @@ OneSolutionSummary
 
     func (*Task) OneSolutionSummary ( whichstream int32, whichsol int32 )
 
-Prints a short summary for the specified solution.
+Prints a short summary for the specified solution. 
 
 
 Optimize
@@ -2738,7 +2740,7 @@ Optimize
     func (*Task) Optimize (  ) ( trmcode int32 )
 
 
-Optimizes the problem.
+Optimizes the problem. 
 
 
 OptimizerSummary
@@ -2748,7 +2750,7 @@ OptimizerSummary
 
     func (*Task) OptimizerSummary ( whichstream int32 )
 
-Prints a short summary with optimizer statistics for last optimization.
+Prints a short summary with optimizer statistics for last optimization. 
 
 
 Potrf
@@ -2765,11 +2767,11 @@ Potrf
 `uplo int32`
     Indicates whether the upper or lower triangular part of the matrix is stored.
 `n int32`
-    Dimension of the symmetric matrix.
+     Dimension of the symmetric matrix.
 `a []float64`
-    A symmetric matrix stored in column-major order. Only the lower or the upper triangular part is used, accordingly with the uplo parameter. It will contain the result on exit.
+     A symmetric matrix stored in column-major order. Only the lower or the upper triangular part is used, accordingly with the uplo parameter. It will contain the result on exit.
 
-Computes a Cholesky factorization a dense matrix.
+Computes a Cholesky factorization a dense matrix. 
 
 
 PrimalRepair
@@ -2786,13 +2788,13 @@ PrimalRepair
 `wlc []float64`
     Weights associated with relaxing lower bounds on the constraints.
 `wuc []float64`
-    Weights associated with relaxing the upper bound on the constraints.
+     Weights associated with relaxing the upper bound on the constraints.
 `wlx []float64`
-    Weights associated with relaxing the lower bounds of the variables.
+     Weights associated with relaxing the lower bounds of the variables.
 `wux []float64`
-    Weights associated with relaxing the upper bounds of variables.
+     Weights associated with relaxing the upper bounds of variables.
 
-The function repairs a primal infeasible optimization problem by adjusting the bounds on the constraints and variables.
+ The function repairs a primal infeasible optimization problem by adjusting the bounds on the constraints and variables. 
 
 
 PrimalSensitivity
@@ -2847,7 +2849,7 @@ PrimalSensitivity
 `rightrangej []float64`
     Right range for variables.
 
-Perform sensitivity analysis on bounds.
+Perform sensitivity analysis on bounds. 
 
 
 ProStaToStr
@@ -2858,7 +2860,7 @@ ProStaToStr
     func (*Task) ProStaToStr ( prosta int32 ) ( str string )
 
 
-Obtains a string containing the name of a problem status given.
+ Obtains a string containing the name of a problem status given. 
 
 
 ProbTypeToStr
@@ -2883,13 +2885,13 @@ PutACol
           valj []float64 )
 
 `j int32`
-    Column index.
+     Column index.
 `subj []int32`
     Row indexes of non-zero values in column.
 `valj []float64`
     New non-zero values of column.
 
-Replaces all elements in one column of A.
+ Replaces all elements in one column of A. 
 
 
 PutAColList
@@ -2905,15 +2907,15 @@ PutAColList
           aval []float64 )
 
 `sub []int32`
-    Indexes of columns that should be replaced.
+     Indexes of columns that should be replaced.
 `ptrb []int32`
-    Array of pointers to the first element in the columns.
+     Array of pointers to the first element in the columns.
 `ptre []int32`
-    Array of pointers to the last element plus one in the columns.
+     Array of pointers to the last element plus one in the columns.
 `asub []int32`
     Variable indexes.
 
-Replaces all elements in several columns the linear constraint matrix by new values.
+ Replaces all elements in several columns the linear constraint matrix by new values. 
 
 
 PutAColSlice
@@ -2932,15 +2934,15 @@ PutAColSlice
 `first int32`
     First column in the slice.
 `last int32`
-    Last column plus one in the slice.
+     Last column plus one in the slice.
 `ptrb []int64`
-    Array of pointers to the first element in the columns.
+     Array of pointers to the first element in the columns.
 `ptre []int64`
-    Array of pointers to the last element plus one in the columns.
+     Array of pointers to the last element plus one in the columns.
 `asub []int32`
     Variable indexes.
 
-Replaces all elements in several columns the linear constraint matrix by new values.
+ Replaces all elements in several columns the linear constraint matrix by new values. 
 
 
 PutARow
@@ -2954,13 +2956,13 @@ PutARow
           vali []float64 )
 
 `i int32`
-    row index.
+     row index.
 `subi []int32`
     Row indexes of non-zero values in row.
 `vali []float64`
     New non-zero values of row.
 
-Replaces all elements in one row of A.
+ Replaces all elements in one row of A. 
 
 
 PutARowList
@@ -2976,15 +2978,15 @@ PutARowList
           aval []float64 )
 
 `sub []int32`
-    Indexes of rows or columns that should be replaced.
+     Indexes of rows or columns that should be replaced.
 `aptrb []int32`
-    Array of pointers to the first element in the rows or columns.
+     Array of pointers to the first element in the rows or columns.
 `aptre []int32`
-    Array of pointers to the last element plus one in the rows or columns.
+     Array of pointers to the last element plus one in the rows or columns.
 `asub []int32`
     Variable indexes.
 
-Replaces all elements in several rows the linear constraint matrix by new values.
+ Replaces all elements in several rows the linear constraint matrix by new values. 
 
 
 PutARowSlice
@@ -3003,15 +3005,15 @@ PutARowSlice
 `first int32`
     First row in the slice.
 `last int32`
-    Last row plus one in the slice.
+     Last row plus one in the slice.
 `ptrb []int64`
-    Array of pointers to the first element in the rows.
+     Array of pointers to the first element in the rows.
 `ptre []int64`
-    Array of pointers to the last element plus one in the rows.
+     Array of pointers to the last element plus one in the rows.
 `asub []int32`
     Variable indexes.
 
-Replaces all elements in several rows the linear constraint matrix by new values.
+ Replaces all elements in several rows the linear constraint matrix by new values. 
 
 
 PutAij
@@ -3025,13 +3027,13 @@ PutAij
           aij float64 )
 
 `i int32`
-    Index of the constraint in which the change should occur.
+     Index of the constraint in which the change should occur.
 `j int32`
-    Index of the variable in which the change should occur.
+     Index of the variable in which the change should occur.
 `aij float64`
     New coefficient.
 
-Changes a single value in the linear coefficient matrix.
+Changes a single value in the linear coefficient matrix. 
 
 
 PutAijList
@@ -3045,13 +3047,13 @@ PutAijList
           valij []float64 )
 
 `subi []int32`
-    Constraint indexes in which the change should occur.
+     Constraint indexes in which the change should occur.
 `subj []int32`
-    Variable indexes in which the change should occur.
+     Variable indexes in which the change should occur.
 `valij []float64`
     New coefficient values.
 
-Changes one or more coefficients in the linear constraint matrix.
+Changes one or more coefficients in the linear constraint matrix. 
 
 
 PutBaraBlockTriplet
@@ -3068,19 +3070,19 @@ PutBaraBlockTriplet
           valijkl []float64 )
 
 `num int64`
-    Number of elements in the block triplet form.
+     Number of elements in the block triplet form.
 `subi []int32`
-    Constraint index.
+     Constraint index.
 `subj []int32`
-    Symmetric matrix variable index.
+     Symmetric matrix variable index.
 `subk []int32`
-    Block row index.
+     Block row index.
 `subl []int32`
-    Block column index.
+     Block column index.
 `valijkl []float64`
-    The numerical value associated with the block triplet.
+     The numerical value associated with the block triplet.
 
-Inputs barA in block triplet form.
+Inputs barA in block triplet form. 
 
 
 PutBaraIj
@@ -3095,15 +3097,15 @@ PutBaraIj
           weights []float64 )
 
 `i int32`
-    Row index of barA.
+     Row index of barA.
 `j int32`
-    Column index of barA.
+     Column index of barA.
 `sub []int64`
-    See argument weights for an explanation.
+     See argument weights for an explanation.
 `weights []float64`
-    Weights in the weighted sum.
+     Weights in the weighted sum.
 
-Inputs an element of barA.
+Inputs an element of barA. 
 
 
 PutBarcBlockTriplet
@@ -3119,17 +3121,17 @@ PutBarcBlockTriplet
           valjkl []float64 )
 
 `num int64`
-    Number of elements in the block triplet form.
+     Number of elements in the block triplet form.
 `subj []int32`
-    Symmetric matrix variable index.
+     Symmetric matrix variable index.
 `subk []int32`
-    Block row index.
+     Block row index.
 `subl []int32`
-    Block column index.
+     Block column index.
 `valjkl []float64`
-    The numerical value associated with the block triplet.
+     The numerical value associated with the block triplet.
 
-Inputs barC in block triplet form.
+Inputs barC in block triplet form. 
 
 
 PutBarcJ
@@ -3143,11 +3145,11 @@ PutBarcJ
           weights []float64 )
 
 `j int32`
-    Index of the element in barc` that should be changed.
+     Index of the element in barc` that should be changed.
 `sub []int64`
-    sub is list of indexes of those symmetric matrices appearing in sum.
+     sub is list of indexes of those symmetric matrices appearing in sum.
 `weights []float64`
-    The weights of the terms in the weighted sum.
+     The weights of the terms in the weighted sum.
 
 Changes one element in barc.
 
@@ -3167,7 +3169,7 @@ PutBarsJ
 `barsj []float64`
     Value of the j'th variable of barx.
 
-Sets the dual solution for a semidefinite variable.
+ Sets the dual solution for a semidefinite variable. 
 
 
 PutBarvarName
@@ -3181,7 +3183,7 @@ PutBarvarName
 `name string`
     The variable name.
 
-Puts the name of a semidefinite variable.
+ Puts the name of a semidefinite variable. 
 
 
 PutBarxJ
@@ -3199,7 +3201,7 @@ PutBarxJ
 `barxj []float64`
     Value of the j'th variable of barx.
 
-Sets the primal solution for a semidefinite variable.
+ Sets the primal solution for a semidefinite variable. 
 
 
 PutBound
@@ -3215,7 +3217,7 @@ PutBound
           bu float64 )
 
 `accmode int32`
-    Defines whether the bound for a constraint or a variable is changed.
+     Defines whether the bound for a constraint or a variable is changed.
 `i int32`
     Index of the constraint or variable.
 `bk int32`
@@ -3225,7 +3227,7 @@ PutBound
 `bu float64`
     New upper bound.
 
-Changes the bound for either one constraint or one variable.
+ Changes the bound for either one constraint or one variable. 
 
 
 PutBoundList
@@ -3241,17 +3243,17 @@ PutBoundList
           bu []float64 )
 
 `accmode int32`
-    Defines whether to access bounds on variables or constraints.
+     Defines whether to access bounds on variables or constraints.
 `sub []int32`
     Subscripts of the bounds that should be changed.
 `bk []int32`
-    Bound keys for variables or constraints.
+     Bound keys for variables or constraints.
 `bl []float64`
-    Bound keys for variables or constraints.
+     Bound keys for variables or constraints.
 `bu []float64`
-    Constraint or variable upper bounds.
+     Constraint or variable upper bounds.
 
-Changes the bounds of constraints or variables.
+Changes the bounds of constraints or variables. 
 
 
 PutBoundSlice
@@ -3268,9 +3270,9 @@ PutBoundSlice
           bu []float64 )
 
 `con int32`
-    Determines whether variables or constraints are modified.
+     Determines whether variables or constraints are modified.
 
-Modifies bounds.
+Modifies bounds. 
 
 
 PutCJ
@@ -3284,7 +3286,7 @@ PutCJ
 `cj float64`
     New coefficient value.
 
-Modifies one linear coefficient in the objective.
+Modifies one linear coefficient in the objective. 
 
 
 PutCList
@@ -3298,7 +3300,7 @@ PutCList
 `val []float64`
     New numerical values for the objective coefficients that should be modified.
 
-Modifies a part of the linear objective coefficients.
+Modifies a part of the linear objective coefficients. 
 
 
 PutCSlice
@@ -3318,7 +3320,7 @@ PutCSlice
 `slice []float64`
     New numerical values for the objective coefficients that should be modified.
 
-Modifies a slice of the linear objective coefficients.
+Modifies a slice of the linear objective coefficients. 
 
 
 PutCallbackFunc
@@ -3343,7 +3345,7 @@ PutCfix
 
     func (*Task) PutCfix ( cfix float64 )
 
-Replaces the fixed term in the objective.
+Replaces the fixed term in the objective. 
 
 
 PutConBound
@@ -3366,7 +3368,7 @@ PutConBound
 `bu float64`
     New upper bound.
 
-Changes the bound for one constraint.
+ Changes the bound for one constraint. 
 
 
 PutConBoundList
@@ -3383,13 +3385,13 @@ PutConBoundList
 `sub []int32`
     List constraints indexes.
 `bkc []int32`
-    New bound keys.
+     New bound keys.
 `blc []float64`
-    New lower bound values.
+     New lower bound values.
 `buc []float64`
-    New upper bounds values.
+     New upper bounds values.
 
-Changes the bounds of a list of constraints.
+Changes the bounds of a list of constraints. 
 
 
 PutConBoundSlice
@@ -3415,7 +3417,7 @@ PutConBoundSlice
 `bu []float64`
     New upper bounds.
 
-Changes the bounds for a slice of the constraints.
+ Changes the bounds for a slice of the constraints. 
 
 
 PutConName
@@ -3429,7 +3431,7 @@ PutConName
 `name string`
     The variable name.
 
-Puts the name of a constraint.
+ Puts the name of a constraint. 
 
 
 PutCone
@@ -3446,7 +3448,7 @@ PutCone
 `k int32`
     Index of the cone.
 
-Replaces a conic constraint.
+ Replaces a conic constraint. 
 
 
 PutConeName
@@ -3460,7 +3462,7 @@ PutConeName
 `name string`
     The variable name.
 
-Puts the name of a cone.
+ Puts the name of a cone. 
 
 
 PutDouParam
@@ -3470,7 +3472,7 @@ PutDouParam
 
     func (*Task) PutDouParam ( param int32, parvalue float64 )
 
-Sets a double parameter.
+Sets a double parameter. 
 
 
 PutInfoCallbackFunc
@@ -3506,7 +3508,7 @@ PutIntParam
 
     func (*Task) PutIntParam ( param int32, parvalue int32 )
 
-Sets an integer parameter.
+Sets an integer parameter. 
 
 
 PutLicenseCode
@@ -3516,9 +3518,9 @@ PutLicenseCode
 
     func (*Env) PutLicenseCode ( code []int32 )
 `code []int32`
-    A license key string.
+     A license key string.
 
-The purpose of this function is to input a runtime license code.
+The purpose of this function is to input a runtime license code. 
 
 
 PutLicenseDebug
@@ -3530,7 +3532,7 @@ PutLicenseDebug
 `licdebug int32`
     Enable output of license check-out debug information.
 
-Enables debug information for the license system.
+Enables debug information for the license system. 
 
 
 PutLicensePath
@@ -3542,7 +3544,7 @@ PutLicensePath
 `licensepath string`
     A path specifycing where to search for the license.
 
-Set the path to the license file.
+Set the path to the license file. 
 
 
 PutLicenseWait
@@ -3554,7 +3556,7 @@ PutLicenseWait
 `licwait int32`
     Enable waiting for a license.
 
-Control whether mosek should wait for an available license if no license is available.
+Control whether mosek should wait for an available license if no license is available. 
 
 
 PutMaxNumANz
@@ -3566,7 +3568,7 @@ PutMaxNumANz
 `maxnumanz int64`
     New size of the storage reserved for storing the linear coefficient matrix.
 
-The function changes the size of the preallocated storage for linear coefficients.
+ The function changes the size of the preallocated storage for linear coefficients. 
 
 
 PutMaxNumBarvar
@@ -3578,7 +3580,7 @@ PutMaxNumBarvar
 `maxnumbarvar int32`
     The maximum number of semidefinite variables.
 
-Sets the number of preallocated symmetric matrix variables in the optimization task.
+Sets the number of preallocated symmetric matrix variables in the optimization task. 
 
 
 PutMaxNumCon
@@ -3588,7 +3590,7 @@ PutMaxNumCon
 
     func (*Task) PutMaxNumCon ( maxnumcon int32 )
 
-Sets the number of preallocated constraints in the optimization task.
+Sets the number of preallocated constraints in the optimization task. 
 
 
 PutMaxNumCone
@@ -3598,7 +3600,7 @@ PutMaxNumCone
 
     func (*Task) PutMaxNumCone ( maxnumcone int32 )
 
-Sets the number of preallocated conic constraints in the optimization task.
+ Sets the number of preallocated conic constraints in the optimization task. 
 
 
 PutMaxNumQNz
@@ -3608,7 +3610,7 @@ PutMaxNumQNz
 
     func (*Task) PutMaxNumQNz ( maxnumqnz int64 )
 
-Changes the size of the preallocated storage for quadratic terms.
+Changes the size of the preallocated storage for quadratic terms. 
 
 
 PutMaxNumVar
@@ -3618,7 +3620,7 @@ PutMaxNumVar
 
     func (*Task) PutMaxNumVar ( maxnumvar int32 )
 
-Sets the number of preallocated variables in the optimization task.
+Sets the number of preallocated variables in the optimization task. 
 
 
 PutNaDouParam
@@ -3628,7 +3630,7 @@ PutNaDouParam
 
     func (*Task) PutNaDouParam ( paramname string, parvalue float64 )
 
-Sets a double parameter.
+Sets a double parameter. 
 
 
 PutNaIntParam
@@ -3638,7 +3640,7 @@ PutNaIntParam
 
     func (*Task) PutNaIntParam ( paramname string, parvalue int32 )
 
-Sets an integer parameter.
+Sets an integer parameter. 
 
 
 PutNaStrParam
@@ -3648,7 +3650,7 @@ PutNaStrParam
 
     func (*Task) PutNaStrParam ( paramname string, parvalue string )
 
-Sets a string parameter.
+Sets a string parameter. 
 
 
 PutObjName
@@ -3658,7 +3660,7 @@ PutObjName
 
     func (*Task) PutObjName ( objname string )
 
-Assigns a new name to the objective.
+Assigns a new name to the objective. 
 
 
 PutObjSense
@@ -3670,7 +3672,7 @@ PutObjSense
 `sense int32`
     The objective sense of the task
 
-Sets the objective sense.
+Sets the objective sense. 
 
 
 PutParam
@@ -3680,7 +3682,7 @@ PutParam
 
     func (*Task) PutParam ( parname string, parvalue string )
 
-Modifies the value of parameter.
+Modifies the value of parameter. 
 
 
 PutQCon
@@ -3695,7 +3697,7 @@ PutQCon
           qcval []float64 )
 
 
-Replaces all quadratic terms in constraints.
+Replaces all quadratic terms in constraints. 
 
 
 PutQConK
@@ -3712,7 +3714,7 @@ PutQConK
 `k int32`
     The constraint in which the new quadratic elements are inserted.
 
-Replaces all quadratic terms in a single constraint.
+Replaces all quadratic terms in a single constraint. 
 
 
 PutQObj
@@ -3726,7 +3728,7 @@ PutQObj
           qoval []float64 )
 
 
-Replaces all quadratic terms in the objective.
+Replaces all quadratic terms in the objective. 
 
 
 PutQObjIJ
@@ -3746,7 +3748,7 @@ PutQObjIJ
 `qoij float64`
     The new coefficient value.
 
-Replaces one coefficient in the quadratic term in the objective.
+ Replaces one coefficient in the quadratic term in the objective. 
 
 
 PutSkc
@@ -3756,7 +3758,7 @@ PutSkc
 
     func (*Task) PutSkc ( whichsol int32, skc []int32 )
 
-Sets the status keys for the constraints.
+ Sets the status keys for the constraints. 
 
 
 PutSkcSlice
@@ -3771,7 +3773,7 @@ PutSkcSlice
           skc []int32 )
 
 
-Sets the status keys for the constraints.
+ Sets the status keys for the constraints. 
 
 
 PutSkx
@@ -3781,7 +3783,7 @@ PutSkx
 
     func (*Task) PutSkx ( whichsol int32, skx []int32 )
 
-Sets the status keys for the scalar variables.
+ Sets the status keys for the scalar variables. 
 
 
 PutSkxSlice
@@ -3796,7 +3798,7 @@ PutSkxSlice
           skx []int32 )
 
 
-Sets the status keys for the variables.
+ Sets the status keys for the variables. 
 
 
 PutSlc
@@ -3808,7 +3810,7 @@ PutSlc
 `slc []float64`
     The slc vector.
 
-Sets the slc vector for a solution.
+ Sets the slc vector for a solution. 
 
 
 PutSlcSlice
@@ -3823,7 +3825,7 @@ PutSlcSlice
           slc []float64 )
 
 
-Sets a slice of the slc vector for a solution.
+ Sets a slice of the slc vector for a solution. 
 
 
 PutSlx
@@ -3835,7 +3837,7 @@ PutSlx
 `slx []float64`
     The slx vector.
 
-Sets the slx vector for a solution.
+ Sets the slx vector for a solution. 
 
 
 PutSlxSlice
@@ -3850,7 +3852,7 @@ PutSlxSlice
           slx []float64 )
 
 
-Sets a slice of the slx vector for a solution.
+ Sets a slice of the slx vector for a solution. 
 
 
 PutSnx
@@ -3862,7 +3864,7 @@ PutSnx
 `sux []float64`
     The snx vector.
 
-Sets the snx vector for a solution.
+ Sets the snx vector for a solution. 
 
 
 PutSnxSlice
@@ -3877,7 +3879,7 @@ PutSnxSlice
           snx []float64 )
 
 
-Sets a slice of the snx vector for a solution.
+ Sets a slice of the snx vector for a solution. 
 
 
 PutSolution
@@ -3900,7 +3902,7 @@ PutSolution
           snx []float64 )
 
 
-Inserts a solution.
+Inserts a solution. 
 
 
 PutSolutionI
@@ -3919,7 +3921,7 @@ PutSolutionI
           sn float64 )
 
 `accmode int32`
-    Defines whether solution information for a constraint or for a variable is modified.
+     Defines whether solution information for a constraint or for a variable is modified.
 `i int32`
     Index of the constraint or variable.
 `sk int32`
@@ -3927,13 +3929,13 @@ PutSolutionI
 `x float64`
     Solution value of the primal constraint or variable.
 `sl float64`
-    Solution value of the dual variable associated with the lower bound.
+     Solution value of the dual variable associated with the lower bound.
 `su float64`
-    Solution value of the dual variable associated with the upper bound.
+     Solution value of the dual variable associated with the upper bound.
 `sn float64`
-    Solution value of the dual variable associated with the cone constraint.
+     Solution value of the dual variable associated with the cone constraint.
 
-Sets the primal and dual solution information for a single constraint or variable.
+ Sets the primal and dual solution information for a single constraint or variable. 
 
 
 PutSolutionYI
@@ -3951,7 +3953,7 @@ PutSolutionYI
 `y float64`
     Solution value of the dual variable.
 
-Inputs the dual variable of a solution.
+ Inputs the dual variable of a solution. 
 
 
 PutStrParam
@@ -3961,7 +3963,7 @@ PutStrParam
 
     func (*Task) PutStrParam ( param int32, parvalue string )
 
-Sets a string parameter.
+Sets a string parameter. 
 
 
 PutStreamFunc
@@ -3983,7 +3985,7 @@ PutSuc
 `suc []float64`
     The suc vector.
 
-Sets the suc vector for a solution.
+ Sets the suc vector for a solution. 
 
 
 PutSucSlice
@@ -3998,7 +4000,7 @@ PutSucSlice
           suc []float64 )
 
 
-Sets a slice of the suc vector for a solution.
+ Sets a slice of the suc vector for a solution. 
 
 
 PutSux
@@ -4010,7 +4012,7 @@ PutSux
 `sux []float64`
     The sux vector.
 
-Sets the sux vector for a solution.
+ Sets the sux vector for a solution. 
 
 
 PutSuxSlice
@@ -4025,7 +4027,7 @@ PutSuxSlice
           sux []float64 )
 
 
-Sets a slice of the sux vector for a solution.
+ Sets a slice of the sux vector for a solution. 
 
 
 PutTaskName
@@ -4035,7 +4037,7 @@ PutTaskName
 
     func (*Task) PutTaskName ( taskname string )
 
-Assigns a new name to the task.
+Assigns a new name to the task. 
 
 
 PutVarBound
@@ -4058,7 +4060,7 @@ PutVarBound
 `bu float64`
     New upper bound.
 
-Changes the bound for one variable.
+ Changes the bound for one variable. 
 
 
 PutVarBoundList
@@ -4075,13 +4077,13 @@ PutVarBoundList
 `sub []int32`
     List of variable indexes.
 `bkx []int32`
-    New bound keys.
+     New bound keys.
 `blx []float64`
-    New lower bound values.
+     New lower bound values.
 `bux []float64`
-    New upper bounds values.
+     New upper bounds values.
 
-Changes the bounds of a list of variables.
+Changes the bounds of a list of variables. 
 
 
 PutVarBoundSlice
@@ -4107,7 +4109,7 @@ PutVarBoundSlice
 `bu []float64`
     New upper bounds.
 
-Changes the bounds for a slice of the variables.
+ Changes the bounds for a slice of the variables. 
 
 
 PutVarName
@@ -4121,7 +4123,7 @@ PutVarName
 `name string`
     The variable name.
 
-Puts the name of a variable.
+ Puts the name of a variable. 
 
 
 PutVarType
@@ -4135,7 +4137,7 @@ PutVarType
 `vartype int32`
     The new variable type.
 
-Sets the variable type of one variable.
+Sets the variable type of one variable. 
 
 
 PutVarTypeList
@@ -4145,11 +4147,11 @@ PutVarTypeList
 
     func (*Task) PutVarTypeList ( subj []int32, vartype []int32 )
 `subj []int32`
-    A list of variable indexes for which the variable type should be changed.
+     A list of variable indexes for which the variable type should be changed.
 `vartype []int32`
-    A list of variable types.
+     A list of variable types.
 
-Sets the variable type for one or more variables.
+Sets the variable type for one or more variables. 
 
 
 PutXc
@@ -4162,7 +4164,7 @@ PutXc
 `xc []float64`
     The xc vector.
 
-Sets the xc vector for a solution.
+ Sets the xc vector for a solution. 
 
 
 PutXcSlice
@@ -4177,7 +4179,7 @@ PutXcSlice
           xc []float64 )
 
 
-Sets a slice of the xc vector for a solution.
+ Sets a slice of the xc vector for a solution. 
 
 
 PutXx
@@ -4189,7 +4191,7 @@ PutXx
 `xx []float64`
     The xx vector.
 
-Sets the xx vector for a solution.
+ Sets the xx vector for a solution. 
 
 
 PutXxSlice
@@ -4204,7 +4206,7 @@ PutXxSlice
           xx []float64 )
 
 
-Obtains a slice of the xx vector for a solution.
+ Obtains a slice of the xx vector for a solution. 
 
 
 PutY
@@ -4216,7 +4218,7 @@ PutY
 `y []float64`
     The y vector.
 
-Sets the y vector for a solution.
+ Sets the y vector for a solution. 
 
 
 PutYSlice
@@ -4231,7 +4233,7 @@ PutYSlice
           y []float64 )
 
 
-Sets a slice of the y vector for a solution.
+ Sets a slice of the y vector for a solution. 
 
 
 ReadData
@@ -4241,9 +4243,9 @@ ReadData
 
     func (*Task) ReadData ( filename string )
 `filename string`
-    Input data file name.
+     Input data file name.
 
-Reads problem data from a file.
+Reads problem data from a file. 
 
 
 ReadDataFormat
@@ -4257,13 +4259,13 @@ ReadDataFormat
           compress int32 )
 
 `filename string`
-    Input data file name.
+     Input data file name.
 `format int32`
     File data format.
 `compress int32`
     File compression type.
 
-Reads problem data from a file.
+Reads problem data from a file. 
 
 
 ReadParamFile
@@ -4273,9 +4275,9 @@ ReadParamFile
 
     func (*Task) ReadParamFile ( filename string )
 `filename string`
-    Input data file name.
+     Input data file name.
 
-Reads a parameter file.
+Reads a parameter file. 
 
 
 ReadSolution
@@ -4285,7 +4287,7 @@ ReadSolution
 
     func (*Task) ReadSolution ( whichsol int32, filename string )
 
-Reads a solution from a file.
+Reads a solution from a file. 
 
 
 ReadSummary
@@ -4295,7 +4297,7 @@ ReadSummary
 
     func (*Task) ReadSummary ( whichstream int32 )
 
-Prints information about last file read.
+Prints information about last file read. 
 
 
 ReadTask
@@ -4307,7 +4309,7 @@ ReadTask
 `filename string`
     Input file name.
 
-Load task data from a file.
+ Load task data from a file. 
 
 
 RemoveBarvars
@@ -4317,9 +4319,9 @@ RemoveBarvars
 
     func (*Task) RemoveBarvars ( subset []int32 )
 `subset []int32`
-    Indexes of symmetric matrix which should be removed.
+     Indexes of symmetric matrix which should be removed.
 
-The function removes a number of symmetric matrix.
+ The function removes a number of symmetric matrix. 
 
 
 RemoveCones
@@ -4329,9 +4331,9 @@ RemoveCones
 
     func (*Task) RemoveCones ( subset []int32 )
 `subset []int32`
-    Indexes of cones which should be removed.
+     Indexes of cones which should be removed.
 
-Removes a conic constraint from the problem.
+Removes a conic constraint from the problem. 
 
 
 RemoveCons
@@ -4341,9 +4343,9 @@ RemoveCons
 
     func (*Task) RemoveCons ( subset []int32 )
 `subset []int32`
-    Indexes of constraints which should be removed.
+     Indexes of constraints which should be removed.
 
-The function removes a number of constraints.
+ The function removes a number of constraints. 
 
 
 RemoveVars
@@ -4353,9 +4355,9 @@ RemoveVars
 
     func (*Task) RemoveVars ( subset []int32 )
 `subset []int32`
-    Indexes of variables which should be removed.
+     Indexes of variables which should be removed.
 
-The function removes a number of variables.
+ The function removes a number of variables. 
 
 
 ResizeTask
@@ -4381,7 +4383,7 @@ ResizeTask
 `maxnumqnz int64`
     New maximum number of quadratic non-zeros elements.
 
-Resizes an optimization task.
+Resizes an optimization task. 
 
 
 SensitivityReport
@@ -4391,7 +4393,7 @@ SensitivityReport
 
     func (*Task) SensitivityReport ( whichstream int32 )
 
-Creates a sensitivity report.
+Creates a sensitivity report. 
 
 
 SetDefaults
@@ -4401,7 +4403,7 @@ SetDefaults
 
     func (*Task) SetDefaults (  )
 
-Resets all parameters values.
+Resets all parameters values. 
 
 
 SkToStr
@@ -4414,7 +4416,7 @@ SkToStr
 `sk int32`
     A valid status key.
 
-Obtains a status key string.
+Obtains a status key string. 
 
 
 SolStaToStr
@@ -4425,7 +4427,7 @@ SolStaToStr
     func (*Task) SolStaToStr ( solsta int32 ) ( str string )
 
 
-Obtains a solution status string.
+Obtains a solution status string. 
 
 
 SolutionDef
@@ -4436,7 +4438,7 @@ SolutionDef
     func (*Task) SolutionDef ( whichsol int32 ) ( isdef bool )
 
 
-Checks whether a solution is defined.
+Checks whether a solution is defined. 
 
 
 SolutionSummary
@@ -4446,7 +4448,7 @@ SolutionSummary
 
     func (*Task) SolutionSummary ( whichstream int32 )
 
-Prints a short summary of the current solutions.
+Prints a short summary of the current solutions. 
 
 
 SolveWithBasis
@@ -4464,15 +4466,15 @@ SolveWithBasis
           val []float64 )
 
 `transp int32`
-    Controls which problem formulation is solved.
+     Controls which problem formulation is solved.
 `numnz int32`
-    Input (number of non-zeros in right-hand side) and output (number of non-zeros in solution vector).
+     Input (number of non-zeros in right-hand side) and output (number of non-zeros in solution vector).
 `sub []int32`
-    Input (indexes of non-zeros in right-hand side) and output (indexes of non-zeros in solution vector).
+     Input (indexes of non-zeros in right-hand side) and output (indexes of non-zeros in solution vector).
 `val []float64`
-    Input (right-hand side values) and output (solution vector values).
+     Input (right-hand side values) and output (solution vector values).
 
-Solve a linear equation system involving a basis matrix.
+ Solve a linear equation system involving a basis matrix. 
 
 
 StrToConeType
@@ -4485,7 +4487,7 @@ StrToConeType
 `str string`
     String corresponding to the cone type code.
 
-Obtains a cone type code.
+Obtains a cone type code. 
 
 
 StrToSk
@@ -4498,7 +4500,7 @@ StrToSk
 `str string`
     Status key string.
 
-Obtains a status key.
+Obtains a status key. 
 
 
 Syeig
@@ -4516,11 +4518,11 @@ Syeig
 `uplo int32`
     Indicates whether the upper or lower triangular part is used.
 `n int32`
-    Dimension of the symmetric input matrix.
+     Dimension of the symmetric input matrix.
 `a []float64`
-    A symmetric matrix stored in column-major order. Only the lower-triangular part is used.
+     A symmetric matrix stored in column-major order. Only the lower-triangular part is used.
 `w []float64`
-    Array of minimum dimension n where eigenvalues will be stored.
+     Array of minimum dimension n where eigenvalues will be stored.
 
 Computes all eigenvalues of a symmetric dense matrix.
 
@@ -4541,11 +4543,11 @@ Syevd
 `uplo int32`
     Indicates whether the upper or lower triangular part is used.
 `n int32`
-    Dimension of symmetric input matrix.
+     Dimension of symmetric input matrix.
 `a []float64`
-    A symmetric matrix stored in column-major order. Only the lower-triangular part is used. It will be overwritten on exit.
+     A symmetric matrix stored in column-major order. Only the lower-triangular part is used. It will be overwritten on exit.
 `w []float64`
-    An array where eigenvalues will be stored. Its lenght must be at least the dimension of the input matrix.
+     An array where eigenvalues will be stored. Its lenght must be at least the dimension of the input matrix.
 
 Computes all the eigenvalue and eigenvectors of a symmetric dense matrix, and thus its eigenvalue decomposition.
 
@@ -4615,7 +4617,7 @@ WriteData
 `filename string`
     Output file name.
 
-Writes problem data to a file.
+Writes problem data to a file. 
 
 
 WriteJsonSol
@@ -4625,7 +4627,7 @@ WriteJsonSol
 
     func (*Task) WriteJsonSol ( filename string )
 
-Write a solution to a file.
+Write a solution to a file. 
 
 
 WriteParamFile
@@ -4637,7 +4639,7 @@ WriteParamFile
 `filename string`
     The name of parameter file.
 
-Writes all the parameters to a parameter file.
+Writes all the parameters to a parameter file. 
 
 
 WriteSolution
@@ -4647,7 +4649,7 @@ WriteSolution
 
     func (*Task) WriteSolution ( whichsol int32, filename string )
 
-Write a solution to a file.
+Write a solution to a file. 
 
 
 WriteTask
