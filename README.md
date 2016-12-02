@@ -21,6 +21,10 @@ What will probably never be supported:
 
 ## Documentation
 
+The documentation contains an API reference covering all functions and
+constants in the interface. It may contain dead links since many sections are
+not included in the manual yet. 
+
 - [API reference](docs/mosek.rst)
 - [Constants reference](docs/mosek_const.rst).
 
