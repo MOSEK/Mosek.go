@@ -230,6 +230,8 @@ Appends a general sparse symmetric matrix to the vector E of symmetric matrixes.
      Column subscripts in the triplets.
 ``valij []float64``
      Values of each triplet.
+``idx int64``
+     Unique index assigned to inputted matrix.
 
 
 MOSEK maintains a storage of symmetric data matrixes that is used to build
@@ -297,6 +299,10 @@ BasisCond
     func (*Task) BasisCond (  ) ( nrmbasis float64, nrminvbasis float64 )
 
 
+``nrmbasis float64``
+     An estimate for the 1 norm of the basis.
+``nrminvbasis float64``
+     An estimate for the 1 norm of the inverse of the basis.
 
 
 If a basic solution is available and it defines a nonsingular basis, then
@@ -614,6 +620,8 @@ Computes the inner product of two vectors. ::
     The x vector.
 ``y []float64``
     The y vector.
+``xty float64``
+    The result of the inner product.
 
 
 Computes the inner product of two vectors :math:`x,y` of lenght :math:`n\geq 0`, i.e
@@ -805,6 +813,8 @@ Obtains one column of the linear constraint matrix. ::
     Index of the non-zeros in the row obtained.
 ``valj []float64``
     Numerical values of the column obtained.
+``nzj int32``
+    Number of non-zeros in the column obtained.
 
 Obtains one column of :math:`A` in a sparse format.  
 
@@ -819,6 +829,8 @@ GetAColNumNz
 
 ``i int32``
     Index of the column.
+``nzj int32``
+    Number of non-zeros in the j'th row or column of (A).
 
 Obtains the number of non-zero elements in one column of :math:`A`.  
 
@@ -892,6 +904,8 @@ GetAPieceNumNz
      Index of the first column in the rectangular piece.
 ``lastj int32``
      Index of the last column plus one in the rectangular piece.
+``numnz int32``
+    Number of non-zero elements in the rectangular piece of the linear constraint matrix.
 
 
 Obtains the number non-zeros in a rectangular piece of :math:`A`, i.e. the number
@@ -925,6 +939,8 @@ Obtains one row of the linear constraint matrix. ::
     Index of the non-zeros in the row obtained.
 ``vali []float64``
     Numerical values of the row obtained.
+``nzi int32``
+    Number of non-zeros in the row obtained.
 
 Obtains one row of :math:`A` in a sparse format.  
 
@@ -939,6 +955,8 @@ GetARowNumNz
 
 ``i int32``
     Index of the row or column.
+``nzi int32``
+    Number of non-zeros in the i'th row of `A`.
 
 Obtains the number of non-zero elements in one row of :math:`A`.  
 
@@ -1046,6 +1064,8 @@ GetASliceNumNz
      Index of the first row or column in the sequence.
 ``last int32``
     Index of the last row or column plus one in the sequence.
+``numnz int64``
+    Number of non-zeros in the slice.
 
 Obtains the number of non-zeros in a slice of rows or columns of :math:`A`.  
 
@@ -1062,6 +1082,8 @@ Obtains a single coefficient in linear constraint matrix. ::
     Row index of the coefficient to be returned.
 ``j int32``
     Column index of the coefficient to be returned.
+``aij float64``
+    Returns the requested coefficient.
 
 Obtains a single coefficient in :math:`A`. 
 
@@ -1095,6 +1117,8 @@ Obtains barA in block triplet form. ::
      Block column index.
 ``valijkl []float64``
     A list indexes of the elements from symmetric matrix storage that appears in the weighted sum.
+``num int64``
+     Number of elements in the block triplet form.
 
 Obtains :math:`\bar{A}` in block triplet form.  
 
@@ -1121,6 +1145,12 @@ Obtains information about an element barA. ::
      A list indexes   of the elements from symmetric matrix storage that appears in the weighted sum.
 ``weights []float64``
      The weights associated with each term in the weighted sum.
+``i int32``
+     Row index of the element at position idx.
+``j int32``
+    Column index of the element at position idx.
+``num int64``
+    Number of terms in weighted sum that forms the element.
 
 
 Obtains information about an element in :math:`\bar{A}`. Since :math:`\bar{A}`
@@ -1146,6 +1176,10 @@ Obtains information about an element barA. ::
 
 ``idx int64``
      Position of the element in the vectorized form.
+``i int32``
+     Row index of the element at position idx.
+``j int32``
+     Column index of the element at position idx.
 
 
 Obtains information about an element in :math:`\bar{A}`. Since :math:`\bar{A}`
@@ -1171,6 +1205,8 @@ Obtains the number terms in the weighted sum that forms a particular element in 
 
 ``idx int64``
      The internal position of the element that should be obtained information for.
+``num int64``
+     Number of terms in the weighted sum that forms the specified element in barA.
 
 
 Each nonzero element in :math:`\bar{A}_{ij}` is formed as a weighted sum of
@@ -1190,6 +1226,8 @@ Obtains the sparsity pattern of the barA matrix. ::
 
 ``idxij []int64``
     Position of each nonzero element in the vector representation of barA.
+``numnz int64``
+    Number of nonzero elements in barA.
 
 
 The matrix :math:`\bar{A}` is assumed to be a sparse matrix of symmetric matrices.
@@ -1226,6 +1264,8 @@ Obtains barc in block triplet form. ::
      Block column index.
 ``valijkl []float64``
      A list indexes of the elements from symmetric matrix storage that appears in the weighted sum.
+``num int64``
+     Number of elements in the block triplet form.
 
 Obtains :math:`\bar{C}` in block triplet form.  
 
@@ -1251,6 +1291,10 @@ Obtains information about an element in barc.::
      Elements appearing the weighted sum.
 ``weights []float64``
      Weights of terms in the weighted sum.
+``j int32``
+     Row index in barc.
+``num int64``
+     Number of terms in the weighted sum.
 
 Obtains information about an element in :math:`\bar{c}`.  
 
@@ -1265,6 +1309,8 @@ Obtains information about an element in barc. ::
 
 ``idx int64``
      Index of element that should be obtained information about. The value is an index of a symmetric sparse variable.
+``num int64``
+     Number of terms that appears in weighted that forms the requested element.
 
 Obtains information about the :math:`\bar{c}_{ij}`.  
 
@@ -1279,6 +1325,8 @@ Obtains the row index of an element in barc. ::
 
 ``idx int64``
      Index of the element that should be obtained information about.
+``j int32``
+     Row index in barc.
 
 Obtains the row index of an element in :math:`\bar{c}`.  
 
@@ -1293,6 +1341,8 @@ Get the positions of the nonzero elements in barc. ::
 
 ``idxj []int64``
     Internal positions of the nonzeros elements in barc.
+``numnz int64``
+    Number of nonzero elements in barc.
 
 
 Internally only the nonzero elements of :math:`\bar{c}` is stored 
@@ -1334,6 +1384,8 @@ GetBarvarName
 
 ``i int32``
     Index.
+``name string``
+    The requested name is copied to this buffer.
 
 
 Obtains a name of a semidefinite variable.
@@ -1350,6 +1402,10 @@ GetBarvarNameIndex
 
 ``somename string``
     The requested name is copied to this buffer.
+``asgn int32``
+    Is non-zero if name somename is assigned to a semidefinite variable.
+``index int32``
+     If the name somename is assigned to a semidefinite variable, then index is the name of the constraint.
 
 
 Obtains the index of name of semidefinite variable.
@@ -1366,6 +1422,8 @@ GetBarvarNameLen
 
 ``i int32``
     Index.
+``len int32``
+    Returns the length of the indicated name.
 
 
 Obtains the length of a name of a semidefinite variable.
@@ -1458,6 +1516,8 @@ Obtains one coefficient of c. ::
 
 ``j int32``
     Index of the variable for which c coefficient should be obtained.
+``cj float64``
+    The c coefficient value.
 
 Obtains one coefficient of :math:`c`.  
 
@@ -1504,6 +1564,12 @@ Obtains a short description of a response code. ::
 
 ``code int32``
     A valid response code.
+``symname string``
+    Symbolic name corresponding to the code.
+``str string``
+    Obtains a short description of a response code.
+``res int32``
+    Response code (see `mosek.RES_...`
 
 Obtains a short description of the meaning of the response code given by ``code``.  
 
@@ -1560,6 +1626,8 @@ GetConName
 
 ``i int32``
     Index.
+``name string``
+    Is assigned the required name.
 
 
 Obtains a name of a constraint.
@@ -1576,6 +1644,10 @@ GetConNameIndex
 
 ``somename string``
     The name which should be checked.
+``asgn int32``
+    Is non-zero if name somename is assigned to a constraint.
+``index int32``
+     If the name somename is assigned to a constraint, then index is the name of the constraint.
 
 
 Checks whether the name ``somename`` has been assigned to any constraint. If it has been assigned to constraint, then index of the constraint is reported.
@@ -1592,6 +1664,8 @@ GetConNameLen
 
 ``i int32``
     Index.
+``len int32``
+    Returns the length of the indicated name.
 
 
 Obtains the length of a name of a constraint variable.
@@ -1646,6 +1720,8 @@ GetConeName
 
 ``i int32``
     Index.
+``name string``
+    Is assigned the required name.
 
 
 Obtains a name of a cone.
@@ -1662,6 +1738,10 @@ GetConeNameIndex
 
 ``somename string``
     The name which should be checked.
+``asgn int32``
+    Is non-zero if name somename is assigned to a cone.
+``index int32``
+    If the name somename is assigned to a cone, then index is the name of the cone.
 
 Checks whether the name ``somename`` has been assigned  to any cone. If it has been assigned to cone, then index of the cone is reported.  
 
@@ -1676,6 +1756,8 @@ GetConeNameLen
 
 ``i int32``
     Index.
+``len int32``
+    Returns the length of the indicated name.
 
 
 Obtains the length of a name of a cone.
@@ -1692,6 +1774,8 @@ Obtains the dimension of a symmetric matrix variable.::
 
 ``j int32``
     Index of the semidefinite variable whose dimension is requested.
+``dimbarvarj int32``
+    The dimension of the j'th semidefinite variable.
 
 Obtains the dimension of a symmetric matrix variable.
 
@@ -1704,6 +1788,8 @@ Obtains a double information item. ::
     func (*Task) GetDouInf ( whichdinf int32 ) ( dvalue float64 )
 
 
+``dvalue float64``
+     The value of the required double information item.
 
 
 Obtains a double information item from the task information database.
@@ -1751,6 +1837,20 @@ Compute norms of the primal solution. ::
           nrmbars float64 )
 
 
+``nrmy float64``
+     The norm of the y vector.
+``nrmslc float64``
+     The norm of the slc vector.
+``nrmsuc float64``
+     The norm of the suc vector.
+``nrmslx float64``
+     The norm of the slx vector.
+``nrmsux float64``
+     The norm of the sux vector.
+``nrmsnx float64``
+     The norm of the snx vector.
+``nrmbars float64``
+     The norm of the bars vector.
 
 Compute norms of the primal solution.
                
@@ -1909,6 +2009,8 @@ Obtains the index of a named information item. ::
     func (*Task) GetInfIndex ( inftype int32, infname string ) ( infindex int32 )
 
 
+``infindex int32``
+    The item index.
 
 Obtains the index of a named information item. 
 
@@ -1949,6 +2051,8 @@ Obtains an infeasible sub problem. ::
 
 ``whichsol int32``
      Which solution to use when determining the infeasible subproblem.
+``inftask Task``
+     A new task containing the infeasible subproblem.
 
 
 Given the solution is a certificate of primal or dual infeasibility then a
@@ -1975,6 +2079,8 @@ Obtains an integer information item. ::
     func (*Task) GetIntInf ( whichiinf int32 ) ( ivalue int32 )
 
 
+``ivalue int32``
+     The value of the required integer information item.
 
 
 Obtains an integer information item from the task information database.
@@ -2003,6 +2109,8 @@ Obtains the length if the j'th semidefinite variables. ::
 
 ``j int32``
     Index of the semidefinite variable whose length if requested.
+``lenbarvarj int64``
+    Number of scalar elements in the lower triangular part of the semidefinite variable.
 
 Obtains the length of the :math:`j`\ th semidefinite variable i.e. the number of elements in the triangular part. 
 
@@ -2015,6 +2123,8 @@ Obtains an integer information item. ::
     func (*Task) GetLintInf ( whichliinf int32 ) ( ivalue int64 )
 
 
+``ivalue int64``
+     The value of the required integer information item.
 
 
 Obtains an integer information item from the task information database.
@@ -2041,6 +2151,8 @@ Obtains the number of semidefinite variables. ::
     func (*Task) GetMaxNumBarvar (  ) ( maxnumbarvar int32 )
 
 
+``maxnumbarvar int32``
+    Obtains maximum number of semidefinite variable currently allowed.
 
 Obtains the number of semidefinite variables. 
 
@@ -2109,6 +2221,10 @@ Obtains information about the amount of memory used by a task. ::
     func (*Task) GetMemUsage (  ) ( meminuse int64, maxmemuse int64 )
 
 
+``meminuse int64``
+    Amount of memory currently used by the task.
+``maxmemuse int64``
+    Maximum amount of memory used by the task until now.
 
 Obtains information about the amount of memory used by a task. 
 
@@ -2145,6 +2261,8 @@ Obtains an upper bound on the number of scalar elements in the block triplet for
     func (*Task) GetNumBaraBlockTriplets (  ) ( num int64 )
 
 
+``num int64``
+     Number elements in the block triplet form of bara.
 
 Obtains an upper bound on the number of elements in the block triplet form of :math:`\bar{A}`.  
 
@@ -2157,6 +2275,8 @@ Get the number of nonzero elements in barA. ::
     func (*Task) GetNumBaraNz (  ) ( nz int64 )
 
 
+``nz int64``
+    The number of nonzero block elements in barA.
 
 Get the number of nonzero elements in :math:`\bar{A}`.  
 
@@ -2169,6 +2289,8 @@ Obtains an upper bound on the number of elements in the block triplet form of ba
     func (*Task) GetNumBarcBlockTriplets (  ) ( num int64 )
 
 
+``num int64``
+     An upper bound on the number elements in the block trip let form of barc.
 
 Obtains an upper bound on the number of elements in the block triplet form of :math:`\bar{C}`.  
 
@@ -2181,6 +2303,8 @@ Obtains the number of nonzero elements in barc.::
     func (*Task) GetNumBarcNz (  ) ( nz int64 )
 
 
+``nz int64``
+    The number of nonzero elements in barc.
 
 Obtains the number of nonzero elements in :math:`\bar{c}`.  
 
@@ -2193,6 +2317,8 @@ Obtains the number of semidefinite variables. ::
     func (*Task) GetNumBarvar (  ) ( numbarvar int32 )
 
 
+``numbarvar int32``
+    Number of semidefinite variable in the problem.
 
 Obtains the number of semidefinite variables. 
 
@@ -2217,6 +2343,8 @@ Obtains the number of cones. ::
     func (*Task) GetNumCone (  ) ( numcone int32 )
 
 
+``numcone int32``
+    Number conic constraints.
 
 Obtains the number of cones. 
 
@@ -2243,6 +2371,8 @@ GetNumIntVar
     func (*Task) GetNumIntVar (  ) ( numintvar int32 )
 
 
+``numintvar int32``
+    Number of integer variables.
 
 
 Obtains the number of integer-constrained variables.
@@ -2257,6 +2387,8 @@ Obtains the number of parameters of a given type. ::
     func (*Task) GetNumParam ( partype int32 ) ( numparam int32 )
 
 
+``numparam int32``
+    Returns the number of parameters of the requested type.
 
 Obtains the number of parameters of a given type. 
 
@@ -2299,6 +2431,8 @@ Get the number of symmetric matrixes stored. ::
     func (*Task) GetNumSymMat (  ) ( num int64 )
 
 
+``num int64``
+     Returns the number of symmetric sparse matrixes.
 
 Get the number of symmetric matrixes stored in the vector :math:`E`.  
 
@@ -2323,6 +2457,8 @@ GetObjName
     func (*Task) GetObjName (  ) ( objname string )
 
 
+``objname string``
+    Assigned the objective name.
 
 
 Obtains the name assigned to the objective function.
@@ -2337,6 +2473,8 @@ GetObjNameLen
     func (*Task) GetObjNameLen (  ) ( len int32 )
 
 
+``len int32``
+    Assigned the length of the objective name.
 
 
 Obtains the length of the name assigned to the objective function.
@@ -2351,6 +2489,8 @@ Gets the objective sense. ::
     func (*Task) GetObjSense (  ) ( sense int32 )
 
 
+``sense int32``
+     The returned objective sense.
 
 
 Gets the objective sense of the task.
@@ -2365,6 +2505,8 @@ GetParamMax
     func (*Task) GetParamMax ( partype int32 ) ( parammax int32 )
 
 
+``parammax int32``
+    The maximum index of the given parameter type.
 
 
 Obtains the maximum index of a parameter of a given type plus 1.
@@ -2409,6 +2551,12 @@ Compute norms of the primal solution. ::
           nrmbarx float64 )
 
 
+``nrmxc float64``
+     The norm of xc vector.
+``nrmxx float64``
+     The norm of xx vector.
+``nrmbarx float64``
+     The norm of barx vector.
 
 Compute norms of the primal solution.
                
@@ -2436,6 +2584,8 @@ GetProbType
     func (*Task) GetProbType (  ) ( probtype int32 )
 
 
+``probtype int32``
+     The problem type.
 
 
 Obtains the problem type.
@@ -2624,6 +2774,8 @@ GetQObjIJ
     Row index of the coefficient.
 ``j int32``
     Column index of coefficient.
+``qoij float64``
+    The required coefficient.
 
 Obtains one coefficient :math:`q_{ij}^o` in the quadratic term of the objective.  
 
@@ -2939,6 +3091,16 @@ GetSolutionI
      Defines whether solution information for a constraint or for a variable is retrieved.
 ``i int32``
     Index of the constraint or variable.
+``sk int32``
+    Status key of the constraint of variable.
+``x float64``
+    Solution value of the primal variable.
+``sl float64``
+     Solution value of the dual variable associated with the lower bound.
+``su float64``
+     Solution value of the dual variable associated with the upper bound.
+``sn float64``
+     Solution value of the dual variable associated with the cone constraint.
 
 
 Obtains the primal and dual solution information for a single constraint or variable.
@@ -2965,6 +3127,28 @@ Obtains information about of a solution. ::
           dviolcone float64 )
 
 
+``pobj float64``
+     The primal objective value.
+``pviolcon float64``
+     Maximal primal bound violation for a xc variable.
+``pviolvar float64``
+     Maximal primal bound violation for a xx variable.
+``pviolbarvar float64``
+     Maximal primal bound violation for a barx variable.
+``pviolcone float64``
+     Maximal primal violation of the solution with respect to the conic constraints.
+``pviolitg float64``
+     Maximal violation in the integer constraints.
+``dobj float64``
+     Dual objective value.
+``dviolcon float64``
+     Maximal dual bound violation a xc variable.
+``dviolvar float64``
+     Maximal dual bound violation xx variable.
+``dviolbarvar float64``
+     Maximal dual bound violation for a bars variable.
+``dviolcone float64``
+     Maximum violation of the dual solution in the dual conic constraints .
 
 Obtains information about a solution.
                
@@ -3089,6 +3273,10 @@ Obtains the value of a string parameter. ::
     func (*Task) GetStrParam ( param int32 ) ( len int32, parvalue string )
 
 
+``len int32``
+    The length of the parameter value.
+``parvalue string``
+     If this is not |null|, the parameter value is stored here.
 
 Obtains the value of a string parameter. 
 
@@ -3101,6 +3289,8 @@ Obtains the length of a string parameter. ::
     func (*Task) GetStrParamLen ( param int32 ) ( len int32 )
 
 
+``len int32``
+    The length of the parameter value.
 
 Obtains the length of a string parameter. 
 
@@ -3181,6 +3371,12 @@ Obtains information of  a matrix from the symmetric matrix storage E. ::
 
 ``idx int64``
      Index of the matrix that is requested information about.
+``dim int32``
+     Returns the dimension of the requested matrix.
+``nz int64``
+     Returns the number of non-zeros in the requested matrix.
+``type int32``
+     Returns the type of the requested matrix.
 
 
 MOSEK maintains a vector denoted by :math:`E` of symmetric data matrixes. This function makes it possible to obtain important information about an data matrix in :math:`E`.
@@ -3195,6 +3391,8 @@ Obtains the task name. ::
     func (*Task) GetTaskName (  ) ( taskname string )
 
 
+``taskname string``
+    Is assigned the task name.
 
 Obtains the name assigned to the task. 
 
@@ -3207,6 +3405,8 @@ GetTaskNameLen
     func (*Task) GetTaskNameLen (  ) ( len int32 )
 
 
+``len int32``
+    Returns the length of the task name.
 
 
 Obtains the length the task name.
@@ -3265,6 +3465,8 @@ GetVarName
 
 ``j int32``
     Index.
+``name string``
+    Returns the required name.
 
 
 Obtains a name of a variable.
@@ -3281,6 +3483,10 @@ Checks whether the name somename has been assigned  to any variable.  ::
 
 ``somename string``
     The name which should be checked.
+``asgn int32``
+    Is non-zero if name somename is assigned to a variable.
+``index int32``
+     If the name somename is assigned to a variable, then index is the name of the variable.
 
 Checks whether the name ``somename`` has been assigned  to any variable. If it has been assigned to variable, then index of the variable is reported.  
 
@@ -3295,6 +3501,8 @@ GetVarNameLen
 
 ``i int32``
     Index.
+``len int32``
+    Returns the length of the indicated name.
 
 
 Obtains the length of a name of a variable variable.
@@ -3311,6 +3519,8 @@ Gets the variable type of one variable. ::
 
 ``j int32``
     Index of the variable.
+``vartype int32``
+    Variable type of variable index j.
 
 Gets the variable type of one variable. 
 
@@ -3349,6 +3559,16 @@ Obtains MOSEK version information. ::
           res int32 )
 
 
+``major int32``
+    Major version number.
+``minor int32``
+    Minor version number.
+``build int32``
+    Build number.
+``revision int32``
+    Revision number.
+``res int32``
+    Response code (see `mosek.RES_...`
 
 Obtains MOSEK version information. 
 
@@ -3550,6 +3770,8 @@ Stops all threads and delete all handles used by the license system. ::
     func Licensecleanup (  ) ( res int32 )
 
 
+``res int32``
+    Response code (see `mosek.RES_...`
 
 
 Stops all threads and delete all handles used by the license system. If this
@@ -3617,6 +3839,8 @@ Optimizes the problem. ::
     func (*Task) Optimize (  ) ( trmcode int32 )
 
 
+``trmcode int32``
+    Is either OK or a termination response code.
 
 
 Calls the optimizer. Depending on the problem type and the selected optimizer
@@ -3845,6 +4069,8 @@ ProStaToStr
     func (*Task) ProStaToStr ( prosta int32 ) ( str string )
 
 
+``str string``
+    String corresponding to the status key.
 
 
 Obtains a string containing the name of a problem status given.
@@ -3859,6 +4085,8 @@ Obtains a string containing the name of a problem type given.::
     func (*Task) ProbTypeToStr ( probtype int32 ) ( str string )
 
 
+``str string``
+    String corresponding to the problem type key.
 
 
 Obtains a string containing the name of a problem type given.
@@ -5884,6 +6112,8 @@ Obtains a status key string. ::
 
 ``sk int32``
     A valid status key.
+``str string``
+    String corresponding to the status key.
 
 
 Obtains an explanatory string corresponding to a status key.
@@ -5898,6 +6128,8 @@ Obtains a solution status string. ::
     func (*Task) SolStaToStr ( solsta int32 ) ( str string )
 
 
+``str string``
+    String corresponding to the solution status.
 
 
 Obtains an explanatory string corresponding to a solution status.
@@ -5912,6 +6144,8 @@ Checks whether a solution is defined. ::
     func (*Task) SolutionDef ( whichsol int32 ) ( isdef bool )
 
 
+``isdef bool``
+    Is non-zero if the requested solution is defined.
 
 Checks whether a solution is defined. 
 
@@ -6012,6 +6246,8 @@ Obtains a cone type code. ::
 
 ``str string``
     String corresponding to the cone type code.
+``conetype int32``
+    The cone type corresponding to str.
 
 
 Obtains cone type code corresponding to a cone type string.
@@ -6028,6 +6264,8 @@ Obtains a status key. ::
 
 ``str string``
     Status key string.
+``sk int32``
+    Status key corresponding to the string.
 
 
 Obtains the status key corresponding to an explanatory string.
