@@ -38,10 +38,12 @@ structure but not the underlying MOSEK allocations.
 AnalyzeNames
 ~~~~~~~~~~~~
 
- Analyze the names and issue an error for the first invalid name. ::
+Analyze the names and issue an error for the first invalid name.::
 
     func (*Task) AnalyzeNames ( whichstream int32, nametype int32 )
 
+``whichstream int32``
+    <no description>
 ``nametype int32``
     The type of names e.g. valid in MPS or LP files.
 
@@ -53,10 +55,12 @@ The function analyzes the names and issue an error if a name is invalid.
 AnalyzeProblem
 ~~~~~~~~~~~~~~
 
- Analyze the data of a task. ::
+Analyze the data of a task.::
 
     func (*Task) AnalyzeProblem ( whichstream int32 )
 
+``whichstream int32``
+    <no description>
 
 
 The function analyzes the data of task and writes out a report.
@@ -66,10 +70,14 @@ The function analyzes the data of task and writes out a report.
 AnalyzeSolution
 ~~~~~~~~~~~~~~~
 
- Print information related to the quality of the solution. ::
+Print information related to the quality of the solution.::
 
     func (*Task) AnalyzeSolution ( whichstream int32, whichsol int32 )
 
+``whichstream int32``
+    <no description>
+``whichsol int32``
+    <no description>
 
 
 Print information related to the quality of the solution and
@@ -91,7 +99,7 @@ Following parameters can be used to configure the printed statistics:
 AppendBarvars
 ~~~~~~~~~~~~~
 
-Appends a semidefinite  variable of dimension dim to the problem. ::
+Appends a semidefinite  variable of dimension dim to the problem.::
 
     func (*Task) AppendBarvars ( dim []int32 )
 
@@ -106,7 +114,7 @@ Appends a positive semidefinite matrix variable of dimension ``dim`` to the prob
 AppendCone
 ~~~~~~~~~~
 
-Appends a new cone constraint to the problem. ::
+Appends a new cone constraint to the problem.::
 
     func (*Task) AppendCone
         ( ct int32,
@@ -114,6 +122,12 @@ Appends a new cone constraint to the problem. ::
           submem []int32 )
 
 
+``ct int32``
+    <no description>
+``conepar float64``
+    <no description>
+``submem []int32``
+    <no description>
 
 
 Appends a new conic constraint to the problem. Hence, add a constraint
@@ -150,7 +164,7 @@ For an explained code example see Section :ref:`doc.tutorial_cqo`.
 AppendConeSeq
 ~~~~~~~~~~~~~
 
-Appends a new conic constraint to the problem. ::
+Appends a new conic constraint to the problem.::
 
     func (*Task) AppendConeSeq
         ( ct int32,
@@ -159,6 +173,10 @@ Appends a new conic constraint to the problem. ::
           j int32 )
 
 
+``ct int32``
+    <no description>
+``conepar float64``
+    <no description>
 ``nummem int32``
     Dimension of the conic constraint.
 ``j int32``
@@ -172,7 +190,7 @@ Appends a new conic constraint to the problem. The function assumes the members 
 AppendConesSeq
 ~~~~~~~~~~~~~~
 
-Appends a multiple conic constraints to the problem. ::
+Appends a multiple conic constraints to the problem.::
 
     func (*Task) AppendConesSeq
         ( ct []int32,
@@ -181,6 +199,12 @@ Appends a multiple conic constraints to the problem. ::
           j int32 )
 
 
+``ct []int32``
+    <no description>
+``conepar []float64``
+    <no description>
+``nummem []int32``
+    <no description>
 ``j int32``
     Index of the first variable in the first cone to be appended.
 
@@ -197,7 +221,7 @@ forth.
 AppendCons
 ~~~~~~~~~~
 
- Appends a number of constraints to the optimization task. ::
+Appends a number of constraints to the optimization task.::
 
     func (*Task) AppendCons ( num int32 )
 
@@ -212,7 +236,7 @@ Appends a number of constraints to the model. Appended constraints will be decla
 AppendSparseSymMat
 ~~~~~~~~~~~~~~~~~~
 
-Appends a general sparse symmetric matrix to the vector E of symmetric matrixes. ::
+Appends a general sparse symmetric matrix to the vector E of symmetric matrixes.::
 
     func (*Task) AppendSparseSymMat
         ( dim int32,
@@ -254,7 +278,7 @@ Observe the function reports the index (position) of the appended matrix in
 AppendVars
 ~~~~~~~~~~
 
- Appends a number of variables to the optimization task. ::
+Appends a number of variables to the optimization task.::
 
     func (*Task) AppendVars ( num int32 )
 
@@ -269,7 +293,7 @@ Appends a number of variables to the model. Appended variables will be fixed at 
 Axpy
 ~~~~
 
-Adds alpha times x to y. ::
+Adds alpha times x to y.::
 
     func (*Env) Axpy
         ( n int32,
@@ -294,7 +318,7 @@ Adds :math:`\alpha x` to :math:`y`.
 BasisCond
 ~~~~~~~~~
 
- Computes conditioning information for the basis matrix. ::
+Computes conditioning information for the basis matrix.::
 
     func (*Task) BasisCond (  ) ( nrmbasis float64, nrminvbasis float64 )
 
@@ -324,7 +348,7 @@ estimate :math:`\kappa_1(B)`.
 CheckConvexity
 ~~~~~~~~~~~~~~
 
- Checks if a quadratic optimization problem is convex. ::
+Checks if a quadratic optimization problem is convex.::
 
     func (*Task) CheckConvexity (  )
 
@@ -339,7 +363,7 @@ The function reports an error if the problem is not convex.
 CheckInAll
 ~~~~~~~~~~
 
-Check in all unsued license features to the license token server.  ::
+Check in all unsued license features to the license token server.::
 
     func (*Env) CheckInAll (  )
 
@@ -352,7 +376,7 @@ Check in all unsued license features to the license token server.
 CheckInLicense
 ~~~~~~~~~~~~~~
 
-Check in a license feature from the license server ahead of time. ::
+Check in a license feature from the license server ahead of time.::
 
     func (*Env) CheckInLicense ( feature int32 )
 
@@ -376,7 +400,7 @@ overhead, so frequent calls to this function should be avoided.
 CheckMem
 ~~~~~~~~
 
-Checks the memory allocated by the task. ::
+Checks the memory allocated by the task.::
 
     func (*Task) CheckMem ( file string, line int32 )
 
@@ -391,7 +415,7 @@ Checks the memory allocated by the task.
 CheckoutLicense
 ~~~~~~~~~~~~~~~
 
-Check out a license feature from the license server ahead of time. ::
+Check out a license feature from the license server ahead of time.::
 
     func (*Env) CheckoutLicense ( feature int32 )
 
@@ -415,7 +439,7 @@ one feature will be checked out from the license server.
 ChgBound
 ~~~~~~~~
 
- Changes the bounds for one constraint or variable. ::
+Changes the bounds for one constraint or variable.::
 
     func (*Task) ChgBound
         ( accmode int32,
@@ -425,6 +449,8 @@ ChgBound
           value float64 )
 
 
+``accmode int32``
+    <no description>
 ``i int32``
      Index of the constraint or variable for which the bounds should be changed.
 ``lower int32``
@@ -472,7 +498,7 @@ Please note that this function automatically updates the bound key for  bound, i
 ChgConBound
 ~~~~~~~~~~~
 
- Changes the bounds for one constraint. ::
+Changes the bounds for one constraint.::
 
     func (*Task) ChgConBound
         ( i int32,
@@ -527,7 +553,7 @@ bound key is changed to ``fixed``.
 ChgVarBound
 ~~~~~~~~~~~
 
- Changes the bounds for one variable. ::
+Changes the bounds for one variable.::
 
     func (*Task) ChgVarBound
         ( j int32,
@@ -581,7 +607,7 @@ changed to ``fixed``.
 CommitChanges
 ~~~~~~~~~~~~~
 
-Commits all cached problem changes. ::
+Commits all cached problem changes.::
 
     func (*Task) CommitChanges (  )
 
@@ -594,10 +620,12 @@ Commits all cached problem changes to the task. It is usually not necessary expl
 DeleteSolution
 ~~~~~~~~~~~~~~
 
-Undefine a solution and frees the memory it uses. ::
+Undefine a solution and frees the memory it uses.::
 
     func (*Task) DeleteSolution ( whichsol int32 )
 
+``whichsol int32``
+    <no description>
 
 Undefine a solution and frees the memory it uses. 
 
@@ -605,7 +633,7 @@ Undefine a solution and frees the memory it uses.
 Dot
 ~~~
 
-Computes the inner product of two vectors. ::
+Computes the inner product of two vectors.::
 
     func (*Env) Dot
         ( n int32,
@@ -635,7 +663,7 @@ Note that if :math:`n=0`, then the results of the operation is 0.
 DualSensitivity
 ~~~~~~~~~~~~~~~
 
- Performs sensitivity analysis on objective coefficients. ::
+Performs sensitivity analysis on objective coefficients.::
 
     func (*Task) DualSensitivity
         ( subj []int32,
@@ -678,7 +706,7 @@ For an example, please see Section :ref:`doc.shared.sensitivity_example`.
 EchoIntro
 ~~~~~~~~~
 
-Prints an intro to message stream. ::
+Prints an intro to message stream.::
 
     func (*Env) EchoIntro ( longver int32 )
 
@@ -796,7 +824,7 @@ Note that the result is stored overwriting :math:`y`.
 GetACol
 ~~~~~~~
 
-Obtains one column of the linear constraint matrix. ::
+Obtains one column of the linear constraint matrix.::
 
     func (*Task) GetACol
         ( j int32,
@@ -822,7 +850,7 @@ Obtains one column of :math:`A` in a sparse format.
 GetAColNumNz
 ~~~~~~~~~~~~
 
- Obtains the number of non-zero elements in one column of the linear constraint matrix ::
+Obtains the number of non-zero elements in one column of the linear constraint matrix::
 
     func (*Task) GetAColNumNz ( i int32 ) ( nzj int32 )
 
@@ -838,7 +866,7 @@ Obtains the number of non-zero elements in one column of :math:`A`.
 GetAColSliceTrip
 ~~~~~~~~~~~~~~~~
 
- Obtains a sequence of columns from the coefficient matrix in triplet format. ::
+Obtains a sequence of columns from the coefficient matrix in triplet format.::
 
     func (*Task) GetAColSliceTrip
         ( first int32,
@@ -886,7 +914,7 @@ Obtains a sequence of columns  from :math:`A` in a sparse triplet format.
 GetAPieceNumNz
 ~~~~~~~~~~~~~~
 
- Obtains the number non-zeros in a rectangular piece of the linear constraint matrix. ::
+Obtains the number non-zeros in a rectangular piece of the linear constraint matrix.::
 
     func (*Task) GetAPieceNumNz
         ( firsti int32,
@@ -922,7 +950,7 @@ row or column. In that case use the function ``getarownumnz`` or ``getacolnumnz`
 GetARow
 ~~~~~~~
 
-Obtains one row of the linear constraint matrix. ::
+Obtains one row of the linear constraint matrix.::
 
     func (*Task) GetARow
         ( i int32,
@@ -948,7 +976,7 @@ Obtains one row of :math:`A` in a sparse format.
 GetARowNumNz
 ~~~~~~~~~~~~
 
- Obtains the number of non-zero elements in one row of the linear constraint matrix ::
+Obtains the number of non-zero elements in one row of the linear constraint matrix::
 
     func (*Task) GetARowNumNz ( i int32 ) ( nzi int32 )
 
@@ -964,7 +992,7 @@ Obtains the number of non-zero elements in one row of :math:`A`.
 GetARowSliceTrip
 ~~~~~~~~~~~~~~~~
 
- Obtains a sequence of rows from the coefficient matrix in triplet format. ::
+Obtains a sequence of rows from the coefficient matrix in triplet format.::
 
     func (*Task) GetARowSliceTrip
         ( first int32,
@@ -1012,7 +1040,7 @@ Obtains a sequence of rows  from :math:`A` in a sparse triplets format.
 GetASlice
 ~~~~~~~~~
 
-Obtains a sequence of rows or columns from the coefficient matrix. ::
+Obtains a sequence of rows or columns from the coefficient matrix.::
 
     func (*Task) GetASlice
         ( accmode int32,
@@ -1049,7 +1077,7 @@ Obtains a sequence of rows or columns from :math:`A` in sparse format.
 GetASliceNumNz
 ~~~~~~~~~~~~~~
 
- Obtains the number of non-zeros in a slice of rows or columns of the coefficient matrix. ::
+Obtains the number of non-zeros in a slice of rows or columns of the coefficient matrix.::
 
     func (*Task) GetASliceNumNz
         ( accmode int32,
@@ -1073,7 +1101,7 @@ Obtains the number of non-zeros in a slice of rows or columns of :math:`A`.
 GetAij
 ~~~~~~
 
-Obtains a single coefficient in linear constraint matrix. ::
+Obtains a single coefficient in linear constraint matrix.::
 
     func (*Task) GetAij ( i int32, j int32 ) ( aij float64 )
 
@@ -1091,7 +1119,7 @@ Obtains a single coefficient in :math:`A`.
 GetBaraBlockTriplet
 ~~~~~~~~~~~~~~~~~~~
 
-Obtains barA in block triplet form. ::
+Obtains barA in block triplet form.::
 
     func (*Task) GetBaraBlockTriplet
         ( subi []int32,
@@ -1126,7 +1154,7 @@ Obtains :math:`\bar{A}` in block triplet form.
 GetBaraIdx
 ~~~~~~~~~~
 
-Obtains information about an element barA. ::
+Obtains information about an element barA.::
 
     func (*Task) GetBaraIdx
         ( idx int64,
@@ -1169,7 +1197,7 @@ element with the highest index is the one that is used.
 GetBaraIdxIJ
 ~~~~~~~~~~~~
 
-Obtains information about an element barA. ::
+Obtains information about an element barA.::
 
     func (*Task) GetBaraIdxIJ ( idx int64 ) ( i int32, j int32 )
 
@@ -1198,7 +1226,7 @@ element with the highest index is the one that is used.
 GetBaraIdxInfo
 ~~~~~~~~~~~~~~
 
-Obtains the number terms in the weighted sum that forms a particular element in barA. ::
+Obtains the number terms in the weighted sum that forms a particular element in barA.::
 
     func (*Task) GetBaraIdxInfo ( idx int64 ) ( num int64 )
 
@@ -1219,7 +1247,7 @@ about the weighted sum.
 GetBaraSparsity
 ~~~~~~~~~~~~~~~
 
-Obtains the sparsity pattern of the barA matrix. ::
+Obtains the sparsity pattern of the barA matrix.::
 
     func (*Task) GetBaraSparsity ( idxij []int64 ) ( numnz int64, idxij []int64 )
 
@@ -1242,7 +1270,7 @@ on vectorized form. This function is used to obtain the sparsity pattern of
 GetBarcBlockTriplet
 ~~~~~~~~~~~~~~~~~~~
 
-Obtains barc in block triplet form. ::
+Obtains barc in block triplet form.::
 
     func (*Task) GetBarcBlockTriplet
         ( subj []int32,
@@ -1302,7 +1330,7 @@ Obtains information about an element in :math:`\bar{c}`.
 GetBarcIdxInfo
 ~~~~~~~~~~~~~~
 
-Obtains information about an element in barc. ::
+Obtains information about an element in barc.::
 
     func (*Task) GetBarcIdxInfo ( idx int64 ) ( num int64 )
 
@@ -1318,7 +1346,7 @@ Obtains information about the :math:`\bar{c}_{ij}`.
 GetBarcIdxJ
 ~~~~~~~~~~~
 
-Obtains the row index of an element in barc. ::
+Obtains the row index of an element in barc.::
 
     func (*Task) GetBarcIdxJ ( idx int64 ) ( j int32 )
 
@@ -1334,7 +1362,7 @@ Obtains the row index of an element in :math:`\bar{c}`.
 GetBarcSparsity
 ~~~~~~~~~~~~~~~
 
-Get the positions of the nonzero elements in barc. ::
+Get the positions of the nonzero elements in barc.::
 
     func (*Task) GetBarcSparsity ( idxj []int64 ) ( numnz int64, idxj []int64 )
 
@@ -1357,7 +1385,7 @@ obtained using ``getbarcidxinfo`` and ``getbarcidx``.
 GetBarsJ
 ~~~~~~~~
 
- Obtains the dual solution for a semidefinite variable. ::
+Obtains the dual solution for a semidefinite variable.::
 
     func (*Task) GetBarsJ
         ( whichsol int32,
@@ -1366,6 +1394,8 @@ GetBarsJ
         ( barsj []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``j int32``
     Index of the semidefinite variable.
 ``barsj []float64``
@@ -1377,7 +1407,7 @@ Obtains the dual solution for a semidefinite variable. Only the lower triangle p
 GetBarvarName
 ~~~~~~~~~~~~~
 
- Obtains a name of a semidefinite variable. ::
+Obtains a name of a semidefinite variable.::
 
     func (*Task) GetBarvarName ( i int32 ) ( name string )
 
@@ -1395,7 +1425,7 @@ Obtains a name of a semidefinite variable.
 GetBarvarNameIndex
 ~~~~~~~~~~~~~~~~~~
 
- Obtains the index of name of semidefinite variable. ::
+Obtains the index of name of semidefinite variable.::
 
     func (*Task) GetBarvarNameIndex ( somename string ) ( asgn int32, index int32 )
 
@@ -1415,7 +1445,7 @@ Obtains the index of name of semidefinite variable.
 GetBarvarNameLen
 ~~~~~~~~~~~~~~~~
 
- Obtains the length of a name of a semidefinite variable. ::
+Obtains the length of a name of a semidefinite variable.::
 
     func (*Task) GetBarvarNameLen ( i int32 ) ( len int32 )
 
@@ -1433,7 +1463,7 @@ Obtains the length of a name of a semidefinite variable.
 GetBarxJ
 ~~~~~~~~
 
- Obtains the primal solution for a semidefinite variable. ::
+Obtains the primal solution for a semidefinite variable.::
 
     func (*Task) GetBarxJ
         ( whichsol int32,
@@ -1442,6 +1472,8 @@ GetBarxJ
         ( barxj []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``j int32``
     Index of the semidefinite variable.
 ``barxj []float64``
@@ -1453,7 +1485,7 @@ Obtains the primal solution for a semidefinite variable. Only the lower triangle
 GetBound
 ~~~~~~~~
 
- Obtains bound information for one constraint or variable. ::
+Obtains bound information for one constraint or variable.::
 
     func (*Task) GetBound
         ( accmode int32,
@@ -1463,8 +1495,16 @@ GetBound
           bu float64 )
 
 
+``accmode int32``
+    <no description>
 ``i int32``
      Index of the constraint or variable for which the bound information should be obtained.
+``bk int32``
+    <no description>
+``bl float64``
+    <no description>
+``bu float64``
+    <no description>
 
 
 Obtains bound information for one constraint or variable.
@@ -1474,7 +1514,7 @@ Obtains bound information for one constraint or variable.
 GetBoundSlice
 ~~~~~~~~~~~~~
 
- Obtains bounds information for a sequence of variables or constraints. ::
+Obtains bounds information for a sequence of variables or constraints.::
 
     func (*Task) GetBoundSlice
         ( accmode int32,
@@ -1488,6 +1528,18 @@ GetBoundSlice
           bu []float64 )
 
 
+``accmode int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``bk []int32``
+    <no description>
+``bl []float64``
+    <no description>
+``bu []float64``
+    <no description>
 
 
 Obtains bounds information for a sequence of variables or constraints.
@@ -1497,11 +1549,13 @@ Obtains bounds information for a sequence of variables or constraints.
 GetC
 ~~~~
 
-Obtains all objective coefficients. ::
+Obtains all objective coefficients.::
 
     func (*Task) GetC ( c []float64 ) ( c []float64 )
 
 
+``c []float64``
+    <no description>
 
 Obtains all objective coefficients :math:`c`. 
 
@@ -1509,7 +1563,7 @@ Obtains all objective coefficients :math:`c`.
 GetCJ
 ~~~~~
 
-Obtains one coefficient of c. ::
+Obtains one coefficient of c.::
 
     func (*Task) GetCJ ( j int32 ) ( cj float64 )
 
@@ -1525,7 +1579,7 @@ Obtains one coefficient of :math:`c`.
 GetCSlice
 ~~~~~~~~~
 
-Obtains a sequence of coefficients from the objective. ::
+Obtains a sequence of coefficients from the objective.::
 
     func (*Task) GetCSlice
         ( first int32,
@@ -1534,6 +1588,12 @@ Obtains a sequence of coefficients from the objective. ::
         ( c []float64 )
 
 
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``c []float64``
+    <no description>
 
 Obtains a sequence of elements in :math:`c`. 
 
@@ -1541,11 +1601,13 @@ Obtains a sequence of elements in :math:`c`.
 GetCfix
 ~~~~~~~
 
-Obtains the fixed term in the objective. ::
+Obtains the fixed term in the objective.::
 
     func (*Task) GetCfix (  ) ( cfix float64 )
 
 
+``cfix float64``
+    <no description>
 
 Obtains the fixed term in the objective. 
 
@@ -1553,7 +1615,7 @@ Obtains the fixed term in the objective.
 GetCodeDesc
 ~~~~~~~~~~~
 
-Obtains a short description of a response code. ::
+Obtains a short description of a response code.::
 
     func GetCodeDesc
         ( code int32 )
@@ -1577,7 +1639,7 @@ Obtains a short description of the meaning of the response code given by ``code`
 GetConBound
 ~~~~~~~~~~~
 
- Obtains bound information for one constraint. ::
+Obtains bound information for one constraint.::
 
     func (*Task) GetConBound
         ( i int32 )
@@ -1588,6 +1650,12 @@ GetConBound
 
 ``i int32``
      Index of the constraint for which the bound information should be obtained.
+``bk int32``
+    <no description>
+``bl float64``
+    <no description>
+``bu float64``
+    <no description>
 
 
 Obtains bound information for one constraint.
@@ -1597,7 +1665,7 @@ Obtains bound information for one constraint.
 GetConBoundSlice
 ~~~~~~~~~~~~~~~~
 
- Obtains bounds information for a slice of the constraints. ::
+Obtains bounds information for a slice of the constraints.::
 
     func (*Task) GetConBoundSlice
         ( first int32,
@@ -1610,6 +1678,16 @@ GetConBoundSlice
           bu []float64 )
 
 
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``bk []int32``
+    <no description>
+``bl []float64``
+    <no description>
+``bu []float64``
+    <no description>
 
 
 Obtains bounds information for a slice of the constraints.
@@ -1619,7 +1697,7 @@ Obtains bounds information for a slice of the constraints.
 GetConName
 ~~~~~~~~~~
 
- Obtains a name of a constraint. ::
+Obtains a name of a constraint.::
 
     func (*Task) GetConName ( i int32 ) ( name string )
 
@@ -1637,7 +1715,7 @@ Obtains a name of a constraint.
 GetConNameIndex
 ~~~~~~~~~~~~~~~
 
- Checks whether the name somename has been assigned  to any constraint. ::
+Checks whether the name somename has been assigned  to any constraint.::
 
     func (*Task) GetConNameIndex ( somename string ) ( asgn int32, index int32 )
 
@@ -1657,7 +1735,7 @@ Checks whether the name ``somename`` has been assigned to any constraint. If it 
 GetConNameLen
 ~~~~~~~~~~~~~
 
- Obtains the length of a name of a constraint variable. ::
+Obtains the length of a name of a constraint variable.::
 
     func (*Task) GetConNameLen ( i int32 ) ( len int32 )
 
@@ -1675,7 +1753,7 @@ Obtains the length of a name of a constraint variable.
 GetCone
 ~~~~~~~
 
-Obtains a conic constraint. ::
+Obtains a conic constraint.::
 
     func (*Task) GetCone
         ( k int32,
@@ -1688,6 +1766,14 @@ Obtains a conic constraint. ::
 
 ``k int32``
     Index of the cone constraint.
+``submem []int32``
+    <no description>
+``ct int32``
+    <no description>
+``conepar float64``
+    <no description>
+``nummem int32``
+    <no description>
 
 Obtains a conic constraint. 
 
@@ -1695,7 +1781,7 @@ Obtains a conic constraint.
 GetConeInfo
 ~~~~~~~~~~~
 
-Obtains information about a conic constraint. ::
+Obtains information about a conic constraint.::
 
     func (*Task) GetConeInfo
         ( k int32 )
@@ -1706,6 +1792,12 @@ Obtains information about a conic constraint. ::
 
 ``k int32``
     Index of the conic constraint.
+``ct int32``
+    <no description>
+``conepar float64``
+    <no description>
+``nummem int32``
+    <no description>
 
 Obtains information about a conic constraint. 
 
@@ -1713,7 +1805,7 @@ Obtains information about a conic constraint.
 GetConeName
 ~~~~~~~~~~~
 
- Obtains a name of a cone. ::
+Obtains a name of a cone.::
 
     func (*Task) GetConeName ( i int32 ) ( name string )
 
@@ -1731,7 +1823,7 @@ Obtains a name of a cone.
 GetConeNameIndex
 ~~~~~~~~~~~~~~~~
 
- Checks whether the name somename has been assigned  to any cone. ::
+Checks whether the name somename has been assigned  to any cone.::
 
     func (*Task) GetConeNameIndex ( somename string ) ( asgn int32, index int32 )
 
@@ -1749,7 +1841,7 @@ Checks whether the name ``somename`` has been assigned  to any cone. If it has b
 GetConeNameLen
 ~~~~~~~~~~~~~~
 
- Obtains the length of a name of a cone. ::
+Obtains the length of a name of a cone.::
 
     func (*Task) GetConeNameLen ( i int32 ) ( len int32 )
 
@@ -1783,11 +1875,13 @@ Obtains the dimension of a symmetric matrix variable.
 GetDouInf
 ~~~~~~~~~
 
-Obtains a double information item. ::
+Obtains a double information item.::
 
     func (*Task) GetDouInf ( whichdinf int32 ) ( dvalue float64 )
 
 
+``whichdinf int32``
+    <no description>
 ``dvalue float64``
      The value of the required double information item.
 
@@ -1799,11 +1893,15 @@ Obtains a double information item from the task information database.
 GetDouParam
 ~~~~~~~~~~~
 
-Obtains a double parameter. ::
+Obtains a double parameter.::
 
     func (*Task) GetDouParam ( param int32 ) ( parvalue float64 )
 
 
+``param int32``
+    <no description>
+``parvalue float64``
+    <no description>
 
 Obtains the value of a double parameter. 
 
@@ -1811,11 +1909,15 @@ Obtains the value of a double parameter.
 GetDualObj
 ~~~~~~~~~~
 
-Computes the dual objective value associated with the solution. ::
+Computes the dual objective value associated with the solution.::
 
     func (*Task) GetDualObj ( whichsol int32 ) ( dualobj float64 )
 
 
+``whichsol int32``
+    <no description>
+``dualobj float64``
+    <no description>
 
 Computes the dual objective value associated with the solution. Note if the solution is a primal infeasibility certificate, then the fixed term in the objective value is not included. 
                       Moreover, since there is no dual solution associated with integer solution, then an error will be reported if the dual objective value is requested for the integer solution. 
@@ -1824,7 +1926,7 @@ Computes the dual objective value associated with the solution. Note if the solu
 GetDualSolutionNorms
 ~~~~~~~~~~~~~~~~~~~~
 
-Compute norms of the primal solution. ::
+Compute norms of the primal solution.::
 
     func (*Task) GetDualSolutionNorms
         ( whichsol int32 )
@@ -1837,6 +1939,8 @@ Compute norms of the primal solution. ::
           nrmbars float64 )
 
 
+``whichsol int32``
+    <no description>
 ``nrmy float64``
      The norm of the y vector.
 ``nrmslc float64``
@@ -1859,7 +1963,7 @@ Compute norms of the primal solution.
 GetDviolBarvar
 ~~~~~~~~~~~~~~
 
-Computes the violation of dual solution for a set of barx variables. ::
+Computes the violation of dual solution for a set of barx variables.::
 
     func (*Task) GetDviolBarvar
         ( whichsol int32,
@@ -1868,6 +1972,8 @@ Computes the violation of dual solution for a set of barx variables. ::
         ( viol []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sub []int32``
     An array of indexes of barx variables.
 ``viol []float64``
@@ -1888,7 +1994,7 @@ dual feasibleness solution the violation should be small.
 GetDviolCon
 ~~~~~~~~~~~
 
-Computes the violation of a dual solution associated with a set of constraints. ::
+Computes the violation of a dual solution associated with a set of constraints.::
 
     func (*Task) GetDviolCon
         ( whichsol int32,
@@ -1897,6 +2003,8 @@ Computes the violation of a dual solution associated with a set of constraints. 
         ( viol []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sub []int32``
     An array of indexes of constraints.
 ``viol []float64``
@@ -1927,7 +2035,7 @@ Both when the solution is a certificate of primal infeasibility or it is a dual 
 GetDviolCones
 ~~~~~~~~~~~~~
 
-Computes the violation of a solution for set of dual conic constraints. ::
+Computes the violation of a solution for set of dual conic constraints.::
 
     func (*Task) GetDviolCones
         ( whichsol int32,
@@ -1936,6 +2044,8 @@ Computes the violation of a solution for set of dual conic constraints. ::
         ( viol []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sub []int32``
     An array of indexes of barx variables.
 ``viol []float64``
@@ -1963,7 +2073,7 @@ dual feasibleness solution the violation should be small.
 GetDviolVar
 ~~~~~~~~~~~
 
-Computes the violation of a dual solution associated with a set of x variables. ::
+Computes the violation of a dual solution associated with a set of x variables.::
 
     func (*Task) GetDviolVar
         ( whichsol int32,
@@ -1972,6 +2082,8 @@ Computes the violation of a dual solution associated with a set of x variables. 
         ( viol []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sub []int32``
     An array of indexes of x variables.
 ``viol []float64``
@@ -2004,11 +2116,15 @@ for linear case but is generalized appropriately for the more general problems.
 GetInfIndex
 ~~~~~~~~~~~
 
-Obtains the index of a named information item. ::
+Obtains the index of a named information item.::
 
     func (*Task) GetInfIndex ( inftype int32, infname string ) ( infindex int32 )
 
 
+``inftype int32``
+    <no description>
+``infname string``
+    <no description>
 ``infindex int32``
     The item index.
 
@@ -2018,11 +2134,13 @@ Obtains the index of a named information item.
 GetInfMax
 ~~~~~~~~~
 
- Obtains the maximum index of an information of a given type inftype plus 1. ::
+Obtains the maximum index of an information of a given type inftype plus 1.::
 
     func (*Task) GetInfMax ( inftype int32, infmax []int32 ) ( infmax []int32 )
 
 
+``inftype int32``
+    <no description>
 ``infmax []int32``
     The maximum index requested.
 
@@ -2032,11 +2150,17 @@ Obtains the maximum index of an information of a given type ``inftype`` plus 1.
 GetInfName
 ~~~~~~~~~~
 
-Obtains the name of an information item. ::
+Obtains the name of an information item.::
 
     func (*Task) GetInfName ( inftype int32, whichinf int32 ) ( infname string )
 
 
+``inftype int32``
+    <no description>
+``whichinf int32``
+    <no description>
+``infname string``
+    <no description>
 
 Obtains the name of an information item. 
 
@@ -2044,7 +2168,7 @@ Obtains the name of an information item.
 GetInfeasibleSubProblem
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Obtains an infeasible sub problem. ::
+Obtains an infeasible sub problem.::
 
     func (*Task) GetInfeasibleSubProblem ( whichsol int32 ) ( inftask Task )
 
@@ -2074,11 +2198,13 @@ For more information see Section :ref:`doc.shared.feas_repair`.
 GetIntInf
 ~~~~~~~~~
 
-Obtains an integer information item. ::
+Obtains an integer information item.::
 
     func (*Task) GetIntInf ( whichiinf int32 ) ( ivalue int32 )
 
 
+``whichiinf int32``
+    <no description>
 ``ivalue int32``
      The value of the required integer information item.
 
@@ -2090,11 +2216,15 @@ Obtains an integer information item from the task information database.
 GetIntParam
 ~~~~~~~~~~~
 
-Obtains an integer parameter. ::
+Obtains an integer parameter.::
 
     func (*Task) GetIntParam ( param int32 ) ( parvalue int32 )
 
 
+``param int32``
+    <no description>
+``parvalue int32``
+    <no description>
 
 Obtains the value of an integer parameter. 
 
@@ -2102,7 +2232,7 @@ Obtains the value of an integer parameter.
 GetLenBarvarJ
 ~~~~~~~~~~~~~
 
-Obtains the length if the j'th semidefinite variables. ::
+Obtains the length if the j'th semidefinite variables.::
 
     func (*Task) GetLenBarvarJ ( j int32 ) ( lenbarvarj int64 )
 
@@ -2118,11 +2248,13 @@ Obtains the length of the :math:`j`\ th semidefinite variable i.e. the number of
 GetLintInf
 ~~~~~~~~~~
 
-Obtains an integer information item. ::
+Obtains an integer information item.::
 
     func (*Task) GetLintInf ( whichliinf int32 ) ( ivalue int64 )
 
 
+``whichliinf int32``
+    <no description>
 ``ivalue int64``
      The value of the required integer information item.
 
@@ -2134,11 +2266,13 @@ Obtains an integer information item from the task information database.
 GetMaxNumANz
 ~~~~~~~~~~~~
 
- Obtains number of preallocated non-zeros in the linear constraint matrix. ::
+Obtains number of preallocated non-zeros in the linear constraint matrix.::
 
     func (*Task) GetMaxNumANz (  ) ( maxnumanz int64 )
 
 
+``maxnumanz int64``
+    <no description>
 
 Obtains number of preallocated non-zeros in :math:`A`. When this number of non-zeros is reached MOSEK will automatically allocate more space for :math:`A`.  
 
@@ -2146,7 +2280,7 @@ Obtains number of preallocated non-zeros in :math:`A`. When this number of non-z
 GetMaxNumBarvar
 ~~~~~~~~~~~~~~~
 
-Obtains the number of semidefinite variables. ::
+Obtains the number of semidefinite variables.::
 
     func (*Task) GetMaxNumBarvar (  ) ( maxnumbarvar int32 )
 
@@ -2160,11 +2294,13 @@ Obtains the number of semidefinite variables.
 GetMaxNumCon
 ~~~~~~~~~~~~
 
-Obtains the number of preallocated constraints in the optimization task. ::
+Obtains the number of preallocated constraints in the optimization task.::
 
     func (*Task) GetMaxNumCon (  ) ( maxnumcon int32 )
 
 
+``maxnumcon int32``
+    <no description>
 
 Obtains the number of preallocated constraints in the optimization task. When this number of constraints is reached MOSEK will automatically allocate more space for constraints.  
 
@@ -2172,11 +2308,13 @@ Obtains the number of preallocated constraints in the optimization task. When th
 GetMaxNumCone
 ~~~~~~~~~~~~~
 
-Obtains the number of preallocated cones in the optimization task. ::
+Obtains the number of preallocated cones in the optimization task.::
 
     func (*Task) GetMaxNumCone (  ) ( maxnumcone int32 )
 
 
+``maxnumcone int32``
+    <no description>
 
 
 Obtains the number of preallocated cones in the optimization task. When this
@@ -2188,11 +2326,13 @@ cones.
 GetMaxNumQNz
 ~~~~~~~~~~~~
 
- Obtains the number of preallocated non-zeros for all quadratic terms in objective and constraints. ::
+Obtains the number of preallocated non-zeros for all quadratic terms in objective and constraints.::
 
     func (*Task) GetMaxNumQNz (  ) ( maxnumqnz int64 )
 
 
+``maxnumqnz int64``
+    <no description>
 
 
 Obtains the number of preallocated non-zeros for :math:`Q` (both objective and
@@ -2204,11 +2344,13 @@ automatically allocate more space for :math:`Q`.
 GetMaxNumVar
 ~~~~~~~~~~~~
 
-Obtains the maximum number variables allowed. ::
+Obtains the maximum number variables allowed.::
 
     func (*Task) GetMaxNumVar (  ) ( maxnumvar int32 )
 
 
+``maxnumvar int32``
+    <no description>
 
 Obtains the number of preallocated variables in the optimization task. When this number of variables is reached MOSEK will automatically allocate more space for constraints.  
 
@@ -2216,7 +2358,7 @@ Obtains the number of preallocated variables in the optimization task. When this
 GetMemUsage
 ~~~~~~~~~~~
 
-Obtains information about the amount of memory used by a task. ::
+Obtains information about the amount of memory used by a task.::
 
     func (*Task) GetMemUsage (  ) ( meminuse int64, maxmemuse int64 )
 
@@ -2232,11 +2374,13 @@ Obtains information about the amount of memory used by a task.
 GetNumANz
 ~~~~~~~~~
 
-Obtains the number of non-zeros in the coefficient matrix. ::
+Obtains the number of non-zeros in the coefficient matrix.::
 
     func (*Task) GetNumANz (  ) ( numanz int32 )
 
 
+``numanz int32``
+    <no description>
 
 Obtains the number of non-zeros in :math:`A`. 
 
@@ -2244,11 +2388,13 @@ Obtains the number of non-zeros in :math:`A`.
 GetNumANz64
 ~~~~~~~~~~~
 
-Obtains the number of non-zeros in the coefficient matrix. ::
+Obtains the number of non-zeros in the coefficient matrix.::
 
     func (*Task) GetNumANz64 (  ) ( numanz int64 )
 
 
+``numanz int64``
+    <no description>
 
 Obtains the number of non-zeros in :math:`A`. 
 
@@ -2256,7 +2402,7 @@ Obtains the number of non-zeros in :math:`A`.
 GetNumBaraBlockTriplets
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Obtains an upper bound on the number of scalar elements in the block triplet form of bara. ::
+Obtains an upper bound on the number of scalar elements in the block triplet form of bara.::
 
     func (*Task) GetNumBaraBlockTriplets (  ) ( num int64 )
 
@@ -2270,7 +2416,7 @@ Obtains an upper bound on the number of elements in the block triplet form of :m
 GetNumBaraNz
 ~~~~~~~~~~~~
 
-Get the number of nonzero elements in barA. ::
+Get the number of nonzero elements in barA.::
 
     func (*Task) GetNumBaraNz (  ) ( nz int64 )
 
@@ -2284,7 +2430,7 @@ Get the number of nonzero elements in :math:`\bar{A}`.
 GetNumBarcBlockTriplets
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Obtains an upper bound on the number of elements in the block triplet form of barc. ::
+Obtains an upper bound on the number of elements in the block triplet form of barc.::
 
     func (*Task) GetNumBarcBlockTriplets (  ) ( num int64 )
 
@@ -2312,7 +2458,7 @@ Obtains the number of nonzero elements in :math:`\bar{c}`.
 GetNumBarvar
 ~~~~~~~~~~~~
 
-Obtains the number of semidefinite variables. ::
+Obtains the number of semidefinite variables.::
 
     func (*Task) GetNumBarvar (  ) ( numbarvar int32 )
 
@@ -2326,11 +2472,13 @@ Obtains the number of semidefinite variables.
 GetNumCon
 ~~~~~~~~~
 
-Obtains the number of constraints. ::
+Obtains the number of constraints.::
 
     func (*Task) GetNumCon (  ) ( numcon int32 )
 
 
+``numcon int32``
+    <no description>
 
 Obtains the number of constraints. 
 
@@ -2338,7 +2486,7 @@ Obtains the number of constraints.
 GetNumCone
 ~~~~~~~~~~
 
-Obtains the number of cones. ::
+Obtains the number of cones.::
 
     func (*Task) GetNumCone (  ) ( numcone int32 )
 
@@ -2352,13 +2500,15 @@ Obtains the number of cones.
 GetNumConeMem
 ~~~~~~~~~~~~~
 
-Obtains the number of members in a cone. ::
+Obtains the number of members in a cone.::
 
     func (*Task) GetNumConeMem ( k int32 ) ( nummem int32 )
 
 
 ``k int32``
     Index of the cone.
+``nummem int32``
+    <no description>
 
 Obtains the number of members in a cone. 
 
@@ -2366,7 +2516,7 @@ Obtains the number of members in a cone.
 GetNumIntVar
 ~~~~~~~~~~~~
 
- Obtains the number of integer-constrained variables. ::
+Obtains the number of integer-constrained variables.::
 
     func (*Task) GetNumIntVar (  ) ( numintvar int32 )
 
@@ -2382,11 +2532,13 @@ Obtains the number of integer-constrained variables.
 GetNumParam
 ~~~~~~~~~~~
 
-Obtains the number of parameters of a given type. ::
+Obtains the number of parameters of a given type.::
 
     func (*Task) GetNumParam ( partype int32 ) ( numparam int32 )
 
 
+``partype int32``
+    <no description>
 ``numparam int32``
     Returns the number of parameters of the requested type.
 
@@ -2396,13 +2548,15 @@ Obtains the number of parameters of a given type.
 GetNumQConKNz
 ~~~~~~~~~~~~~
 
- Obtains the number of non-zero quadratic terms in a constraint. ::
+Obtains the number of non-zero quadratic terms in a constraint.::
 
     func (*Task) GetNumQConKNz ( k int32 ) ( numqcnz int64 )
 
 
 ``k int32``
      Index of the constraint for which the number quadratic terms should be obtained.
+``numqcnz int64``
+    <no description>
 
 
 Obtains the number of non-zero quadratic terms in a constraint.
@@ -2412,11 +2566,13 @@ Obtains the number of non-zero quadratic terms in a constraint.
 GetNumQObjNz
 ~~~~~~~~~~~~
 
- Obtains the number of non-zero quadratic terms in the objective. ::
+Obtains the number of non-zero quadratic terms in the objective.::
 
     func (*Task) GetNumQObjNz (  ) ( numqonz int64 )
 
 
+``numqonz int64``
+    <no description>
 
 
 Obtains the number of non-zero quadratic terms in the objective.
@@ -2426,7 +2582,7 @@ Obtains the number of non-zero quadratic terms in the objective.
 GetNumSymMat
 ~~~~~~~~~~~~
 
-Get the number of symmetric matrixes stored. ::
+Get the number of symmetric matrixes stored.::
 
     func (*Task) GetNumSymMat (  ) ( num int64 )
 
@@ -2440,11 +2596,13 @@ Get the number of symmetric matrixes stored in the vector :math:`E`.
 GetNumVar
 ~~~~~~~~~
 
-Obtains the number of variables. ::
+Obtains the number of variables.::
 
     func (*Task) GetNumVar (  ) ( numvar int32 )
 
 
+``numvar int32``
+    <no description>
 
 Obtains the number of variables. 
 
@@ -2452,7 +2610,7 @@ Obtains the number of variables.
 GetObjName
 ~~~~~~~~~~
 
- Obtains the name assigned to the objective function. ::
+Obtains the name assigned to the objective function.::
 
     func (*Task) GetObjName (  ) ( objname string )
 
@@ -2468,7 +2626,7 @@ Obtains the name assigned to the objective function.
 GetObjNameLen
 ~~~~~~~~~~~~~
 
- Obtains the length of the name assigned to the objective function. ::
+Obtains the length of the name assigned to the objective function.::
 
     func (*Task) GetObjNameLen (  ) ( len int32 )
 
@@ -2484,7 +2642,7 @@ Obtains the length of the name assigned to the objective function.
 GetObjSense
 ~~~~~~~~~~~
 
-Gets the objective sense. ::
+Gets the objective sense.::
 
     func (*Task) GetObjSense (  ) ( sense int32 )
 
@@ -2500,11 +2658,13 @@ Gets the objective sense of the task.
 GetParamMax
 ~~~~~~~~~~~
 
- Obtains the maximum index of a parameter of a given type plus 1. ::
+Obtains the maximum index of a parameter of a given type plus 1.::
 
     func (*Task) GetParamMax ( partype int32 ) ( parammax int32 )
 
 
+``partype int32``
+    <no description>
 ``parammax int32``
     The maximum index of the given parameter type.
 
@@ -2516,11 +2676,17 @@ Obtains the maximum index of a parameter of a given type plus 1.
 GetParamName
 ~~~~~~~~~~~~
 
-Obtains the name of a parameter. ::
+Obtains the name of a parameter.::
 
     func (*Task) GetParamName ( partype int32, param int32 ) ( parname string )
 
 
+``partype int32``
+    <no description>
+``param int32``
+    <no description>
+``parname string``
+    <no description>
 
 Obtains the name for a parameter ``param`` of type ``partype``.  
 
@@ -2528,11 +2694,15 @@ Obtains the name for a parameter ``param`` of type ``partype``.
 GetPrimalObj
 ~~~~~~~~~~~~
 
- Computes the primal objective value for the desired solution. ::
+Computes the primal objective value for the desired solution.::
 
     func (*Task) GetPrimalObj ( whichsol int32 ) ( primalobj float64 )
 
 
+``whichsol int32``
+    <no description>
+``primalobj float64``
+    <no description>
 
 
 Computes the primal objective value for the desired solution. Note if the solution is an infeasibility certificate, then the fixed term in the objective is not included.
@@ -2542,7 +2712,7 @@ Computes the primal objective value for the desired solution. Note if the soluti
 GetPrimalSolutionNorms
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Compute norms of the primal solution. ::
+Compute norms of the primal solution.::
 
     func (*Task) GetPrimalSolutionNorms
         ( whichsol int32 )
@@ -2551,6 +2721,8 @@ Compute norms of the primal solution. ::
           nrmbarx float64 )
 
 
+``whichsol int32``
+    <no description>
 ``nrmxc float64``
      The norm of xc vector.
 ``nrmxx float64``
@@ -2565,11 +2737,15 @@ Compute norms of the primal solution.
 GetProSta
 ~~~~~~~~~
 
- Obtains the problem status. ::
+Obtains the problem status.::
 
     func (*Task) GetProSta ( whichsol int32 ) ( prosta int32 )
 
 
+``whichsol int32``
+    <no description>
+``prosta int32``
+    <no description>
 
 
 Obtains the problem status.
@@ -2579,7 +2755,7 @@ Obtains the problem status.
 GetProbType
 ~~~~~~~~~~~
 
- Obtains the problem type. ::
+Obtains the problem type.::
 
     func (*Task) GetProbType (  ) ( probtype int32 )
 
@@ -2595,7 +2771,7 @@ Obtains the problem type.
 GetPviolBarvar
 ~~~~~~~~~~~~~~
 
-Computes the violation of a primal solution for a list of barx variables. ::
+Computes the violation of a primal solution for a list of barx variables.::
 
     func (*Task) GetPviolBarvar
         ( whichsol int32,
@@ -2604,6 +2780,8 @@ Computes the violation of a primal solution for a list of barx variables. ::
         ( viol []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sub []int32``
     An array of indexes of barx variables.
 ``viol []float64``
@@ -2621,7 +2799,7 @@ variable :math:`\bar{X}_j` is given by
 GetPviolCon
 ~~~~~~~~~~~
 
-Computes the violation of a primal solution for a list of xc variables. ::
+Computes the violation of a primal solution for a list of xc variables.::
 
     func (*Task) GetPviolCon
         ( whichsol int32,
@@ -2630,6 +2808,8 @@ Computes the violation of a primal solution for a list of xc variables. ::
         ( viol []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sub []int32``
     An array of indexes of constraints.
 ``viol []float64``
@@ -2651,7 +2831,7 @@ for linear case but is appropriately generalized for the other cases.
 GetPviolCones
 ~~~~~~~~~~~~~
 
-Computes the violation of a solution for set of conic constraints. ::
+Computes the violation of a solution for set of conic constraints.::
 
     func (*Task) GetPviolCones
         ( whichsol int32,
@@ -2660,6 +2840,8 @@ Computes the violation of a solution for set of conic constraints. ::
         ( viol []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sub []int32``
     An array of indexes of barx variables.
 ``viol []float64``
@@ -2687,7 +2869,7 @@ primal feasibleness solution the violation should be small.
 GetPviolVar
 ~~~~~~~~~~~
 
-Computes the violation of a primal solution for a list of x variables. ::
+Computes the violation of a primal solution for a list of x variables.::
 
     func (*Task) GetPviolVar
         ( whichsol int32,
@@ -2696,6 +2878,8 @@ Computes the violation of a primal solution for a list of x variables. ::
         ( viol []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sub []int32``
     An array of indexes of x variables.
 ``viol []float64``
@@ -2718,7 +2902,7 @@ feasibleness solution the violation should be small.
 GetQConK
 ~~~~~~~~
 
-Obtains all the quadratic terms in a constraint. ::
+Obtains all the quadratic terms in a constraint.::
 
     func (*Task) GetQConK
         ( k int32,
@@ -2733,6 +2917,14 @@ Obtains all the quadratic terms in a constraint. ::
 
 ``k int32``
     Which constraint.
+``qcsubi []int32``
+    <no description>
+``qcsubj []int32``
+    <no description>
+``qcval []float64``
+    <no description>
+``numqcnz int64``
+    <no description>
 
 
 Obtains all the quadratic terms in a constraint. The quadratic
@@ -2743,7 +2935,7 @@ terms are stored sequentially ``qcsubi``, ``qcsubj``, and ``qcval``.
 GetQObj
 ~~~~~~~
 
-Obtains all the quadratic terms in the objective. ::
+Obtains all the quadratic terms in the objective.::
 
     func (*Task) GetQObj
         ( qosubi []int32,
@@ -2755,6 +2947,14 @@ Obtains all the quadratic terms in the objective. ::
           qoval []float64 )
 
 
+``qosubi []int32``
+    <no description>
+``qosubj []int32``
+    <no description>
+``qoval []float64``
+    <no description>
+``numqonz int64``
+    <no description>
 
 
 Obtains the quadratic terms in the objective. The required quadratic terms
@@ -2765,7 +2965,7 @@ are stored sequentially in ``qosubi``, ``qosubj``, and ``qoval``.
 GetQObjIJ
 ~~~~~~~~~
 
- Obtains one coefficient from the quadratic term of the objective ::
+Obtains one coefficient from the quadratic term of the objective::
 
     func (*Task) GetQObjIJ ( i int32, j int32 ) ( qoij float64 )
 
@@ -2783,7 +2983,7 @@ Obtains one coefficient :math:`q_{ij}^o` in the quadratic term of the objective.
 GetReducedCosts
 ~~~~~~~~~~~~~~~
 
-Obtains the difference of (slx-sux) for a sequence of variables. ::
+Obtains the difference of (slx-sux) for a sequence of variables.::
 
     func (*Task) GetReducedCosts
         ( whichsol int32,
@@ -2793,6 +2993,8 @@ Obtains the difference of (slx-sux) for a sequence of variables. ::
         ( redcosts []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``first int32``
     See the documentation for a full description.
 ``last int32``
@@ -2814,11 +3016,15 @@ Computes the reduced costs for a sequence of variables and return them in the va
 GetSkc
 ~~~~~~
 
- Obtains the status keys for the constraints. ::
+Obtains the status keys for the constraints.::
 
     func (*Task) GetSkc ( whichsol int32, skc []int32 ) ( skc []int32 )
 
 
+``whichsol int32``
+    <no description>
+``skc []int32``
+    <no description>
 
 
 Obtains the status keys for the constraints.
@@ -2828,7 +3034,7 @@ Obtains the status keys for the constraints.
 GetSkcSlice
 ~~~~~~~~~~~
 
- Obtains the status keys for the constraints. ::
+Obtains the status keys for the constraints.::
 
     func (*Task) GetSkcSlice
         ( whichsol int32,
@@ -2838,6 +3044,14 @@ GetSkcSlice
         ( skc []int32 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``skc []int32``
+    <no description>
 
 
 Obtains the status keys for the constraints.
@@ -2847,11 +3061,15 @@ Obtains the status keys for the constraints.
 GetSkx
 ~~~~~~
 
- Obtains the status keys for the scalar variables. ::
+Obtains the status keys for the scalar variables.::
 
     func (*Task) GetSkx ( whichsol int32, skx []int32 ) ( skx []int32 )
 
 
+``whichsol int32``
+    <no description>
+``skx []int32``
+    <no description>
 
 
 Obtains the status keys for the scalar variables.
@@ -2861,7 +3079,7 @@ Obtains the status keys for the scalar variables.
 GetSkxSlice
 ~~~~~~~~~~~
 
- Obtains the status keys for the variables. ::
+Obtains the status keys for the variables.::
 
     func (*Task) GetSkxSlice
         ( whichsol int32,
@@ -2871,6 +3089,14 @@ GetSkxSlice
         ( skx []int32 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``skx []int32``
+    <no description>
 
 
 Obtains the status keys for the variables.
@@ -2880,11 +3106,13 @@ Obtains the status keys for the variables.
 GetSlc
 ~~~~~~
 
- Obtains the slc vector for a solution. ::
+Obtains the slc vector for a solution.::
 
     func (*Task) GetSlc ( whichsol int32, slc []float64 ) ( slc []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``slc []float64``
     The slc vector.
 
@@ -2894,7 +3122,7 @@ Obtains the :math:`s_l^c` vector for a solution.
 GetSlcSlice
 ~~~~~~~~~~~
 
- Obtains a slice of the slc vector for a solution. ::
+Obtains a slice of the slc vector for a solution.::
 
     func (*Task) GetSlcSlice
         ( whichsol int32,
@@ -2904,6 +3132,14 @@ GetSlcSlice
         ( slc []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``slc []float64``
+    <no description>
 
 Obtains a slice of the :math:`s_l^c` vector for a solution.  
 
@@ -2911,11 +3147,13 @@ Obtains a slice of the :math:`s_l^c` vector for a solution.
 GetSlx
 ~~~~~~
 
- Obtains the slx vector for a solution. ::
+Obtains the slx vector for a solution.::
 
     func (*Task) GetSlx ( whichsol int32, slx []float64 ) ( slx []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``slx []float64``
     The slx vector.
 
@@ -2925,7 +3163,7 @@ Obtains the :math:`s_l^x` vector for a solution.
 GetSlxSlice
 ~~~~~~~~~~~
 
- Obtains a slice of the slx vector for a solution. ::
+Obtains a slice of the slx vector for a solution.::
 
     func (*Task) GetSlxSlice
         ( whichsol int32,
@@ -2935,6 +3173,14 @@ GetSlxSlice
         ( slx []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``slx []float64``
+    <no description>
 
 Obtains a slice of the :math:`s_l^x` vector for a solution.  
 
@@ -2942,11 +3188,13 @@ Obtains a slice of the :math:`s_l^x` vector for a solution.
 GetSnx
 ~~~~~~
 
- Obtains the snx vector for a solution. ::
+Obtains the snx vector for a solution.::
 
     func (*Task) GetSnx ( whichsol int32, snx []float64 ) ( snx []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``snx []float64``
     The snx vector.
 
@@ -2956,7 +3204,7 @@ Obtains the :math:`s_n^x` vector for a solution.
 GetSnxSlice
 ~~~~~~~~~~~
 
- Obtains a slice of the snx vector for a solution. ::
+Obtains a slice of the snx vector for a solution.::
 
     func (*Task) GetSnxSlice
         ( whichsol int32,
@@ -2966,6 +3214,14 @@ GetSnxSlice
         ( snx []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``snx []float64``
+    <no description>
 
 Obtains a slice of the :math:`s_n^x` vector for a solution.  
 
@@ -2973,11 +3229,15 @@ Obtains a slice of the :math:`s_n^x` vector for a solution.
 GetSolSta
 ~~~~~~~~~
 
- Obtains the solution status. ::
+Obtains the solution status.::
 
     func (*Task) GetSolSta ( whichsol int32 ) ( solsta int32 )
 
 
+``whichsol int32``
+    <no description>
+``solsta int32``
+    <no description>
 
 
 Obtains the solution status.
@@ -2987,7 +3247,7 @@ Obtains the solution status.
 GetSolution
 ~~~~~~~~~~~
 
-Obtains the complete solution. ::
+Obtains the complete solution.::
 
     func (*Task) GetSolution
         ( whichsol int32,
@@ -3017,6 +3277,34 @@ Obtains the complete solution. ::
           snx []float64 )
 
 
+``whichsol int32``
+    <no description>
+``skc []int32``
+    <no description>
+``skx []int32``
+    <no description>
+``skn []int32``
+    <no description>
+``xc []float64``
+    <no description>
+``xx []float64``
+    <no description>
+``y []float64``
+    <no description>
+``slc []float64``
+    <no description>
+``suc []float64``
+    <no description>
+``slx []float64``
+    <no description>
+``sux []float64``
+    <no description>
+``snx []float64``
+    <no description>
+``prosta int32``
+    <no description>
+``solsta int32``
+    <no description>
 
 
 Obtains the complete solution.
@@ -3074,7 +3362,7 @@ The meaning of the values returned by this function depend on the *solution stat
 GetSolutionI
 ~~~~~~~~~~~~
 
- Obtains the solution for a single constraint or variable. ::
+Obtains the solution for a single constraint or variable.::
 
     func (*Task) GetSolutionI
         ( accmode int32,
@@ -3091,6 +3379,8 @@ GetSolutionI
      Defines whether solution information for a constraint or for a variable is retrieved.
 ``i int32``
     Index of the constraint or variable.
+``whichsol int32``
+    <no description>
 ``sk int32``
     Status key of the constraint of variable.
 ``x float64``
@@ -3110,7 +3400,7 @@ Obtains the primal and dual solution information for a single constraint or vari
 GetSolutionInfo
 ~~~~~~~~~~~~~~~
 
-Obtains information about of a solution. ::
+Obtains information about of a solution.::
 
     func (*Task) GetSolutionInfo
         ( whichsol int32 )
@@ -3127,6 +3417,8 @@ Obtains information about of a solution. ::
           dviolcone float64 )
 
 
+``whichsol int32``
+    <no description>
 ``pobj float64``
      The primal objective value.
 ``pviolcon float64``
@@ -3157,7 +3449,7 @@ Obtains information about a solution.
 GetSolutionSlice
 ~~~~~~~~~~~~~~~~
 
-Obtains a slice of the solution. ::
+Obtains a slice of the solution.::
 
     func (*Task) GetSolutionSlice
         ( whichsol int32,
@@ -3168,6 +3460,10 @@ Obtains a slice of the solution. ::
         ( values []float64 )
 
 
+``whichsol int32``
+    <no description>
+``solitem int32``
+    <no description>
 ``first int32``
     Index of the first value in the slice.
 ``last int32``
@@ -3239,7 +3535,7 @@ Depending on the solution status ``value`` will be:
 GetSparseSymMat
 ~~~~~~~~~~~~~~~
 
-Gets a single symmetric matrix from the matrix store. ::
+Gets a single symmetric matrix from the matrix store.::
 
     func (*Task) GetSparseSymMat
         ( idx int64,
@@ -3268,11 +3564,13 @@ Get a single symmetric matrix from the matrix store.
 GetStrParam
 ~~~~~~~~~~~
 
-Obtains the value of a string parameter. ::
+Obtains the value of a string parameter.::
 
     func (*Task) GetStrParam ( param int32 ) ( len int32, parvalue string )
 
 
+``param int32``
+    <no description>
 ``len int32``
     The length of the parameter value.
 ``parvalue string``
@@ -3284,11 +3582,13 @@ Obtains the value of a string parameter.
 GetStrParamLen
 ~~~~~~~~~~~~~~
 
-Obtains the length of a string parameter. ::
+Obtains the length of a string parameter.::
 
     func (*Task) GetStrParamLen ( param int32 ) ( len int32 )
 
 
+``param int32``
+    <no description>
 ``len int32``
     The length of the parameter value.
 
@@ -3298,11 +3598,13 @@ Obtains the length of a string parameter.
 GetSuc
 ~~~~~~
 
- Obtains the suc vector for a solution. ::
+Obtains the suc vector for a solution.::
 
     func (*Task) GetSuc ( whichsol int32, suc []float64 ) ( suc []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``suc []float64``
     The suc vector.
 
@@ -3312,7 +3614,7 @@ Obtains the :math:`s_u^c` vector for a solution.
 GetSucSlice
 ~~~~~~~~~~~
 
- Obtains a slice of the suc vector for a solution. ::
+Obtains a slice of the suc vector for a solution.::
 
     func (*Task) GetSucSlice
         ( whichsol int32,
@@ -3322,6 +3624,14 @@ GetSucSlice
         ( suc []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``suc []float64``
+    <no description>
 
 Obtains a slice of the :math:`s_u^c` vector for a solution.  
 
@@ -3329,11 +3639,13 @@ Obtains a slice of the :math:`s_u^c` vector for a solution.
 GetSux
 ~~~~~~
 
- Obtains the sux vector for a solution. ::
+Obtains the sux vector for a solution.::
 
     func (*Task) GetSux ( whichsol int32, sux []float64 ) ( sux []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``sux []float64``
     The sux vector.
 
@@ -3343,7 +3655,7 @@ Obtains the :math:`s_u^x` vector for a solution.
 GetSuxSlice
 ~~~~~~~~~~~
 
- Obtains a slice of the sux vector for a solution. ::
+Obtains a slice of the sux vector for a solution.::
 
     func (*Task) GetSuxSlice
         ( whichsol int32,
@@ -3353,6 +3665,14 @@ GetSuxSlice
         ( sux []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``sux []float64``
+    <no description>
 
 Obtains a slice of the :math:`s_u^x` vector for a solution.  
 
@@ -3360,7 +3680,7 @@ Obtains a slice of the :math:`s_u^x` vector for a solution.
 GetSymMatInfo
 ~~~~~~~~~~~~~
 
-Obtains information of  a matrix from the symmetric matrix storage E. ::
+Obtains information of  a matrix from the symmetric matrix storage E.::
 
     func (*Task) GetSymMatInfo
         ( idx int64 )
@@ -3386,7 +3706,7 @@ MOSEK maintains a vector denoted by :math:`E` of symmetric data matrixes. This f
 GetTaskName
 ~~~~~~~~~~~
 
-Obtains the task name. ::
+Obtains the task name.::
 
     func (*Task) GetTaskName (  ) ( taskname string )
 
@@ -3400,7 +3720,7 @@ Obtains the name assigned to the task.
 GetTaskNameLen
 ~~~~~~~~~~~~~~
 
- Obtains the length the task name. ::
+Obtains the length the task name.::
 
     func (*Task) GetTaskNameLen (  ) ( len int32 )
 
@@ -3416,7 +3736,7 @@ Obtains the length the task name.
 GetVarBound
 ~~~~~~~~~~~
 
- Obtains bound information for one variable. ::
+Obtains bound information for one variable.::
 
     func (*Task) GetVarBound
         ( i int32 )
@@ -3427,6 +3747,12 @@ GetVarBound
 
 ``i int32``
      Index of the variable for which the bound information should be obtained.
+``bk int32``
+    <no description>
+``bl float64``
+    <no description>
+``bu float64``
+    <no description>
 
 
 Obtains bound information for one variable.
@@ -3436,7 +3762,7 @@ Obtains bound information for one variable.
 GetVarBoundSlice
 ~~~~~~~~~~~~~~~~
 
- Obtains bounds information for a slice of the variables. ::
+Obtains bounds information for a slice of the variables.::
 
     func (*Task) GetVarBoundSlice
         ( first int32,
@@ -3449,6 +3775,16 @@ GetVarBoundSlice
           bu []float64 )
 
 
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``bk []int32``
+    <no description>
+``bl []float64``
+    <no description>
+``bu []float64``
+    <no description>
 
 
 Obtains bounds information for a slice of the variables.
@@ -3458,7 +3794,7 @@ Obtains bounds information for a slice of the variables.
 GetVarName
 ~~~~~~~~~~
 
- Obtains a name of a variable. ::
+Obtains a name of a variable.::
 
     func (*Task) GetVarName ( j int32 ) ( name string )
 
@@ -3476,7 +3812,7 @@ Obtains a name of a variable.
 GetVarNameIndex
 ~~~~~~~~~~~~~~~
 
-Checks whether the name somename has been assigned  to any variable.  ::
+Checks whether the name somename has been assigned  to any variable.::
 
     func (*Task) GetVarNameIndex ( somename string ) ( asgn int32, index int32 )
 
@@ -3494,7 +3830,7 @@ Checks whether the name ``somename`` has been assigned  to any variable. If it h
 GetVarNameLen
 ~~~~~~~~~~~~~
 
- Obtains the length of a name of a variable variable. ::
+Obtains the length of a name of a variable variable.::
 
     func (*Task) GetVarNameLen ( i int32 ) ( len int32 )
 
@@ -3512,7 +3848,7 @@ Obtains the length of a name of a variable variable.
 GetVarType
 ~~~~~~~~~~
 
-Gets the variable type of one variable. ::
+Gets the variable type of one variable.::
 
     func (*Task) GetVarType ( j int32 ) ( vartype int32 )
 
@@ -3528,7 +3864,7 @@ Gets the variable type of one variable.
 GetVarTypeList
 ~~~~~~~~~~~~~~
 
- Obtains the variable type for one or more variables. ::
+Obtains the variable type for one or more variables.::
 
     func (*Task) GetVarTypeList ( subj []int32, vartype []int32 ) ( vartype []int32 )
 
@@ -3548,7 +3884,7 @@ Upon return ``vartype[k]`` is the variable type of variable ``subj[k]``.
 GetVersion
 ~~~~~~~~~~
 
-Obtains MOSEK version information. ::
+Obtains MOSEK version information.::
 
     func GetVersion
         (  )
@@ -3576,11 +3912,13 @@ Obtains MOSEK version information.
 GetXc
 ~~~~~
 
- Obtains the xc vector for a solution. ::
+Obtains the xc vector for a solution.::
 
     func (*Task) GetXc ( whichsol int32, xc []float64 ) ( xc []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``xc []float64``
     The xc vector.
 
@@ -3590,7 +3928,7 @@ Obtains the :math:`x^c` vector for a solution.
 GetXcSlice
 ~~~~~~~~~~
 
- Obtains a slice of the xc vector for a solution. ::
+Obtains a slice of the xc vector for a solution.::
 
     func (*Task) GetXcSlice
         ( whichsol int32,
@@ -3600,6 +3938,14 @@ GetXcSlice
         ( xc []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``xc []float64``
+    <no description>
 
 
 Obtains a slice of the :math:`x^c` vector for a solution. 
@@ -3609,11 +3955,13 @@ Obtains a slice of the :math:`x^c` vector for a solution.
 GetXx
 ~~~~~
 
- Obtains the xx vector for a solution. ::
+Obtains the xx vector for a solution.::
 
     func (*Task) GetXx ( whichsol int32, xx []float64 ) ( xx []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``xx []float64``
     The xx vector.
 
@@ -3623,7 +3971,7 @@ Obtains the :math:`x^x` vector for a solution.
 GetXxSlice
 ~~~~~~~~~~
 
- Obtains a slice of the xx vector for a solution. ::
+Obtains a slice of the xx vector for a solution.::
 
     func (*Task) GetXxSlice
         ( whichsol int32,
@@ -3633,6 +3981,14 @@ GetXxSlice
         ( xx []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``xx []float64``
+    <no description>
 
 Obtains a slice of the :math:`x^x` vector for a solution.  
 
@@ -3640,11 +3996,13 @@ Obtains a slice of the :math:`x^x` vector for a solution.
 GetY
 ~~~~
 
- Obtains the y vector for a solution. ::
+Obtains the y vector for a solution.::
 
     func (*Task) GetY ( whichsol int32, y []float64 ) ( y []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``y []float64``
     The y vector.
 
@@ -3654,7 +4012,7 @@ Obtains the :math:`y` vector for a solution.
 GetYSlice
 ~~~~~~~~~
 
- Obtains a slice of the y vector for a solution. ::
+Obtains a slice of the y vector for a solution.::
 
     func (*Task) GetYSlice
         ( whichsol int32,
@@ -3664,6 +4022,14 @@ GetYSlice
         ( y []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``y []float64``
+    <no description>
 
 Obtains a slice of the :math:`y` vector for a solution.  
 
@@ -3671,7 +4037,7 @@ Obtains a slice of the :math:`y` vector for a solution.
 InitBasisSolve
 ~~~~~~~~~~~~~~
 
- Prepare a task for basis solver. ::
+Prepare a task for basis solver.::
 
     func (*Task) InitBasisSolve ( basis []int32 ) ( basis []int32 )
 
@@ -3695,7 +4061,7 @@ If the basis is singular i.e. not invertible, then the error ``RES_ERR_BASIS_SIN
 InputData
 ~~~~~~~~~
 
-Input the linear part of an optimization task in one function call. ::
+Input the linear part of an optimization task in one function call.::
 
     func (*Task) InputData
         ( maxnumcon int32,
@@ -3714,6 +4080,34 @@ Input the linear part of an optimization task in one function call. ::
           bux []float64 )
 
 
+``maxnumcon int32``
+    <no description>
+``maxnumvar int32``
+    <no description>
+``c []float64``
+    <no description>
+``cfix float64``
+    <no description>
+``aptrb []int64``
+    <no description>
+``aptre []int64``
+    <no description>
+``asub []int32``
+    <no description>
+``aval []float64``
+    <no description>
+``bkc []int32``
+    <no description>
+``blc []float64``
+    <no description>
+``buc []float64``
+    <no description>
+``bkx []int32``
+    <no description>
+``blx []float64``
+    <no description>
+``bux []float64``
+    <no description>
 
 
 Input the linear part of an optimization problem.
@@ -3729,11 +4123,15 @@ For an explained code example see Section :ref:`doc.tutorial_lo` and Section :re
 IsDouParName
 ~~~~~~~~~~~~
 
-Checks a double parameter name. ::
+Checks a double parameter name.::
 
     func (*Task) IsDouParName ( parname string ) ( param int32 )
 
 
+``parname string``
+    <no description>
+``param int32``
+    <no description>
 
 Checks whether ``parname`` is a valid double parameter name.  
 
@@ -3741,11 +4139,15 @@ Checks whether ``parname`` is a valid double parameter name.
 IsIntParName
 ~~~~~~~~~~~~
 
-Checks an integer parameter name. ::
+Checks an integer parameter name.::
 
     func (*Task) IsIntParName ( parname string ) ( param int32 )
 
 
+``parname string``
+    <no description>
+``param int32``
+    <no description>
 
 Checks whether ``parname`` is a valid integer parameter name.  
 
@@ -3753,11 +4155,15 @@ Checks whether ``parname`` is a valid integer parameter name.
 IsStrParName
 ~~~~~~~~~~~~
 
-Checks a string parameter name. ::
+Checks a string parameter name.::
 
     func (*Task) IsStrParName ( parname string ) ( param int32 )
 
 
+``parname string``
+    <no description>
+``param int32``
+    <no description>
 
 Checks whether ``parname`` is a valid string parameter name.  
 
@@ -3765,7 +4171,7 @@ Checks whether ``parname`` is a valid string parameter name.
 Licensecleanup
 ~~~~~~~~~~~~~~
 
-Stops all threads and delete all handles used by the license system. ::
+Stops all threads and delete all handles used by the license system.::
 
     func Licensecleanup (  ) ( res int32 )
 
@@ -3783,7 +4189,7 @@ MOSEK API calls are valid after this.
 LinkFileToStream
 ~~~~~~~~~~~~~~~~
 
-Directs all output from a task stream to a file. ::
+Directs all output from a task stream to a file.::
 
     func (*Task) LinkFileToStream
         ( whichstream int32,
@@ -3791,6 +4197,8 @@ Directs all output from a task stream to a file. ::
           append int32 )
 
 
+``whichstream int32``
+    <no description>
 ``filename string``
     The name of the file where the stream is written.
 ``append int32``
@@ -3802,7 +4210,7 @@ Directs all output from a task stream to a file.
 Linkfiletostream
 ~~~~~~~~~~~~~~~~
 
-Directs all output from a stream to a file. ::
+Directs all output from a stream to a file.::
 
     func (*Env) Linkfiletostream
         ( whichstream int32,
@@ -3810,6 +4218,8 @@ Directs all output from a stream to a file. ::
           append int32 )
 
 
+``whichstream int32``
+    <no description>
 ``filename string``
     Name of the file to write stream data to.
 ``append int32``
@@ -3821,10 +4231,14 @@ Directs all output from a stream to a file.
 OneSolutionSummary
 ~~~~~~~~~~~~~~~~~~
 
-Prints a short summary for the specified solution. ::
+Prints a short summary for the specified solution.::
 
     func (*Task) OneSolutionSummary ( whichstream int32, whichsol int32 )
 
+``whichstream int32``
+    <no description>
+``whichsol int32``
+    <no description>
 
 
 Prints a short summary for a specified solution. 
@@ -3834,7 +4248,7 @@ Prints a short summary for a specified solution.
 Optimize
 ~~~~~~~~
 
-Optimizes the problem. ::
+Optimizes the problem.::
 
     func (*Task) Optimize (  ) ( trmcode int32 )
 
@@ -3871,10 +4285,12 @@ This function returns errors on the left hand side. Warnings are not returned an
 OptimizerSummary
 ~~~~~~~~~~~~~~~~
 
-Prints a short summary with optimizer statistics for last optimization. ::
+Prints a short summary with optimizer statistics for last optimization.::
 
     func (*Task) OptimizerSummary ( whichstream int32 )
 
+``whichstream int32``
+    <no description>
 
 
 Prints a short summary with optimizer statistics for last optimization.
@@ -3884,7 +4300,7 @@ Prints a short summary with optimizer statistics for last optimization.
 Potrf
 ~~~~~
 
-Computes a Cholesky factorization a dense matrix. ::
+Computes a Cholesky factorization a dense matrix.::
 
     func (*Env) Potrf
         ( uplo int32,
@@ -3908,7 +4324,7 @@ Computes a Cholesky factorization of a real symmetric positive definite dense ma
 PrimalRepair
 ~~~~~~~~~~~~
 
- The function repairs a primal infeasible optimization problem by adjusting the bounds on the constraints and variables. ::
+The function repairs a primal infeasible optimization problem by adjusting the bounds on the constraints and variables.::
 
     func (*Task) PrimalRepair
         ( wlc []float64,
@@ -3945,7 +4361,7 @@ apply the function to a cloned task.
 PrimalSensitivity
 ~~~~~~~~~~~~~~~~~
 
-Perform sensitivity analysis on bounds. ::
+Perform sensitivity analysis on bounds.::
 
     func (*Task) PrimalSensitivity
         ( subi []int32,
@@ -4064,11 +4480,13 @@ is controlled by the parameter ``IPAR_SENSITIVITY_TYPE``.
 ProStaToStr
 ~~~~~~~~~~~
 
- Obtains a string containing the name of a problem status given. ::
+Obtains a string containing the name of a problem status given.::
 
     func (*Task) ProStaToStr ( prosta int32 ) ( str string )
 
 
+``prosta int32``
+    <no description>
 ``str string``
     String corresponding to the status key.
 
@@ -4085,6 +4503,8 @@ Obtains a string containing the name of a problem type given.::
     func (*Task) ProbTypeToStr ( probtype int32 ) ( str string )
 
 
+``probtype int32``
+    <no description>
 ``str string``
     String corresponding to the problem type key.
 
@@ -4096,7 +4516,7 @@ Obtains a string containing the name of a problem type given.
 PutACol
 ~~~~~~~
 
- Replaces all elements in one column of A. ::
+Replaces all elements in one column of A.::
 
     func (*Task) PutACol
         ( j int32,
@@ -4121,7 +4541,7 @@ Resets all the elements in column :math:`j` to zero and then do
 PutAColList
 ~~~~~~~~~~~
 
- Replaces all elements in several columns the linear constraint matrix by new values. ::
+Replaces all elements in several columns the linear constraint matrix by new values.::
 
     func (*Task) PutAColList
         ( sub []int32,
@@ -4139,6 +4559,8 @@ PutAColList
      Array of pointers to the last element plus one in the columns.
 ``asub []int32``
     Variable indexes.
+``aval []float64``
+    <no description>
 
 
 Replaces all elements in a set of columns of :math:`A`. The elements are replaced as follows  
@@ -4155,7 +4577,7 @@ Replaces all elements in a set of columns of :math:`A`. The elements are replace
 PutAColSlice
 ~~~~~~~~~~~~
 
- Replaces all elements in several columns the linear constraint matrix by new values. ::
+Replaces all elements in several columns the linear constraint matrix by new values.::
 
     func (*Task) PutAColSlice
         ( first int32,
@@ -4176,6 +4598,8 @@ PutAColSlice
      Array of pointers to the last element plus one in the columns.
 ``asub []int32``
     Variable indexes.
+``aval []float64``
+    <no description>
 
 Replaces all elements in a set of columns of :math:`A`.  
 
@@ -4183,7 +4607,7 @@ Replaces all elements in a set of columns of :math:`A`.
 PutARow
 ~~~~~~~
 
- Replaces all elements in one row of A. ::
+Replaces all elements in one row of A.::
 
     func (*Task) PutARow
         ( i int32,
@@ -4208,7 +4632,7 @@ Resets all the elements in row :math:`i` to zero and then do
 PutARowList
 ~~~~~~~~~~~
 
- Replaces all elements in several rows the linear constraint matrix by new values. ::
+Replaces all elements in several rows the linear constraint matrix by new values.::
 
     func (*Task) PutARowList
         ( sub []int32,
@@ -4226,6 +4650,8 @@ PutARowList
      Array of pointers to the last element plus one in the rows or columns.
 ``asub []int32``
     Variable indexes.
+``aval []float64``
+    <no description>
 
 
 Replaces all elements in a set of rows of :math:`A`. The elements are replaced as follows  
@@ -4242,7 +4668,7 @@ Replaces all elements in a set of rows of :math:`A`. The elements are replaced a
 PutARowSlice
 ~~~~~~~~~~~~
 
- Replaces all elements in several rows the linear constraint matrix by new values. ::
+Replaces all elements in several rows the linear constraint matrix by new values.::
 
     func (*Task) PutARowSlice
         ( first int32,
@@ -4263,6 +4689,8 @@ PutARowSlice
      Array of pointers to the last element plus one in the rows.
 ``asub []int32``
     Variable indexes.
+``aval []float64``
+    <no description>
 
 
 Replaces all elements in a set of rows of :math:`A`. The elements is replaced as follows
@@ -4280,7 +4708,7 @@ Replaces all elements in a set of rows of :math:`A`. The elements is replaced as
 PutAij
 ~~~~~~
 
-Changes a single value in the linear coefficient matrix. ::
+Changes a single value in the linear coefficient matrix.::
 
     func (*Task) PutAij
         ( i int32,
@@ -4305,7 +4733,7 @@ Changes a coefficient in :math:`A` using the method
 PutAijList
 ~~~~~~~~~~
 
-Changes one or more coefficients in the linear constraint matrix. ::
+Changes one or more coefficients in the linear constraint matrix.::
 
     func (*Task) PutAijList
         ( subi []int32,
@@ -4330,7 +4758,7 @@ Changes one or more coefficients in :math:`A` using the method
 PutBaraBlockTriplet
 ~~~~~~~~~~~~~~~~~~~
 
-Inputs barA in block triplet form. ::
+Inputs barA in block triplet form.::
 
     func (*Task) PutBaraBlockTriplet
         ( num int64,
@@ -4360,7 +4788,7 @@ Inputs the :math:`\bar{A}` in block triplet form.
 PutBaraIj
 ~~~~~~~~~
 
-Inputs an element of barA. ::
+Inputs an element of barA.::
 
     func (*Task) PutBaraIj
         ( i int32,
@@ -4396,7 +4824,7 @@ using the function ``appendsparsesymmat``.
 PutBarcBlockTriplet
 ~~~~~~~~~~~~~~~~~~~
 
-Inputs barC in block triplet form. ::
+Inputs barC in block triplet form.::
 
     func (*Task) PutBarcBlockTriplet
         ( num int64,
@@ -4455,7 +4883,7 @@ The symmetric matrixes themselves are defined separately using the function
 PutBarsJ
 ~~~~~~~~
 
- Sets the dual solution for a semidefinite variable. ::
+Sets the dual solution for a semidefinite variable.::
 
     func (*Task) PutBarsJ
         ( whichsol int32,
@@ -4463,6 +4891,8 @@ PutBarsJ
           barsj []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``j int32``
     Index of the semidefinite variable.
 ``barsj []float64``
@@ -4476,7 +4906,7 @@ Sets the dual solution for a semidefinite variable.
 PutBarvarName
 ~~~~~~~~~~~~~
 
- Puts the name of a semidefinite variable. ::
+Puts the name of a semidefinite variable.::
 
     func (*Task) PutBarvarName ( j int32, name string )
 
@@ -4493,7 +4923,7 @@ Puts the name of a semidefinite variable.
 PutBarxJ
 ~~~~~~~~
 
- Sets the primal solution for a semidefinite variable. ::
+Sets the primal solution for a semidefinite variable.::
 
     func (*Task) PutBarxJ
         ( whichsol int32,
@@ -4501,6 +4931,8 @@ PutBarxJ
           barxj []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``j int32``
     Index of the semidefinite variable.
 ``barxj []float64``
@@ -4514,7 +4946,7 @@ Sets the primal solution for a semidefinite variable.
 PutBound
 ~~~~~~~~
 
- Changes the bound for either one constraint or one variable. ::
+Changes the bound for either one constraint or one variable.::
 
     func (*Task) PutBound
         ( accmode int32,
@@ -4549,7 +4981,7 @@ inputted as specified.
 PutBoundList
 ~~~~~~~~~~~~
 
-Changes the bounds of constraints or variables. ::
+Changes the bounds of constraints or variables.::
 
     func (*Task) PutBoundList
         ( accmode int32,
@@ -4580,7 +5012,7 @@ a constraint or a variable, only the last change takes effect.
 PutBoundSlice
 ~~~~~~~~~~~~~
 
-Modifies bounds. ::
+Modifies bounds.::
 
     func (*Task) PutBoundSlice
         ( con int32,
@@ -4593,6 +5025,16 @@ Modifies bounds. ::
 
 ``con int32``
      Determines whether variables or constraints are modified.
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``bk []int32``
+    <no description>
+``bl []float64``
+    <no description>
+``bu []float64``
+    <no description>
 
 
 Changes the bounds for a sequence of variables or constraints.
@@ -4602,7 +5044,7 @@ Changes the bounds for a sequence of variables or constraints.
 PutCJ
 ~~~~~
 
-Modifies one linear coefficient in the objective. ::
+Modifies one linear coefficient in the objective.::
 
     func (*Task) PutCJ ( j int32, cj float64 )
 
@@ -4622,7 +5064,7 @@ Modifies one coefficient in the linear objective vector :math:`c`, i.e.
 PutCList
 ~~~~~~~~
 
-Modifies a part of the linear objective coefficients. ::
+Modifies a part of the linear objective coefficients.::
 
     func (*Task) PutCList ( subj []int32, val []float64 )
 
@@ -4643,7 +5085,7 @@ If a variable index is specified multiple times in ``subj`` only the last entry 
 PutCSlice
 ~~~~~~~~~
 
-Modifies a slice of the linear objective coefficients. ::
+Modifies a slice of the linear objective coefficients.::
 
     func (*Task) PutCSlice
         ( first int32,
@@ -4685,10 +5127,12 @@ means that the solver will stop.
 PutCfix
 ~~~~~~~
 
-Replaces the fixed term in the objective. ::
+Replaces the fixed term in the objective.::
 
     func (*Task) PutCfix ( cfix float64 )
 
+``cfix float64``
+    <no description>
 
 
 Replaces the fixed term in the objective by a new one.
@@ -4698,7 +5142,7 @@ Replaces the fixed term in the objective by a new one.
 PutConBound
 ~~~~~~~~~~~
 
- Changes the bound for one constraint. ::
+Changes the bound for one constraint.::
 
     func (*Task) PutConBound
         ( i int32,
@@ -4727,7 +5171,7 @@ changed accordingly. If a bound value is numerically larger than ``DPAR_DATA_TOL
 PutConBoundList
 ~~~~~~~~~~~~~~~
 
-Changes the bounds of a list of constraints. ::
+Changes the bounds of a list of constraints.::
 
     func (*Task) PutConBoundList
         ( sub []int32,
@@ -4753,7 +5197,7 @@ Changes the bounds for a list of constraints. If multiple bound changes are spec
 PutConBoundSlice
 ~~~~~~~~~~~~~~~~
 
- Changes the bounds for a slice of the constraints. ::
+Changes the bounds for a slice of the constraints.::
 
     func (*Task) PutConBoundSlice
         ( first int32,
@@ -4782,7 +5226,7 @@ Changes the bounds for a slice of the constraints.
 PutConName
 ~~~~~~~~~~
 
- Puts the name of a constraint. ::
+Puts the name of a constraint.::
 
     func (*Task) PutConName ( i int32, name string )
 
@@ -4799,7 +5243,7 @@ Puts the name of a constraint.
 PutCone
 ~~~~~~~
 
- Replaces a conic constraint. ::
+Replaces a conic constraint.::
 
     func (*Task) PutCone
         ( k int32,
@@ -4810,6 +5254,12 @@ PutCone
 
 ``k int32``
     Index of the cone.
+``ct int32``
+    <no description>
+``conepar float64``
+    <no description>
+``submem []int32``
+    <no description>
 
 
 Replaces a conic constraint.
@@ -4819,7 +5269,7 @@ Replaces a conic constraint.
 PutConeName
 ~~~~~~~~~~~
 
- Puts the name of a cone. ::
+Puts the name of a cone.::
 
     func (*Task) PutConeName ( j int32, name string )
 
@@ -4836,10 +5286,14 @@ Puts the name of a cone.
 PutDouParam
 ~~~~~~~~~~~
 
-Sets a double parameter. ::
+Sets a double parameter.::
 
     func (*Task) PutDouParam ( param int32, parvalue float64 )
 
+``param int32``
+    <no description>
+``parvalue float64``
+    <no description>
 
 Sets the value of a double parameter. 
 
@@ -4874,10 +5328,14 @@ Callback function returns: Non-zero to indicate that the solver should stop.
 PutIntParam
 ~~~~~~~~~~~
 
-Sets an integer parameter. ::
+Sets an integer parameter.::
 
     func (*Task) PutIntParam ( param int32, parvalue int32 )
 
+``param int32``
+    <no description>
+``parvalue int32``
+    <no description>
 
 
 Sets the value of an integer parameter.
@@ -4896,7 +5354,7 @@ Sets the value of an integer parameter.
 PutLicenseCode
 ~~~~~~~~~~~~~~
 
-The purpose of this function is to input a runtime license code. ::
+The purpose of this function is to input a runtime license code.::
 
     func (*Env) PutLicenseCode ( code []int32 )
 
@@ -4911,7 +5369,7 @@ The purpose of this function is to input a runtime license code.
 PutLicenseDebug
 ~~~~~~~~~~~~~~~
 
-Enables debug information for the license system. ::
+Enables debug information for the license system.::
 
     func (*Env) PutLicenseDebug ( licdebug int32 )
 
@@ -4924,7 +5382,7 @@ If ``licdebug`` is  non-zero, then MOSEK will print debug info regarding the lic
 PutLicensePath
 ~~~~~~~~~~~~~~
 
-Set the path to the license file. ::
+Set the path to the license file.::
 
     func (*Env) PutLicensePath ( licensepath string )
 
@@ -4939,7 +5397,7 @@ Set the path to the license file.
 PutLicenseWait
 ~~~~~~~~~~~~~~
 
-Control whether mosek should wait for an available license if no license is available. ::
+Control whether mosek should wait for an available license if no license is available.::
 
     func (*Env) PutLicenseWait ( licwait int32 )
 
@@ -4955,7 +5413,7 @@ is available. Moreover, ``licwait-1`` is the number of milliseconds to wait betw
 PutMaxNumANz
 ~~~~~~~~~~~~
 
- The function changes the size of the preallocated storage for linear coefficients. ::
+The function changes the size of the preallocated storage for linear coefficients.::
 
     func (*Task) PutMaxNumANz ( maxnumanz int64 )
 
@@ -4984,7 +5442,7 @@ is zero.
 PutMaxNumBarvar
 ~~~~~~~~~~~~~~~
 
-Sets the number of preallocated symmetric matrix variables in the optimization task. ::
+Sets the number of preallocated symmetric matrix variables in the optimization task.::
 
     func (*Task) PutMaxNumBarvar ( maxnumbarvar int32 )
 
@@ -5007,10 +5465,12 @@ variables in the task.
 PutMaxNumCon
 ~~~~~~~~~~~~
 
-Sets the number of preallocated constraints in the optimization task. ::
+Sets the number of preallocated constraints in the optimization task.::
 
     func (*Task) PutMaxNumCon ( maxnumcon int32 )
 
+``maxnumcon int32``
+    <no description>
 
 
 Sets the number of preallocated constraints in the optimization task. When this
@@ -5028,10 +5488,12 @@ constraints in the task.
 PutMaxNumCone
 ~~~~~~~~~~~~~
 
- Sets the number of preallocated conic constraints in the optimization task. ::
+Sets the number of preallocated conic constraints in the optimization task.::
 
     func (*Task) PutMaxNumCone ( maxnumcone int32 )
 
+``maxnumcone int32``
+    <no description>
 
 
 Sets the number of preallocated conic constraints in the optimization task.
@@ -5049,10 +5511,12 @@ constraints in the task.
 PutMaxNumQNz
 ~~~~~~~~~~~~
 
-Changes the size of the preallocated storage for quadratic terms. ::
+Changes the size of the preallocated storage for quadratic terms.::
 
     func (*Task) PutMaxNumQNz ( maxnumqnz int64 )
 
+``maxnumqnz int64``
+    <no description>
 
 
 MOSEK stores only the non-zero elements in :math:`Q`. Therefore, MOSEK
@@ -5073,10 +5537,12 @@ a hint of the amount of data to preallocate for efficiency reasons.
 PutMaxNumVar
 ~~~~~~~~~~~~
 
-Sets the number of preallocated variables in the optimization task. ::
+Sets the number of preallocated variables in the optimization task.::
 
     func (*Task) PutMaxNumVar ( maxnumvar int32 )
 
+``maxnumvar int32``
+    <no description>
 
 
 Sets the number of preallocated variables in the optimization task. When this
@@ -5094,10 +5560,14 @@ variables in the task.
 PutNaDouParam
 ~~~~~~~~~~~~~
 
-Sets a double parameter. ::
+Sets a double parameter.::
 
     func (*Task) PutNaDouParam ( paramname string, parvalue float64 )
 
+``paramname string``
+    <no description>
+``parvalue float64``
+    <no description>
 
 Sets the value of a named double parameter. 
 
@@ -5105,10 +5575,14 @@ Sets the value of a named double parameter.
 PutNaIntParam
 ~~~~~~~~~~~~~
 
-Sets an integer parameter. ::
+Sets an integer parameter.::
 
     func (*Task) PutNaIntParam ( paramname string, parvalue int32 )
 
+``paramname string``
+    <no description>
+``parvalue int32``
+    <no description>
 
 Sets the value of a named integer parameter. 
 
@@ -5116,10 +5590,14 @@ Sets the value of a named integer parameter.
 PutNaStrParam
 ~~~~~~~~~~~~~
 
-Sets a string parameter. ::
+Sets a string parameter.::
 
     func (*Task) PutNaStrParam ( paramname string, parvalue string )
 
+``paramname string``
+    <no description>
+``parvalue string``
+    <no description>
 
 Sets the value of a named string parameter. 
 
@@ -5127,10 +5605,12 @@ Sets the value of a named string parameter.
 PutObjName
 ~~~~~~~~~~
 
-Assigns a new name to the objective. ::
+Assigns a new name to the objective.::
 
     func (*Task) PutObjName ( objname string )
 
+``objname string``
+    <no description>
 
 Assigns the name given by ``objname`` to the objective function.  
 
@@ -5138,7 +5618,7 @@ Assigns the name given by ``objname`` to the objective function.
 PutObjSense
 ~~~~~~~~~~~
 
-Sets the objective sense. ::
+Sets the objective sense.::
 
     func (*Task) PutObjSense ( sense int32 )
 
@@ -5151,10 +5631,14 @@ Sets the objective sense of the task.
 PutParam
 ~~~~~~~~
 
-Modifies the value of parameter. ::
+Modifies the value of parameter.::
 
     func (*Task) PutParam ( parname string, parvalue string )
 
+``parname string``
+    <no description>
+``parvalue string``
+    <no description>
 
 
 Checks if a ``parname`` is valid parameter name. If it is, the parameter is
@@ -5165,7 +5649,7 @@ assigned the value specified by ``parvalue``.
 PutQCon
 ~~~~~~~
 
-Replaces all quadratic terms in constraints. ::
+Replaces all quadratic terms in constraints.::
 
     func (*Task) PutQCon
         ( qcsubk []int32,
@@ -5174,6 +5658,14 @@ Replaces all quadratic terms in constraints. ::
           qcval []float64 )
 
 
+``qcsubk []int32``
+    <no description>
+``qcsubi []int32``
+    <no description>
+``qcsubj []int32``
+    <no description>
+``qcval []float64``
+    <no description>
 
 
 Replace all quadratic entries in the constraints. consider constraints on the form:
@@ -5197,7 +5689,7 @@ Please note that duplicate entries are added together.
 PutQConK
 ~~~~~~~~
 
-Replaces all quadratic terms in a single constraint. ::
+Replaces all quadratic terms in a single constraint.::
 
     func (*Task) PutQConK
         ( k int32,
@@ -5208,6 +5700,12 @@ Replaces all quadratic terms in a single constraint. ::
 
 ``k int32``
     The constraint in which the new quadratic elements are inserted.
+``qcsubi []int32``
+    <no description>
+``qcsubj []int32``
+    <no description>
+``qcval []float64``
+    <no description>
 
 
 Replaces all the quadratic entries in one constraint :math:`k` of the form:
@@ -5247,7 +5745,7 @@ For a code example see Section :ref:`doc.tutorial_qo`
 PutQObj
 ~~~~~~~
 
-Replaces all quadratic terms in the objective. ::
+Replaces all quadratic terms in the objective.::
 
     func (*Task) PutQObj
         ( qosubi []int32,
@@ -5255,6 +5753,12 @@ Replaces all quadratic terms in the objective. ::
           qoval []float64 )
 
 
+``qosubi []int32``
+    <no description>
+``qosubj []int32``
+    <no description>
+``qoval []float64``
+    <no description>
 
 
 Replaces all the quadratic terms in the objective
@@ -5290,7 +5794,7 @@ For a code example see Section :ref:`doc.tutorial_qo`.
 PutQObjIJ
 ~~~~~~~~~
 
- Replaces one coefficient in the quadratic term in the objective. ::
+Replaces one coefficient in the quadratic term in the objective.::
 
     func (*Task) PutQObjIJ
         ( i int32,
@@ -5323,10 +5827,14 @@ computationally expensive than replacing all elements at once. Use
 PutSkc
 ~~~~~~
 
- Sets the status keys for the constraints. ::
+Sets the status keys for the constraints.::
 
     func (*Task) PutSkc ( whichsol int32, skc []int32 )
 
+``whichsol int32``
+    <no description>
+``skc []int32``
+    <no description>
 
 
 Sets the status keys for the constraints.
@@ -5336,7 +5844,7 @@ Sets the status keys for the constraints.
 PutSkcSlice
 ~~~~~~~~~~~
 
- Sets the status keys for the constraints. ::
+Sets the status keys for the constraints.::
 
     func (*Task) PutSkcSlice
         ( whichsol int32,
@@ -5345,6 +5853,14 @@ PutSkcSlice
           skc []int32 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``skc []int32``
+    <no description>
 
 
 Sets the status keys for the constraints.
@@ -5354,10 +5870,14 @@ Sets the status keys for the constraints.
 PutSkx
 ~~~~~~
 
- Sets the status keys for the scalar variables. ::
+Sets the status keys for the scalar variables.::
 
     func (*Task) PutSkx ( whichsol int32, skx []int32 )
 
+``whichsol int32``
+    <no description>
+``skx []int32``
+    <no description>
 
 
 Sets the status keys for the scalar variables.
@@ -5367,7 +5887,7 @@ Sets the status keys for the scalar variables.
 PutSkxSlice
 ~~~~~~~~~~~
 
- Sets the status keys for the variables. ::
+Sets the status keys for the variables.::
 
     func (*Task) PutSkxSlice
         ( whichsol int32,
@@ -5376,6 +5896,14 @@ PutSkxSlice
           skx []int32 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``skx []int32``
+    <no description>
 
 
 Sets the status keys for the variables.
@@ -5385,10 +5913,12 @@ Sets the status keys for the variables.
 PutSlc
 ~~~~~~
 
- Sets the slc vector for a solution. ::
+Sets the slc vector for a solution.::
 
     func (*Task) PutSlc ( whichsol int32, slc []float64 )
 
+``whichsol int32``
+    <no description>
 ``slc []float64``
     The slc vector.
 
@@ -5398,7 +5928,7 @@ Sets the :math:`s_l^c` vector for a solution.
 PutSlcSlice
 ~~~~~~~~~~~
 
- Sets a slice of the slc vector for a solution. ::
+Sets a slice of the slc vector for a solution.::
 
     func (*Task) PutSlcSlice
         ( whichsol int32,
@@ -5407,6 +5937,14 @@ PutSlcSlice
           slc []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``slc []float64``
+    <no description>
 
 Sets a slice of the :math:`s_l^c` vector for a solution.  
 
@@ -5414,10 +5952,12 @@ Sets a slice of the :math:`s_l^c` vector for a solution.
 PutSlx
 ~~~~~~
 
- Sets the slx vector for a solution. ::
+Sets the slx vector for a solution.::
 
     func (*Task) PutSlx ( whichsol int32, slx []float64 )
 
+``whichsol int32``
+    <no description>
 ``slx []float64``
     The slx vector.
 
@@ -5427,7 +5967,7 @@ Sets the :math:`s_l^x` vector for a solution.
 PutSlxSlice
 ~~~~~~~~~~~
 
- Sets a slice of the slx vector for a solution. ::
+Sets a slice of the slx vector for a solution.::
 
     func (*Task) PutSlxSlice
         ( whichsol int32,
@@ -5436,6 +5976,14 @@ PutSlxSlice
           slx []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``slx []float64``
+    <no description>
 
 Sets a slice of the :math:`s_l^x` vector for a solution.  
 
@@ -5443,10 +5991,12 @@ Sets a slice of the :math:`s_l^x` vector for a solution.
 PutSnx
 ~~~~~~
 
- Sets the snx vector for a solution. ::
+Sets the snx vector for a solution.::
 
     func (*Task) PutSnx ( whichsol int32, sux []float64 )
 
+``whichsol int32``
+    <no description>
 ``sux []float64``
     The snx vector.
 
@@ -5456,7 +6006,7 @@ Sets the :math:`s_n^x` vector for a solution.
 PutSnxSlice
 ~~~~~~~~~~~
 
- Sets a slice of the snx vector for a solution. ::
+Sets a slice of the snx vector for a solution.::
 
     func (*Task) PutSnxSlice
         ( whichsol int32,
@@ -5465,6 +6015,14 @@ PutSnxSlice
           snx []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``snx []float64``
+    <no description>
 
 Sets a slice of the :math:`s_n^x` vector for a solution.  
 
@@ -5472,7 +6030,7 @@ Sets a slice of the :math:`s_n^x` vector for a solution.
 PutSolution
 ~~~~~~~~~~~
 
-Inserts a solution. ::
+Inserts a solution.::
 
     func (*Task) PutSolution
         ( whichsol int32,
@@ -5489,6 +6047,30 @@ Inserts a solution. ::
           snx []float64 )
 
 
+``whichsol int32``
+    <no description>
+``skc []int32``
+    <no description>
+``skx []int32``
+    <no description>
+``skn []int32``
+    <no description>
+``xc []float64``
+    <no description>
+``xx []float64``
+    <no description>
+``y []float64``
+    <no description>
+``slc []float64``
+    <no description>
+``suc []float64``
+    <no description>
+``slx []float64``
+    <no description>
+``sux []float64``
+    <no description>
+``snx []float64``
+    <no description>
 
 Inserts a solution into the task. 
 
@@ -5496,7 +6078,7 @@ Inserts a solution into the task.
 PutSolutionI
 ~~~~~~~~~~~~
 
- Sets the primal and dual solution information for a single constraint or variable. ::
+Sets the primal and dual solution information for a single constraint or variable.::
 
     func (*Task) PutSolutionI
         ( accmode int32,
@@ -5513,6 +6095,8 @@ PutSolutionI
      Defines whether solution information for a constraint or for a variable is modified.
 ``i int32``
     Index of the constraint or variable.
+``whichsol int32``
+    <no description>
 ``sk int32``
     Status key of the constraint or variable.
 ``x float64``
@@ -5533,7 +6117,7 @@ constraint or variable.
 PutSolutionYI
 ~~~~~~~~~~~~~
 
- Inputs the dual variable of a solution. ::
+Inputs the dual variable of a solution.::
 
     func (*Task) PutSolutionYI
         ( i int32,
@@ -5543,6 +6127,8 @@ PutSolutionYI
 
 ``i int32``
     Index of the dual variable.
+``whichsol int32``
+    <no description>
 ``y float64``
     Solution value of the dual variable.
 
@@ -5554,10 +6140,14 @@ Inputs the dual variable of a solution.
 PutStrParam
 ~~~~~~~~~~~
 
-Sets a string parameter. ::
+Sets a string parameter.::
 
     func (*Task) PutStrParam ( param int32, parvalue string )
 
+``param int32``
+    <no description>
+``parvalue string``
+    <no description>
 
 Sets the value of a string parameter. 
 
@@ -5576,10 +6166,12 @@ Add a stream printer function to the task. ``whichstream`` should be a ``mosek.S
 PutSuc
 ~~~~~~
 
- Sets the suc vector for a solution. ::
+Sets the suc vector for a solution.::
 
     func (*Task) PutSuc ( whichsol int32, suc []float64 )
 
+``whichsol int32``
+    <no description>
 ``suc []float64``
     The suc vector.
 
@@ -5589,7 +6181,7 @@ Sets the :math:`s_u^c` vector for a solution.
 PutSucSlice
 ~~~~~~~~~~~
 
- Sets a slice of the suc vector for a solution. ::
+Sets a slice of the suc vector for a solution.::
 
     func (*Task) PutSucSlice
         ( whichsol int32,
@@ -5598,6 +6190,14 @@ PutSucSlice
           suc []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``suc []float64``
+    <no description>
 
 Sets a slice of the :math:`s_u^c` vector for a solution.  
 
@@ -5605,10 +6205,12 @@ Sets a slice of the :math:`s_u^c` vector for a solution.
 PutSux
 ~~~~~~
 
- Sets the sux vector for a solution. ::
+Sets the sux vector for a solution.::
 
     func (*Task) PutSux ( whichsol int32, sux []float64 )
 
+``whichsol int32``
+    <no description>
 ``sux []float64``
     The sux vector.
 
@@ -5618,7 +6220,7 @@ Sets the :math:`s_u^x` vector for a solution.
 PutSuxSlice
 ~~~~~~~~~~~
 
- Sets a slice of the sux vector for a solution. ::
+Sets a slice of the sux vector for a solution.::
 
     func (*Task) PutSuxSlice
         ( whichsol int32,
@@ -5627,6 +6229,14 @@ PutSuxSlice
           sux []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``sux []float64``
+    <no description>
 
 Sets a slice of the :math:`s_u^x` vector for a solution.  
 
@@ -5634,10 +6244,12 @@ Sets a slice of the :math:`s_u^x` vector for a solution.
 PutTaskName
 ~~~~~~~~~~~
 
-Assigns a new name to the task. ::
+Assigns a new name to the task.::
 
     func (*Task) PutTaskName ( taskname string )
 
+``taskname string``
+    <no description>
 
 Assigns the name ``taskname`` to the task. 
 
@@ -5645,7 +6257,7 @@ Assigns the name ``taskname`` to the task.
 PutVarBound
 ~~~~~~~~~~~
 
- Changes the bound for one variable. ::
+Changes the bound for one variable.::
 
     func (*Task) PutVarBound
         ( j int32,
@@ -5677,7 +6289,7 @@ inputted as specified.
 PutVarBoundList
 ~~~~~~~~~~~~~~~
 
-Changes the bounds of a list of variables. ::
+Changes the bounds of a list of variables.::
 
     func (*Task) PutVarBoundList
         ( sub []int32,
@@ -5703,7 +6315,7 @@ Changes the bounds for one or more variables. If multiple bound changes are spec
 PutVarBoundSlice
 ~~~~~~~~~~~~~~~~
 
- Changes the bounds for a slice of the variables. ::
+Changes the bounds for a slice of the variables.::
 
     func (*Task) PutVarBoundSlice
         ( first int32,
@@ -5732,7 +6344,7 @@ Changes the bounds for a slice of the variables.
 PutVarName
 ~~~~~~~~~~
 
- Puts the name of a variable. ::
+Puts the name of a variable.::
 
     func (*Task) PutVarName ( j int32, name string )
 
@@ -5749,7 +6361,7 @@ Puts the name of a variable.
 PutVarType
 ~~~~~~~~~~
 
-Sets the variable type of one variable. ::
+Sets the variable type of one variable.::
 
     func (*Task) PutVarType ( j int32, vartype int32 )
 
@@ -5764,7 +6376,7 @@ Sets the variable type of one variable.
 PutVarTypeList
 ~~~~~~~~~~~~~~
 
-Sets the variable type for one or more variables. ::
+Sets the variable type for one or more variables.::
 
     func (*Task) PutVarTypeList ( subj []int32, vartype []int32 )
 
@@ -5786,11 +6398,13 @@ takes effect.
 PutXc
 ~~~~~
 
- Sets the xc vector for a solution. ::
+Sets the xc vector for a solution.::
 
     func (*Task) PutXc ( whichsol int32, xc []float64 ) ( xc []float64 )
 
 
+``whichsol int32``
+    <no description>
 ``xc []float64``
     The xc vector.
 
@@ -5800,7 +6414,7 @@ Sets the :math:`x^c` vector for a solution.
 PutXcSlice
 ~~~~~~~~~~
 
- Sets a slice of the xc vector for a solution. ::
+Sets a slice of the xc vector for a solution.::
 
     func (*Task) PutXcSlice
         ( whichsol int32,
@@ -5809,6 +6423,14 @@ PutXcSlice
           xc []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``xc []float64``
+    <no description>
 
 Sets a slice of the :math:`x^c` vector for a solution.  
 
@@ -5816,10 +6438,12 @@ Sets a slice of the :math:`x^c` vector for a solution.
 PutXx
 ~~~~~
 
- Sets the xx vector for a solution. ::
+Sets the xx vector for a solution.::
 
     func (*Task) PutXx ( whichsol int32, xx []float64 )
 
+``whichsol int32``
+    <no description>
 ``xx []float64``
     The xx vector.
 
@@ -5829,7 +6453,7 @@ Sets the :math:`x^x` vector for a solution.
 PutXxSlice
 ~~~~~~~~~~
 
- Obtains a slice of the xx vector for a solution. ::
+Obtains a slice of the xx vector for a solution.::
 
     func (*Task) PutXxSlice
         ( whichsol int32,
@@ -5838,6 +6462,14 @@ PutXxSlice
           xx []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``xx []float64``
+    <no description>
 
 
 Obtains a slice of the :math:`x^x` vector for a solution. 
@@ -5847,10 +6479,12 @@ Obtains a slice of the :math:`x^x` vector for a solution.
 PutY
 ~~~~
 
- Sets the y vector for a solution. ::
+Sets the y vector for a solution.::
 
     func (*Task) PutY ( whichsol int32, y []float64 )
 
+``whichsol int32``
+    <no description>
 ``y []float64``
     The y vector.
 
@@ -5860,7 +6494,7 @@ Sets the :math:`y` vector for a solution.
 PutYSlice
 ~~~~~~~~~
 
- Sets a slice of the y vector for a solution. ::
+Sets a slice of the y vector for a solution.::
 
     func (*Task) PutYSlice
         ( whichsol int32,
@@ -5869,6 +6503,14 @@ PutYSlice
           y []float64 )
 
 
+``whichsol int32``
+    <no description>
+``first int32``
+    <no description>
+``last int32``
+    <no description>
+``y []float64``
+    <no description>
 
 Sets a slice of the :math:`y` vector for a solution.  
 
@@ -5876,7 +6518,7 @@ Sets a slice of the :math:`y` vector for a solution.
 ReadData
 ~~~~~~~~
 
-Reads problem data from a file. ::
+Reads problem data from a file.::
 
     func (*Task) ReadData ( filename string )
 
@@ -5889,7 +6531,7 @@ Reads an optimization problem and associated data from a file.
 ReadDataFormat
 ~~~~~~~~~~~~~~
 
-Reads problem data from a file. ::
+Reads problem data from a file.::
 
     func (*Task) ReadDataFormat
         ( filename string,
@@ -5910,7 +6552,7 @@ Reads an optimization problem and associated data from a file.
 ReadParamFile
 ~~~~~~~~~~~~~
 
-Reads a parameter file. ::
+Reads a parameter file.::
 
     func (*Task) ReadParamFile ( filename string )
 
@@ -5923,10 +6565,14 @@ Reads a parameter file.
 ReadSolution
 ~~~~~~~~~~~~
 
-Reads a solution from a file. ::
+Reads a solution from a file.::
 
     func (*Task) ReadSolution ( whichsol int32, filename string )
 
+``whichsol int32``
+    <no description>
+``filename string``
+    <no description>
 
 Reads a solution file and inserts the solution into the solution ``whichsol``.  
 
@@ -5934,10 +6580,12 @@ Reads a solution file and inserts the solution into the solution ``whichsol``.
 ReadSummary
 ~~~~~~~~~~~
 
-Prints information about last file read. ::
+Prints information about last file read.::
 
     func (*Task) ReadSummary ( whichstream int32 )
 
+``whichstream int32``
+    <no description>
 
 
 Prints a short summary of last file that was read.
@@ -5947,7 +6595,7 @@ Prints a short summary of last file that was read.
 ReadTask
 ~~~~~~~~
 
- Load task data from a file. ::
+Load task data from a file.::
 
     func (*Task) ReadTask ( filename string )
 
@@ -5967,7 +6615,7 @@ See section :ref:`doc.shared.taskformat` for a description of the Task format.
 RemoveBarvars
 ~~~~~~~~~~~~~
 
- The function removes a number of symmetric matrix. ::
+The function removes a number of symmetric matrix.::
 
     func (*Task) RemoveBarvars ( subset []int32 )
 
@@ -5986,7 +6634,7 @@ constraint 5 and so forth.
 RemoveCones
 ~~~~~~~~~~~
 
-Removes a conic constraint from the problem. ::
+Removes a conic constraint from the problem.::
 
     func (*Task) RemoveCones ( subset []int32 )
 
@@ -6002,7 +6650,7 @@ In general, it is much more efficient to remove a cone with a high index than a 
 RemoveCons
 ~~~~~~~~~~
 
- The function removes a number of constraints. ::
+The function removes a number of constraints.::
 
     func (*Task) RemoveCons ( subset []int32 )
 
@@ -6021,7 +6669,7 @@ constraint 5 and so forth.
 RemoveVars
 ~~~~~~~~~~
 
- The function removes a number of variables. ::
+The function removes a number of variables.::
 
     func (*Task) RemoveVars ( subset []int32 )
 
@@ -6040,7 +6688,7 @@ constraint 5 and so forth.
 ResizeTask
 ~~~~~~~~~~
 
-Resizes an optimization task. ::
+Resizes an optimization task.::
 
     func (*Task) ResizeTask
         ( maxnumcon int32,
@@ -6076,10 +6724,12 @@ existing data stored in the task is destroyed.
 SensitivityReport
 ~~~~~~~~~~~~~~~~~
 
-Creates a sensitivity report. ::
+Creates a sensitivity report.::
 
     func (*Task) SensitivityReport ( whichstream int32 )
 
+``whichstream int32``
+    <no description>
 
 
 Reads a sensitivity format file from a location given by
@@ -6092,7 +6742,7 @@ string, then the sensitivity report is also written to a file of this name.
 SetDefaults
 ~~~~~~~~~~~
 
-Resets all parameters values. ::
+Resets all parameters values.::
 
     func (*Task) SetDefaults (  )
 
@@ -6105,7 +6755,7 @@ Resets all the parameters to their default values.
 SkToStr
 ~~~~~~~
 
-Obtains a status key string. ::
+Obtains a status key string.::
 
     func (*Task) SkToStr ( sk int32 ) ( str string )
 
@@ -6123,11 +6773,13 @@ Obtains an explanatory string corresponding to a status key.
 SolStaToStr
 ~~~~~~~~~~~
 
-Obtains a solution status string. ::
+Obtains a solution status string.::
 
     func (*Task) SolStaToStr ( solsta int32 ) ( str string )
 
 
+``solsta int32``
+    <no description>
 ``str string``
     String corresponding to the solution status.
 
@@ -6139,11 +6791,13 @@ Obtains an explanatory string corresponding to a solution status.
 SolutionDef
 ~~~~~~~~~~~
 
-Checks whether a solution is defined. ::
+Checks whether a solution is defined.::
 
     func (*Task) SolutionDef ( whichsol int32 ) ( isdef bool )
 
 
+``whichsol int32``
+    <no description>
 ``isdef bool``
     Is non-zero if the requested solution is defined.
 
@@ -6153,10 +6807,12 @@ Checks whether a solution is defined.
 SolutionSummary
 ~~~~~~~~~~~~~~~
 
-Prints a short summary of the current solutions. ::
+Prints a short summary of the current solutions.::
 
     func (*Task) SolutionSummary ( whichstream int32 )
 
+``whichstream int32``
+    <no description>
 
 Prints a short summary of the current solutions.  
 
@@ -6164,7 +6820,7 @@ Prints a short summary of the current solutions.
 SolveWithBasis
 ~~~~~~~~~~~~~~
 
- Solve a linear equation system involving a basis matrix. ::
+Solve a linear equation system involving a basis matrix.::
 
     func (*Task) SolveWithBasis
         ( transp int32,
@@ -6239,7 +6895,7 @@ Please note that this function exploits the sparsity in the vector :math:`b` to 
 StrToConeType
 ~~~~~~~~~~~~~
 
-Obtains a cone type code. ::
+Obtains a cone type code.::
 
     func (*Task) StrToConeType ( str string ) ( conetype int32 )
 
@@ -6257,7 +6913,7 @@ Obtains cone type code corresponding to a cone type string.
 StrToSk
 ~~~~~~~
 
-Obtains a status key. ::
+Obtains a status key.::
 
     func (*Task) StrToSk ( str string ) ( sk int32 )
 
@@ -6425,6 +7081,8 @@ Update the information items related to the solution.::
 
     func (*Task) UpdateSolutionInfo ( whichsol int32 )
 
+``whichsol int32``
+    <no description>
 
 Update the information items related to the solution.   
 
@@ -6432,7 +7090,7 @@ Update the information items related to the solution.
 WriteData
 ~~~~~~~~~
 
-Writes problem data to a file. ::
+Writes problem data to a file.::
 
     func (*Task) WriteData ( filename string )
 
@@ -6465,10 +7123,12 @@ such function *cannot* be written to file and MOSEK will issue a warning.
 WriteJsonSol
 ~~~~~~~~~~~~
 
-Write a solution to a file. ::
+Write a solution to a file.::
 
     func (*Task) WriteJsonSol ( filename string )
 
+``filename string``
+    <no description>
 
 
 Saves the current  solutions and solver information items in a JSON file.
@@ -6478,7 +7138,7 @@ Saves the current  solutions and solver information items in a JSON file.
 WriteParamFile
 ~~~~~~~~~~~~~~
 
-Writes all the parameters to a parameter file. ::
+Writes all the parameters to a parameter file.::
 
     func (*Task) WriteParamFile ( filename string )
 
@@ -6491,10 +7151,14 @@ Writes all the parameters to a parameter file.
 WriteSolution
 ~~~~~~~~~~~~~
 
-Write a solution to a file. ::
+Write a solution to a file.::
 
     func (*Task) WriteSolution ( whichsol int32, filename string )
 
+``whichsol int32``
+    <no description>
+``filename string``
+    <no description>
 
 
 Saves the current basic, interior-point, or integer solution to a file.
