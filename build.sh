@@ -22,7 +22,7 @@ export CGO_CFLAGS="-I$MOSEK_INC_DIR"
 export CGO_LDFLAGS="-L$MOSEK_BIN_DIR -Xlinker -rpath-link=$MOSEK_BIN_DIR"
 export GOPATH=$(pwd)
 
-echo $CGO_CFLAGS
+#echo $CGO_CFLAGS
 
 go install mosek examples/...
 
