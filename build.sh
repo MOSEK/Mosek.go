@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MOSEKMAJORVER=8
-MOSEKMINORVER=0
+MOSEKMINORVER=1
 
 case "$(uname)" in
     Linux) PLATFORM=linux64x86
