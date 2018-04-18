@@ -98,17 +98,14 @@ func main() {
 	if task.GetRes() != mosek.RES_OK { os.Exit(1) }
 
         switch solsta {
-	case mosek.SOL_STA_OPTIMAL: fallthrough
-	case mosek.SOL_STA_NEAR_OPTIMAL:
+	case mosek.SOL_STA_OPTIMAL:
 		xx := task.GetXx(mosek.SOL_BAS, nil)
         
 		fmt.Println("Optimal primal solution")
 		fmt.Println("  x = ",xx)
 
 	case mosek.SOL_STA_DUAL_INFEAS_CER: fallthrough
-	case mosek.SOL_STA_PRIM_INFEAS_CER: fallthrough
-	case mosek.SOL_STA_NEAR_DUAL_INFEAS_CER: fallthrough
-	case mosek.SOL_STA_NEAR_PRIM_INFEAS_CER:  
+	case mosek.SOL_STA_PRIM_INFEAS_CER:
 		fmt.Println("Primal or dual infeasibility certificate found.")
 	case mosek.SOL_STA_UNKNOWN:
 		/* If the solutions status is unknown, print the
