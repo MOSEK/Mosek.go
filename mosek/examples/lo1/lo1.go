@@ -1,13 +1,13 @@
 package main
 /*
   Purpose:   To demonstrate how to solve a small linear
-             optimization problem using the MOSEK C API, 
+             optimization problem using the MOSEK C API,
              and handle the solver result and the problem
              solution.
 */
 
-import ( 
-	"mosek" 
+import (
+	"mosek.com/mosek"
 	"fmt"
 	"math"
 	"os"
@@ -16,19 +16,19 @@ import (
 func main() {
         const numvar int32 = 4
         const numcon int32 = 3
-        
+
         c := []float64 {3.0, 1.0, 5.0, 1.0}
         /* Below is the sparse representation of the A
            matrix stored by column. */
 
         aptrb := []int32 {0, 2, 5, 7}
         aptre := []int32 {2, 5, 7, 9}
-        asub  := [9]int32 { 
+        asub  := [9]int32 {
 		0, 1,
 		0, 1, 2,
-		0, 1,      
+		0, 1,
 		1, 2 }
-        aval  := [9]float64 { 
+        aval  := [9]float64 {
 		3.0, 2.0,
 		1.0, 1.0, 2.0,
 		2.0, 3.0,
@@ -43,11 +43,11 @@ func main() {
         blx := []float64 { 0.0,          0.0,         0.0,          0.0 };
         bux := []float64 { math.Inf(+1), 10.0,        math.Inf(+1), math.Inf(+1) };
 
-           
+
 	var r int32
 
         env,r := mosek.MakeEnv()
-        if r != 0 { os.Exit(1) } 
+        if r != 0 { os.Exit(1) }
         defer env.DeleteEnv()
         task,r := env.MakeTask()
         if r != 0 { os.Exit(1) }
@@ -64,13 +64,13 @@ func main() {
 	task.AppendVars(numvar)
 
 	for j := int32(0) ; j < numvar ; j++ {
-		/* Set the linear term c_j in the objective.*/  
+		/* Set the linear term c_j in the objective.*/
 		task.PutCJ(j,c[j])
-		
+
 		/* Set the bounds on variable j. blx[j] <= x_j <=
 		/* bux[j] */
 		task.PutVarBound(j,bkx[j], blx[j], bux[j])
-		/* Input column j of A */   
+		/* Input column j of A */
 		task.PutACol(j, asub[aptrb[j]:aptre[j]], aval[aptrb[j]:aptre[j]])
 	}
 
@@ -79,10 +79,10 @@ func main() {
 	for i := int32(0) ; i < numcon; i++ {
 		task.PutConBound(i, bkc[i], blc[i], buc[i])
 	}
-	
+
 	/* Maximize objective function. */
 	task.PutObjSense( mosek.OBJECTIVE_SENSE_MAXIMIZE)
-	
+
 	/* Run optimizer */
 	trmcode := task.Optimize()
 
@@ -91,7 +91,7 @@ func main() {
 	/* Print a summary containing information about the solution
 	/* for debugging purposes. */
 	task.SolutionSummary(mosek.STREAM_LOG)
-     
+
 	var solsta int32
 
 	solsta = task.GetSolSta (mosek.SOL_BAS)
@@ -100,7 +100,7 @@ func main() {
         switch solsta {
 	case mosek.SOL_STA_OPTIMAL:
 		xx := task.GetXx(mosek.SOL_BAS, nil)
-        
+
 		fmt.Println("Optimal primal solution")
 		fmt.Println("  x = ",xx)
 
@@ -111,13 +111,12 @@ func main() {
 		/* If the solutions status is unknown, print the
                 /* termination code indicating why the optimizer
                 /* terminated prematurely. */
-		
+
 		symname,_,_ := mosek.GetCodeDesc(trmcode)
-		
+
 		fmt.Println("The solution status is unknown.")
 		fmt.Printf("The optimizer terminitated with code: %s\n",symname)
 	default:
 		fmt.Println("Other solution status.")
 	}
 }
-
