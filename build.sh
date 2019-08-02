@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MOSEKMAJORVER=8
+MOSEKMAJORVER=9
 MOSEKMINORVER=1
 
 case "$(uname)" in
@@ -24,7 +24,8 @@ export GOPATH=$(pwd)
 
 #echo $CGO_CFLAGS
 
-go install mosek examples/...
-
-
-
+cd mosek
+go build && \
+go build examples/lo1/lo1.go && \
+go build examples/qo1/qo1.go && \
+go build examples/cqo1/cqo1.go
