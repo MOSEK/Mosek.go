@@ -4,7 +4,7 @@ package main
               optimization problem using the MOSEK API.
  */
 
-import "mosek.com/mosek"
+import mosek "github.com/mosek/mosek.go"
 import "fmt"
 import "os"
 import "math"

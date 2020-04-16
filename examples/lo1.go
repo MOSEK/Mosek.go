@@ -7,7 +7,7 @@ package main
 */
 
 import (
-	"mosek.com/mosek"
+	mosek "github.com/mosek/mosek.go"
 	"fmt"
 	"math"
 	"os"

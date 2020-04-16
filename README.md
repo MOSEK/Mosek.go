@@ -5,6 +5,14 @@ no guarantee on how or how quickly we do so.
 
 The API has been tested on 64bit Linux, but may work on other posix platforms as well.
 
+
+# Requirements
+
+- MOSEK tools
+- Go v1.12+
+
+The MOSEK Go interface does not depend on any third-party packages.
+
 # Go interface for MOSEK
 
 This is a thin Go interface for MOSEK.
@@ -15,24 +23,36 @@ Currently implemented:
 - Stream printing callbacks
 - Progress and information callbacks
 
-What will probably never be supported:
-
-- General convex API
-
 ## Documentation
 
 The documentation contains an API reference covering all functions and
 constants in the interface. It may contain dead links since many sections are
-not included in the manual yet. 
+not included in the manual yet.
 
 - [API reference](docs/mosek.rst)
 - [Constants reference](docs/mosek_const.rst).
 
-# Building
+For a more complete version of the documentation, see the [official C API documentation](https://docs.mosek.com/9.2/capi/index.html).
 
-Building requires MOSEK 8 and `go` 1.12.0 or later. By default the
-builder script will look in `$HOME` for a mosek installation; this can be overridden by setting the `MOSEK_INST_DIR` variable:
+# Using MOSEK from another project
+
+You can use Mosek from a go project by importing it by its full name:
+
 ```
-MOSEK_INST_DIR=$HOME/local build.sh
+import mosek "github.com/mosek/mosek.go"
 ```
-This will build the library and all examples.
+
+When building using `go build`, MOSEK must be available (the specific
+version is defined in the file `MOSEKVER`). Usually MOSEK will not be
+globally available, so locations of header file and library must be
+specified when building a project that imports MOSEK:
+
+```
+export CGO_CFLAGS="-I$HOME/mosek/9.2/tools/platform/linux64x86/h"
+export CGO_LDFLAGS="-L$HOME/mosek/9.2/tools/platform/linux64x86/bin"
+go build
+```
+
+# Building examples
+
+Run the included script `build.sh` to build examples.
