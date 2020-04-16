@@ -30,7 +30,7 @@ not included in the manual yet.
 
 # Building
 
-Building requires MOSEK 8 and `go` 1.2.1 or later. By default the
+Building requires MOSEK 8 and `go` 1.12.0 or later. By default the
 builder script will look in `$HOME` for a mosek installation; this can be overridden by setting the `MOSEK_INST_DIR` variable:
 ```
 MOSEK_INST_DIR=$HOME/local build.sh

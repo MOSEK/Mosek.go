@@ -26,9 +26,7 @@ MOSEK_INC_DIR=$MOSEK_INST_DIR/mosek/$MOSEKMAJORVER.$MOSEKMINORVER/tools/platform
 
 export CGO_CFLAGS="-I$MOSEK_INC_DIR"
 export CGO_LDFLAGS="-L$MOSEK_BIN_DIR -Xlinker -rpath-link=$MOSEK_BIN_DIR"
-export GOPATH=$(pwd)
 
-cd mosek
 go build && \
 go install examples/lo1.go && \
 go install examples/qo1.go && \
