@@ -51,6 +51,275 @@ ffitypemap = {
     'int64_t'      : 'int64',
     }
 
+def atype2nimdecl(t):
+    if   isinstance(t,ag.agref):
+        return 'ref ' + atype2num(t.t)
+    elif isinstance(t,ag.agptr):
+        return 'ptr ' + atype2num(t.t)
+    elif isinstance(t,ag.agenum):
+        return t.t
+    elif isinstance(t,ag.agtype):
+        return atypemap[t.t]
+    elif isinstance(t,str):
+        return atypemap[t]
+    else:
+        assert False,t
+
+
+
+class ComputeGen(ag.BaseComputeGenerator):
+    def __init__(self,code,tis,cls,func,tmpvargen):
+        super().__init__(code,tis,cls,func,tmpvargen)
+        self.__func = func
+
+    def binop(self,op,lhs,rhs):
+        code = []
+        code.extend(lhs.code)
+        code.extend(rhs.code)
+        return ag.ComputeNodePartial(f'({lhs.value} {op} {rhs.value})',code)
+    def cmp(self,op,lhs,rhs):
+        code = []
+        code.extend(lhs.code)
+        code.extend(rhs.code)
+        return ag.ComputeNodePartial(f'({lhs.value} {op} {rhs.value})',code)
+    def cast(self,tp,arg):
+        code = []
+        code.extend(arg.code)
+        return ComputeNodePartial(f'cast[{tp.t}]({arg.value})',code)
+    def ifthenelse(self,cond,thenitem,elseitem):
+        code = []
+        tmpvar = self.tmpvargen()
+        code.extend(cond.code)
+        code.append(f'var {tmpvar} : {atype2nimdecl(thenitem.type)}')
+        code.append(f'if {cond.value}:')
+        code.extend(['  ' + l for l in thenitem.code])
+        code.append(f'  {tmpvar} = {thenitem.value}')
+        code.append(f'else:')
+        code.extend(['  ' + l for l in elseitem.code])
+        code.append(f'  {tmpvar} = {elseitem.value}')
+
+        return ag.ComputeNodePartial(tmpvar,code)
+    def constref(self,cc,name):
+        return cc['prefix'].lower()+name
+    def lengthof(self,arg):
+        return ag.ComputeNodePartial(f'cast[int32]({arg.value}.len)',arg.code)
+    def longlengthof(self,arg):
+        return ag.ComputeNodePartial(f'{arg.value}.len',arg.code)
+    def sumof(self,arg):
+        return ag.ComputeNodePartial(f'{arg.value}.foldl(a+b)',arg.code)
+    def gencall(self,func,*args):
+        callargs = []
+        value = None
+        code = []
+        selfargs = [ a for a in self.__func['args'] if a.get('classarg') ]
+        for a in args:
+            if   a in ['self','task']:
+                #n = self.__func.getReplaces()
+                callargs.append(f'{selfargs[0]["name"]}.nativep')
+            elif isinstance(a,ag.DummyArg) or isinstance(a,ag.ReturnArg):
+                tmpvar = self.tmpvargen()
+                if isinstance(a.type, ag.agref):
+                    code.append(f'var {tmpvar} : {atype2nimdecl(a.type.t)}')
+                    callargs.append(f'addr({tmpvar})')
+                else:
+                    code.append('var {tmpvar} : {atype2nimdecl(a.type)}')
+                    callargs.append(f'{tmpvar}')
+
+                if isinstance(a,ag.ReturnArg):
+                    value = tmpvar
+            else:
+                code.extend(a.code)
+                callargs.append(a.value)
+        callargs = ','.join(callargs)
+        code.append(f'handle_res(MSK_{func["name"]}({callargs}))')
+        return ag.ComputeNodePartial(value,code)
+
+class FuncGen(ag.BaseFuncGenerator):
+    def __init__(self,tis,cls,func,tmpvargen):
+        self.__tmpvargen = tmpvargen
+        super().__init__(tis,
+                         cls,
+                         func,
+                         tmpvargen = tmpvargen,
+                         addcollectors = ['nativearg'])
+        self.__cls = cls
+        self.__func = func
+        self.funname = func['name']
+        self.funapiname = func.get('api-name',self.funname)
+    def warn(self,msg,*args): logging.warning(msg,*args)
+    def error(self,msg,*args): logging.error(msg,*args)
+    def info(self,msg,*args): logging.info(msg,*args)
+    def codegen(self,code):
+        return ComputeGen(code,self.jtis,self.__cls,self.__func,self.__tmpvargen)()
+    def arg_classarg(self,a,tp,atn,ctn,n,argbrief,argdesc):
+        self['callarg'].append(f'self.ptr()')
+        self['selfarg'] = f'self *{objecttypemap[atn]}'
+        #self['funarg'].append(f'{n} {objecttypemap[atn]}')
+    def arg_ptr(self,a,basetp,atn,ctn,n,minlength,indexof,isdefaultoarg,argbrief,argdesc):
+        if atn == 'enum':
+            argtp = 'int32' 
+        else:
+            argtp = atype2nimdecl(atn)
+            if argtp == 'void':
+                raise ag.DontGenerate(self.__func['name'],"Void pointer arguments not supported")
+        
+        tmp = self.__tmpvargen.next()
+        
+        assert minlength
+        self['prelude'].extend([f'var {tmp} *{argtp}'])
+        self['prelude'].extend(minlength.code)
+
+        if 'i' in a['mode']:
+            self['prelude'].extend([f'if len({n}) < {minlength.value} {{',
+                                    f'''  err = &ArrayLengthError{fun:"{self.funapiname}",arg:"{n}"}''',
+                                    '  return',
+                                    '}',
+                                    f'if {n} != nil {{ {tmp} = (*MSKint32t)(&{n}[0]) }}'])
+            self['funarg'].append(f'{n} []{argtp}')
+
+            if indexof:
+                tmpvar = self.tmpvargen()
+                ixcheck = ' || '.join([f'{tmpvar} >= len({ix})' for ix in indexof])
+                self['prelude'].extend([f'for _,{tmpvar} := range {n} {{',
+                                        f'  if {tmpvar} < 0 || {ixcheck} {{',
+                                        f'    err = &ArrayLengthError("{self.funapiname}","{n}")',
+                                        '    return',
+                                        '  }',
+                                        '}'])
+        else:
+            self['prelude'].extend([f'{n} := make([]{argtp},{minlength.value})',
+                                    f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&n[0]) }}'])
+            self['retarg'].append(f'{n} []{argtp}')
+        self['callarg'].append(tmp)
+            
+#    def arg_surpof(self,a,basetp,atn,ctn,n,surpof,argbrief,argdesc):
+#        minlen = f'{surpof[0]["name"]}.len'
+#        for sof in surpof[1:]:
+#            minlen = f'min({minlen},{sof["name"]}.len)'
+#        argtp = atype2nimdecl(atn)
+#        self['prelude'].append(f'var {n} = cast[{argtp}]({minlen})')
+#        self['callarg'].append(f'unsafeAddr({n})')
+#        self['nativearg'].append(f'{n} : ptr {argtp}')
+    def arg_ref(self,a,basetp,atn,ctn,n,indexof,isdefaultoarg,argbrief,argdesc):
+        if atn == 'enum':
+            if self.jtis['constclasses'][ctn]['is-enumerable']:
+                argtp = ctn
+            else:
+                argtp = 'int32'
+        else:
+            argtp = atype2nimdecl(atn)
+
+        assert a['mode'] != 'io'
+        self['retarg'].append(f'{n} {argtp}')
+
+        if self['callarg'].append('')
+        self['callarg'].append(f'addr({n})')
+
+        if not isdefaultoarg:
+            self['funarg'].append(f'{n} : var {argtp}')
+        else:
+            self['prelude'].append(f'var {n} : {argtp}')
+            self['rettype'].append(argtp)
+            self['retval'].append(n)
+        self['nativearg'].append(f'{n} : ptr {argtp}')
+    def arg_ref_func(self,a,tp,rettype,argtypes,n,isdefaultoarg,argbrief,argdesc):
+        raise DontGenerate("arg_ref_func() not implemented")
+    def arg_refobj(self,a,basetp,atn,ctn,n,isdefaultoarg,argbrief,argdesc):
+        raise ag.DontGenerate(self.funname,"Not supported: Ref to object")
+    def arg_refptr(self,a,basetp,atn,ctn,n,lenarg,minlength,isdefaultoarg,argbrief,argdesc):
+        raise ag.DontGenerate(self.funname,"Not supported: Ref to pointer")
+    def arg_instring(self,a,tp,atn,ctn,n,argbrief,argdesc):
+        self['callarg'].append(n)
+        self['funarg'].append(f'{n} : string')
+        self['nativearg'].append(f'{n} : cstring')
+    def arg_outstring(self,a,tp,atn,ctn,n,minlength,isdefaultoarg,argbrief,argdesc):
+        tmpvar1 = self.tmpvargen()
+        self['prelude'].extend(minlength.code)
+        self['prelude'].append(f'var {tmpvar1} : seq[char] = newSeq[char]({minlength.value})')
+        self['callarg'].append(f'unsafeAddr({tmpvar1}[0])')
+
+        if not isdefaultoarg:
+            self['funarg'].append(f'{n} : var string')
+            self['postlude'].extend([f'{n} = newString({minlength.value}-1)',
+                                     f'copyMem({n}[0].addr,{tmpvar1}[0].unsafeAddr,{minlength.value}-1)'])
+        else:
+            self['postlude'].extend([f'var {n} = newString({minlength.value}-1)',
+                                     f'copyMem({n}[0].addr,{tmpvar1}[0].unsafeAddr,{minlength.value}-1)'])
+            self['rettype'].append('string')
+            self['retval'].append(n)
+
+        self['nativearg'].append(f'{n} : ptr char')
+        # tmpvar1 = self.tmpvargen()
+        # tmpvar2 = self.tmpvargen()
+        # assert minlength
+        # self['prelude'].extend(minlength.code)
+        # self['prelude'].append(f'var {tmpvar1} : string = newstring({minlength.value}+1)')
+        # self['prelude'].append(f'var {tmpvar2} : cstring = {tmpvar1}')
+        # self['callarg'].append(tmpvar2)
+
+        # if not isdefaultoarg:
+        #     self['funarg'].append(f'{n} : var string')
+        #     self['postlude'].append(f'{n} = $({tmpvar2})')
+        # else:
+        #     self['rettype'].append('string')
+        #     self['retval'].append(f'$({tmpvar2})')
+        # self['nativearg'].append(f'{n} : cstring')
+    def arg_computed_value(self,a,tp,atn,ctn,n,lengthof,code,argbrief,argdesc):
+        argtp = atype2nimdecl(atn)
+        if lengthof:
+            minlen = f'{lengthof[0]["name"]}.len'
+            for lof in lengthof[1:]:
+                minlen = f'min({minlen},{lof["name"]}.len)'
+
+            if argtp == ag.agtype('int64'):
+                self['prelude'].append(f'var {n} : {argtp} = {minlen}')
+            else:
+                self['prelude'].append(f'var {n} : {argtp} = cast[int32]({minlen})')
+            self['callarg'].append(n)
+        elif code:
+            argtp = atype2nimdecl(atn)
+            self['prelude'].extend(code.code)
+            self['prelude'].append(f'var {n} : {argtp} = {code.value}')
+
+            self['callarg'].append(n)
+        else:
+            assert False
+        self['nativearg'].append(f'{n} : {argtp}')
+    def arg_obj(self,a,tp,atn,ctn,n,argbrief,argdesc):
+        raise ag.DontGenerate(self.funname,"Not supported: Non-class-arg object arguments")
+        assert False
+    def arg_value(self,a,tp,atn,ctn,n,argbrief,argdesc):
+        if atn == 'enum':
+            if self.jtis["constclasses"][ctn]['is-enumerable']:
+                argtp = ctn
+            else:
+                argtp = 'int32'
+        else:
+            argtp = atype2nimdecl(atn)
+
+        self['funarg'].append(f'{n} : {argtp}')
+        self['callarg'].append(n)
+        self['nativearg'].append(f'{n} : {argtp}')
+    def genfunc(self,d,func,funname,apiname,brief,desc):
+        callargs = ','.join(self['callarg'])
+        funargs  = ','.join(self['funarg'])
+        nfunargs = ','.join(self['nativearg'])
+
+        assert len(self['retval']) in [0,1]
+        if self['retval']: retstr = ' : '+self['rettype'][0]
+        else: retstr = ''
+
+        d['nativehdrs'].append(f'proc MSK_{funname}({nfunargs}) : rescode {{. cdecl, importc .}}')
+        d['funimpl'].append(f'proc {self.funapiname}*({funargs}){retstr} =')
+        d['funimpl'].extend(['  '+l for l in self['prelude']])
+        if func['args'] and func['args'][0]['name'] == 'task' and func['args'][0]['classarg']:
+            d['funimpl'].append(f'  handle_res(task,MSK_{self.funname}({callargs}))')
+        else:
+            d['funimpl'].append(f'  handle_res(MSK_{self.funname}({callargs}))')
+        d['funimpl'].extend(['  '+l for l in self['postlude']])
+        if self['retval']:
+            d['funimpl'].append(f'  return {self["retval"][0]}')
+
 class APIGen(ag.BaseAPIGenerator):
     def __init__(self,
                  tis,
@@ -93,15 +362,6 @@ if __name__ == '__main__':
 
     mosek_version = jtis['mosek-version']
     assert REQUIRE_JAIS <= tuple(jtis['jsonais-version'])
-
-
-
-    
-
-
-
-
-
 
     with open(a.target,'wt') as f:
 

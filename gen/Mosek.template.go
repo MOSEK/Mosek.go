@@ -12,9 +12,28 @@ package mosek
 import (
     "C"
     "unsafe"
+    "fmt"
 )
 
 //{consts}
+
+
+type MosekError struct {
+    code int32
+    msg string
+}
+func (self*MosekError) Error() string {
+    return fmt.Sprintf("%d: %s",self.code,self.msg)
+}
+
+
+type ArrayLengthError struct {
+    fun string
+    arg string
+}
+func (self*ArrayLengthError) Error() string {
+    return fmt.Sprintf("%s: Argument %s is too short",self.fun,self.arg)   
+}
 
 
 type Env struct {
