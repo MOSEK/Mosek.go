@@ -163,7 +163,7 @@ class FuncGen(ag.BaseFuncGenerator):
             if argtp == 'void':
                 raise ag.DontGenerate(self.__func['name'],"Void pointer arguments not supported")
         
-        tmp = self.__tmpvargen.next()
+        tmp = self.tmpvargen()
         
         assert minlength
         self['prelude'].extend([f'var {tmp} *{argtp}'])
@@ -189,7 +189,7 @@ class FuncGen(ag.BaseFuncGenerator):
         else:
             self['prelude'].extend([f'{n} := make([]{argtp},{minlength.value})',
                                     f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&n[0]) }}'])
-            self['retarg'].append(f'{n} []{argtp}')
+            self['retarg'].append((n,f'[]{argtp}'))
         self['callarg'].append(tmp)
             
 #    def arg_surpof(self,a,basetp,atn,ctn,n,surpof,argbrief,argdesc):
@@ -202,26 +202,14 @@ class FuncGen(ag.BaseFuncGenerator):
 #        self['nativearg'].append(f'{n} : ptr {argtp}')
     def arg_ref(self,a,basetp,atn,ctn,n,indexof,isdefaultoarg,argbrief,argdesc):
         if atn == 'enum':
-            if self.jtis['constclasses'][ctn]['is-enumerable']:
-                argtp = ctn
-            else:
-                argtp = 'int32'
+            argtp = 'int32'
         else:
             argtp = atype2nimdecl(atn)
 
         assert a['mode'] != 'io'
-        self['retarg'].append(f'{n} {argtp}')
-
-        if self['callarg'].append('')
-        self['callarg'].append(f'addr({n})')
-
-        if not isdefaultoarg:
-            self['funarg'].append(f'{n} : var {argtp}')
-        else:
-            self['prelude'].append(f'var {n} : {argtp}')
-            self['rettype'].append(argtp)
-            self['retval'].append(n)
-        self['nativearg'].append(f'{n} : ptr {argtp}')
+        self['retarg'].append((n,argtp))
+_
+        self['callarg'].append(f'&{n}')
     def arg_ref_func(self,a,tp,rettype,argtypes,n,isdefaultoarg,argbrief,argdesc):
         raise DontGenerate("arg_ref_func() not implemented")
     def arg_refobj(self,a,basetp,atn,ctn,n,isdefaultoarg,argbrief,argdesc):
@@ -229,45 +217,26 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_refptr(self,a,basetp,atn,ctn,n,lenarg,minlength,isdefaultoarg,argbrief,argdesc):
         raise ag.DontGenerate(self.funname,"Not supported: Ref to pointer")
     def arg_instring(self,a,tp,atn,ctn,n,argbrief,argdesc):
-        self['callarg'].append(n)
-        self['funarg'].append(f'{n} : string')
-        self['nativearg'].append(f'{n} : cstring')
+        self['funarg'].append(f'{n} string')
+        tmp = self.tmpvargen()
+        self['prelude'].append(f'{tmp} := C.CString({n})')
+        self['callarg'].append(tmp)
     def arg_outstring(self,a,tp,atn,ctn,n,minlength,isdefaultoarg,argbrief,argdesc):
         tmpvar1 = self.tmpvargen()
         self['prelude'].extend(minlength.code)
-        self['prelude'].append(f'var {tmpvar1} : seq[char] = newSeq[char]({minlength.value})')
-        self['callarg'].append(f'unsafeAddr({tmpvar1}[0])')
-
-        if not isdefaultoarg:
-            self['funarg'].append(f'{n} : var string')
-            self['postlude'].extend([f'{n} = newString({minlength.value}-1)',
-                                     f'copyMem({n}[0].addr,{tmpvar1}[0].unsafeAddr,{minlength.value}-1)'])
-        else:
-            self['postlude'].extend([f'var {n} = newString({minlength.value}-1)',
-                                     f'copyMem({n}[0].addr,{tmpvar1}[0].unsafeAddr,{minlength.value}-1)'])
-            self['rettype'].append('string')
-            self['retval'].append(n)
-
-        self['nativearg'].append(f'{n} : ptr char')
-        # tmpvar1 = self.tmpvargen()
-        # tmpvar2 = self.tmpvargen()
-        # assert minlength
-        # self['prelude'].extend(minlength.code)
-        # self['prelude'].append(f'var {tmpvar1} : string = newstring({minlength.value}+1)')
-        # self['prelude'].append(f'var {tmpvar2} : cstring = {tmpvar1}')
-        # self['callarg'].append(tmpvar2)
-
-        # if not isdefaultoarg:
-        #     self['funarg'].append(f'{n} : var string')
-        #     self['postlude'].append(f'{n} = $({tmpvar2})')
-        # else:
-        #     self['rettype'].append('string')
-        #     self['retval'].append(f'$({tmpvar2})')
-        # self['nativearg'].append(f'{n} : cstring')
+        self['prelude'].append(f'{tmpvar1} := make([[]byte,{minlength.value})')
+        self['callarg'].append(f'C.CString(&tmpvar1[0])')
+        self['postlude'].extend([f'var {n} string',
+                                 f"if p := strings.IndexByte({tmpvar1},'\\0'); p < 0 {{",
+                                 f'  {n} = string({tmpvar1})',
+                                 '} else {',
+                                 f'  {n} = string({tmpvar1}[:p])',
+                                 '}'])
+        self['retarg'].append((n,'string'))
     def arg_computed_value(self,a,tp,atn,ctn,n,lengthof,code,argbrief,argdesc):
         argtp = atype2nimdecl(atn)
         if lengthof:
-            minlen = f'{lengthof[0]["name"]}.len'
+            minlen = f'len({lengthof[0]["name"]})'
             for lof in lengthof[1:]:
                 minlen = f'min({minlen},{lof["name"]}.len)'
 
