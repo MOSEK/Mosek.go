@@ -133,7 +133,7 @@ class ComputeGen(ag.BaseComputeGenerator):
                 callargs.append(a.value)
         callargs = ','.join(callargs)
         tmpres = self.tmpvargen()
-        code.extend([f'if {tmpres} := MSK_{func["name"]}({callargs}); {tmpres} != 0 {{',
+        code.extend([f'if {tmpres} := C.MSK_{func["name"]}({callargs}); {tmpres} != 0 {{',
                      f'  lastcode,lastmsg = self.getlasterror({tmpres})',
                      '   err = MosekError{ code:lastcode,msg:lastmsg}',
                      '  return',
@@ -155,6 +155,7 @@ class FuncGen(ag.BaseFuncGenerator):
         self.__selfarg = None
         self.funname = func['name']
         self.funapiname = re.sub('-.',lambda o: o.group(0)[1].upper(),func.get('api-caml-name').capitalize())
+
     def warn(self,msg,*args): logging.warning(msg,*args)
     def error(self,msg,*args): logging.error(msg,*args)
     def info(self,msg,*args): logging.info(msg,*args)
@@ -180,7 +181,6 @@ class FuncGen(ag.BaseFuncGenerator):
         tmp = self.tmpvargen()
 
         self['prelude'].extend([f'var {tmp} *{argtp}'])
-
 
         if minlength:
             self['prelude'].extend(minlength.code)
@@ -282,6 +282,9 @@ class FuncGen(ag.BaseFuncGenerator):
         self['funarg'].append(f'{n} {argtp}')
         self['callarg'].append(n)
     def genfunc(self,d,func,funname,apiname,brief,desc):
+        if func['status'] == 'internal':
+            raise ag.DontGenerate(self.__func['name'],"Invalid type") 
+
         callargs = ','.join(self['callarg'])
         funargs  = ','.join(self['funarg'])
         nfunargs = ','.join(self['nativearg'])
@@ -303,7 +306,7 @@ class FuncGen(ag.BaseFuncGenerator):
 
         tmp = self.tmpvargen()
         argstr = ','.join(self["callarg"])
-        d['funimpl'].append( f'  if {tmp} := MSK_{self.funname}({argstr}); {tmp} != 0 {{')
+        d['funimpl'].append( f'  if {tmp} := C.MSK_{self.funname}({argstr}); {tmp} != 0 {{')
         if self.__clsarg is not None:
             d['funimpl'].extend([f'    lastcode,lastmsg := self.getlasterror({tmp})',
                                  '    err = &MosekError{code:lastcode,msg:lastmsg}',
@@ -322,7 +325,7 @@ class APIGen(ag.BaseAPIGenerator):
                  tis,
                  tmpvargen):
         self.__tmpvargen = tmpvargen
-        super().__init__(tis, tmpvargen = tmpvargen, targetfilter='dotnet')
+        super().__init__(tis, tmpvargen = tmpvargen, targetfilter='go')
 
     def warn(self,msg,*args): logging.warning(msg,*args)
     def error(self,msg,*args): logging.error(msg,*args)
@@ -339,6 +342,8 @@ class APIGen(ag.BaseAPIGenerator):
             d['const'].append('const (')
             for k,v in L:
                 d['const'].append(f'    MSK_{pfx}{k.upper()} {cname} = {v}')
+            if pfx:
+                d['const'].append(f'    MSK_{pfx}END {cname} = {v}')
             d['const'].append(')')
 
     def genfunc(self,dfunc,func,cls):

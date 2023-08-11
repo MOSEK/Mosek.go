@@ -10,14 +10,14 @@ package mosek
 // extern void streamfunc_wrn(void *, char *);
 // extern void streamfunc_msg(void *, char *);
 // extern void streamfunc_err(void *, char *);
-// extern int callbackfunc(void *, void *, int, double *, int *, long long *);
+// extern int callbackfunc(void *, void *, int, MSKrealt *, MSKint32t*, MSKint64t *);
+import "C"
+
 import (
-    "C"
     "unsafe"
     "fmt"
     "golang.org/x/exp/constraints"
 )
-
 // Constants
 type Basindtype int32
 const (
@@ -26,6 +26,7 @@ const (
     MSK_BI_NO_ERROR Basindtype = 2
     MSK_BI_IF_FEASIBLE Basindtype = 3
     MSK_BI_RESERVERED Basindtype = 4
+    MSK_BI_END Basindtype = 4
 )
 type Boundkey int32
 const (
@@ -34,11 +35,13 @@ const (
     MSK_BK_FX Boundkey = 2
     MSK_BK_FR Boundkey = 3
     MSK_BK_RA Boundkey = 4
+    MSK_BK_END Boundkey = 4
 )
 type Mark int32
 const (
     MSK_MARK_LO Mark = 0
     MSK_MARK_UP Mark = 1
+    MSK_MARK_END Mark = 1
 )
 type Simdegen int32
 const (
@@ -47,16 +50,19 @@ const (
     MSK_SIM_DEGEN_AGGRESSIVE Simdegen = 2
     MSK_SIM_DEGEN_MODERATE Simdegen = 3
     MSK_SIM_DEGEN_MINIMUM Simdegen = 4
+    MSK_SIM_DEGEN_END Simdegen = 4
 )
 type Transpose int32
 const (
     MSK_TRANSPOSE_NO Transpose = 0
     MSK_TRANSPOSE_YES Transpose = 1
+    MSK_TRANSPOSE_END Transpose = 1
 )
 type Uplo int32
 const (
     MSK_UPLO_LO Uplo = 0
     MSK_UPLO_UP Uplo = 1
+    MSK_UPLO_END Uplo = 1
 )
 type Simreform int32
 const (
@@ -64,18 +70,21 @@ const (
     MSK_SIM_REFORMULATION_ON Simreform = 1
     MSK_SIM_REFORMULATION_FREE Simreform = 2
     MSK_SIM_REFORMULATION_AGGRESSIVE Simreform = 3
+    MSK_SIM_REFORMULATION_END Simreform = 3
 )
 type Simdupvec int32
 const (
     MSK_SIM_EXPLOIT_DUPVEC_OFF Simdupvec = 0
     MSK_SIM_EXPLOIT_DUPVEC_ON Simdupvec = 1
     MSK_SIM_EXPLOIT_DUPVEC_FREE Simdupvec = 2
+    MSK_SIM_EXPLOIT_DUPVEC_END Simdupvec = 2
 )
 type Simhotstart int32
 const (
     MSK_SIM_HOTSTART_NONE Simhotstart = 0
     MSK_SIM_HOTSTART_FREE Simhotstart = 1
     MSK_SIM_HOTSTART_STATUS_KEYS Simhotstart = 2
+    MSK_SIM_HOTSTART_END Simhotstart = 2
 )
 type Intpnthotstart int32
 const (
@@ -83,6 +92,7 @@ const (
     MSK_INTPNT_HOTSTART_PRIMAL Intpnthotstart = 1
     MSK_INTPNT_HOTSTART_DUAL Intpnthotstart = 2
     MSK_INTPNT_HOTSTART_PRIMAL_DUAL Intpnthotstart = 3
+    MSK_INTPNT_HOTSTART_END Intpnthotstart = 3
 )
 type Purify int32
 const (
@@ -91,6 +101,7 @@ const (
     MSK_PURIFY_DUAL Purify = 2
     MSK_PURIFY_PRIMAL_DUAL Purify = 3
     MSK_PURIFY_AUTO Purify = 4
+    MSK_PURIFY_END Purify = 4
 )
 type Callbackcode int32
 const (
@@ -188,6 +199,7 @@ const (
     MSK_CALLBACK_UPDATE_PRIMAL_SIMPLEX_BI Callbackcode = 91
     MSK_CALLBACK_UPDATE_SIMPLEX Callbackcode = 92
     MSK_CALLBACK_WRITE_OPF Callbackcode = 93
+    MSK_CALLBACK_END Callbackcode = 93
 )
 type Compresstype int32
 const (
@@ -195,6 +207,7 @@ const (
     MSK_COMPRESS_FREE Compresstype = 1
     MSK_COMPRESS_GZIP Compresstype = 2
     MSK_COMPRESS_ZSTD Compresstype = 3
+    MSK_COMPRESS_END Compresstype = 3
 )
 type Conetype int32
 const (
@@ -205,6 +218,7 @@ const (
     MSK_CT_PPOW Conetype = 4
     MSK_CT_DPOW Conetype = 5
     MSK_CT_ZERO Conetype = 6
+    MSK_CT_END Conetype = 6
 )
 type Domaintype int32
 const (
@@ -221,16 +235,19 @@ const (
     MSK_DOMAIN_PRIMAL_GEO_MEAN_CONE Domaintype = 10
     MSK_DOMAIN_DUAL_GEO_MEAN_CONE Domaintype = 11
     MSK_DOMAIN_SVEC_PSD_CONE Domaintype = 12
+    MSK_DOMAIN_END Domaintype = 12
 )
 type Nametype int32
 const (
     MSK_NAME_TYPE_GEN Nametype = 0
     MSK_NAME_TYPE_MPS Nametype = 1
     MSK_NAME_TYPE_LP Nametype = 2
+    MSK_NAME_TYPE_END Nametype = 2
 )
 type Symmattype int32
 const (
     MSK_SYMMAT_TYPE_SPARSE Symmattype = 0
+    MSK_SYMMAT_TYPE_END Symmattype = 0
 )
 type Dataformat int32
 const (
@@ -243,6 +260,7 @@ const (
     MSK_DATA_FORMAT_PTF Dataformat = 6
     MSK_DATA_FORMAT_CB Dataformat = 7
     MSK_DATA_FORMAT_JSON_TASK Dataformat = 8
+    MSK_DATA_FORMAT_END Dataformat = 8
 )
 type Solformat int32
 const (
@@ -250,6 +268,7 @@ const (
     MSK_SOL_FORMAT_B Solformat = 1
     MSK_SOL_FORMAT_TASK Solformat = 2
     MSK_SOL_FORMAT_JSON_TASK Solformat = 3
+    MSK_SOL_FORMAT_END Solformat = 3
 )
 type Dinfitem int32
 const (
@@ -364,11 +383,13 @@ const (
     MSK_DINF_SOL_ITR_PVIOLVAR Dinfitem = 108
     MSK_DINF_TO_CONIC_TIME Dinfitem = 109
     MSK_DINF_WRITE_DATA_TIME Dinfitem = 110
+    MSK_DINF_END Dinfitem = 110
 )
 type Feature int32
 const (
     MSK_FEATURE_PTS Feature = 0
     MSK_FEATURE_PTON Feature = 1
+    MSK_FEATURE_END Feature = 1
 )
 type Dparam int32
 const (
@@ -434,6 +455,7 @@ const (
     MSK_DPAR_SIMPLEX_ABS_TOL_PIV Dparam = 59
     MSK_DPAR_UPPER_OBJ_CUT Dparam = 60
     MSK_DPAR_UPPER_OBJ_CUT_FINITE_TRH Dparam = 61
+    MSK_DPAR_END Dparam = 61
 )
 type Liinfitem int32
 const (
@@ -458,6 +480,7 @@ const (
     MSK_LIINF_RD_NUMDJC Liinfitem = 18
     MSK_LIINF_RD_NUMQNZ Liinfitem = 19
     MSK_LIINF_SIMPLEX_ITER Liinfitem = 20
+    MSK_LIINF_END Liinfitem = 20
 )
 type Iinfitem int32
 const (
@@ -578,18 +601,21 @@ const (
     MSK_IINF_SOL_ITR_PROSTA Iinfitem = 114
     MSK_IINF_SOL_ITR_SOLSTA Iinfitem = 115
     MSK_IINF_STO_NUM_A_REALLOC Iinfitem = 116
+    MSK_IINF_END Iinfitem = 116
 )
 type Inftype int32
 const (
     MSK_INF_DOU_TYPE Inftype = 0
     MSK_INF_INT_TYPE Inftype = 1
     MSK_INF_LINT_TYPE Inftype = 2
+    MSK_INF_END Inftype = 2
 )
 type Iomode int32
 const (
     MSK_IOMODE_READ Iomode = 0
     MSK_IOMODE_WRITE Iomode = 1
     MSK_IOMODE_READWRITE Iomode = 2
+    MSK_IOMODE_END Iomode = 2
 )
 type Iparam int32
 const (
@@ -783,6 +809,7 @@ const (
     MSK_IPAR_WRITE_SOL_VARIABLES Iparam = 187
     MSK_IPAR_WRITE_TASK_INC_SOL Iparam = 188
     MSK_IPAR_WRITE_XML_MODE Iparam = 189
+    MSK_IPAR_END Iparam = 189
 )
 type Branchdir int32
 const (
@@ -794,6 +821,7 @@ const (
     MSK_BRANCH_DIR_ROOT_LP Branchdir = 5
     MSK_BRANCH_DIR_GUIDED Branchdir = 6
     MSK_BRANCH_DIR_PSEUDOCOST Branchdir = 7
+    MSK_BRANCH_DIR_END Branchdir = 7
 )
 type Miqcqoreformmethod int32
 const (
@@ -803,12 +831,14 @@ const (
     MSK_MIO_QCQO_REFORMULATION_METHOD_EIGEN_VAL_METHOD Miqcqoreformmethod = 3
     MSK_MIO_QCQO_REFORMULATION_METHOD_DIAG_SDP Miqcqoreformmethod = 4
     MSK_MIO_QCQO_REFORMULATION_METHOD_RELAX_SDP Miqcqoreformmethod = 5
+    MSK_MIO_QCQO_REFORMULATION_METHOD_END Miqcqoreformmethod = 5
 )
 type Miodatapermmethod int32
 const (
     MSK_MIO_DATA_PERMUTATION_METHOD_NONE Miodatapermmethod = 0
     MSK_MIO_DATA_PERMUTATION_METHOD_CYCLIC_SHIFT Miodatapermmethod = 1
     MSK_MIO_DATA_PERMUTATION_METHOD_RANDOM Miodatapermmethod = 2
+    MSK_MIO_DATA_PERMUTATION_METHOD_END Miodatapermmethod = 2
 )
 type Miocontsoltype int32
 const (
@@ -816,11 +846,13 @@ const (
     MSK_MIO_CONT_SOL_ROOT Miocontsoltype = 1
     MSK_MIO_CONT_SOL_ITG Miocontsoltype = 2
     MSK_MIO_CONT_SOL_ITG_REL Miocontsoltype = 3
+    MSK_MIO_CONT_SOL_END Miocontsoltype = 3
 )
 type Miomode int32
 const (
     MSK_MIO_MODE_IGNORED Miomode = 0
     MSK_MIO_MODE_SATISFIED Miomode = 1
+    MSK_MIO_MODE_END Miomode = 1
 )
 type Mionodeseltype int32
 const (
@@ -828,12 +860,14 @@ const (
     MSK_MIO_NODE_SELECTION_FIRST Mionodeseltype = 1
     MSK_MIO_NODE_SELECTION_BEST Mionodeseltype = 2
     MSK_MIO_NODE_SELECTION_PSEUDO Mionodeseltype = 3
+    MSK_MIO_NODE_SELECTION_END Mionodeseltype = 3
 )
 type Miovarseltype int32
 const (
     MSK_MIO_VAR_SELECTION_FREE Miovarseltype = 0
     MSK_MIO_VAR_SELECTION_PSEUDOCOST Miovarseltype = 1
     MSK_MIO_VAR_SELECTION_STRONG Miovarseltype = 2
+    MSK_MIO_VAR_SELECTION_END Miovarseltype = 2
 )
 type Mpsformat int32
 const (
@@ -841,11 +875,13 @@ const (
     MSK_MPS_FORMAT_RELAXED Mpsformat = 1
     MSK_MPS_FORMAT_FREE Mpsformat = 2
     MSK_MPS_FORMAT_CPLEX Mpsformat = 3
+    MSK_MPS_FORMAT_END Mpsformat = 3
 )
 type Objsense int32
 const (
     MSK_OBJECTIVE_SENSE_MINIMIZE Objsense = 0
     MSK_OBJECTIVE_SENSE_MAXIMIZE Objsense = 1
+    MSK_OBJECTIVE_SENSE_END Objsense = 1
 )
 type Onoffkey int32
 const (
@@ -861,6 +897,7 @@ const (
     MSK_OPTIMIZER_INTPNT Optimizertype = 4
     MSK_OPTIMIZER_MIXED_INT Optimizertype = 5
     MSK_OPTIMIZER_PRIMAL_SIMPLEX Optimizertype = 6
+    MSK_OPTIMIZER_END Optimizertype = 6
 )
 type Orderingtype int32
 const (
@@ -870,12 +907,14 @@ const (
     MSK_ORDER_METHOD_TRY_GRAPHPAR Orderingtype = 3
     MSK_ORDER_METHOD_FORCE_GRAPHPAR Orderingtype = 4
     MSK_ORDER_METHOD_NONE Orderingtype = 5
+    MSK_ORDER_METHOD_END Orderingtype = 5
 )
 type Presolvemode int32
 const (
     MSK_PRESOLVE_MODE_OFF Presolvemode = 0
     MSK_PRESOLVE_MODE_ON Presolvemode = 1
     MSK_PRESOLVE_MODE_FREE Presolvemode = 2
+    MSK_PRESOLVE_MODE_END Presolvemode = 2
 )
 type Parametertype int32
 const (
@@ -883,12 +922,14 @@ const (
     MSK_PAR_DOU_TYPE Parametertype = 1
     MSK_PAR_INT_TYPE Parametertype = 2
     MSK_PAR_STR_TYPE Parametertype = 3
+    MSK_PAR_END Parametertype = 3
 )
 type Problemitem int32
 const (
     MSK_PI_VAR Problemitem = 0
     MSK_PI_CON Problemitem = 1
     MSK_PI_CONE Problemitem = 2
+    MSK_PI_END Problemitem = 2
 )
 type Problemtype int32
 const (
@@ -897,6 +938,7 @@ const (
     MSK_PROBTYPE_QCQO Problemtype = 2
     MSK_PROBTYPE_CONIC Problemtype = 3
     MSK_PROBTYPE_MIXED Problemtype = 4
+    MSK_PROBTYPE_END Problemtype = 4
 )
 type Prosta int32
 const (
@@ -909,11 +951,13 @@ const (
     MSK_PRO_STA_PRIM_AND_DUAL_INFEAS Prosta = 6
     MSK_PRO_STA_ILL_POSED Prosta = 7
     MSK_PRO_STA_PRIM_INFEAS_OR_UNBOUNDED Prosta = 8
+    MSK_PRO_STA_END Prosta = 8
 )
 type Xmlwriteroutputtype int32
 const (
     MSK_WRITE_XML_MODE_ROW Xmlwriteroutputtype = 0
     MSK_WRITE_XML_MODE_COL Xmlwriteroutputtype = 1
+    MSK_WRITE_XML_MODE_END Xmlwriteroutputtype = 1
 )
 type Rescode int32
 const (
@@ -1462,6 +1506,7 @@ const (
     MSK_RES_TRM_LOST_RACE Rescode = 100027
     MSK_RES_TRM_INTERNAL Rescode = 100030
     MSK_RES_TRM_INTERNAL_STOP Rescode = 100031
+    MSK_RES_END Rescode = 100031
 )
 type Rescodetype int32
 const (
@@ -1470,20 +1515,24 @@ const (
     MSK_RESPONSE_TRM Rescodetype = 2
     MSK_RESPONSE_ERR Rescodetype = 3
     MSK_RESPONSE_UNK Rescodetype = 4
+    MSK_RESPONSE_END Rescodetype = 4
 )
 type Scalingtype int32
 const (
     MSK_SCALING_FREE Scalingtype = 0
     MSK_SCALING_NONE Scalingtype = 1
+    MSK_SCALING_END Scalingtype = 1
 )
 type Scalingmethod int32
 const (
     MSK_SCALING_METHOD_POW2 Scalingmethod = 0
     MSK_SCALING_METHOD_FREE Scalingmethod = 1
+    MSK_SCALING_METHOD_END Scalingmethod = 1
 )
 type Sensitivitytype int32
 const (
     MSK_SENSITIVITY_TYPE_BASIS Sensitivitytype = 0
+    MSK_SENSITIVITY_TYPE_END Sensitivitytype = 0
 )
 type Simseltype int32
 const (
@@ -1493,6 +1542,7 @@ const (
     MSK_SIM_SELECTION_DEVEX Simseltype = 3
     MSK_SIM_SELECTION_SE Simseltype = 4
     MSK_SIM_SELECTION_PARTIAL Simseltype = 5
+    MSK_SIM_SELECTION_END Simseltype = 5
 )
 type Solitem int32
 const (
@@ -1504,6 +1554,7 @@ const (
     MSK_SOL_ITEM_SLX Solitem = 5
     MSK_SOL_ITEM_SUX Solitem = 6
     MSK_SOL_ITEM_SNX Solitem = 7
+    MSK_SOL_ITEM_END Solitem = 7
 )
 type Solsta int32
 const (
@@ -1517,18 +1568,21 @@ const (
     MSK_SOL_STA_PRIM_ILLPOSED_CER Solsta = 7
     MSK_SOL_STA_DUAL_ILLPOSED_CER Solsta = 8
     MSK_SOL_STA_INTEGER_OPTIMAL Solsta = 9
+    MSK_SOL_STA_END Solsta = 9
 )
 type Soltype int32
 const (
     MSK_SOL_ITR Soltype = 0
     MSK_SOL_BAS Soltype = 1
     MSK_SOL_ITG Soltype = 2
+    MSK_SOL_END Soltype = 2
 )
 type Solveform int32
 const (
     MSK_SOLVE_FREE Solveform = 0
     MSK_SOLVE_PRIMAL Solveform = 1
     MSK_SOLVE_DUAL Solveform = 2
+    MSK_SOLVE_END Solveform = 2
 )
 type Sparam int32
 const (
@@ -1557,6 +1611,7 @@ const (
     MSK_SPAR_STAT_KEY Sparam = 22
     MSK_SPAR_STAT_NAME Sparam = 23
     MSK_SPAR_WRITE_LP_GEN_VAR_NAME Sparam = 24
+    MSK_SPAR_END Sparam = 24
 )
 type Stakey int32
 const (
@@ -1567,12 +1622,14 @@ const (
     MSK_SK_UPR Stakey = 4
     MSK_SK_FIX Stakey = 5
     MSK_SK_INF Stakey = 6
+    MSK_SK_END Stakey = 6
 )
 type Startpointtype int32
 const (
     MSK_STARTING_POINT_FREE Startpointtype = 0
     MSK_STARTING_POINT_GUESS Startpointtype = 1
     MSK_STARTING_POINT_CONSTANT Startpointtype = 2
+    MSK_STARTING_POINT_END Startpointtype = 2
 )
 type Streamtype int32
 const (
@@ -1580,6 +1637,7 @@ const (
     MSK_STREAM_MSG Streamtype = 1
     MSK_STREAM_ERR Streamtype = 2
     MSK_STREAM_WRN Streamtype = 3
+    MSK_STREAM_END Streamtype = 3
 )
 type Value int32
 const (
@@ -1590,6 +1648,7 @@ type Variabletype int32
 const (
     MSK_VAR_TYPE_CONT Variabletype = 0
     MSK_VAR_TYPE_INT Variabletype = 1
+    MSK_VAR_END Variabletype = 1
 )
 
 
@@ -1613,12 +1672,12 @@ func (self*ArrayLengthError) Error() string {
 
 
 type Env struct {
-        r    int32
+        r    Rescode
         cptr unsafe.Pointer
 }
 
 type Task struct {
-        r               int32
+        r               Rescode
         cptr            unsafe.Pointer
 	streamfunc      [4]func(string)
 	callbackfunc    func(int32)int
@@ -1628,20 +1687,20 @@ type Task struct {
 func (t * Task) ptr() C.MSKtask_t { return C.MSKtask_t(t.cptr) }
 func (e * Env)  ptr() C.MSKenv_t  { return C.MSKenv_t(e.cptr) }
 
-func (self * Task) getlasterror(res int32) (int32,string) {
-    return res,""
+func (self * Env) getlasterror(res C.MSKrescodee) (Rescode,string) {
+    return Rescode(res),""
 }
-func (self * Task) getlasterror(res int32) (int32,string) {
-    var lastcode int32 = res
-    var lastmsglen int64
-    if 0 != MSK_getlasterror64(self.ptr(),&lastcode,0, &lastmsglen, nil) {
-        return lastcode,""
+func (self * Task) getlasterror(res C.MSKrescodee) (Rescode,string) {
+    var lastcode C.MSKrescodee = res
+    var lastmsglen C.long
+    if 0 != C.MSK_getlasterror64(self.ptr(),&lastcode,0, &lastmsglen, nil) {
+        return Rescode(lastcode),""
     } else {
-        lastmsgbytes := make([]byte,lastmsglen+1)
-        if 0 != MSK_getlasterror64(self.ptr(),&lastcode,lastmsglen,&lastmsglen,&lastmsgbytes[0]) {
-            return lastcode,""
+        lastmsgbytes := make([]C.char,lastmsglen+1)
+        if 0 != C.MSK_getlasterror64(self.ptr(),&lastcode,lastmsglen,&lastmsglen,(*C.char)(&lastmsgbytes[0])) {
+            return Rescode(lastcode),""
         } else {
-            return lastcode,string(lastmsgbytes[:lastmsglen])
+            return Rescode(lastcode),C.GoString(&lastmsgbytes[0])
         }
     }
 }
@@ -1650,25 +1709,25 @@ func (self * Task) getlasterror(res int32) (int32,string) {
 //export streamfunc_log
 func streamfunc_log(handle unsafe.Pointer, msg * C.char) {
 	task := (*Task)(handle)
-	if task.streamfunc[STREAM_LOG] != nil { task.streamfunc[STREAM_LOG](C.GoString(msg)) }
+	if task.streamfunc[MSK_STREAM_LOG] != nil { task.streamfunc[MSK_STREAM_LOG](C.GoString(msg)) }
 }
 
 //export streamfunc_msg
 func streamfunc_msg(handle unsafe.Pointer, msg * C.char) {
 	task := (*Task)(handle)
-	if task.streamfunc[STREAM_MSG] != nil { task.streamfunc[STREAM_MSG](C.GoString(msg)) }
+	if task.streamfunc[MSK_STREAM_MSG] != nil { task.streamfunc[MSK_STREAM_MSG](C.GoString(msg)) }
 }
 
 //export streamfunc_wrn
 func streamfunc_wrn(handle unsafe.Pointer, msg * C.char) {
 	task := (*Task)(handle)
-	if task.streamfunc[STREAM_WRN] != nil { task.streamfunc[STREAM_WRN](C.GoString(msg)) }
+	if task.streamfunc[MSK_STREAM_WRN] != nil { task.streamfunc[MSK_STREAM_WRN](C.GoString(msg)) }
 }
 
 //export streamfunc_err
 func streamfunc_err(handle unsafe.Pointer, msg * C.char) {
 	task := (*Task)(handle)
-	if task.streamfunc[STREAM_ERR] != nil { task.streamfunc[STREAM_ERR](C.GoString(msg)) }
+	if task.streamfunc[MSK_STREAM_ERR] != nil { task.streamfunc[MSK_STREAM_ERR](C.GoString(msg)) }
 }
 
 //export callbackfunc
@@ -1685,9 +1744,9 @@ func callbackfunc(
 	var r int = 0
 
 	if task.infcallbackfunc != nil {
-		_dinf  := (*[int(DINF_END)]float64)(unsafe.Pointer(dinf))[0:DINF_END]
-		_iinf  := (*[int(IINF_END)]int32)  (unsafe.Pointer(iinf))[0:IINF_END]
-		_liinf := (*[int(LIINF_END)]int64) (unsafe.Pointer(liinf))[0:LIINF_END]
+		_dinf  := (*[int(MSK_DINF_END)]float64)(unsafe.Pointer(dinf))[0:MSK_DINF_END]
+		_iinf  := (*[int(MSK_IINF_END)]int32)  (unsafe.Pointer(iinf))[0:MSK_IINF_END]
+		_liinf := (*[int(MSK_LIINF_END)]int64) (unsafe.Pointer(liinf))[0:MSK_LIINF_END]
 
 		r = task.infcallbackfunc(int32(code),_dinf,_iinf,_liinf)
 	} else if task.callbackfunc != nil {
@@ -1729,11 +1788,11 @@ func (e *Env) Delete() {
 
 func (t *Task) Delete() {
         taskptr := t.ptr()
-        C.MSK_deletetask(&taskptr)
+        _ = C.MSK_deletetask(&taskptr)
         t.cptr = nil
 }
 
-func (t *Task) PutStreamFunc(whichstream int32, fun func(string)) {
+func (t *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) {
 	t.streamfunc[whichstream] = fun
 
 	if fun == nil {
@@ -1745,10 +1804,10 @@ func (t *Task) PutStreamFunc(whichstream int32, fun func(string)) {
 	} else {
 		var strmfun (*[0]byte)
 		switch whichstream {
-		case STREAM_MSG: strmfun = (*[0]byte)(C.streamfunc_msg)
-		case STREAM_LOG: strmfun = (*[0]byte)(C.streamfunc_log)
-		case STREAM_ERR: strmfun = (*[0]byte)(C.streamfunc_err)
-		case STREAM_WRN: strmfun = (*[0]byte)(C.streamfunc_wrn)
+		case MSK_STREAM_MSG: strmfun = (*[0]byte)(C.streamfunc_msg)
+		case MSK_STREAM_LOG: strmfun = (*[0]byte)(C.streamfunc_log)
+		case MSK_STREAM_ERR: strmfun = (*[0]byte)(C.streamfunc_err)
+		case MSK_STREAM_WRN: strmfun = (*[0]byte)(C.streamfunc_wrn)
 		}
 
 		C.MSK_linkfunctotaskstream(
@@ -1777,11 +1836,11 @@ func (t *Task) PutInfoCallbackFunc(fun func(int32,[]float64,[]int32,[]int64) int
 	}
 }
 
-func (e * Env)  ClearError() { e.r = RES_OK }
-func (t * Task) ClearError() { t.r = RES_OK }
+func (e * Env)  ClearError() { e.r = MSK_RES_OK }
+func (t * Task) ClearError() { t.r = MSK_RES_OK }
 
-func (e * Env)  GetRes() int32 { return e.r }
-func (t * Task) GetRes() int32 { return t.r }
+//func (e * Env)  GetRes() int32 { return e.r }
+//func (t * Task) GetRes() int32 { return t.r }
 
 func minint(a []int) (r int) {
         if len(a) == 0 { panic("Minimum of empty array") }
@@ -1792,16 +1851,16 @@ func minint(a []int) (r int) {
         return
 }
 
-func sum[T Number](data []T) T {
+func sum[T int32|int64|float64](data []T) T {
     var r T
-    for _,v := range(self) { r += v }
-    return v
+    for _,v := range data { r += v }
+    return r
 }
 
 
 // Methods
 func (self *Task) AnalyzeNames(whichstream Streamtype,nametype Nametype) (err error) {
-  if _tmt0 := MSK_analyzenames(self.ptr(),whichstream,nametype); _tmt0 != 0 {
+  if _tmt0 := C.MSK_analyzenames(self.ptr(),whichstream,nametype); _tmt0 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt0)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1809,7 +1868,7 @@ func (self *Task) AnalyzeNames(whichstream Streamtype,nametype Nametype) (err er
   return
 }
 func (self *Task) AnalyzeProblem(whichstream Streamtype) (err error) {
-  if _tmt1 := MSK_analyzeproblem(self.ptr(),whichstream); _tmt1 != 0 {
+  if _tmt1 := C.MSK_analyzeproblem(self.ptr(),whichstream); _tmt1 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt1)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1817,7 +1876,7 @@ func (self *Task) AnalyzeProblem(whichstream Streamtype) (err error) {
   return
 }
 func (self *Task) AnalyzeSolution(whichstream Streamtype,whichsol Soltype) (err error) {
-  if _tmt2 := MSK_analyzesolution(self.ptr(),whichstream,whichsol); _tmt2 != 0 {
+  if _tmt2 := C.MSK_analyzesolution(self.ptr(),whichstream,whichsol); _tmt2 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt2)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1835,7 +1894,7 @@ func (self *Task) AppendAcc(domidx int64,afeidxlist []int64,b []float64) (err er
     return
   }
   if b != nil { _tmt5 = (*C.MSKint32t)(&b[0]) }
-  if _tmt6 := MSK_appendacc(self.ptr(),domidx,numafeidx,_tmt4,_tmt5); _tmt6 != 0 {
+  if _tmt6 := C.MSK_appendacc(self.ptr(),domidx,numafeidx,_tmt4,_tmt5); _tmt6 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt6)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1857,7 +1916,7 @@ func (self *Task) AppendAccs(domidxs []int64,afeidxlist []int64,b []float64) (er
     return
   }
   if b != nil { _tmt11 = (*C.MSKint32t)(&b[0]) }
-  if _tmt12 := MSK_appendaccs(self.ptr(),numaccs,_tmt8,numafeidx,_tmt10,_tmt11); _tmt12 != 0 {
+  if _tmt12 := C.MSK_appendaccs(self.ptr(),numaccs,_tmt8,numafeidx,_tmt10,_tmt11); _tmt12 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt12)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1866,7 +1925,7 @@ func (self *Task) AppendAccs(domidxs []int64,afeidxlist []int64,b []float64) (er
 }
 func (self *Task) AppendAccSeq(domidx int64,afeidxfirst int64,b []float64) (err error) {
   var _tmt13 int64
-  if _tmt14 := MSK_getdomainn(task.nativep,domidx,addr(_tmt13)); _tmt14 != 0 {
+  if _tmt14 := C.MSK_getdomainn(task.nativep,domidx,addr(_tmt13)); _tmt14 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmt14)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -1878,7 +1937,7 @@ func (self *Task) AppendAccSeq(domidx int64,afeidxfirst int64,b []float64) (err 
     return
   }
   if b != nil { _tmt15 = (*C.MSKint32t)(&b[0]) }
-  if _tmt16 := MSK_appendaccseq(self.ptr(),domidx,numafeidx,afeidxfirst,_tmt15); _tmt16 != 0 {
+  if _tmt16 := C.MSK_appendaccseq(self.ptr(),domidx,numafeidx,afeidxfirst,_tmt15); _tmt16 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt16)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1896,7 +1955,7 @@ func (self *Task) AppendAccsSeq(domidxs []int64,numafeidx int64,afeidxfirst int6
     return
   }
   if b != nil { _tmt19 = (*C.MSKint32t)(&b[0]) }
-  if _tmt20 := MSK_appendaccsseq(self.ptr(),numaccs,_tmt18,numafeidx,afeidxfirst,_tmt19); _tmt20 != 0 {
+  if _tmt20 := C.MSK_appendaccsseq(self.ptr(),numaccs,_tmt18,numafeidx,afeidxfirst,_tmt19); _tmt20 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt20)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1904,7 +1963,7 @@ func (self *Task) AppendAccsSeq(domidxs []int64,numafeidx int64,afeidxfirst int6
   return
 }
 func (self *Task) AppendAfes(num int64) (err error) {
-  if _tmt21 := MSK_appendafes(self.ptr(),num); _tmt21 != 0 {
+  if _tmt21 := C.MSK_appendafes(self.ptr(),num); _tmt21 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt21)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1916,7 +1975,7 @@ func (self *Task) AppendBarvars(dim []int32) (err error) {
   var num int32 = int32(_tmt22)
   var _tmt23 *int32
   if dim != nil { _tmt23 = (*C.MSKint32t)(&dim[0]) }
-  if _tmt24 := MSK_appendbarvars(self.ptr(),num,_tmt23); _tmt24 != 0 {
+  if _tmt24 := C.MSK_appendbarvars(self.ptr(),num,_tmt23); _tmt24 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt24)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1928,7 +1987,7 @@ func (self *Task) AppendCone(ct Conetype,conepar float64,submem []int32) (err er
   var nummem int32 = int32(_tmt25)
   var _tmt26 *int32
   if submem != nil { _tmt26 = (*C.MSKint32t)(&submem[0]) }
-  if _tmt27 := MSK_appendcone(self.ptr(),ct,conepar,nummem,_tmt26); _tmt27 != 0 {
+  if _tmt27 := C.MSK_appendcone(self.ptr(),ct,conepar,nummem,_tmt26); _tmt27 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt27)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1936,7 +1995,7 @@ func (self *Task) AppendCone(ct Conetype,conepar float64,submem []int32) (err er
   return
 }
 func (self *Task) AppendConeSeq(ct Conetype,conepar float64,nummem int32,j int32) (err error) {
-  if _tmt28 := MSK_appendconeseq(self.ptr(),ct,conepar,nummem,j); _tmt28 != 0 {
+  if _tmt28 := C.MSK_appendconeseq(self.ptr(),ct,conepar,nummem,j); _tmt28 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt28)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1954,7 +2013,7 @@ func (self *Task) AppendConesSeq(ct []Conetype,conepar []float64,nummem []int32,
   if conepar != nil { _tmt31 = (*C.MSKint32t)(&conepar[0]) }
   var _tmt32 *int32
   if nummem != nil { _tmt32 = (*C.MSKint32t)(&nummem[0]) }
-  if _tmt33 := MSK_appendconesseq(self.ptr(),num,_tmt30,_tmt31,_tmt32,j); _tmt33 != 0 {
+  if _tmt33 := C.MSK_appendconesseq(self.ptr(),num,_tmt30,_tmt31,_tmt32,j); _tmt33 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt33)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1962,7 +2021,7 @@ func (self *Task) AppendConesSeq(ct []Conetype,conepar []float64,nummem []int32,
   return
 }
 func (self *Task) AppendCons(num int32) (err error) {
-  if _tmt34 := MSK_appendcons(self.ptr(),num); _tmt34 != 0 {
+  if _tmt34 := C.MSK_appendcons(self.ptr(),num); _tmt34 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt34)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1970,7 +2029,7 @@ func (self *Task) AppendCons(num int32) (err error) {
   return
 }
 func (self *Task) AppendDjcs(num int64) (err error) {
-  if _tmt35 := MSK_appenddjcs(self.ptr(),num); _tmt35 != 0 {
+  if _tmt35 := C.MSK_appenddjcs(self.ptr(),num); _tmt35 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt35)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1978,7 +2037,7 @@ func (self *Task) AppendDjcs(num int64) (err error) {
   return
 }
 func (self *Task) AppendDualExpConeDomain() (domidx int64,err error) {
-  if _tmt36 := MSK_appenddualexpconedomain(self.ptr(),&domidx); _tmt36 != 0 {
+  if _tmt36 := C.MSK_appenddualexpconedomain(self.ptr(),&domidx); _tmt36 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt36)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1986,7 +2045,7 @@ func (self *Task) AppendDualExpConeDomain() (domidx int64,err error) {
   return
 }
 func (self *Task) AppendDualGeoMeanConeDomain(n int64) (domidx int64,err error) {
-  if _tmt37 := MSK_appenddualgeomeanconedomain(self.ptr(),n,&domidx); _tmt37 != 0 {
+  if _tmt37 := C.MSK_appenddualgeomeanconedomain(self.ptr(),n,&domidx); _tmt37 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt37)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -1998,7 +2057,7 @@ func (self *Task) AppendDualPowerConeDomain(n int64,alpha []float64) (domidx int
   var nleft int64 = int32(_tmt38)
   var _tmt39 *float64
   if alpha != nil { _tmt39 = (*C.MSKint32t)(&alpha[0]) }
-  if _tmt40 := MSK_appenddualpowerconedomain(self.ptr(),n,nleft,_tmt39,&domidx); _tmt40 != 0 {
+  if _tmt40 := C.MSK_appenddualpowerconedomain(self.ptr(),n,nleft,_tmt39,&domidx); _tmt40 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt40)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2006,7 +2065,7 @@ func (self *Task) AppendDualPowerConeDomain(n int64,alpha []float64) (domidx int
   return
 }
 func (self *Task) AppendPrimalExpConeDomain() (domidx int64,err error) {
-  if _tmt41 := MSK_appendprimalexpconedomain(self.ptr(),&domidx); _tmt41 != 0 {
+  if _tmt41 := C.MSK_appendprimalexpconedomain(self.ptr(),&domidx); _tmt41 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt41)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2014,7 +2073,7 @@ func (self *Task) AppendPrimalExpConeDomain() (domidx int64,err error) {
   return
 }
 func (self *Task) AppendPrimalGeoMeanConeDomain(n int64) (domidx int64,err error) {
-  if _tmt42 := MSK_appendprimalgeomeanconedomain(self.ptr(),n,&domidx); _tmt42 != 0 {
+  if _tmt42 := C.MSK_appendprimalgeomeanconedomain(self.ptr(),n,&domidx); _tmt42 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt42)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2026,7 +2085,7 @@ func (self *Task) AppendPrimalPowerConeDomain(n int64,alpha []float64) (domidx i
   var nleft int64 = int32(_tmt43)
   var _tmt44 *float64
   if alpha != nil { _tmt44 = (*C.MSKint32t)(&alpha[0]) }
-  if _tmt45 := MSK_appendprimalpowerconedomain(self.ptr(),n,nleft,_tmt44,&domidx); _tmt45 != 0 {
+  if _tmt45 := C.MSK_appendprimalpowerconedomain(self.ptr(),n,nleft,_tmt44,&domidx); _tmt45 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt45)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2034,7 +2093,7 @@ func (self *Task) AppendPrimalPowerConeDomain(n int64,alpha []float64) (domidx i
   return
 }
 func (self *Task) AppendQuadraticConeDomain(n int64) (domidx int64,err error) {
-  if _tmt46 := MSK_appendquadraticconedomain(self.ptr(),n,&domidx); _tmt46 != 0 {
+  if _tmt46 := C.MSK_appendquadraticconedomain(self.ptr(),n,&domidx); _tmt46 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt46)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2042,7 +2101,7 @@ func (self *Task) AppendQuadraticConeDomain(n int64) (domidx int64,err error) {
   return
 }
 func (self *Task) AppendRDomain(n int64) (domidx int64,err error) {
-  if _tmt47 := MSK_appendrdomain(self.ptr(),n,&domidx); _tmt47 != 0 {
+  if _tmt47 := C.MSK_appendrdomain(self.ptr(),n,&domidx); _tmt47 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt47)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2050,7 +2109,7 @@ func (self *Task) AppendRDomain(n int64) (domidx int64,err error) {
   return
 }
 func (self *Task) AppendRminusDomain(n int64) (domidx int64,err error) {
-  if _tmt48 := MSK_appendrminusdomain(self.ptr(),n,&domidx); _tmt48 != 0 {
+  if _tmt48 := C.MSK_appendrminusdomain(self.ptr(),n,&domidx); _tmt48 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt48)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2058,7 +2117,7 @@ func (self *Task) AppendRminusDomain(n int64) (domidx int64,err error) {
   return
 }
 func (self *Task) AppendRplusDomain(n int64) (domidx int64,err error) {
-  if _tmt49 := MSK_appendrplusdomain(self.ptr(),n,&domidx); _tmt49 != 0 {
+  if _tmt49 := C.MSK_appendrplusdomain(self.ptr(),n,&domidx); _tmt49 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt49)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2066,7 +2125,7 @@ func (self *Task) AppendRplusDomain(n int64) (domidx int64,err error) {
   return
 }
 func (self *Task) AppendRQuadraticConeDomain(n int64) (domidx int64,err error) {
-  if _tmt50 := MSK_appendrquadraticconedomain(self.ptr(),n,&domidx); _tmt50 != 0 {
+  if _tmt50 := C.MSK_appendrquadraticconedomain(self.ptr(),n,&domidx); _tmt50 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt50)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2074,7 +2133,7 @@ func (self *Task) AppendRQuadraticConeDomain(n int64) (domidx int64,err error) {
   return
 }
 func (self *Task) AppendRzeroDomain(n int64) (domidx int64,err error) {
-  if _tmt51 := MSK_appendrzerodomain(self.ptr(),n,&domidx); _tmt51 != 0 {
+  if _tmt51 := C.MSK_appendrzerodomain(self.ptr(),n,&domidx); _tmt51 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt51)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2092,7 +2151,7 @@ func (self *Task) AppendSparseSymMat(dim int32,subi []int32,subj []int32,valij [
   if subj != nil { _tmt54 = (*C.MSKint32t)(&subj[0]) }
   var _tmt55 *float64
   if valij != nil { _tmt55 = (*C.MSKint32t)(&valij[0]) }
-  if _tmt56 := MSK_appendsparsesymmat(self.ptr(),dim,nz,_tmt53,_tmt54,_tmt55,&idx); _tmt56 != 0 {
+  if _tmt56 := C.MSK_appendsparsesymmat(self.ptr(),dim,nz,_tmt53,_tmt54,_tmt55,&idx); _tmt56 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt56)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2128,7 +2187,7 @@ func (self *Task) AppendSparseSymMatList(dims []int32,nz []int64,subi []int32,su
   var _tmt63 *int64
   idx := make([]int64,num)
   if len(idx) > 0 { _tmt63 = (*int64)(&n[0]) }
-  if _tmt64 := MSK_appendsparsesymmatlist(self.ptr(),num,_tmt58,_tmt59,_tmt60,_tmt61,_tmt62,_tmt63); _tmt64 != 0 {
+  if _tmt64 := C.MSK_appendsparsesymmatlist(self.ptr(),num,_tmt58,_tmt59,_tmt60,_tmt61,_tmt62,_tmt63); _tmt64 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt64)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2136,7 +2195,7 @@ func (self *Task) AppendSparseSymMatList(dims []int32,nz []int64,subi []int32,su
   return
 }
 func (self *Task) AppendSvecPsdConeDomain(n int64) (domidx int64,err error) {
-  if _tmt65 := MSK_appendsvecpsdconedomain(self.ptr(),n,&domidx); _tmt65 != 0 {
+  if _tmt65 := C.MSK_appendsvecpsdconedomain(self.ptr(),n,&domidx); _tmt65 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt65)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
@@ -2144,5831 +2203,5796 @@ func (self *Task) AppendSvecPsdConeDomain(n int64) (domidx int64,err error) {
   return
 }
 func (self *Task) AppendVars(num int32) (err error) {
-  if _tmt66 := MSK_appendvars(self.ptr(),num); _tmt66 != 0 {
+  if _tmt66 := C.MSK_appendvars(self.ptr(),num); _tmt66 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmt66)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
-func (self *Task) AsyncGetResult(address string,accesstoken string,token string) (respavailable bool,resp Rescode,trm Rescode,err error) {
-  _tmt67 := C.CString(address)
-  _tmt68 := C.CString(accesstoken)
-  _tmt69 := C.CString(token)
-  if _tmt70 := MSK_asyncgetresult(self.ptr(),_tmt67,_tmt68,_tmt69,&respavailable,&resp,&trm); _tmt70 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt70)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  return
-}
-func (self *Task) AsyncOptimize(address string,accesstoken string) (token string,err error) {
-  _tmt71 := C.CString(address)
-  _tmt72 := C.CString(accesstoken)
-  _tmt73 := make([]byte,33)
-  if _tmt74 := MSK_asyncoptimize(self.ptr(),_tmt71,_tmt72,C.CString(&tmpvar1[0])); _tmt74 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt74)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  var token string
-  if p := strings.IndexByte(_tmt73,byte(0)); p < 0 {
-    token = string(_tmt73)
-  } else {
-    token = string(_tmt73[:p])
-  }
-  return
-}
-func (self *Task) AsyncPoll(address string,accesstoken string,token string) (respavailable bool,resp Rescode,trm Rescode,err error) {
-  _tmt75 := C.CString(address)
-  _tmt76 := C.CString(accesstoken)
-  _tmt77 := C.CString(token)
-  if _tmt78 := MSK_asyncpoll(self.ptr(),_tmt75,_tmt76,_tmt77,&respavailable,&resp,&trm); _tmt78 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt78)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  return
-}
-func (self *Task) AsyncStop(address string,accesstoken string,token string) (err error) {
-  _tmt79 := C.CString(address)
-  _tmt80 := C.CString(accesstoken)
-  _tmt81 := C.CString(token)
-  if _tmt82 := MSK_asyncstop(self.ptr(),_tmt79,_tmt80,_tmt81); _tmt82 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt82)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  return
-}
 func (self *Task) BasisCond() (nrmbasis float64,nrminvbasis float64,err error) {
-  if _tmt83 := MSK_basiscond(self.ptr(),&nrmbasis,&nrminvbasis); _tmt83 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt83)
+  if _tmt67 := C.MSK_basiscond(self.ptr(),&nrmbasis,&nrminvbasis); _tmt67 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt67)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) CheckMem(file string,line int32) (err error) {
-  _tmt84 := C.CString(file)
-  if _tmt85 := MSK_checkmemtask(self.ptr(),_tmt84,line); _tmt85 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt85)
+  _tmt68 := C.CString(file)
+  if _tmt69 := C.MSK_checkmemtask(self.ptr(),_tmt68,line); _tmt69 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt69)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ChgConBound(i int32,lower int32,finite int32,value float64) (err error) {
-  if _tmt86 := MSK_chgconbound(self.ptr(),i,lower,finite,value); _tmt86 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt86)
+  if _tmt70 := C.MSK_chgconbound(self.ptr(),i,lower,finite,value); _tmt70 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt70)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ChgVarBound(j int32,lower int32,finite int32,value float64) (err error) {
-  if _tmt87 := MSK_chgvarbound(self.ptr(),j,lower,finite,value); _tmt87 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt87)
+  if _tmt71 := C.MSK_chgvarbound(self.ptr(),j,lower,finite,value); _tmt71 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt71)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) CommitChanges() (err error) {
-  if _tmt88 := MSK_commitchanges(self.ptr()); _tmt88 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt88)
+  if _tmt72 := C.MSK_commitchanges(self.ptr()); _tmt72 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt72)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) DeleteSolution(whichsol Soltype) (err error) {
-  if _tmt89 := MSK_deletesolution(self.ptr(),whichsol); _tmt89 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt89)
+  if _tmt73 := C.MSK_deletesolution(self.ptr(),whichsol); _tmt73 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt73)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) DualSensitivity(subj []int32) (leftpricej []float64,rightpricej []float64,leftrangej []float64,rightrangej []float64,err error) {
-  _tmt90 := len(subj)
-  var numj int32 = int32(_tmt90)
-  var _tmt91 *int32
-  if subj != nil { _tmt91 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt92 *float64
+  _tmt74 := len(subj)
+  var numj int32 = int32(_tmt74)
+  var _tmt75 *int32
+  if subj != nil { _tmt75 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt76 *float64
   leftpricej := make([]float64,numj)
-  if len(leftpricej) > 0 { _tmt92 = (*float64)(&n[0]) }
-  var _tmt93 *float64
+  if len(leftpricej) > 0 { _tmt76 = (*float64)(&n[0]) }
+  var _tmt77 *float64
   rightpricej := make([]float64,numj)
-  if len(rightpricej) > 0 { _tmt93 = (*float64)(&n[0]) }
-  var _tmt94 *float64
+  if len(rightpricej) > 0 { _tmt77 = (*float64)(&n[0]) }
+  var _tmt78 *float64
   leftrangej := make([]float64,numj)
-  if len(leftrangej) > 0 { _tmt94 = (*float64)(&n[0]) }
-  var _tmt95 *float64
+  if len(leftrangej) > 0 { _tmt78 = (*float64)(&n[0]) }
+  var _tmt79 *float64
   rightrangej := make([]float64,numj)
-  if len(rightrangej) > 0 { _tmt95 = (*float64)(&n[0]) }
-  if _tmt96 := MSK_dualsensitivity(self.ptr(),numj,_tmt91,_tmt92,_tmt93,_tmt94,_tmt95); _tmt96 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt96)
+  if len(rightrangej) > 0 { _tmt79 = (*float64)(&n[0]) }
+  if _tmt80 := C.MSK_dualsensitivity(self.ptr(),numj,_tmt75,_tmt76,_tmt77,_tmt78,_tmt79); _tmt80 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt80)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) EmptyAfeBarfRow(afeidx int64) (err error) {
-  if _tmt97 := MSK_emptyafebarfrow(self.ptr(),afeidx); _tmt97 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt97)
+  if _tmt81 := C.MSK_emptyafebarfrow(self.ptr(),afeidx); _tmt81 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt81)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) EmptyAfeBarfRowList(afeidxlist []int64) (err error) {
-  _tmt98 := len(afeidxlist)
-  var numafeidx int64 = int32(_tmt98)
-  var _tmt99 *int64
-  if afeidxlist != nil { _tmt99 = (*C.MSKint32t)(&afeidxlist[0]) }
-  if _tmt100 := MSK_emptyafebarfrowlist(self.ptr(),numafeidx,_tmt99); _tmt100 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt100)
+  _tmt82 := len(afeidxlist)
+  var numafeidx int64 = int32(_tmt82)
+  var _tmt83 *int64
+  if afeidxlist != nil { _tmt83 = (*C.MSKint32t)(&afeidxlist[0]) }
+  if _tmt84 := C.MSK_emptyafebarfrowlist(self.ptr(),numafeidx,_tmt83); _tmt84 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt84)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) EmptyAfeFCol(varidx int32) (err error) {
-  if _tmt101 := MSK_emptyafefcol(self.ptr(),varidx); _tmt101 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt101)
+  if _tmt85 := C.MSK_emptyafefcol(self.ptr(),varidx); _tmt85 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt85)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) EmptyAfeFColList(varidx []int32) (err error) {
-  _tmt102 := len(varidx)
-  var numvaridx int64 = int32(_tmt102)
-  var _tmt103 *int32
-  if varidx != nil { _tmt103 = (*C.MSKint32t)(&varidx[0]) }
-  if _tmt104 := MSK_emptyafefcollist(self.ptr(),numvaridx,_tmt103); _tmt104 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt104)
+  _tmt86 := len(varidx)
+  var numvaridx int64 = int32(_tmt86)
+  var _tmt87 *int32
+  if varidx != nil { _tmt87 = (*C.MSKint32t)(&varidx[0]) }
+  if _tmt88 := C.MSK_emptyafefcollist(self.ptr(),numvaridx,_tmt87); _tmt88 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt88)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) EmptyAfeFRow(afeidx int64) (err error) {
-  if _tmt105 := MSK_emptyafefrow(self.ptr(),afeidx); _tmt105 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt105)
+  if _tmt89 := C.MSK_emptyafefrow(self.ptr(),afeidx); _tmt89 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt89)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) EmptyAfeFRowList(afeidx []int64) (err error) {
-  _tmt106 := len(afeidx)
-  var numafeidx int64 = int32(_tmt106)
-  var _tmt107 *int64
-  if afeidx != nil { _tmt107 = (*C.MSKint32t)(&afeidx[0]) }
-  if _tmt108 := MSK_emptyafefrowlist(self.ptr(),numafeidx,_tmt107); _tmt108 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt108)
+  _tmt90 := len(afeidx)
+  var numafeidx int64 = int32(_tmt90)
+  var _tmt91 *int64
+  if afeidx != nil { _tmt91 = (*C.MSKint32t)(&afeidx[0]) }
+  if _tmt92 := C.MSK_emptyafefrowlist(self.ptr(),numafeidx,_tmt91); _tmt92 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt92)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) EvaluateAcc(whichsol Soltype,accidx int64) (activity []float64,err error) {
-  var _tmt111 *float64
-  var _tmt109 int64
-  if _tmt110 := MSK_getaccn(task.nativep,accidx,addr(_tmt109)); _tmt110 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt110)
+  var _tmt95 *float64
+  var _tmt93 int64
+  if _tmt94 := C.MSK_getaccn(task.nativep,accidx,addr(_tmt93)); _tmt94 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt94)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  activity := make([]float64,_tmt109)
-  if len(activity) > 0 { _tmt111 = (*float64)(&n[0]) }
-  if _tmt112 := MSK_evaluateacc(self.ptr(),whichsol,accidx,_tmt111); _tmt112 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt112)
+  activity := make([]float64,_tmt93)
+  if len(activity) > 0 { _tmt95 = (*float64)(&n[0]) }
+  if _tmt96 := C.MSK_evaluateacc(self.ptr(),whichsol,accidx,_tmt95); _tmt96 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt96)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) EvaluateAccs(whichsol Soltype) (activity []float64,err error) {
-  var _tmt115 *float64
-  var _tmt113 int64
-  if _tmt114 := MSK_getaccntot(task.nativep,addr(_tmt113)); _tmt114 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt114)
+  var _tmt99 *float64
+  var _tmt97 int64
+  if _tmt98 := C.MSK_getaccntot(task.nativep,addr(_tmt97)); _tmt98 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt98)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  activity := make([]float64,_tmt113)
-  if len(activity) > 0 { _tmt115 = (*float64)(&n[0]) }
-  if _tmt116 := MSK_evaluateaccs(self.ptr(),whichsol,_tmt115); _tmt116 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt116)
+  activity := make([]float64,_tmt97)
+  if len(activity) > 0 { _tmt99 = (*float64)(&n[0]) }
+  if _tmt100 := C.MSK_evaluateaccs(self.ptr(),whichsol,_tmt99); _tmt100 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt100)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GenerateAccNames(sub []int64,fmt string,dims []int32,sp []int64,namedaxisidxs []int32,names []string) (err error) {
-  _tmt117 := len(sub)
-  var num int64 = int32(_tmt117)
-  var _tmt118 *int64
-  if sub != nil { _tmt118 = (*C.MSKint32t)(&sub[0]) }
-  _tmt119 := C.CString(fmt)
-  _tmt120 := len(dims)
-  var ndims int32 = int32(_tmt120)
-  var _tmt121 *int32
-  if dims != nil { _tmt121 = (*C.MSKint32t)(&dims[0]) }
-  var _tmt122 *int64
+  _tmt101 := len(sub)
+  var num int64 = int32(_tmt101)
+  var _tmt102 *int64
+  if sub != nil { _tmt102 = (*C.MSKint32t)(&sub[0]) }
+  _tmt103 := C.CString(fmt)
+  _tmt104 := len(dims)
+  var ndims int32 = int32(_tmt104)
+  var _tmt105 *int32
+  if dims != nil { _tmt105 = (*C.MSKint32t)(&dims[0]) }
+  var _tmt106 *int64
   if len(sp) < num {
     err = &ArrayLengthError{fun:"GenerateAccNames",arg:"sp"}
     return
   }
-  if sp != nil { _tmt122 = (*C.MSKint32t)(&sp[0]) }
-  _tmt123 := len(namedaxisidxs)
-  var numnamedaxis int32 = int32(_tmt123)
-  var _tmt124 *int32
-  if namedaxisidxs != nil { _tmt124 = (*C.MSKint32t)(&namedaxisidxs[0]) }
-  _tmt125 := len(names)
-  var numnames int64 = int32(_tmt125)
-  var _tmt126 *string
-  if names != nil { _tmt126 = (*C.MSKint32t)(&names[0]) }
-  if _tmt127 := MSK_generateaccnames(self.ptr(),num,_tmt118,_tmt119,ndims,_tmt121,_tmt122,numnamedaxis,_tmt124,numnames,_tmt126); _tmt127 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt127)
+  if sp != nil { _tmt106 = (*C.MSKint32t)(&sp[0]) }
+  _tmt107 := len(namedaxisidxs)
+  var numnamedaxis int32 = int32(_tmt107)
+  var _tmt108 *int32
+  if namedaxisidxs != nil { _tmt108 = (*C.MSKint32t)(&namedaxisidxs[0]) }
+  _tmt109 := len(names)
+  var numnames int64 = int32(_tmt109)
+  var _tmt110 *string
+  if names != nil { _tmt110 = (*C.MSKint32t)(&names[0]) }
+  if _tmt111 := C.MSK_generateaccnames(self.ptr(),num,_tmt102,_tmt103,ndims,_tmt105,_tmt106,numnamedaxis,_tmt108,numnames,_tmt110); _tmt111 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt111)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GenerateBarvarNames(subj []int32,fmt string,dims []int32,sp []int64,namedaxisidxs []int32,names []string) (err error) {
-  _tmt128 := len(subj)
-  var num int32 = int32(_tmt128)
-  var _tmt129 *int32
-  if subj != nil { _tmt129 = (*C.MSKint32t)(&subj[0]) }
-  _tmt130 := C.CString(fmt)
-  _tmt131 := len(dims)
-  var ndims int32 = int32(_tmt131)
-  var _tmt132 *int32
-  if dims != nil { _tmt132 = (*C.MSKint32t)(&dims[0]) }
-  var _tmt133 *int64
+  _tmt112 := len(subj)
+  var num int32 = int32(_tmt112)
+  var _tmt113 *int32
+  if subj != nil { _tmt113 = (*C.MSKint32t)(&subj[0]) }
+  _tmt114 := C.CString(fmt)
+  _tmt115 := len(dims)
+  var ndims int32 = int32(_tmt115)
+  var _tmt116 *int32
+  if dims != nil { _tmt116 = (*C.MSKint32t)(&dims[0]) }
+  var _tmt117 *int64
   if len(sp) < num {
     err = &ArrayLengthError{fun:"GenerateBarvarNames",arg:"sp"}
     return
   }
-  if sp != nil { _tmt133 = (*C.MSKint32t)(&sp[0]) }
-  _tmt134 := len(namedaxisidxs)
-  var numnamedaxis int32 = int32(_tmt134)
-  var _tmt135 *int32
-  if namedaxisidxs != nil { _tmt135 = (*C.MSKint32t)(&namedaxisidxs[0]) }
-  _tmt136 := len(names)
-  var numnames int64 = int32(_tmt136)
-  var _tmt137 *string
-  if names != nil { _tmt137 = (*C.MSKint32t)(&names[0]) }
-  if _tmt138 := MSK_generatebarvarnames(self.ptr(),num,_tmt129,_tmt130,ndims,_tmt132,_tmt133,numnamedaxis,_tmt135,numnames,_tmt137); _tmt138 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt138)
+  if sp != nil { _tmt117 = (*C.MSKint32t)(&sp[0]) }
+  _tmt118 := len(namedaxisidxs)
+  var numnamedaxis int32 = int32(_tmt118)
+  var _tmt119 *int32
+  if namedaxisidxs != nil { _tmt119 = (*C.MSKint32t)(&namedaxisidxs[0]) }
+  _tmt120 := len(names)
+  var numnames int64 = int32(_tmt120)
+  var _tmt121 *string
+  if names != nil { _tmt121 = (*C.MSKint32t)(&names[0]) }
+  if _tmt122 := C.MSK_generatebarvarnames(self.ptr(),num,_tmt113,_tmt114,ndims,_tmt116,_tmt117,numnamedaxis,_tmt119,numnames,_tmt121); _tmt122 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt122)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GenerateConeNames(subk []int32,fmt string,dims []int32,sp []int64,namedaxisidxs []int32,names []string) (err error) {
-  _tmt139 := len(subk)
-  var num int32 = int32(_tmt139)
-  var _tmt140 *int32
-  if subk != nil { _tmt140 = (*C.MSKint32t)(&subk[0]) }
-  _tmt141 := C.CString(fmt)
-  _tmt142 := len(dims)
-  var ndims int32 = int32(_tmt142)
-  var _tmt143 *int32
-  if dims != nil { _tmt143 = (*C.MSKint32t)(&dims[0]) }
-  var _tmt144 *int64
+  _tmt123 := len(subk)
+  var num int32 = int32(_tmt123)
+  var _tmt124 *int32
+  if subk != nil { _tmt124 = (*C.MSKint32t)(&subk[0]) }
+  _tmt125 := C.CString(fmt)
+  _tmt126 := len(dims)
+  var ndims int32 = int32(_tmt126)
+  var _tmt127 *int32
+  if dims != nil { _tmt127 = (*C.MSKint32t)(&dims[0]) }
+  var _tmt128 *int64
   if len(sp) < num {
     err = &ArrayLengthError{fun:"GenerateConeNames",arg:"sp"}
     return
   }
-  if sp != nil { _tmt144 = (*C.MSKint32t)(&sp[0]) }
-  _tmt145 := len(namedaxisidxs)
-  var numnamedaxis int32 = int32(_tmt145)
-  var _tmt146 *int32
-  if namedaxisidxs != nil { _tmt146 = (*C.MSKint32t)(&namedaxisidxs[0]) }
-  _tmt147 := len(names)
-  var numnames int64 = int32(_tmt147)
-  var _tmt148 *string
-  if names != nil { _tmt148 = (*C.MSKint32t)(&names[0]) }
-  if _tmt149 := MSK_generateconenames(self.ptr(),num,_tmt140,_tmt141,ndims,_tmt143,_tmt144,numnamedaxis,_tmt146,numnames,_tmt148); _tmt149 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt149)
+  if sp != nil { _tmt128 = (*C.MSKint32t)(&sp[0]) }
+  _tmt129 := len(namedaxisidxs)
+  var numnamedaxis int32 = int32(_tmt129)
+  var _tmt130 *int32
+  if namedaxisidxs != nil { _tmt130 = (*C.MSKint32t)(&namedaxisidxs[0]) }
+  _tmt131 := len(names)
+  var numnames int64 = int32(_tmt131)
+  var _tmt132 *string
+  if names != nil { _tmt132 = (*C.MSKint32t)(&names[0]) }
+  if _tmt133 := C.MSK_generateconenames(self.ptr(),num,_tmt124,_tmt125,ndims,_tmt127,_tmt128,numnamedaxis,_tmt130,numnames,_tmt132); _tmt133 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt133)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GenerateConNames(subi []int32,fmt string,dims []int32,sp []int64,namedaxisidxs []int32,names []string) (err error) {
-  _tmt150 := len(subi)
-  var num int32 = int32(_tmt150)
-  var _tmt151 *int32
-  if subi != nil { _tmt151 = (*C.MSKint32t)(&subi[0]) }
-  _tmt152 := C.CString(fmt)
-  _tmt153 := len(dims)
-  var ndims int32 = int32(_tmt153)
-  var _tmt154 *int32
-  if dims != nil { _tmt154 = (*C.MSKint32t)(&dims[0]) }
-  var _tmt155 *int64
+  _tmt134 := len(subi)
+  var num int32 = int32(_tmt134)
+  var _tmt135 *int32
+  if subi != nil { _tmt135 = (*C.MSKint32t)(&subi[0]) }
+  _tmt136 := C.CString(fmt)
+  _tmt137 := len(dims)
+  var ndims int32 = int32(_tmt137)
+  var _tmt138 *int32
+  if dims != nil { _tmt138 = (*C.MSKint32t)(&dims[0]) }
+  var _tmt139 *int64
   if len(sp) < num {
     err = &ArrayLengthError{fun:"GenerateConNames",arg:"sp"}
     return
   }
-  if sp != nil { _tmt155 = (*C.MSKint32t)(&sp[0]) }
-  _tmt156 := len(namedaxisidxs)
-  var numnamedaxis int32 = int32(_tmt156)
-  var _tmt157 *int32
-  if namedaxisidxs != nil { _tmt157 = (*C.MSKint32t)(&namedaxisidxs[0]) }
-  _tmt158 := len(names)
-  var numnames int64 = int32(_tmt158)
-  var _tmt159 *string
-  if names != nil { _tmt159 = (*C.MSKint32t)(&names[0]) }
-  if _tmt160 := MSK_generateconnames(self.ptr(),num,_tmt151,_tmt152,ndims,_tmt154,_tmt155,numnamedaxis,_tmt157,numnames,_tmt159); _tmt160 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt160)
+  if sp != nil { _tmt139 = (*C.MSKint32t)(&sp[0]) }
+  _tmt140 := len(namedaxisidxs)
+  var numnamedaxis int32 = int32(_tmt140)
+  var _tmt141 *int32
+  if namedaxisidxs != nil { _tmt141 = (*C.MSKint32t)(&namedaxisidxs[0]) }
+  _tmt142 := len(names)
+  var numnames int64 = int32(_tmt142)
+  var _tmt143 *string
+  if names != nil { _tmt143 = (*C.MSKint32t)(&names[0]) }
+  if _tmt144 := C.MSK_generateconnames(self.ptr(),num,_tmt135,_tmt136,ndims,_tmt138,_tmt139,numnamedaxis,_tmt141,numnames,_tmt143); _tmt144 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt144)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GenerateDjcNames(sub []int64,fmt string,dims []int32,sp []int64,namedaxisidxs []int32,names []string) (err error) {
-  _tmt161 := len(sub)
-  var num int64 = int32(_tmt161)
-  var _tmt162 *int64
-  if sub != nil { _tmt162 = (*C.MSKint32t)(&sub[0]) }
-  _tmt163 := C.CString(fmt)
-  _tmt164 := len(dims)
-  var ndims int32 = int32(_tmt164)
-  var _tmt165 *int32
-  if dims != nil { _tmt165 = (*C.MSKint32t)(&dims[0]) }
-  var _tmt166 *int64
+  _tmt145 := len(sub)
+  var num int64 = int32(_tmt145)
+  var _tmt146 *int64
+  if sub != nil { _tmt146 = (*C.MSKint32t)(&sub[0]) }
+  _tmt147 := C.CString(fmt)
+  _tmt148 := len(dims)
+  var ndims int32 = int32(_tmt148)
+  var _tmt149 *int32
+  if dims != nil { _tmt149 = (*C.MSKint32t)(&dims[0]) }
+  var _tmt150 *int64
   if len(sp) < num {
     err = &ArrayLengthError{fun:"GenerateDjcNames",arg:"sp"}
     return
   }
-  if sp != nil { _tmt166 = (*C.MSKint32t)(&sp[0]) }
-  _tmt167 := len(namedaxisidxs)
-  var numnamedaxis int32 = int32(_tmt167)
-  var _tmt168 *int32
-  if namedaxisidxs != nil { _tmt168 = (*C.MSKint32t)(&namedaxisidxs[0]) }
-  _tmt169 := len(names)
-  var numnames int64 = int32(_tmt169)
-  var _tmt170 *string
-  if names != nil { _tmt170 = (*C.MSKint32t)(&names[0]) }
-  if _tmt171 := MSK_generatedjcnames(self.ptr(),num,_tmt162,_tmt163,ndims,_tmt165,_tmt166,numnamedaxis,_tmt168,numnames,_tmt170); _tmt171 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt171)
+  if sp != nil { _tmt150 = (*C.MSKint32t)(&sp[0]) }
+  _tmt151 := len(namedaxisidxs)
+  var numnamedaxis int32 = int32(_tmt151)
+  var _tmt152 *int32
+  if namedaxisidxs != nil { _tmt152 = (*C.MSKint32t)(&namedaxisidxs[0]) }
+  _tmt153 := len(names)
+  var numnames int64 = int32(_tmt153)
+  var _tmt154 *string
+  if names != nil { _tmt154 = (*C.MSKint32t)(&names[0]) }
+  if _tmt155 := C.MSK_generatedjcnames(self.ptr(),num,_tmt146,_tmt147,ndims,_tmt149,_tmt150,numnamedaxis,_tmt152,numnames,_tmt154); _tmt155 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt155)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GenerateVarNames(subj []int32,fmt string,dims []int32,sp []int64,namedaxisidxs []int32,names []string) (err error) {
-  _tmt172 := len(subj)
-  var num int32 = int32(_tmt172)
-  var _tmt173 *int32
-  if subj != nil { _tmt173 = (*C.MSKint32t)(&subj[0]) }
-  _tmt174 := C.CString(fmt)
-  _tmt175 := len(dims)
-  var ndims int32 = int32(_tmt175)
-  var _tmt176 *int32
-  if dims != nil { _tmt176 = (*C.MSKint32t)(&dims[0]) }
-  var _tmt177 *int64
+  _tmt156 := len(subj)
+  var num int32 = int32(_tmt156)
+  var _tmt157 *int32
+  if subj != nil { _tmt157 = (*C.MSKint32t)(&subj[0]) }
+  _tmt158 := C.CString(fmt)
+  _tmt159 := len(dims)
+  var ndims int32 = int32(_tmt159)
+  var _tmt160 *int32
+  if dims != nil { _tmt160 = (*C.MSKint32t)(&dims[0]) }
+  var _tmt161 *int64
   if len(sp) < num {
     err = &ArrayLengthError{fun:"GenerateVarNames",arg:"sp"}
     return
   }
-  if sp != nil { _tmt177 = (*C.MSKint32t)(&sp[0]) }
-  _tmt178 := len(namedaxisidxs)
-  var numnamedaxis int32 = int32(_tmt178)
-  var _tmt179 *int32
-  if namedaxisidxs != nil { _tmt179 = (*C.MSKint32t)(&namedaxisidxs[0]) }
-  _tmt180 := len(names)
-  var numnames int64 = int32(_tmt180)
-  var _tmt181 *string
-  if names != nil { _tmt181 = (*C.MSKint32t)(&names[0]) }
-  if _tmt182 := MSK_generatevarnames(self.ptr(),num,_tmt173,_tmt174,ndims,_tmt176,_tmt177,numnamedaxis,_tmt179,numnames,_tmt181); _tmt182 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt182)
+  if sp != nil { _tmt161 = (*C.MSKint32t)(&sp[0]) }
+  _tmt162 := len(namedaxisidxs)
+  var numnamedaxis int32 = int32(_tmt162)
+  var _tmt163 *int32
+  if namedaxisidxs != nil { _tmt163 = (*C.MSKint32t)(&namedaxisidxs[0]) }
+  _tmt164 := len(names)
+  var numnames int64 = int32(_tmt164)
+  var _tmt165 *string
+  if names != nil { _tmt165 = (*C.MSKint32t)(&names[0]) }
+  if _tmt166 := C.MSK_generatevarnames(self.ptr(),num,_tmt157,_tmt158,ndims,_tmt160,_tmt161,numnamedaxis,_tmt163,numnames,_tmt165); _tmt166 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt166)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccAfeIdxList(accidx int64) (afeidxlist []int64,err error) {
-  var _tmt185 *int64
-  var _tmt183 int64
-  if _tmt184 := MSK_getaccn(task.nativep,accidx,addr(_tmt183)); _tmt184 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt184)
+  var _tmt169 *int64
+  var _tmt167 int64
+  if _tmt168 := C.MSK_getaccn(task.nativep,accidx,addr(_tmt167)); _tmt168 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt168)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  afeidxlist := make([]int64,_tmt183)
-  if len(afeidxlist) > 0 { _tmt185 = (*int64)(&n[0]) }
-  if _tmt186 := MSK_getaccafeidxlist(self.ptr(),accidx,_tmt185); _tmt186 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt186)
+  afeidxlist := make([]int64,_tmt167)
+  if len(afeidxlist) > 0 { _tmt169 = (*int64)(&n[0]) }
+  if _tmt170 := C.MSK_getaccafeidxlist(self.ptr(),accidx,_tmt169); _tmt170 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt170)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccB(accidx int64) (b []float64,err error) {
-  var _tmt189 *float64
-  var _tmt187 int64
-  if _tmt188 := MSK_getaccn(task.nativep,accidx,addr(_tmt187)); _tmt188 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt188)
+  var _tmt173 *float64
+  var _tmt171 int64
+  if _tmt172 := C.MSK_getaccn(task.nativep,accidx,addr(_tmt171)); _tmt172 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt172)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  b := make([]float64,_tmt187)
-  if len(b) > 0 { _tmt189 = (*float64)(&n[0]) }
-  if _tmt190 := MSK_getaccb(self.ptr(),accidx,_tmt189); _tmt190 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt190)
+  b := make([]float64,_tmt171)
+  if len(b) > 0 { _tmt173 = (*float64)(&n[0]) }
+  if _tmt174 := C.MSK_getaccb(self.ptr(),accidx,_tmt173); _tmt174 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt174)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccBarfBlockTriplet() (numtrip int64,acc_afe []int64,bar_var []int32,blk_row []int32,blk_col []int32,blk_val []float64,err error) {
-  var _tmt191 int64
-  if _tmt192 := MSK_getaccbarfnumblocktriplets(task.nativep,addr(_tmt191)); _tmt192 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt192)
+  var _tmt175 int64
+  if _tmt176 := C.MSK_getaccbarfnumblocktriplets(task.nativep,addr(_tmt175)); _tmt176 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt176)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumtrip int64 = _tmt191
-  var _tmt193 *int64
+  var maxnumtrip int64 = _tmt175
+  var _tmt177 *int64
   acc_afe := make([]int64,maxnumtrip)
-  if len(acc_afe) > 0 { _tmt193 = (*int64)(&n[0]) }
-  var _tmt194 *int32
+  if len(acc_afe) > 0 { _tmt177 = (*int64)(&n[0]) }
+  var _tmt178 *int32
   bar_var := make([]int32,maxnumtrip)
-  if len(bar_var) > 0 { _tmt194 = (*int32)(&n[0]) }
-  var _tmt195 *int32
+  if len(bar_var) > 0 { _tmt178 = (*int32)(&n[0]) }
+  var _tmt179 *int32
   blk_row := make([]int32,maxnumtrip)
-  if len(blk_row) > 0 { _tmt195 = (*int32)(&n[0]) }
-  var _tmt196 *int32
+  if len(blk_row) > 0 { _tmt179 = (*int32)(&n[0]) }
+  var _tmt180 *int32
   blk_col := make([]int32,maxnumtrip)
-  if len(blk_col) > 0 { _tmt196 = (*int32)(&n[0]) }
-  var _tmt197 *float64
+  if len(blk_col) > 0 { _tmt180 = (*int32)(&n[0]) }
+  var _tmt181 *float64
   blk_val := make([]float64,maxnumtrip)
-  if len(blk_val) > 0 { _tmt197 = (*float64)(&n[0]) }
-  if _tmt198 := MSK_getaccbarfblocktriplet(self.ptr(),maxnumtrip,&numtrip,_tmt193,_tmt194,_tmt195,_tmt196,_tmt197); _tmt198 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt198)
+  if len(blk_val) > 0 { _tmt181 = (*float64)(&n[0]) }
+  if _tmt182 := C.MSK_getaccbarfblocktriplet(self.ptr(),maxnumtrip,&numtrip,_tmt177,_tmt178,_tmt179,_tmt180,_tmt181); _tmt182 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt182)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccBarfNumBlockTriplets() (numtrip int64,err error) {
-  if _tmt199 := MSK_getaccbarfnumblocktriplets(self.ptr(),&numtrip); _tmt199 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt199)
+  if _tmt183 := C.MSK_getaccbarfnumblocktriplets(self.ptr(),&numtrip); _tmt183 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt183)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccDomain(accidx int64) (domidx int64,err error) {
-  if _tmt200 := MSK_getaccdomain(self.ptr(),accidx,&domidx); _tmt200 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt200)
+  if _tmt184 := C.MSK_getaccdomain(self.ptr(),accidx,&domidx); _tmt184 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt184)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccDotY(whichsol Soltype,accidx int64) (doty []float64,err error) {
-  var _tmt203 *float64
-  var _tmt201 int64
-  if _tmt202 := MSK_getaccn(task.nativep,accidx,addr(_tmt201)); _tmt202 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt202)
+  var _tmt187 *float64
+  var _tmt185 int64
+  if _tmt186 := C.MSK_getaccn(task.nativep,accidx,addr(_tmt185)); _tmt186 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt186)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  doty := make([]float64,_tmt201)
-  if len(doty) > 0 { _tmt203 = (*float64)(&n[0]) }
-  if _tmt204 := MSK_getaccdoty(self.ptr(),whichsol,accidx,_tmt203); _tmt204 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt204)
+  doty := make([]float64,_tmt185)
+  if len(doty) > 0 { _tmt187 = (*float64)(&n[0]) }
+  if _tmt188 := C.MSK_getaccdoty(self.ptr(),whichsol,accidx,_tmt187); _tmt188 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt188)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccDotYS(whichsol Soltype) (doty []float64,err error) {
-  var _tmt207 *float64
-  var _tmt205 int64
-  if _tmt206 := MSK_getaccntot(task.nativep,addr(_tmt205)); _tmt206 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt206)
+  var _tmt191 *float64
+  var _tmt189 int64
+  if _tmt190 := C.MSK_getaccntot(task.nativep,addr(_tmt189)); _tmt190 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt190)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  doty := make([]float64,_tmt205)
-  if len(doty) > 0 { _tmt207 = (*float64)(&n[0]) }
-  if _tmt208 := MSK_getaccdotys(self.ptr(),whichsol,_tmt207); _tmt208 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt208)
+  doty := make([]float64,_tmt189)
+  if len(doty) > 0 { _tmt191 = (*float64)(&n[0]) }
+  if _tmt192 := C.MSK_getaccdotys(self.ptr(),whichsol,_tmt191); _tmt192 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt192)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccFNumnz() (accfnnz int64,err error) {
-  if _tmt209 := MSK_getaccfnumnz(self.ptr(),&accfnnz); _tmt209 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt209)
+  if _tmt193 := C.MSK_getaccfnumnz(self.ptr(),&accfnnz); _tmt193 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt193)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccFTrip() (frow []int64,fcol []int32,fval []float64,err error) {
-  var _tmt212 *int64
-  var _tmt210 int64
-  if _tmt211 := MSK_getaccfnumnz(task.nativep,addr(_tmt210)); _tmt211 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt211)
+  var _tmt196 *int64
+  var _tmt194 int64
+  if _tmt195 := C.MSK_getaccfnumnz(task.nativep,addr(_tmt194)); _tmt195 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt195)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  frow := make([]int64,_tmt210)
-  if len(frow) > 0 { _tmt212 = (*int64)(&n[0]) }
-  var _tmt215 *int32
-  var _tmt213 int64
-  if _tmt214 := MSK_getaccfnumnz(task.nativep,addr(_tmt213)); _tmt214 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt214)
+  frow := make([]int64,_tmt194)
+  if len(frow) > 0 { _tmt196 = (*int64)(&n[0]) }
+  var _tmt199 *int32
+  var _tmt197 int64
+  if _tmt198 := C.MSK_getaccfnumnz(task.nativep,addr(_tmt197)); _tmt198 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt198)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  fcol := make([]int32,_tmt213)
-  if len(fcol) > 0 { _tmt215 = (*int32)(&n[0]) }
-  var _tmt218 *float64
-  var _tmt216 int64
-  if _tmt217 := MSK_getaccfnumnz(task.nativep,addr(_tmt216)); _tmt217 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt217)
+  fcol := make([]int32,_tmt197)
+  if len(fcol) > 0 { _tmt199 = (*int32)(&n[0]) }
+  var _tmt202 *float64
+  var _tmt200 int64
+  if _tmt201 := C.MSK_getaccfnumnz(task.nativep,addr(_tmt200)); _tmt201 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt201)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  fval := make([]float64,_tmt216)
-  if len(fval) > 0 { _tmt218 = (*float64)(&n[0]) }
-  if _tmt219 := MSK_getaccftrip(self.ptr(),_tmt212,_tmt215,_tmt218); _tmt219 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt219)
+  fval := make([]float64,_tmt200)
+  if len(fval) > 0 { _tmt202 = (*float64)(&n[0]) }
+  if _tmt203 := C.MSK_getaccftrip(self.ptr(),_tmt196,_tmt199,_tmt202); _tmt203 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt203)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccGVector() (g []float64,err error) {
-  var _tmt222 *float64
-  var _tmt220 int64
-  if _tmt221 := MSK_getaccntot(task.nativep,addr(_tmt220)); _tmt221 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt221)
+  var _tmt206 *float64
+  var _tmt204 int64
+  if _tmt205 := C.MSK_getaccntot(task.nativep,addr(_tmt204)); _tmt205 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt205)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  g := make([]float64,_tmt220)
-  if len(g) > 0 { _tmt222 = (*float64)(&n[0]) }
-  if _tmt223 := MSK_getaccgvector(self.ptr(),_tmt222); _tmt223 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt223)
+  g := make([]float64,_tmt204)
+  if len(g) > 0 { _tmt206 = (*float64)(&n[0]) }
+  if _tmt207 := C.MSK_getaccgvector(self.ptr(),_tmt206); _tmt207 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt207)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccN(accidx int64) (n int64,err error) {
-  if _tmt224 := MSK_getaccn(self.ptr(),accidx,&n); _tmt224 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt224)
+  if _tmt208 := C.MSK_getaccn(self.ptr(),accidx,&n); _tmt208 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt208)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccName(accidx int64) (name string,err error) {
-  var _tmt225 int32
-  if _tmt226 := MSK_getaccnamelen(task.nativep,accidx,addr(_tmt225)); _tmt226 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt226)
+  var _tmt209 int32
+  if _tmt210 := C.MSK_getaccnamelen(task.nativep,accidx,addr(_tmt209)); _tmt210 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt210)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizename int32 = (1 + _tmt225)
-  _tmt227 := make([]byte,sizename)
-  if _tmt228 := MSK_getaccname(self.ptr(),accidx,sizename,C.CString(&tmpvar1[0])); _tmt228 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt228)
+  var sizename int32 = (1 + _tmt209)
+  _tmt211 := make([]byte,sizename)
+  if _tmt212 := C.MSK_getaccname(self.ptr(),accidx,sizename,C.CString(&tmpvar1[0])); _tmt212 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt212)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var name string
-  if p := strings.IndexByte(_tmt227,byte(0)); p < 0 {
-    name = string(_tmt227)
+  if p := strings.IndexByte(_tmt211,byte(0)); p < 0 {
+    name = string(_tmt211)
   } else {
-    name = string(_tmt227[:p])
+    name = string(_tmt211[:p])
   }
   return
 }
 func (self *Task) GetAccNameLen(accidx int64) (len int32,err error) {
-  if _tmt229 := MSK_getaccnamelen(self.ptr(),accidx,&len); _tmt229 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt229)
+  if _tmt213 := C.MSK_getaccnamelen(self.ptr(),accidx,&len); _tmt213 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt213)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccNTot() (n int64,err error) {
-  if _tmt230 := MSK_getaccntot(self.ptr(),&n); _tmt230 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt230)
+  if _tmt214 := C.MSK_getaccntot(self.ptr(),&n); _tmt214 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt214)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAccs() (domidxlist []int64,afeidxlist []int64,b []float64,err error) {
-  var _tmt233 *int64
-  var _tmt231 int64
-  if _tmt232 := MSK_getnumacc(task.nativep,addr(_tmt231)); _tmt232 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt232)
+  var _tmt217 *int64
+  var _tmt215 int64
+  if _tmt216 := C.MSK_getnumacc(task.nativep,addr(_tmt215)); _tmt216 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt216)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  domidxlist := make([]int64,_tmt231)
-  if len(domidxlist) > 0 { _tmt233 = (*int64)(&n[0]) }
-  var _tmt236 *int64
-  var _tmt234 int64
-  if _tmt235 := MSK_getaccntot(task.nativep,addr(_tmt234)); _tmt235 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt235)
+  domidxlist := make([]int64,_tmt215)
+  if len(domidxlist) > 0 { _tmt217 = (*int64)(&n[0]) }
+  var _tmt220 *int64
+  var _tmt218 int64
+  if _tmt219 := C.MSK_getaccntot(task.nativep,addr(_tmt218)); _tmt219 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt219)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  afeidxlist := make([]int64,_tmt234)
-  if len(afeidxlist) > 0 { _tmt236 = (*int64)(&n[0]) }
-  var _tmt239 *float64
-  var _tmt237 int64
-  if _tmt238 := MSK_getaccntot(task.nativep,addr(_tmt237)); _tmt238 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt238)
+  afeidxlist := make([]int64,_tmt218)
+  if len(afeidxlist) > 0 { _tmt220 = (*int64)(&n[0]) }
+  var _tmt223 *float64
+  var _tmt221 int64
+  if _tmt222 := C.MSK_getaccntot(task.nativep,addr(_tmt221)); _tmt222 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt222)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  b := make([]float64,_tmt237)
-  if len(b) > 0 { _tmt239 = (*float64)(&n[0]) }
-  if _tmt240 := MSK_getaccs(self.ptr(),_tmt233,_tmt236,_tmt239); _tmt240 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt240)
+  b := make([]float64,_tmt221)
+  if len(b) > 0 { _tmt223 = (*float64)(&n[0]) }
+  if _tmt224 := C.MSK_getaccs(self.ptr(),_tmt217,_tmt220,_tmt223); _tmt224 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt224)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetACol(j int32) (nzj int32,subj []int32,valj []float64,err error) {
-  var _tmt243 *int32
-  var _tmt241 int32
-  if _tmt242 := MSK_getacolnumnz(task.nativep,j,addr(_tmt241)); _tmt242 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt242)
+  var _tmt227 *int32
+  var _tmt225 int32
+  if _tmt226 := C.MSK_getacolnumnz(task.nativep,j,addr(_tmt225)); _tmt226 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt226)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  subj := make([]int32,_tmt241)
-  if len(subj) > 0 { _tmt243 = (*int32)(&n[0]) }
-  var _tmt246 *float64
-  var _tmt244 int32
-  if _tmt245 := MSK_getacolnumnz(task.nativep,j,addr(_tmt244)); _tmt245 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt245)
+  subj := make([]int32,_tmt225)
+  if len(subj) > 0 { _tmt227 = (*int32)(&n[0]) }
+  var _tmt230 *float64
+  var _tmt228 int32
+  if _tmt229 := C.MSK_getacolnumnz(task.nativep,j,addr(_tmt228)); _tmt229 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt229)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  valj := make([]float64,_tmt244)
-  if len(valj) > 0 { _tmt246 = (*float64)(&n[0]) }
-  if _tmt247 := MSK_getacol(self.ptr(),j,&nzj,_tmt243,_tmt246); _tmt247 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt247)
+  valj := make([]float64,_tmt228)
+  if len(valj) > 0 { _tmt230 = (*float64)(&n[0]) }
+  if _tmt231 := C.MSK_getacol(self.ptr(),j,&nzj,_tmt227,_tmt230); _tmt231 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt231)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAColNumNz(i int32) (nzj int32,err error) {
-  if _tmt248 := MSK_getacolnumnz(self.ptr(),i,&nzj); _tmt248 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt248)
+  if _tmt232 := C.MSK_getacolnumnz(self.ptr(),i,&nzj); _tmt232 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt232)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAColSlice(first int32,last int32) (ptrb []int64,ptre []int64,sub []int32,val []float64,err error) {
-  var _tmt249 int64
-  if _tmt250 := MSK_getacolslicenumnz64(task.nativep,first,last,addr(_tmt249)); _tmt250 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt250)
+  var _tmt233 int64
+  if _tmt234 := C.MSK_getacolslicenumnz64(task.nativep,first,last,addr(_tmt233)); _tmt234 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt234)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumnz int64 = _tmt249
-  var _tmt251 *int64
+  var maxnumnz int64 = _tmt233
+  var _tmt235 *int64
   ptrb := make([]int64,(last - first))
-  if len(ptrb) > 0 { _tmt251 = (*int64)(&n[0]) }
-  var _tmt252 *int64
+  if len(ptrb) > 0 { _tmt235 = (*int64)(&n[0]) }
+  var _tmt236 *int64
   ptre := make([]int64,(last - first))
-  if len(ptre) > 0 { _tmt252 = (*int64)(&n[0]) }
-  var _tmt253 *int32
+  if len(ptre) > 0 { _tmt236 = (*int64)(&n[0]) }
+  var _tmt237 *int32
   sub := make([]int32,maxnumnz)
-  if len(sub) > 0 { _tmt253 = (*int32)(&n[0]) }
-  var _tmt254 *float64
+  if len(sub) > 0 { _tmt237 = (*int32)(&n[0]) }
+  var _tmt238 *float64
   val := make([]float64,maxnumnz)
-  if len(val) > 0 { _tmt254 = (*float64)(&n[0]) }
-  if _tmt255 := MSK_getacolslice64(self.ptr(),first,last,maxnumnz,_tmt251,_tmt252,_tmt253,_tmt254); _tmt255 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt255)
+  if len(val) > 0 { _tmt238 = (*float64)(&n[0]) }
+  if _tmt239 := C.MSK_getacolslice64(self.ptr(),first,last,maxnumnz,_tmt235,_tmt236,_tmt237,_tmt238); _tmt239 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt239)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAColSliceNumNz(first int32,last int32) (numnz int64,err error) {
-  if _tmt256 := MSK_getacolslicenumnz64(self.ptr(),first,last,&numnz); _tmt256 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt256)
+  if _tmt240 := C.MSK_getacolslicenumnz64(self.ptr(),first,last,&numnz); _tmt240 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt240)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAColSliceTrip(first int32,last int32) (subi []int32,subj []int32,val []float64,err error) {
-  var _tmt257 int64
-  if _tmt258 := MSK_getacolslicenumnz64(task.nativep,first,last,addr(_tmt257)); _tmt258 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt258)
+  var _tmt241 int64
+  if _tmt242 := C.MSK_getacolslicenumnz64(task.nativep,first,last,addr(_tmt241)); _tmt242 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt242)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumnz int64 = _tmt257
-  var _tmt259 *int32
+  var maxnumnz int64 = _tmt241
+  var _tmt243 *int32
   subi := make([]int32,maxnumnz)
-  if len(subi) > 0 { _tmt259 = (*int32)(&n[0]) }
-  var _tmt260 *int32
+  if len(subi) > 0 { _tmt243 = (*int32)(&n[0]) }
+  var _tmt244 *int32
   subj := make([]int32,maxnumnz)
-  if len(subj) > 0 { _tmt260 = (*int32)(&n[0]) }
-  var _tmt261 *float64
+  if len(subj) > 0 { _tmt244 = (*int32)(&n[0]) }
+  var _tmt245 *float64
   val := make([]float64,maxnumnz)
-  if len(val) > 0 { _tmt261 = (*float64)(&n[0]) }
-  if _tmt262 := MSK_getacolslicetrip(self.ptr(),first,last,maxnumnz,_tmt259,_tmt260,_tmt261); _tmt262 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt262)
+  if len(val) > 0 { _tmt245 = (*float64)(&n[0]) }
+  if _tmt246 := C.MSK_getacolslicetrip(self.ptr(),first,last,maxnumnz,_tmt243,_tmt244,_tmt245); _tmt246 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt246)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeBarfBlockTriplet() (numtrip int64,afeidx []int64,barvaridx []int32,subk []int32,subl []int32,valkl []float64,err error) {
-  var _tmt263 int64
-  if _tmt264 := MSK_getafebarfnumblocktriplets(task.nativep,addr(_tmt263)); _tmt264 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt264)
+  var _tmt247 int64
+  if _tmt248 := C.MSK_getafebarfnumblocktriplets(task.nativep,addr(_tmt247)); _tmt248 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt248)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumtrip int64 = _tmt263
-  var _tmt265 *int64
+  var maxnumtrip int64 = _tmt247
+  var _tmt249 *int64
   afeidx := make([]int64,maxnumtrip)
-  if len(afeidx) > 0 { _tmt265 = (*int64)(&n[0]) }
-  var _tmt266 *int32
+  if len(afeidx) > 0 { _tmt249 = (*int64)(&n[0]) }
+  var _tmt250 *int32
   barvaridx := make([]int32,maxnumtrip)
-  if len(barvaridx) > 0 { _tmt266 = (*int32)(&n[0]) }
-  var _tmt267 *int32
+  if len(barvaridx) > 0 { _tmt250 = (*int32)(&n[0]) }
+  var _tmt251 *int32
   subk := make([]int32,maxnumtrip)
-  if len(subk) > 0 { _tmt267 = (*int32)(&n[0]) }
-  var _tmt268 *int32
+  if len(subk) > 0 { _tmt251 = (*int32)(&n[0]) }
+  var _tmt252 *int32
   subl := make([]int32,maxnumtrip)
-  if len(subl) > 0 { _tmt268 = (*int32)(&n[0]) }
-  var _tmt269 *float64
+  if len(subl) > 0 { _tmt252 = (*int32)(&n[0]) }
+  var _tmt253 *float64
   valkl := make([]float64,maxnumtrip)
-  if len(valkl) > 0 { _tmt269 = (*float64)(&n[0]) }
-  if _tmt270 := MSK_getafebarfblocktriplet(self.ptr(),maxnumtrip,&numtrip,_tmt265,_tmt266,_tmt267,_tmt268,_tmt269); _tmt270 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt270)
+  if len(valkl) > 0 { _tmt253 = (*float64)(&n[0]) }
+  if _tmt254 := C.MSK_getafebarfblocktriplet(self.ptr(),maxnumtrip,&numtrip,_tmt249,_tmt250,_tmt251,_tmt252,_tmt253); _tmt254 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt254)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeBarfNumBlockTriplets() (numtrip int64,err error) {
-  if _tmt271 := MSK_getafebarfnumblocktriplets(self.ptr(),&numtrip); _tmt271 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt271)
+  if _tmt255 := C.MSK_getafebarfnumblocktriplets(self.ptr(),&numtrip); _tmt255 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt255)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeBarfNumRowEntries(afeidx int64) (numentr int32,err error) {
-  if _tmt272 := MSK_getafebarfnumrowentries(self.ptr(),afeidx,&numentr); _tmt272 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt272)
+  if _tmt256 := C.MSK_getafebarfnumrowentries(self.ptr(),afeidx,&numentr); _tmt256 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt256)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeBarfRow(afeidx int64) (barvaridx []int32,ptrterm []int64,numterm []int64,termidx []int64,termweight []float64,err error) {
-  var _tmt276 *int32
+  var _tmt260 *int32
+  var _tmt257 int32
+  var _tmt258 int64
+  if _tmt259 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt257),addr(_tmt258)); _tmt259 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt259)
+     err = MosekError{ code:lastcode,msg:lastmsg}
+    return
+  }
+  barvaridx := make([]int32,_tmt257)
+  if len(barvaridx) > 0 { _tmt260 = (*int32)(&n[0]) }
+  var _tmt264 *int64
+  var _tmt261 int32
+  var _tmt262 int64
+  if _tmt263 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt261),addr(_tmt262)); _tmt263 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt263)
+     err = MosekError{ code:lastcode,msg:lastmsg}
+    return
+  }
+  ptrterm := make([]int64,_tmt261)
+  if len(ptrterm) > 0 { _tmt264 = (*int64)(&n[0]) }
+  var _tmt268 *int64
+  var _tmt265 int32
+  var _tmt266 int64
+  if _tmt267 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt265),addr(_tmt266)); _tmt267 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt267)
+     err = MosekError{ code:lastcode,msg:lastmsg}
+    return
+  }
+  numterm := make([]int64,_tmt265)
+  if len(numterm) > 0 { _tmt268 = (*int64)(&n[0]) }
+  var _tmt272 *int64
+  var _tmt269 int32
+  var _tmt270 int64
+  if _tmt271 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt269),addr(_tmt270)); _tmt271 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt271)
+     err = MosekError{ code:lastcode,msg:lastmsg}
+    return
+  }
+  termidx := make([]int64,_tmt270)
+  if len(termidx) > 0 { _tmt272 = (*int64)(&n[0]) }
+  var _tmt276 *float64
   var _tmt273 int32
   var _tmt274 int64
-  if _tmt275 := MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt273),addr(_tmt274)); _tmt275 != 0 {
+  if _tmt275 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt273),addr(_tmt274)); _tmt275 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmt275)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  barvaridx := make([]int32,_tmt273)
-  if len(barvaridx) > 0 { _tmt276 = (*int32)(&n[0]) }
-  var _tmt280 *int64
-  var _tmt277 int32
-  var _tmt278 int64
-  if _tmt279 := MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt277),addr(_tmt278)); _tmt279 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt279)
-     err = MosekError{ code:lastcode,msg:lastmsg}
-    return
-  }
-  ptrterm := make([]int64,_tmt277)
-  if len(ptrterm) > 0 { _tmt280 = (*int64)(&n[0]) }
-  var _tmt284 *int64
-  var _tmt281 int32
-  var _tmt282 int64
-  if _tmt283 := MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt281),addr(_tmt282)); _tmt283 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt283)
-     err = MosekError{ code:lastcode,msg:lastmsg}
-    return
-  }
-  numterm := make([]int64,_tmt281)
-  if len(numterm) > 0 { _tmt284 = (*int64)(&n[0]) }
-  var _tmt288 *int64
-  var _tmt285 int32
-  var _tmt286 int64
-  if _tmt287 := MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt285),addr(_tmt286)); _tmt287 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt287)
-     err = MosekError{ code:lastcode,msg:lastmsg}
-    return
-  }
-  termidx := make([]int64,_tmt286)
-  if len(termidx) > 0 { _tmt288 = (*int64)(&n[0]) }
-  var _tmt292 *float64
-  var _tmt289 int32
-  var _tmt290 int64
-  if _tmt291 := MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmt289),addr(_tmt290)); _tmt291 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt291)
-     err = MosekError{ code:lastcode,msg:lastmsg}
-    return
-  }
-  termweight := make([]float64,_tmt290)
-  if len(termweight) > 0 { _tmt292 = (*float64)(&n[0]) }
-  if _tmt293 := MSK_getafebarfrow(self.ptr(),afeidx,_tmt276,_tmt280,_tmt284,_tmt288,_tmt292); _tmt293 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt293)
+  termweight := make([]float64,_tmt274)
+  if len(termweight) > 0 { _tmt276 = (*float64)(&n[0]) }
+  if _tmt277 := C.MSK_getafebarfrow(self.ptr(),afeidx,_tmt260,_tmt264,_tmt268,_tmt272,_tmt276); _tmt277 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt277)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeBarfRowInfo(afeidx int64) (numentr int32,numterm int64,err error) {
-  if _tmt294 := MSK_getafebarfrowinfo(self.ptr(),afeidx,&numentr,&numterm); _tmt294 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt294)
+  if _tmt278 := C.MSK_getafebarfrowinfo(self.ptr(),afeidx,&numentr,&numterm); _tmt278 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt278)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeFNumNz() (numnz int64,err error) {
-  if _tmt295 := MSK_getafefnumnz(self.ptr(),&numnz); _tmt295 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt295)
+  if _tmt279 := C.MSK_getafefnumnz(self.ptr(),&numnz); _tmt279 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt279)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeFRow(afeidx int64) (numnz int32,varidx []int32,val []float64,err error) {
-  var _tmt298 *int32
-  var _tmt296 int32
-  if _tmt297 := MSK_getafefrownumnz(task.nativep,afeidx,addr(_tmt296)); _tmt297 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt297)
+  var _tmt282 *int32
+  var _tmt280 int32
+  if _tmt281 := C.MSK_getafefrownumnz(task.nativep,afeidx,addr(_tmt280)); _tmt281 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt281)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  varidx := make([]int32,_tmt296)
-  if len(varidx) > 0 { _tmt298 = (*int32)(&n[0]) }
-  var _tmt301 *float64
-  var _tmt299 int32
-  if _tmt300 := MSK_getafefrownumnz(task.nativep,afeidx,addr(_tmt299)); _tmt300 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt300)
+  varidx := make([]int32,_tmt280)
+  if len(varidx) > 0 { _tmt282 = (*int32)(&n[0]) }
+  var _tmt285 *float64
+  var _tmt283 int32
+  if _tmt284 := C.MSK_getafefrownumnz(task.nativep,afeidx,addr(_tmt283)); _tmt284 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt284)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  val := make([]float64,_tmt299)
-  if len(val) > 0 { _tmt301 = (*float64)(&n[0]) }
-  if _tmt302 := MSK_getafefrow(self.ptr(),afeidx,&numnz,_tmt298,_tmt301); _tmt302 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt302)
+  val := make([]float64,_tmt283)
+  if len(val) > 0 { _tmt285 = (*float64)(&n[0]) }
+  if _tmt286 := C.MSK_getafefrow(self.ptr(),afeidx,&numnz,_tmt282,_tmt285); _tmt286 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt286)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeFRowNumNz(afeidx int64) (numnz int32,err error) {
-  if _tmt303 := MSK_getafefrownumnz(self.ptr(),afeidx,&numnz); _tmt303 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt303)
+  if _tmt287 := C.MSK_getafefrownumnz(self.ptr(),afeidx,&numnz); _tmt287 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt287)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeFTrip() (afeidx []int64,varidx []int32,val []float64,err error) {
-  var _tmt306 *int64
-  var _tmt304 int64
-  if _tmt305 := MSK_getafefnumnz(task.nativep,addr(_tmt304)); _tmt305 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt305)
+  var _tmt290 *int64
+  var _tmt288 int64
+  if _tmt289 := C.MSK_getafefnumnz(task.nativep,addr(_tmt288)); _tmt289 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt289)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  afeidx := make([]int64,_tmt304)
-  if len(afeidx) > 0 { _tmt306 = (*int64)(&n[0]) }
-  var _tmt309 *int32
-  var _tmt307 int64
-  if _tmt308 := MSK_getafefnumnz(task.nativep,addr(_tmt307)); _tmt308 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt308)
+  afeidx := make([]int64,_tmt288)
+  if len(afeidx) > 0 { _tmt290 = (*int64)(&n[0]) }
+  var _tmt293 *int32
+  var _tmt291 int64
+  if _tmt292 := C.MSK_getafefnumnz(task.nativep,addr(_tmt291)); _tmt292 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt292)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  varidx := make([]int32,_tmt307)
-  if len(varidx) > 0 { _tmt309 = (*int32)(&n[0]) }
-  var _tmt312 *float64
-  var _tmt310 int64
-  if _tmt311 := MSK_getafefnumnz(task.nativep,addr(_tmt310)); _tmt311 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt311)
+  varidx := make([]int32,_tmt291)
+  if len(varidx) > 0 { _tmt293 = (*int32)(&n[0]) }
+  var _tmt296 *float64
+  var _tmt294 int64
+  if _tmt295 := C.MSK_getafefnumnz(task.nativep,addr(_tmt294)); _tmt295 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt295)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  val := make([]float64,_tmt310)
-  if len(val) > 0 { _tmt312 = (*float64)(&n[0]) }
-  if _tmt313 := MSK_getafeftrip(self.ptr(),_tmt306,_tmt309,_tmt312); _tmt313 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt313)
+  val := make([]float64,_tmt294)
+  if len(val) > 0 { _tmt296 = (*float64)(&n[0]) }
+  if _tmt297 := C.MSK_getafeftrip(self.ptr(),_tmt290,_tmt293,_tmt296); _tmt297 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt297)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeG(afeidx int64) (g float64,err error) {
-  if _tmt314 := MSK_getafeg(self.ptr(),afeidx,&g); _tmt314 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt314)
+  if _tmt298 := C.MSK_getafeg(self.ptr(),afeidx,&g); _tmt298 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt298)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAfeGSlice(first int64,last int64) (g []float64,err error) {
-  var _tmt315 *float64
+  var _tmt299 *float64
   g := make([]float64,(last - first))
-  if len(g) > 0 { _tmt315 = (*float64)(&n[0]) }
-  if _tmt316 := MSK_getafegslice(self.ptr(),first,last,_tmt315); _tmt316 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt316)
+  if len(g) > 0 { _tmt299 = (*float64)(&n[0]) }
+  if _tmt300 := C.MSK_getafegslice(self.ptr(),first,last,_tmt299); _tmt300 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt300)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAij(i int32,j int32) (aij float64,err error) {
-  if _tmt317 := MSK_getaij(self.ptr(),i,j,&aij); _tmt317 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt317)
+  if _tmt301 := C.MSK_getaij(self.ptr(),i,j,&aij); _tmt301 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt301)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetAPieceNumNz(firsti int32,lasti int32,firstj int32,lastj int32) (numnz int32,err error) {
-  if _tmt318 := MSK_getapiecenumnz(self.ptr(),firsti,lasti,firstj,lastj,&numnz); _tmt318 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt318)
+  if _tmt302 := C.MSK_getapiecenumnz(self.ptr(),firsti,lasti,firstj,lastj,&numnz); _tmt302 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt302)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetARow(i int32) (nzi int32,subi []int32,vali []float64,err error) {
-  var _tmt321 *int32
-  var _tmt319 int32
-  if _tmt320 := MSK_getarownumnz(task.nativep,i,addr(_tmt319)); _tmt320 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt320)
+  var _tmt305 *int32
+  var _tmt303 int32
+  if _tmt304 := C.MSK_getarownumnz(task.nativep,i,addr(_tmt303)); _tmt304 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt304)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  subi := make([]int32,_tmt319)
-  if len(subi) > 0 { _tmt321 = (*int32)(&n[0]) }
-  var _tmt324 *float64
-  var _tmt322 int32
-  if _tmt323 := MSK_getarownumnz(task.nativep,i,addr(_tmt322)); _tmt323 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt323)
+  subi := make([]int32,_tmt303)
+  if len(subi) > 0 { _tmt305 = (*int32)(&n[0]) }
+  var _tmt308 *float64
+  var _tmt306 int32
+  if _tmt307 := C.MSK_getarownumnz(task.nativep,i,addr(_tmt306)); _tmt307 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt307)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  vali := make([]float64,_tmt322)
-  if len(vali) > 0 { _tmt324 = (*float64)(&n[0]) }
-  if _tmt325 := MSK_getarow(self.ptr(),i,&nzi,_tmt321,_tmt324); _tmt325 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt325)
+  vali := make([]float64,_tmt306)
+  if len(vali) > 0 { _tmt308 = (*float64)(&n[0]) }
+  if _tmt309 := C.MSK_getarow(self.ptr(),i,&nzi,_tmt305,_tmt308); _tmt309 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt309)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetARowNumNz(i int32) (nzi int32,err error) {
-  if _tmt326 := MSK_getarownumnz(self.ptr(),i,&nzi); _tmt326 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt326)
+  if _tmt310 := C.MSK_getarownumnz(self.ptr(),i,&nzi); _tmt310 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt310)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetARowSlice(first int32,last int32) (ptrb []int64,ptre []int64,sub []int32,val []float64,err error) {
-  var _tmt327 int64
-  if _tmt328 := MSK_getarowslicenumnz64(task.nativep,first,last,addr(_tmt327)); _tmt328 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt328)
+  var _tmt311 int64
+  if _tmt312 := C.MSK_getarowslicenumnz64(task.nativep,first,last,addr(_tmt311)); _tmt312 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt312)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumnz int64 = _tmt327
-  var _tmt329 *int64
+  var maxnumnz int64 = _tmt311
+  var _tmt313 *int64
   ptrb := make([]int64,(last - first))
-  if len(ptrb) > 0 { _tmt329 = (*int64)(&n[0]) }
-  var _tmt330 *int64
+  if len(ptrb) > 0 { _tmt313 = (*int64)(&n[0]) }
+  var _tmt314 *int64
   ptre := make([]int64,(last - first))
-  if len(ptre) > 0 { _tmt330 = (*int64)(&n[0]) }
-  var _tmt331 *int32
+  if len(ptre) > 0 { _tmt314 = (*int64)(&n[0]) }
+  var _tmt315 *int32
   sub := make([]int32,maxnumnz)
-  if len(sub) > 0 { _tmt331 = (*int32)(&n[0]) }
-  var _tmt332 *float64
+  if len(sub) > 0 { _tmt315 = (*int32)(&n[0]) }
+  var _tmt316 *float64
   val := make([]float64,maxnumnz)
-  if len(val) > 0 { _tmt332 = (*float64)(&n[0]) }
-  if _tmt333 := MSK_getarowslice64(self.ptr(),first,last,maxnumnz,_tmt329,_tmt330,_tmt331,_tmt332); _tmt333 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt333)
+  if len(val) > 0 { _tmt316 = (*float64)(&n[0]) }
+  if _tmt317 := C.MSK_getarowslice64(self.ptr(),first,last,maxnumnz,_tmt313,_tmt314,_tmt315,_tmt316); _tmt317 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt317)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetARowSliceNumNz(first int32,last int32) (numnz int64,err error) {
-  if _tmt334 := MSK_getarowslicenumnz64(self.ptr(),first,last,&numnz); _tmt334 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt334)
+  if _tmt318 := C.MSK_getarowslicenumnz64(self.ptr(),first,last,&numnz); _tmt318 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt318)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetARowSliceTrip(first int32,last int32) (subi []int32,subj []int32,val []float64,err error) {
-  var _tmt335 int64
-  if _tmt336 := MSK_getarowslicenumnz64(task.nativep,first,last,addr(_tmt335)); _tmt336 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt336)
+  var _tmt319 int64
+  if _tmt320 := C.MSK_getarowslicenumnz64(task.nativep,first,last,addr(_tmt319)); _tmt320 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt320)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumnz int64 = _tmt335
-  var _tmt337 *int32
+  var maxnumnz int64 = _tmt319
+  var _tmt321 *int32
   subi := make([]int32,maxnumnz)
-  if len(subi) > 0 { _tmt337 = (*int32)(&n[0]) }
-  var _tmt338 *int32
+  if len(subi) > 0 { _tmt321 = (*int32)(&n[0]) }
+  var _tmt322 *int32
   subj := make([]int32,maxnumnz)
-  if len(subj) > 0 { _tmt338 = (*int32)(&n[0]) }
-  var _tmt339 *float64
+  if len(subj) > 0 { _tmt322 = (*int32)(&n[0]) }
+  var _tmt323 *float64
   val := make([]float64,maxnumnz)
-  if len(val) > 0 { _tmt339 = (*float64)(&n[0]) }
-  if _tmt340 := MSK_getarowslicetrip(self.ptr(),first,last,maxnumnz,_tmt337,_tmt338,_tmt339); _tmt340 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt340)
+  if len(val) > 0 { _tmt323 = (*float64)(&n[0]) }
+  if _tmt324 := C.MSK_getarowslicetrip(self.ptr(),first,last,maxnumnz,_tmt321,_tmt322,_tmt323); _tmt324 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt324)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetATrip() (subi []int32,subj []int32,val []float64,err error) {
-  var _tmt341 int64
-  if _tmt342 := MSK_getnumanz64(task.nativep,addr(_tmt341)); _tmt342 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt342)
+  var _tmt325 int64
+  if _tmt326 := C.MSK_getnumanz64(task.nativep,addr(_tmt325)); _tmt326 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt326)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumnz int64 = _tmt341
-  var _tmt343 *int32
+  var maxnumnz int64 = _tmt325
+  var _tmt327 *int32
   subi := make([]int32,maxnumnz)
-  if len(subi) > 0 { _tmt343 = (*int32)(&n[0]) }
-  var _tmt344 *int32
+  if len(subi) > 0 { _tmt327 = (*int32)(&n[0]) }
+  var _tmt328 *int32
   subj := make([]int32,maxnumnz)
-  if len(subj) > 0 { _tmt344 = (*int32)(&n[0]) }
-  var _tmt345 *float64
+  if len(subj) > 0 { _tmt328 = (*int32)(&n[0]) }
+  var _tmt329 *float64
   val := make([]float64,maxnumnz)
-  if len(val) > 0 { _tmt345 = (*float64)(&n[0]) }
-  if _tmt346 := MSK_getatrip(self.ptr(),maxnumnz,_tmt343,_tmt344,_tmt345); _tmt346 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt346)
+  if len(val) > 0 { _tmt329 = (*float64)(&n[0]) }
+  if _tmt330 := C.MSK_getatrip(self.ptr(),maxnumnz,_tmt327,_tmt328,_tmt329); _tmt330 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt330)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetATruncateTol() (tolzero []float64,err error) {
-  var _tmt347 *float64
+  var _tmt331 *float64
   tolzero := make([]float64,1)
-  if len(tolzero) > 0 { _tmt347 = (*float64)(&n[0]) }
-  if _tmt348 := MSK_getatruncatetol(self.ptr(),_tmt347); _tmt348 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt348)
+  if len(tolzero) > 0 { _tmt331 = (*float64)(&n[0]) }
+  if _tmt332 := C.MSK_getatruncatetol(self.ptr(),_tmt331); _tmt332 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt332)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBaraBlockTriplet() (num int64,subi []int32,subj []int32,subk []int32,subl []int32,valijkl []float64,err error) {
-  var _tmt349 int64
-  if _tmt350 := MSK_getnumbarablocktriplets(task.nativep,addr(_tmt349)); _tmt350 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt350)
+  var _tmt333 int64
+  if _tmt334 := C.MSK_getnumbarablocktriplets(task.nativep,addr(_tmt333)); _tmt334 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt334)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnum int64 = _tmt349
-  var _tmt351 *int32
+  var maxnum int64 = _tmt333
+  var _tmt335 *int32
   subi := make([]int32,maxnum)
-  if len(subi) > 0 { _tmt351 = (*int32)(&n[0]) }
-  var _tmt352 *int32
+  if len(subi) > 0 { _tmt335 = (*int32)(&n[0]) }
+  var _tmt336 *int32
   subj := make([]int32,maxnum)
-  if len(subj) > 0 { _tmt352 = (*int32)(&n[0]) }
-  var _tmt353 *int32
+  if len(subj) > 0 { _tmt336 = (*int32)(&n[0]) }
+  var _tmt337 *int32
   subk := make([]int32,maxnum)
-  if len(subk) > 0 { _tmt353 = (*int32)(&n[0]) }
-  var _tmt354 *int32
+  if len(subk) > 0 { _tmt337 = (*int32)(&n[0]) }
+  var _tmt338 *int32
   subl := make([]int32,maxnum)
-  if len(subl) > 0 { _tmt354 = (*int32)(&n[0]) }
-  var _tmt355 *float64
+  if len(subl) > 0 { _tmt338 = (*int32)(&n[0]) }
+  var _tmt339 *float64
   valijkl := make([]float64,maxnum)
-  if len(valijkl) > 0 { _tmt355 = (*float64)(&n[0]) }
-  if _tmt356 := MSK_getbarablocktriplet(self.ptr(),maxnum,&num,_tmt351,_tmt352,_tmt353,_tmt354,_tmt355); _tmt356 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt356)
+  if len(valijkl) > 0 { _tmt339 = (*float64)(&n[0]) }
+  if _tmt340 := C.MSK_getbarablocktriplet(self.ptr(),maxnum,&num,_tmt335,_tmt336,_tmt337,_tmt338,_tmt339); _tmt340 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt340)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBaraIdx(idx int64) (i int32,j int32,num int64,sub []int64,weights []float64,err error) {
-  var _tmt357 int64
-  if _tmt358 := MSK_getbaraidxinfo(task.nativep,idx,addr(_tmt357)); _tmt358 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt358)
+  var _tmt341 int64
+  if _tmt342 := C.MSK_getbaraidxinfo(task.nativep,idx,addr(_tmt341)); _tmt342 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt342)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnum int64 = _tmt357
-  var _tmt359 *int64
+  var maxnum int64 = _tmt341
+  var _tmt343 *int64
   sub := make([]int64,maxnum)
-  if len(sub) > 0 { _tmt359 = (*int64)(&n[0]) }
-  var _tmt360 *float64
+  if len(sub) > 0 { _tmt343 = (*int64)(&n[0]) }
+  var _tmt344 *float64
   weights := make([]float64,maxnum)
-  if len(weights) > 0 { _tmt360 = (*float64)(&n[0]) }
-  if _tmt361 := MSK_getbaraidx(self.ptr(),idx,maxnum,&i,&j,&num,_tmt359,_tmt360); _tmt361 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt361)
+  if len(weights) > 0 { _tmt344 = (*float64)(&n[0]) }
+  if _tmt345 := C.MSK_getbaraidx(self.ptr(),idx,maxnum,&i,&j,&num,_tmt343,_tmt344); _tmt345 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt345)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBaraIdxIJ(idx int64) (i int32,j int32,err error) {
-  if _tmt362 := MSK_getbaraidxij(self.ptr(),idx,&i,&j); _tmt362 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt362)
+  if _tmt346 := C.MSK_getbaraidxij(self.ptr(),idx,&i,&j); _tmt346 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt346)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBaraIdxInfo(idx int64) (num int64,err error) {
-  if _tmt363 := MSK_getbaraidxinfo(self.ptr(),idx,&num); _tmt363 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt363)
+  if _tmt347 := C.MSK_getbaraidxinfo(self.ptr(),idx,&num); _tmt347 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt347)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBaraSparsity() (numnz int64,idxij []int64,err error) {
-  var _tmt364 int64
-  if _tmt365 := MSK_getnumbaranz(task.nativep,addr(_tmt364)); _tmt365 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt365)
+  var _tmt348 int64
+  if _tmt349 := C.MSK_getnumbaranz(task.nativep,addr(_tmt348)); _tmt349 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt349)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumnz int64 = _tmt364
-  var _tmt366 *int64
+  var maxnumnz int64 = _tmt348
+  var _tmt350 *int64
   idxij := make([]int64,maxnumnz)
-  if len(idxij) > 0 { _tmt366 = (*int64)(&n[0]) }
-  if _tmt367 := MSK_getbarasparsity(self.ptr(),maxnumnz,&numnz,_tmt366); _tmt367 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt367)
+  if len(idxij) > 0 { _tmt350 = (*int64)(&n[0]) }
+  if _tmt351 := C.MSK_getbarasparsity(self.ptr(),maxnumnz,&numnz,_tmt350); _tmt351 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt351)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarcBlockTriplet() (num int64,subj []int32,subk []int32,subl []int32,valjkl []float64,err error) {
-  var _tmt368 int64
-  if _tmt369 := MSK_getnumbarcblocktriplets(task.nativep,addr(_tmt368)); _tmt369 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt369)
+  var _tmt352 int64
+  if _tmt353 := C.MSK_getnumbarcblocktriplets(task.nativep,addr(_tmt352)); _tmt353 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt353)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnum int64 = _tmt368
-  var _tmt370 *int32
+  var maxnum int64 = _tmt352
+  var _tmt354 *int32
   subj := make([]int32,maxnum)
-  if len(subj) > 0 { _tmt370 = (*int32)(&n[0]) }
-  var _tmt371 *int32
+  if len(subj) > 0 { _tmt354 = (*int32)(&n[0]) }
+  var _tmt355 *int32
   subk := make([]int32,maxnum)
-  if len(subk) > 0 { _tmt371 = (*int32)(&n[0]) }
-  var _tmt372 *int32
+  if len(subk) > 0 { _tmt355 = (*int32)(&n[0]) }
+  var _tmt356 *int32
   subl := make([]int32,maxnum)
-  if len(subl) > 0 { _tmt372 = (*int32)(&n[0]) }
-  var _tmt373 *float64
+  if len(subl) > 0 { _tmt356 = (*int32)(&n[0]) }
+  var _tmt357 *float64
   valjkl := make([]float64,maxnum)
-  if len(valjkl) > 0 { _tmt373 = (*float64)(&n[0]) }
-  if _tmt374 := MSK_getbarcblocktriplet(self.ptr(),maxnum,&num,_tmt370,_tmt371,_tmt372,_tmt373); _tmt374 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt374)
+  if len(valjkl) > 0 { _tmt357 = (*float64)(&n[0]) }
+  if _tmt358 := C.MSK_getbarcblocktriplet(self.ptr(),maxnum,&num,_tmt354,_tmt355,_tmt356,_tmt357); _tmt358 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt358)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarcIdx(idx int64) (j int32,num int64,sub []int64,weights []float64,err error) {
-  var _tmt375 int64
-  if _tmt376 := MSK_getbarcidxinfo(task.nativep,idx,addr(_tmt375)); _tmt376 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt376)
+  var _tmt359 int64
+  if _tmt360 := C.MSK_getbarcidxinfo(task.nativep,idx,addr(_tmt359)); _tmt360 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt360)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnum int64 = _tmt375
-  var _tmt377 *int64
+  var maxnum int64 = _tmt359
+  var _tmt361 *int64
   sub := make([]int64,maxnum)
-  if len(sub) > 0 { _tmt377 = (*int64)(&n[0]) }
-  var _tmt378 *float64
+  if len(sub) > 0 { _tmt361 = (*int64)(&n[0]) }
+  var _tmt362 *float64
   weights := make([]float64,maxnum)
-  if len(weights) > 0 { _tmt378 = (*float64)(&n[0]) }
-  if _tmt379 := MSK_getbarcidx(self.ptr(),idx,maxnum,&j,&num,_tmt377,_tmt378); _tmt379 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt379)
+  if len(weights) > 0 { _tmt362 = (*float64)(&n[0]) }
+  if _tmt363 := C.MSK_getbarcidx(self.ptr(),idx,maxnum,&j,&num,_tmt361,_tmt362); _tmt363 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt363)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarcIdxInfo(idx int64) (num int64,err error) {
-  if _tmt380 := MSK_getbarcidxinfo(self.ptr(),idx,&num); _tmt380 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt380)
+  if _tmt364 := C.MSK_getbarcidxinfo(self.ptr(),idx,&num); _tmt364 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt364)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarcIdxJ(idx int64) (j int32,err error) {
-  if _tmt381 := MSK_getbarcidxj(self.ptr(),idx,&j); _tmt381 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt381)
+  if _tmt365 := C.MSK_getbarcidxj(self.ptr(),idx,&j); _tmt365 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt365)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarcSparsity() (numnz int64,idxj []int64,err error) {
-  var _tmt382 int64
-  if _tmt383 := MSK_getnumbarcnz(task.nativep,addr(_tmt382)); _tmt383 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt383)
+  var _tmt366 int64
+  if _tmt367 := C.MSK_getnumbarcnz(task.nativep,addr(_tmt366)); _tmt367 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt367)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumnz int64 = _tmt382
-  var _tmt384 *int64
+  var maxnumnz int64 = _tmt366
+  var _tmt368 *int64
   idxj := make([]int64,maxnumnz)
-  if len(idxj) > 0 { _tmt384 = (*int64)(&n[0]) }
-  if _tmt385 := MSK_getbarcsparsity(self.ptr(),maxnumnz,&numnz,_tmt384); _tmt385 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt385)
+  if len(idxj) > 0 { _tmt368 = (*int64)(&n[0]) }
+  if _tmt369 := C.MSK_getbarcsparsity(self.ptr(),maxnumnz,&numnz,_tmt368); _tmt369 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt369)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarsJ(whichsol Soltype,j int32) (barsj []float64,err error) {
-  var _tmt388 *float64
-  var _tmt386 int64
-  if _tmt387 := MSK_getlenbarvarj(task.nativep,j,addr(_tmt386)); _tmt387 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt387)
+  var _tmt372 *float64
+  var _tmt370 int64
+  if _tmt371 := C.MSK_getlenbarvarj(task.nativep,j,addr(_tmt370)); _tmt371 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt371)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  barsj := make([]float64,_tmt386)
-  if len(barsj) > 0 { _tmt388 = (*float64)(&n[0]) }
-  if _tmt389 := MSK_getbarsj(self.ptr(),whichsol,j,_tmt388); _tmt389 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt389)
+  barsj := make([]float64,_tmt370)
+  if len(barsj) > 0 { _tmt372 = (*float64)(&n[0]) }
+  if _tmt373 := C.MSK_getbarsj(self.ptr(),whichsol,j,_tmt372); _tmt373 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt373)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarsSlice(whichsol Soltype,first int32,last int32,slicesize int64) (barsslice []float64,err error) {
-  var _tmt390 *float64
+  var _tmt374 *float64
   barsslice := make([]float64,slicesize)
-  if len(barsslice) > 0 { _tmt390 = (*float64)(&n[0]) }
-  if _tmt391 := MSK_getbarsslice(self.ptr(),whichsol,first,last,slicesize,_tmt390); _tmt391 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt391)
+  if len(barsslice) > 0 { _tmt374 = (*float64)(&n[0]) }
+  if _tmt375 := C.MSK_getbarsslice(self.ptr(),whichsol,first,last,slicesize,_tmt374); _tmt375 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt375)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarvarName(i int32) (name string,err error) {
-  var _tmt392 int32
-  if _tmt393 := MSK_getbarvarnamelen(task.nativep,i,addr(_tmt392)); _tmt393 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt393)
+  var _tmt376 int32
+  if _tmt377 := C.MSK_getbarvarnamelen(task.nativep,i,addr(_tmt376)); _tmt377 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt377)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizename int32 = (1 + _tmt392)
-  _tmt394 := make([]byte,sizename)
-  if _tmt395 := MSK_getbarvarname(self.ptr(),i,sizename,C.CString(&tmpvar1[0])); _tmt395 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt395)
+  var sizename int32 = (1 + _tmt376)
+  _tmt378 := make([]byte,sizename)
+  if _tmt379 := C.MSK_getbarvarname(self.ptr(),i,sizename,C.CString(&tmpvar1[0])); _tmt379 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt379)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var name string
-  if p := strings.IndexByte(_tmt394,byte(0)); p < 0 {
-    name = string(_tmt394)
+  if p := strings.IndexByte(_tmt378,byte(0)); p < 0 {
+    name = string(_tmt378)
   } else {
-    name = string(_tmt394[:p])
+    name = string(_tmt378[:p])
   }
   return
 }
 func (self *Task) GetBarvarNameIndex(somename string) (asgn int32,index int32,err error) {
-  _tmt396 := C.CString(somename)
-  if _tmt397 := MSK_getbarvarnameindex(self.ptr(),_tmt396,&asgn,&index); _tmt397 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt397)
+  _tmt380 := C.CString(somename)
+  if _tmt381 := C.MSK_getbarvarnameindex(self.ptr(),_tmt380,&asgn,&index); _tmt381 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt381)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarvarNameLen(i int32) (len int32,err error) {
-  if _tmt398 := MSK_getbarvarnamelen(self.ptr(),i,&len); _tmt398 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt398)
+  if _tmt382 := C.MSK_getbarvarnamelen(self.ptr(),i,&len); _tmt382 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt382)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarxJ(whichsol Soltype,j int32) (barxj []float64,err error) {
-  var _tmt401 *float64
-  var _tmt399 int64
-  if _tmt400 := MSK_getlenbarvarj(task.nativep,j,addr(_tmt399)); _tmt400 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt400)
+  var _tmt385 *float64
+  var _tmt383 int64
+  if _tmt384 := C.MSK_getlenbarvarj(task.nativep,j,addr(_tmt383)); _tmt384 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt384)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  barxj := make([]float64,_tmt399)
-  if len(barxj) > 0 { _tmt401 = (*float64)(&n[0]) }
-  if _tmt402 := MSK_getbarxj(self.ptr(),whichsol,j,_tmt401); _tmt402 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt402)
+  barxj := make([]float64,_tmt383)
+  if len(barxj) > 0 { _tmt385 = (*float64)(&n[0]) }
+  if _tmt386 := C.MSK_getbarxj(self.ptr(),whichsol,j,_tmt385); _tmt386 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt386)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetBarxSlice(whichsol Soltype,first int32,last int32,slicesize int64) (barxslice []float64,err error) {
-  var _tmt403 *float64
+  var _tmt387 *float64
   barxslice := make([]float64,slicesize)
-  if len(barxslice) > 0 { _tmt403 = (*float64)(&n[0]) }
-  if _tmt404 := MSK_getbarxslice(self.ptr(),whichsol,first,last,slicesize,_tmt403); _tmt404 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt404)
+  if len(barxslice) > 0 { _tmt387 = (*float64)(&n[0]) }
+  if _tmt388 := C.MSK_getbarxslice(self.ptr(),whichsol,first,last,slicesize,_tmt387); _tmt388 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt388)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetC() (c []float64,err error) {
-  var _tmt407 *float64
-  var _tmt405 int32
-  if _tmt406 := MSK_getnumvar(task.nativep,addr(_tmt405)); _tmt406 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt406)
+  var _tmt391 *float64
+  var _tmt389 int32
+  if _tmt390 := C.MSK_getnumvar(task.nativep,addr(_tmt389)); _tmt390 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt390)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  c := make([]float64,_tmt405)
-  if len(c) > 0 { _tmt407 = (*float64)(&n[0]) }
-  if _tmt408 := MSK_getc(self.ptr(),_tmt407); _tmt408 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt408)
+  c := make([]float64,_tmt389)
+  if len(c) > 0 { _tmt391 = (*float64)(&n[0]) }
+  if _tmt392 := C.MSK_getc(self.ptr(),_tmt391); _tmt392 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt392)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetCfix() (cfix float64,err error) {
-  if _tmt409 := MSK_getcfix(self.ptr(),&cfix); _tmt409 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt409)
+  if _tmt393 := C.MSK_getcfix(self.ptr(),&cfix); _tmt393 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt393)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetCJ(j int32) (cj float64,err error) {
-  if _tmt410 := MSK_getcj(self.ptr(),j,&cj); _tmt410 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt410)
+  if _tmt394 := C.MSK_getcj(self.ptr(),j,&cj); _tmt394 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt394)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetCList(subj []int32) (c []float64,err error) {
-  _tmt411 := len(subj)
-  var num int32 = int32(_tmt411)
-  var _tmt412 *int32
-  if subj != nil { _tmt412 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt413 *float64
+  _tmt395 := len(subj)
+  var num int32 = int32(_tmt395)
+  var _tmt396 *int32
+  if subj != nil { _tmt396 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt397 *float64
   c := make([]float64,num)
-  if len(c) > 0 { _tmt413 = (*float64)(&n[0]) }
-  if _tmt414 := MSK_getclist(self.ptr(),num,_tmt412,_tmt413); _tmt414 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt414)
+  if len(c) > 0 { _tmt397 = (*float64)(&n[0]) }
+  if _tmt398 := C.MSK_getclist(self.ptr(),num,_tmt396,_tmt397); _tmt398 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt398)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetConBound(i int32) (bk Boundkey,bl float64,bu float64,err error) {
-  if _tmt415 := MSK_getconbound(self.ptr(),i,&bk,&bl,&bu); _tmt415 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt415)
+  if _tmt399 := C.MSK_getconbound(self.ptr(),i,&bk,&bl,&bu); _tmt399 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt399)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetConBoundSlice(first int32,last int32) (bk []Boundkey,bl []float64,bu []float64,err error) {
-  var _tmt416 *Boundkey
+  var _tmt400 *Boundkey
   bk := make([]Boundkey,(last - first))
-  if len(bk) > 0 { _tmt416 = (*Boundkey)(&n[0]) }
-  var _tmt417 *float64
+  if len(bk) > 0 { _tmt400 = (*Boundkey)(&n[0]) }
+  var _tmt401 *float64
   bl := make([]float64,(last - first))
-  if len(bl) > 0 { _tmt417 = (*float64)(&n[0]) }
-  var _tmt418 *float64
+  if len(bl) > 0 { _tmt401 = (*float64)(&n[0]) }
+  var _tmt402 *float64
   bu := make([]float64,(last - first))
-  if len(bu) > 0 { _tmt418 = (*float64)(&n[0]) }
-  if _tmt419 := MSK_getconboundslice(self.ptr(),first,last,_tmt416,_tmt417,_tmt418); _tmt419 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt419)
+  if len(bu) > 0 { _tmt402 = (*float64)(&n[0]) }
+  if _tmt403 := C.MSK_getconboundslice(self.ptr(),first,last,_tmt400,_tmt401,_tmt402); _tmt403 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt403)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetCone(k int32) (ct Conetype,conepar float64,nummem int32,submem []int32,err error) {
-  var _tmt424 *int32
-  var _tmt420 conetype
-  var _tmt421 float64
-  var _tmt422 int32
-  if _tmt423 := MSK_getconeinfo(task.nativep,k,addr(_tmt420),addr(_tmt421),addr(_tmt422)); _tmt423 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt423)
+  var _tmt408 *int32
+  var _tmt404 conetype
+  var _tmt405 float64
+  var _tmt406 int32
+  if _tmt407 := C.MSK_getconeinfo(task.nativep,k,addr(_tmt404),addr(_tmt405),addr(_tmt406)); _tmt407 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt407)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  submem := make([]int32,_tmt422)
-  if len(submem) > 0 { _tmt424 = (*int32)(&n[0]) }
-  if _tmt425 := MSK_getcone(self.ptr(),k,&ct,&conepar,&nummem,_tmt424); _tmt425 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt425)
+  submem := make([]int32,_tmt406)
+  if len(submem) > 0 { _tmt408 = (*int32)(&n[0]) }
+  if _tmt409 := C.MSK_getcone(self.ptr(),k,&ct,&conepar,&nummem,_tmt408); _tmt409 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt409)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetConeInfo(k int32) (ct Conetype,conepar float64,nummem int32,err error) {
-  if _tmt426 := MSK_getconeinfo(self.ptr(),k,&ct,&conepar,&nummem); _tmt426 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt426)
+  if _tmt410 := C.MSK_getconeinfo(self.ptr(),k,&ct,&conepar,&nummem); _tmt410 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt410)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetConeName(i int32) (name string,err error) {
-  var _tmt427 int32
-  if _tmt428 := MSK_getconenamelen(task.nativep,i,addr(_tmt427)); _tmt428 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt428)
+  var _tmt411 int32
+  if _tmt412 := C.MSK_getconenamelen(task.nativep,i,addr(_tmt411)); _tmt412 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt412)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizename int32 = (1 + _tmt427)
-  _tmt429 := make([]byte,sizename)
-  if _tmt430 := MSK_getconename(self.ptr(),i,sizename,C.CString(&tmpvar1[0])); _tmt430 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt430)
+  var sizename int32 = (1 + _tmt411)
+  _tmt413 := make([]byte,sizename)
+  if _tmt414 := C.MSK_getconename(self.ptr(),i,sizename,C.CString(&tmpvar1[0])); _tmt414 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt414)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var name string
-  if p := strings.IndexByte(_tmt429,byte(0)); p < 0 {
-    name = string(_tmt429)
+  if p := strings.IndexByte(_tmt413,byte(0)); p < 0 {
+    name = string(_tmt413)
   } else {
-    name = string(_tmt429[:p])
+    name = string(_tmt413[:p])
   }
   return
 }
 func (self *Task) GetConeNameIndex(somename string) (asgn int32,index int32,err error) {
-  _tmt431 := C.CString(somename)
-  if _tmt432 := MSK_getconenameindex(self.ptr(),_tmt431,&asgn,&index); _tmt432 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt432)
+  _tmt415 := C.CString(somename)
+  if _tmt416 := C.MSK_getconenameindex(self.ptr(),_tmt415,&asgn,&index); _tmt416 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt416)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetConeNameLen(i int32) (len int32,err error) {
-  if _tmt433 := MSK_getconenamelen(self.ptr(),i,&len); _tmt433 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt433)
+  if _tmt417 := C.MSK_getconenamelen(self.ptr(),i,&len); _tmt417 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt417)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetConName(i int32) (name string,err error) {
-  var _tmt434 int32
-  if _tmt435 := MSK_getconnamelen(task.nativep,i,addr(_tmt434)); _tmt435 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt435)
+  var _tmt418 int32
+  if _tmt419 := C.MSK_getconnamelen(task.nativep,i,addr(_tmt418)); _tmt419 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt419)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizename int32 = (1 + _tmt434)
-  _tmt436 := make([]byte,sizename)
-  if _tmt437 := MSK_getconname(self.ptr(),i,sizename,C.CString(&tmpvar1[0])); _tmt437 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt437)
+  var sizename int32 = (1 + _tmt418)
+  _tmt420 := make([]byte,sizename)
+  if _tmt421 := C.MSK_getconname(self.ptr(),i,sizename,C.CString(&tmpvar1[0])); _tmt421 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt421)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var name string
-  if p := strings.IndexByte(_tmt436,byte(0)); p < 0 {
-    name = string(_tmt436)
+  if p := strings.IndexByte(_tmt420,byte(0)); p < 0 {
+    name = string(_tmt420)
   } else {
-    name = string(_tmt436[:p])
+    name = string(_tmt420[:p])
   }
   return
 }
 func (self *Task) GetConNameIndex(somename string) (asgn int32,index int32,err error) {
-  _tmt438 := C.CString(somename)
-  if _tmt439 := MSK_getconnameindex(self.ptr(),_tmt438,&asgn,&index); _tmt439 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt439)
+  _tmt422 := C.CString(somename)
+  if _tmt423 := C.MSK_getconnameindex(self.ptr(),_tmt422,&asgn,&index); _tmt423 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt423)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetConNameLen(i int32) (len int32,err error) {
-  if _tmt440 := MSK_getconnamelen(self.ptr(),i,&len); _tmt440 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt440)
+  if _tmt424 := C.MSK_getconnamelen(self.ptr(),i,&len); _tmt424 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt424)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetCSlice(first int32,last int32) (c []float64,err error) {
-  var _tmt441 *float64
+  var _tmt425 *float64
   c := make([]float64,(last - first))
-  if len(c) > 0 { _tmt441 = (*float64)(&n[0]) }
-  if _tmt442 := MSK_getcslice(self.ptr(),first,last,_tmt441); _tmt442 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt442)
+  if len(c) > 0 { _tmt425 = (*float64)(&n[0]) }
+  if _tmt426 := C.MSK_getcslice(self.ptr(),first,last,_tmt425); _tmt426 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt426)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDimBarvarJ(j int32) (dimbarvarj int32,err error) {
-  if _tmt443 := MSK_getdimbarvarj(self.ptr(),j,&dimbarvarj); _tmt443 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt443)
+  if _tmt427 := C.MSK_getdimbarvarj(self.ptr(),j,&dimbarvarj); _tmt427 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt427)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcAfeIdxList(djcidx int64) (afeidxlist []int64,err error) {
-  var _tmt446 *int64
-  var _tmt444 int64
-  if _tmt445 := MSK_getdjcnumafe(task.nativep,djcidx,addr(_tmt444)); _tmt445 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt445)
+  var _tmt430 *int64
+  var _tmt428 int64
+  if _tmt429 := C.MSK_getdjcnumafe(task.nativep,djcidx,addr(_tmt428)); _tmt429 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt429)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  afeidxlist := make([]int64,_tmt444)
-  if len(afeidxlist) > 0 { _tmt446 = (*int64)(&n[0]) }
-  if _tmt447 := MSK_getdjcafeidxlist(self.ptr(),djcidx,_tmt446); _tmt447 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt447)
+  afeidxlist := make([]int64,_tmt428)
+  if len(afeidxlist) > 0 { _tmt430 = (*int64)(&n[0]) }
+  if _tmt431 := C.MSK_getdjcafeidxlist(self.ptr(),djcidx,_tmt430); _tmt431 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt431)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcB(djcidx int64) (b []float64,err error) {
-  var _tmt450 *float64
-  var _tmt448 int64
-  if _tmt449 := MSK_getdjcnumafe(task.nativep,djcidx,addr(_tmt448)); _tmt449 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt449)
+  var _tmt434 *float64
+  var _tmt432 int64
+  if _tmt433 := C.MSK_getdjcnumafe(task.nativep,djcidx,addr(_tmt432)); _tmt433 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt433)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  b := make([]float64,_tmt448)
-  if len(b) > 0 { _tmt450 = (*float64)(&n[0]) }
-  if _tmt451 := MSK_getdjcb(self.ptr(),djcidx,_tmt450); _tmt451 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt451)
+  b := make([]float64,_tmt432)
+  if len(b) > 0 { _tmt434 = (*float64)(&n[0]) }
+  if _tmt435 := C.MSK_getdjcb(self.ptr(),djcidx,_tmt434); _tmt435 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt435)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcDomainIdxList(djcidx int64) (domidxlist []int64,err error) {
-  var _tmt454 *int64
-  var _tmt452 int64
-  if _tmt453 := MSK_getdjcnumdomain(task.nativep,djcidx,addr(_tmt452)); _tmt453 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt453)
+  var _tmt438 *int64
+  var _tmt436 int64
+  if _tmt437 := C.MSK_getdjcnumdomain(task.nativep,djcidx,addr(_tmt436)); _tmt437 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt437)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  domidxlist := make([]int64,_tmt452)
-  if len(domidxlist) > 0 { _tmt454 = (*int64)(&n[0]) }
-  if _tmt455 := MSK_getdjcdomainidxlist(self.ptr(),djcidx,_tmt454); _tmt455 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt455)
+  domidxlist := make([]int64,_tmt436)
+  if len(domidxlist) > 0 { _tmt438 = (*int64)(&n[0]) }
+  if _tmt439 := C.MSK_getdjcdomainidxlist(self.ptr(),djcidx,_tmt438); _tmt439 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt439)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcName(djcidx int64) (name string,err error) {
-  var _tmt456 int32
-  if _tmt457 := MSK_getdjcnamelen(task.nativep,djcidx,addr(_tmt456)); _tmt457 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt457)
+  var _tmt440 int32
+  if _tmt441 := C.MSK_getdjcnamelen(task.nativep,djcidx,addr(_tmt440)); _tmt441 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt441)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizename int32 = (1 + _tmt456)
-  _tmt458 := make([]byte,sizename)
-  if _tmt459 := MSK_getdjcname(self.ptr(),djcidx,sizename,C.CString(&tmpvar1[0])); _tmt459 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt459)
+  var sizename int32 = (1 + _tmt440)
+  _tmt442 := make([]byte,sizename)
+  if _tmt443 := C.MSK_getdjcname(self.ptr(),djcidx,sizename,C.CString(&tmpvar1[0])); _tmt443 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt443)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var name string
-  if p := strings.IndexByte(_tmt458,byte(0)); p < 0 {
-    name = string(_tmt458)
+  if p := strings.IndexByte(_tmt442,byte(0)); p < 0 {
+    name = string(_tmt442)
   } else {
-    name = string(_tmt458[:p])
+    name = string(_tmt442[:p])
   }
   return
 }
 func (self *Task) GetDjcNameLen(djcidx int64) (len int32,err error) {
-  if _tmt460 := MSK_getdjcnamelen(self.ptr(),djcidx,&len); _tmt460 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt460)
+  if _tmt444 := C.MSK_getdjcnamelen(self.ptr(),djcidx,&len); _tmt444 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt444)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcNumAfe(djcidx int64) (numafe int64,err error) {
-  if _tmt461 := MSK_getdjcnumafe(self.ptr(),djcidx,&numafe); _tmt461 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt461)
+  if _tmt445 := C.MSK_getdjcnumafe(self.ptr(),djcidx,&numafe); _tmt445 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt445)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcNumAfeTot() (numafetot int64,err error) {
-  if _tmt462 := MSK_getdjcnumafetot(self.ptr(),&numafetot); _tmt462 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt462)
+  if _tmt446 := C.MSK_getdjcnumafetot(self.ptr(),&numafetot); _tmt446 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt446)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcNumDomain(djcidx int64) (numdomain int64,err error) {
-  if _tmt463 := MSK_getdjcnumdomain(self.ptr(),djcidx,&numdomain); _tmt463 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt463)
+  if _tmt447 := C.MSK_getdjcnumdomain(self.ptr(),djcidx,&numdomain); _tmt447 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt447)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcNumDomainTot() (numdomaintot int64,err error) {
-  if _tmt464 := MSK_getdjcnumdomaintot(self.ptr(),&numdomaintot); _tmt464 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt464)
+  if _tmt448 := C.MSK_getdjcnumdomaintot(self.ptr(),&numdomaintot); _tmt448 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt448)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcNumTerm(djcidx int64) (numterm int64,err error) {
-  if _tmt465 := MSK_getdjcnumterm(self.ptr(),djcidx,&numterm); _tmt465 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt465)
+  if _tmt449 := C.MSK_getdjcnumterm(self.ptr(),djcidx,&numterm); _tmt449 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt449)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcNumTermTot() (numtermtot int64,err error) {
-  if _tmt466 := MSK_getdjcnumtermtot(self.ptr(),&numtermtot); _tmt466 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt466)
+  if _tmt450 := C.MSK_getdjcnumtermtot(self.ptr(),&numtermtot); _tmt450 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt450)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcs() (domidxlist []int64,afeidxlist []int64,b []float64,termsizelist []int64,numterms []int64,err error) {
-  var _tmt469 *int64
-  var _tmt467 int64
-  if _tmt468 := MSK_getdjcnumdomaintot(task.nativep,addr(_tmt467)); _tmt468 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt468)
+  var _tmt453 *int64
+  var _tmt451 int64
+  if _tmt452 := C.MSK_getdjcnumdomaintot(task.nativep,addr(_tmt451)); _tmt452 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt452)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  domidxlist := make([]int64,_tmt467)
-  if len(domidxlist) > 0 { _tmt469 = (*int64)(&n[0]) }
-  var _tmt472 *int64
-  var _tmt470 int64
-  if _tmt471 := MSK_getdjcnumafetot(task.nativep,addr(_tmt470)); _tmt471 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt471)
+  domidxlist := make([]int64,_tmt451)
+  if len(domidxlist) > 0 { _tmt453 = (*int64)(&n[0]) }
+  var _tmt456 *int64
+  var _tmt454 int64
+  if _tmt455 := C.MSK_getdjcnumafetot(task.nativep,addr(_tmt454)); _tmt455 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt455)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  afeidxlist := make([]int64,_tmt470)
-  if len(afeidxlist) > 0 { _tmt472 = (*int64)(&n[0]) }
-  var _tmt475 *float64
-  var _tmt473 int64
-  if _tmt474 := MSK_getdjcnumafetot(task.nativep,addr(_tmt473)); _tmt474 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt474)
+  afeidxlist := make([]int64,_tmt454)
+  if len(afeidxlist) > 0 { _tmt456 = (*int64)(&n[0]) }
+  var _tmt459 *float64
+  var _tmt457 int64
+  if _tmt458 := C.MSK_getdjcnumafetot(task.nativep,addr(_tmt457)); _tmt458 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt458)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  b := make([]float64,_tmt473)
-  if len(b) > 0 { _tmt475 = (*float64)(&n[0]) }
-  var _tmt478 *int64
-  var _tmt476 int64
-  if _tmt477 := MSK_getdjcnumtermtot(task.nativep,addr(_tmt476)); _tmt477 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt477)
+  b := make([]float64,_tmt457)
+  if len(b) > 0 { _tmt459 = (*float64)(&n[0]) }
+  var _tmt462 *int64
+  var _tmt460 int64
+  if _tmt461 := C.MSK_getdjcnumtermtot(task.nativep,addr(_tmt460)); _tmt461 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt461)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  termsizelist := make([]int64,_tmt476)
-  if len(termsizelist) > 0 { _tmt478 = (*int64)(&n[0]) }
-  var _tmt481 *int64
-  var _tmt479 int64
-  if _tmt480 := MSK_getnumdjc(task.nativep,addr(_tmt479)); _tmt480 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt480)
+  termsizelist := make([]int64,_tmt460)
+  if len(termsizelist) > 0 { _tmt462 = (*int64)(&n[0]) }
+  var _tmt465 *int64
+  var _tmt463 int64
+  if _tmt464 := C.MSK_getnumdjc(task.nativep,addr(_tmt463)); _tmt464 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt464)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  numterms := make([]int64,_tmt479)
-  if len(numterms) > 0 { _tmt481 = (*int64)(&n[0]) }
-  if _tmt482 := MSK_getdjcs(self.ptr(),_tmt469,_tmt472,_tmt475,_tmt478,_tmt481); _tmt482 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt482)
+  numterms := make([]int64,_tmt463)
+  if len(numterms) > 0 { _tmt465 = (*int64)(&n[0]) }
+  if _tmt466 := C.MSK_getdjcs(self.ptr(),_tmt453,_tmt456,_tmt459,_tmt462,_tmt465); _tmt466 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt466)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDjcTermSizeList(djcidx int64) (termsizelist []int64,err error) {
-  var _tmt485 *int64
-  var _tmt483 int64
-  if _tmt484 := MSK_getdjcnumterm(task.nativep,djcidx,addr(_tmt483)); _tmt484 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt484)
+  var _tmt469 *int64
+  var _tmt467 int64
+  if _tmt468 := C.MSK_getdjcnumterm(task.nativep,djcidx,addr(_tmt467)); _tmt468 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt468)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  termsizelist := make([]int64,_tmt483)
-  if len(termsizelist) > 0 { _tmt485 = (*int64)(&n[0]) }
-  if _tmt486 := MSK_getdjctermsizelist(self.ptr(),djcidx,_tmt485); _tmt486 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt486)
+  termsizelist := make([]int64,_tmt467)
+  if len(termsizelist) > 0 { _tmt469 = (*int64)(&n[0]) }
+  if _tmt470 := C.MSK_getdjctermsizelist(self.ptr(),djcidx,_tmt469); _tmt470 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt470)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDomainN(domidx int64) (n int64,err error) {
-  if _tmt487 := MSK_getdomainn(self.ptr(),domidx,&n); _tmt487 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt487)
+  if _tmt471 := C.MSK_getdomainn(self.ptr(),domidx,&n); _tmt471 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt471)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDomainName(domidx int64) (name string,err error) {
-  var _tmt488 int32
-  if _tmt489 := MSK_getdomainnamelen(task.nativep,domidx,addr(_tmt488)); _tmt489 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt489)
+  var _tmt472 int32
+  if _tmt473 := C.MSK_getdomainnamelen(task.nativep,domidx,addr(_tmt472)); _tmt473 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt473)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizename int32 = (1 + _tmt488)
-  _tmt490 := make([]byte,sizename)
-  if _tmt491 := MSK_getdomainname(self.ptr(),domidx,sizename,C.CString(&tmpvar1[0])); _tmt491 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt491)
+  var sizename int32 = (1 + _tmt472)
+  _tmt474 := make([]byte,sizename)
+  if _tmt475 := C.MSK_getdomainname(self.ptr(),domidx,sizename,C.CString(&tmpvar1[0])); _tmt475 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt475)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var name string
-  if p := strings.IndexByte(_tmt490,byte(0)); p < 0 {
-    name = string(_tmt490)
+  if p := strings.IndexByte(_tmt474,byte(0)); p < 0 {
+    name = string(_tmt474)
   } else {
-    name = string(_tmt490[:p])
+    name = string(_tmt474[:p])
   }
   return
 }
 func (self *Task) GetDomainNameLen(domidx int64) (len int32,err error) {
-  if _tmt492 := MSK_getdomainnamelen(self.ptr(),domidx,&len); _tmt492 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt492)
+  if _tmt476 := C.MSK_getdomainnamelen(self.ptr(),domidx,&len); _tmt476 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt476)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDomainType(domidx int64) (domtype Domaintype,err error) {
-  if _tmt493 := MSK_getdomaintype(self.ptr(),domidx,&domtype); _tmt493 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt493)
+  if _tmt477 := C.MSK_getdomaintype(self.ptr(),domidx,&domtype); _tmt477 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt477)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDouInf(whichdinf Dinfitem) (dvalue float64,err error) {
-  if _tmt494 := MSK_getdouinf(self.ptr(),whichdinf,&dvalue); _tmt494 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt494)
+  if _tmt478 := C.MSK_getdouinf(self.ptr(),whichdinf,&dvalue); _tmt478 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt478)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDouParam(param Dparam) (parvalue float64,err error) {
-  if _tmt495 := MSK_getdouparam(self.ptr(),param,&parvalue); _tmt495 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt495)
+  if _tmt479 := C.MSK_getdouparam(self.ptr(),param,&parvalue); _tmt479 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt479)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDualObj(whichsol Soltype) (dualobj float64,err error) {
-  if _tmt496 := MSK_getdualobj(self.ptr(),whichsol,&dualobj); _tmt496 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt496)
+  if _tmt480 := C.MSK_getdualobj(self.ptr(),whichsol,&dualobj); _tmt480 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt480)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDualSolutionNorms(whichsol Soltype) (nrmy float64,nrmslc float64,nrmsuc float64,nrmslx float64,nrmsux float64,nrmsnx float64,nrmbars float64,err error) {
-  if _tmt497 := MSK_getdualsolutionnorms(self.ptr(),whichsol,&nrmy,&nrmslc,&nrmsuc,&nrmslx,&nrmsux,&nrmsnx,&nrmbars); _tmt497 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt497)
+  if _tmt481 := C.MSK_getdualsolutionnorms(self.ptr(),whichsol,&nrmy,&nrmslc,&nrmsuc,&nrmslx,&nrmsux,&nrmsnx,&nrmbars); _tmt481 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt481)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDviolAcc(whichsol Soltype,accidxlist []int64) (viol []float64,err error) {
-  _tmt498 := len(accidxlist)
-  var numaccidx int64 = int32(_tmt498)
-  var _tmt499 *int64
-  if accidxlist != nil { _tmt499 = (*C.MSKint32t)(&accidxlist[0]) }
-  var _tmt500 *float64
+  _tmt482 := len(accidxlist)
+  var numaccidx int64 = int32(_tmt482)
+  var _tmt483 *int64
+  if accidxlist != nil { _tmt483 = (*C.MSKint32t)(&accidxlist[0]) }
+  var _tmt484 *float64
   viol := make([]float64,numaccidx)
-  if len(viol) > 0 { _tmt500 = (*float64)(&n[0]) }
-  if _tmt501 := MSK_getdviolacc(self.ptr(),whichsol,numaccidx,_tmt499,_tmt500); _tmt501 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt501)
+  if len(viol) > 0 { _tmt484 = (*float64)(&n[0]) }
+  if _tmt485 := C.MSK_getdviolacc(self.ptr(),whichsol,numaccidx,_tmt483,_tmt484); _tmt485 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt485)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDviolBarvar(whichsol Soltype,sub []int32) (viol []float64,err error) {
-  _tmt502 := len(sub)
-  var num int32 = int32(_tmt502)
-  var _tmt503 *int32
-  if sub != nil { _tmt503 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt504 *float64
+  _tmt486 := len(sub)
+  var num int32 = int32(_tmt486)
+  var _tmt487 *int32
+  if sub != nil { _tmt487 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt488 *float64
   viol := make([]float64,num)
-  if len(viol) > 0 { _tmt504 = (*float64)(&n[0]) }
-  if _tmt505 := MSK_getdviolbarvar(self.ptr(),whichsol,num,_tmt503,_tmt504); _tmt505 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt505)
+  if len(viol) > 0 { _tmt488 = (*float64)(&n[0]) }
+  if _tmt489 := C.MSK_getdviolbarvar(self.ptr(),whichsol,num,_tmt487,_tmt488); _tmt489 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt489)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDviolCon(whichsol Soltype,sub []int32) (viol []float64,err error) {
-  _tmt506 := len(sub)
-  var num int32 = int32(_tmt506)
-  var _tmt507 *int32
-  if sub != nil { _tmt507 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt508 *float64
+  _tmt490 := len(sub)
+  var num int32 = int32(_tmt490)
+  var _tmt491 *int32
+  if sub != nil { _tmt491 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt492 *float64
   viol := make([]float64,num)
-  if len(viol) > 0 { _tmt508 = (*float64)(&n[0]) }
-  if _tmt509 := MSK_getdviolcon(self.ptr(),whichsol,num,_tmt507,_tmt508); _tmt509 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt509)
+  if len(viol) > 0 { _tmt492 = (*float64)(&n[0]) }
+  if _tmt493 := C.MSK_getdviolcon(self.ptr(),whichsol,num,_tmt491,_tmt492); _tmt493 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt493)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDviolCones(whichsol Soltype,sub []int32) (viol []float64,err error) {
-  _tmt510 := len(sub)
-  var num int32 = int32(_tmt510)
-  var _tmt511 *int32
-  if sub != nil { _tmt511 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt512 *float64
+  _tmt494 := len(sub)
+  var num int32 = int32(_tmt494)
+  var _tmt495 *int32
+  if sub != nil { _tmt495 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt496 *float64
   viol := make([]float64,num)
-  if len(viol) > 0 { _tmt512 = (*float64)(&n[0]) }
-  if _tmt513 := MSK_getdviolcones(self.ptr(),whichsol,num,_tmt511,_tmt512); _tmt513 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt513)
+  if len(viol) > 0 { _tmt496 = (*float64)(&n[0]) }
+  if _tmt497 := C.MSK_getdviolcones(self.ptr(),whichsol,num,_tmt495,_tmt496); _tmt497 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt497)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetDviolVar(whichsol Soltype,sub []int32) (viol []float64,err error) {
-  _tmt514 := len(sub)
-  var num int32 = int32(_tmt514)
-  var _tmt515 *int32
-  if sub != nil { _tmt515 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt516 *float64
+  _tmt498 := len(sub)
+  var num int32 = int32(_tmt498)
+  var _tmt499 *int32
+  if sub != nil { _tmt499 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt500 *float64
   viol := make([]float64,num)
-  if len(viol) > 0 { _tmt516 = (*float64)(&n[0]) }
-  if _tmt517 := MSK_getdviolvar(self.ptr(),whichsol,num,_tmt515,_tmt516); _tmt517 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt517)
+  if len(viol) > 0 { _tmt500 = (*float64)(&n[0]) }
+  if _tmt501 := C.MSK_getdviolvar(self.ptr(),whichsol,num,_tmt499,_tmt500); _tmt501 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt501)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetInfIndex(inftype Inftype,infname string) (infindex int32,err error) {
-  _tmt518 := C.CString(infname)
-  if _tmt519 := MSK_getinfindex(self.ptr(),inftype,_tmt518,&infindex); _tmt519 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt519)
+  _tmt502 := C.CString(infname)
+  if _tmt503 := C.MSK_getinfindex(self.ptr(),inftype,_tmt502,&infindex); _tmt503 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt503)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
+func (self *Task) GetInfMax(inftype Inftype) (infmax []int32,err error) {
+  var _tmt504 *int32
+  infmax := make([]int32,max_str_len)
+  if len(infmax) > 0 { _tmt504 = (*int32)(&n[0]) }
+  if _tmt505 := C.MSK_getinfmax(self.ptr(),inftype,_tmt504); _tmt505 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt505)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  return
+}
+func (self *Task) GetInfName(inftype Inftype,whichinf int32) (infname string,err error) {
+  _tmt506 := make([]byte,max_str_len)
+  if _tmt507 := C.MSK_getinfname(self.ptr(),inftype,whichinf,C.CString(&tmpvar1[0])); _tmt507 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt507)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  var infname string
+  if p := strings.IndexByte(_tmt506,byte(0)); p < 0 {
+    infname = string(_tmt506)
+  } else {
+    infname = string(_tmt506[:p])
+  }
+  return
+}
 func (self *Task) GetIntInf(whichiinf Iinfitem) (ivalue int32,err error) {
-  if _tmt520 := MSK_getintinf(self.ptr(),whichiinf,&ivalue); _tmt520 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt520)
+  if _tmt508 := C.MSK_getintinf(self.ptr(),whichiinf,&ivalue); _tmt508 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt508)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetIntParam(param Iparam) (parvalue int32,err error) {
-  if _tmt521 := MSK_getintparam(self.ptr(),param,&parvalue); _tmt521 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt521)
+  if _tmt509 := C.MSK_getintparam(self.ptr(),param,&parvalue); _tmt509 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt509)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetLenBarvarJ(j int32) (lenbarvarj int64,err error) {
-  if _tmt522 := MSK_getlenbarvarj(self.ptr(),j,&lenbarvarj); _tmt522 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt522)
+  if _tmt510 := C.MSK_getlenbarvarj(self.ptr(),j,&lenbarvarj); _tmt510 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt510)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetLintInf(whichliinf Liinfitem) (ivalue int64,err error) {
-  if _tmt523 := MSK_getlintinf(self.ptr(),whichliinf,&ivalue); _tmt523 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt523)
+  if _tmt511 := C.MSK_getlintinf(self.ptr(),whichliinf,&ivalue); _tmt511 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt511)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetMaxNumANz() (maxnumanz int64,err error) {
-  if _tmt524 := MSK_getmaxnumanz64(self.ptr(),&maxnumanz); _tmt524 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt524)
+  if _tmt512 := C.MSK_getmaxnumanz64(self.ptr(),&maxnumanz); _tmt512 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt512)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetMaxNumBarvar() (maxnumbarvar int32,err error) {
-  if _tmt525 := MSK_getmaxnumbarvar(self.ptr(),&maxnumbarvar); _tmt525 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt525)
+  if _tmt513 := C.MSK_getmaxnumbarvar(self.ptr(),&maxnumbarvar); _tmt513 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt513)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetMaxNumCon() (maxnumcon int32,err error) {
-  if _tmt526 := MSK_getmaxnumcon(self.ptr(),&maxnumcon); _tmt526 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt526)
+  if _tmt514 := C.MSK_getmaxnumcon(self.ptr(),&maxnumcon); _tmt514 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt514)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetMaxNumCone() (maxnumcone int32,err error) {
-  if _tmt527 := MSK_getmaxnumcone(self.ptr(),&maxnumcone); _tmt527 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt527)
+  if _tmt515 := C.MSK_getmaxnumcone(self.ptr(),&maxnumcone); _tmt515 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt515)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetMaxNumQNz() (maxnumqnz int64,err error) {
-  if _tmt528 := MSK_getmaxnumqnz64(self.ptr(),&maxnumqnz); _tmt528 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt528)
+  if _tmt516 := C.MSK_getmaxnumqnz64(self.ptr(),&maxnumqnz); _tmt516 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt516)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetMaxNumVar() (maxnumvar int32,err error) {
-  if _tmt529 := MSK_getmaxnumvar(self.ptr(),&maxnumvar); _tmt529 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt529)
+  if _tmt517 := C.MSK_getmaxnumvar(self.ptr(),&maxnumvar); _tmt517 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt517)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetMemUsage() (meminuse int64,maxmemuse int64,err error) {
-  if _tmt530 := MSK_getmemusagetask(self.ptr(),&meminuse,&maxmemuse); _tmt530 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt530)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  return
-}
-func (self *Task) GetMioNumThreads() (numthreads int32,err error) {
-  if _tmt531 := MSK_getmionumthreads(self.ptr(),&numthreads); _tmt531 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt531)
+  if _tmt518 := C.MSK_getmemusagetask(self.ptr(),&meminuse,&maxmemuse); _tmt518 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt518)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumAcc() (num int64,err error) {
-  if _tmt532 := MSK_getnumacc(self.ptr(),&num); _tmt532 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt532)
+  if _tmt519 := C.MSK_getnumacc(self.ptr(),&num); _tmt519 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt519)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumAfe() (numafe int64,err error) {
-  if _tmt533 := MSK_getnumafe(self.ptr(),&numafe); _tmt533 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt533)
+  if _tmt520 := C.MSK_getnumafe(self.ptr(),&numafe); _tmt520 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt520)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumANz() (numanz int32,err error) {
-  if _tmt534 := MSK_getnumanz(self.ptr(),&numanz); _tmt534 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt534)
+  if _tmt521 := C.MSK_getnumanz(self.ptr(),&numanz); _tmt521 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt521)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumANz64() (numanz int64,err error) {
-  if _tmt535 := MSK_getnumanz64(self.ptr(),&numanz); _tmt535 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt535)
+  if _tmt522 := C.MSK_getnumanz64(self.ptr(),&numanz); _tmt522 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt522)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumBaraBlockTriplets() (num int64,err error) {
-  if _tmt536 := MSK_getnumbarablocktriplets(self.ptr(),&num); _tmt536 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt536)
+  if _tmt523 := C.MSK_getnumbarablocktriplets(self.ptr(),&num); _tmt523 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt523)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumBaraNz() (nz int64,err error) {
-  if _tmt537 := MSK_getnumbaranz(self.ptr(),&nz); _tmt537 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt537)
+  if _tmt524 := C.MSK_getnumbaranz(self.ptr(),&nz); _tmt524 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt524)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumBarcBlockTriplets() (num int64,err error) {
-  if _tmt538 := MSK_getnumbarcblocktriplets(self.ptr(),&num); _tmt538 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt538)
+  if _tmt525 := C.MSK_getnumbarcblocktriplets(self.ptr(),&num); _tmt525 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt525)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumBarcNz() (nz int64,err error) {
-  if _tmt539 := MSK_getnumbarcnz(self.ptr(),&nz); _tmt539 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt539)
+  if _tmt526 := C.MSK_getnumbarcnz(self.ptr(),&nz); _tmt526 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt526)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumBarvar() (numbarvar int32,err error) {
-  if _tmt540 := MSK_getnumbarvar(self.ptr(),&numbarvar); _tmt540 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt540)
+  if _tmt527 := C.MSK_getnumbarvar(self.ptr(),&numbarvar); _tmt527 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt527)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumCon() (numcon int32,err error) {
-  if _tmt541 := MSK_getnumcon(self.ptr(),&numcon); _tmt541 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt541)
+  if _tmt528 := C.MSK_getnumcon(self.ptr(),&numcon); _tmt528 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt528)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumCone() (numcone int32,err error) {
-  if _tmt542 := MSK_getnumcone(self.ptr(),&numcone); _tmt542 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt542)
+  if _tmt529 := C.MSK_getnumcone(self.ptr(),&numcone); _tmt529 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt529)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumConeMem(k int32) (nummem int32,err error) {
-  if _tmt543 := MSK_getnumconemem(self.ptr(),k,&nummem); _tmt543 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt543)
+  if _tmt530 := C.MSK_getnumconemem(self.ptr(),k,&nummem); _tmt530 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt530)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumDjc() (num int64,err error) {
-  if _tmt544 := MSK_getnumdjc(self.ptr(),&num); _tmt544 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt544)
+  if _tmt531 := C.MSK_getnumdjc(self.ptr(),&num); _tmt531 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt531)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumDomain() (numdomain int64,err error) {
-  if _tmt545 := MSK_getnumdomain(self.ptr(),&numdomain); _tmt545 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt545)
+  if _tmt532 := C.MSK_getnumdomain(self.ptr(),&numdomain); _tmt532 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt532)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumIntVar() (numintvar int32,err error) {
-  if _tmt546 := MSK_getnumintvar(self.ptr(),&numintvar); _tmt546 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt546)
+  if _tmt533 := C.MSK_getnumintvar(self.ptr(),&numintvar); _tmt533 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt533)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumParam(partype Parametertype) (numparam int32,err error) {
-  if _tmt547 := MSK_getnumparam(self.ptr(),partype,&numparam); _tmt547 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt547)
+  if _tmt534 := C.MSK_getnumparam(self.ptr(),partype,&numparam); _tmt534 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt534)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumQConKNz(k int32) (numqcnz int64,err error) {
-  if _tmt548 := MSK_getnumqconknz64(self.ptr(),k,&numqcnz); _tmt548 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt548)
+  if _tmt535 := C.MSK_getnumqconknz64(self.ptr(),k,&numqcnz); _tmt535 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt535)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumQObjNz() (numqonz int64,err error) {
-  if _tmt549 := MSK_getnumqobjnz64(self.ptr(),&numqonz); _tmt549 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt549)
+  if _tmt536 := C.MSK_getnumqobjnz64(self.ptr(),&numqonz); _tmt536 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt536)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumSymMat() (num int64,err error) {
-  if _tmt550 := MSK_getnumsymmat(self.ptr(),&num); _tmt550 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt550)
+  if _tmt537 := C.MSK_getnumsymmat(self.ptr(),&num); _tmt537 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt537)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetNumVar() (numvar int32,err error) {
-  if _tmt551 := MSK_getnumvar(self.ptr(),&numvar); _tmt551 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt551)
+  if _tmt538 := C.MSK_getnumvar(self.ptr(),&numvar); _tmt538 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt538)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetObjName() (objname string,err error) {
-  var _tmt552 int32
-  if _tmt553 := MSK_getobjnamelen(task.nativep,addr(_tmt552)); _tmt553 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt553)
+  var _tmt539 int32
+  if _tmt540 := C.MSK_getobjnamelen(task.nativep,addr(_tmt539)); _tmt540 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt540)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizeobjname int32 = (1 + _tmt552)
-  _tmt554 := make([]byte,sizeobjname)
-  if _tmt555 := MSK_getobjname(self.ptr(),sizeobjname,C.CString(&tmpvar1[0])); _tmt555 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt555)
+  var sizeobjname int32 = (1 + _tmt539)
+  _tmt541 := make([]byte,sizeobjname)
+  if _tmt542 := C.MSK_getobjname(self.ptr(),sizeobjname,C.CString(&tmpvar1[0])); _tmt542 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt542)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var objname string
-  if p := strings.IndexByte(_tmt554,byte(0)); p < 0 {
-    objname = string(_tmt554)
+  if p := strings.IndexByte(_tmt541,byte(0)); p < 0 {
+    objname = string(_tmt541)
   } else {
-    objname = string(_tmt554[:p])
+    objname = string(_tmt541[:p])
   }
   return
 }
 func (self *Task) GetObjNameLen() (len int32,err error) {
-  if _tmt556 := MSK_getobjnamelen(self.ptr(),&len); _tmt556 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt556)
+  if _tmt543 := C.MSK_getobjnamelen(self.ptr(),&len); _tmt543 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt543)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetObjSense() (sense Objsense,err error) {
-  if _tmt557 := MSK_getobjsense(self.ptr(),&sense); _tmt557 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt557)
+  if _tmt544 := C.MSK_getobjsense(self.ptr(),&sense); _tmt544 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt544)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
+func (self *Task) GetParamMax(partype Parametertype) (parammax int32,err error) {
+  if _tmt545 := C.MSK_getparammax(self.ptr(),partype,&parammax); _tmt545 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt545)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  return
+}
+func (self *Task) GetParamName(partype Parametertype,param int32) (parname string,err error) {
+  _tmt546 := make([]byte,max_str_len)
+  if _tmt547 := C.MSK_getparamname(self.ptr(),partype,param,C.CString(&tmpvar1[0])); _tmt547 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt547)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  var parname string
+  if p := strings.IndexByte(_tmt546,byte(0)); p < 0 {
+    parname = string(_tmt546)
+  } else {
+    parname = string(_tmt546[:p])
+  }
+  return
+}
 func (self *Task) GetPowerDomainAlpha(domidx int64) (alpha []float64,err error) {
-  var _tmt561 *float64
-  var _tmt558 int64
-  var _tmt559 int64
-  if _tmt560 := MSK_getpowerdomaininfo(task.nativep,domidx,addr(_tmt558),addr(_tmt559)); _tmt560 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt560)
+  var _tmt551 *float64
+  var _tmt548 int64
+  var _tmt549 int64
+  if _tmt550 := C.MSK_getpowerdomaininfo(task.nativep,domidx,addr(_tmt548),addr(_tmt549)); _tmt550 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt550)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  alpha := make([]float64,_tmt559)
-  if len(alpha) > 0 { _tmt561 = (*float64)(&n[0]) }
-  if _tmt562 := MSK_getpowerdomainalpha(self.ptr(),domidx,_tmt561); _tmt562 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt562)
+  alpha := make([]float64,_tmt549)
+  if len(alpha) > 0 { _tmt551 = (*float64)(&n[0]) }
+  if _tmt552 := C.MSK_getpowerdomainalpha(self.ptr(),domidx,_tmt551); _tmt552 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt552)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPowerDomainInfo(domidx int64) (n int64,nleft int64,err error) {
-  if _tmt563 := MSK_getpowerdomaininfo(self.ptr(),domidx,&n,&nleft); _tmt563 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt563)
+  if _tmt553 := C.MSK_getpowerdomaininfo(self.ptr(),domidx,&n,&nleft); _tmt553 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt553)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPrimalObj(whichsol Soltype) (primalobj float64,err error) {
-  if _tmt564 := MSK_getprimalobj(self.ptr(),whichsol,&primalobj); _tmt564 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt564)
+  if _tmt554 := C.MSK_getprimalobj(self.ptr(),whichsol,&primalobj); _tmt554 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt554)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPrimalSolutionNorms(whichsol Soltype) (nrmxc float64,nrmxx float64,nrmbarx float64,err error) {
-  if _tmt565 := MSK_getprimalsolutionnorms(self.ptr(),whichsol,&nrmxc,&nrmxx,&nrmbarx); _tmt565 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt565)
+  if _tmt555 := C.MSK_getprimalsolutionnorms(self.ptr(),whichsol,&nrmxc,&nrmxx,&nrmbarx); _tmt555 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt555)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetProbType() (probtype Problemtype,err error) {
-  if _tmt566 := MSK_getprobtype(self.ptr(),&probtype); _tmt566 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt566)
+  if _tmt556 := C.MSK_getprobtype(self.ptr(),&probtype); _tmt556 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt556)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetProSta(whichsol Soltype) (problemsta Prosta,err error) {
-  if _tmt567 := MSK_getprosta(self.ptr(),whichsol,&problemsta); _tmt567 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt567)
+  if _tmt557 := C.MSK_getprosta(self.ptr(),whichsol,&problemsta); _tmt557 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt557)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPviolAcc(whichsol Soltype,accidxlist []int64) (viol []float64,err error) {
-  _tmt568 := len(accidxlist)
-  var numaccidx int64 = int32(_tmt568)
-  var _tmt569 *int64
-  if accidxlist != nil { _tmt569 = (*C.MSKint32t)(&accidxlist[0]) }
-  var _tmt570 *float64
+  _tmt558 := len(accidxlist)
+  var numaccidx int64 = int32(_tmt558)
+  var _tmt559 *int64
+  if accidxlist != nil { _tmt559 = (*C.MSKint32t)(&accidxlist[0]) }
+  var _tmt560 *float64
   viol := make([]float64,numaccidx)
-  if len(viol) > 0 { _tmt570 = (*float64)(&n[0]) }
-  if _tmt571 := MSK_getpviolacc(self.ptr(),whichsol,numaccidx,_tmt569,_tmt570); _tmt571 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt571)
+  if len(viol) > 0 { _tmt560 = (*float64)(&n[0]) }
+  if _tmt561 := C.MSK_getpviolacc(self.ptr(),whichsol,numaccidx,_tmt559,_tmt560); _tmt561 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt561)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPviolBarvar(whichsol Soltype,sub []int32) (viol []float64,err error) {
-  _tmt572 := len(sub)
-  var num int32 = int32(_tmt572)
-  var _tmt573 *int32
-  if sub != nil { _tmt573 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt574 *float64
+  _tmt562 := len(sub)
+  var num int32 = int32(_tmt562)
+  var _tmt563 *int32
+  if sub != nil { _tmt563 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt564 *float64
   viol := make([]float64,num)
-  if len(viol) > 0 { _tmt574 = (*float64)(&n[0]) }
-  if _tmt575 := MSK_getpviolbarvar(self.ptr(),whichsol,num,_tmt573,_tmt574); _tmt575 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt575)
+  if len(viol) > 0 { _tmt564 = (*float64)(&n[0]) }
+  if _tmt565 := C.MSK_getpviolbarvar(self.ptr(),whichsol,num,_tmt563,_tmt564); _tmt565 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt565)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPviolCon(whichsol Soltype,sub []int32) (viol []float64,err error) {
-  _tmt576 := len(sub)
-  var num int32 = int32(_tmt576)
-  var _tmt577 *int32
-  if sub != nil { _tmt577 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt578 *float64
+  _tmt566 := len(sub)
+  var num int32 = int32(_tmt566)
+  var _tmt567 *int32
+  if sub != nil { _tmt567 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt568 *float64
   viol := make([]float64,num)
-  if len(viol) > 0 { _tmt578 = (*float64)(&n[0]) }
-  if _tmt579 := MSK_getpviolcon(self.ptr(),whichsol,num,_tmt577,_tmt578); _tmt579 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt579)
+  if len(viol) > 0 { _tmt568 = (*float64)(&n[0]) }
+  if _tmt569 := C.MSK_getpviolcon(self.ptr(),whichsol,num,_tmt567,_tmt568); _tmt569 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt569)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPviolCones(whichsol Soltype,sub []int32) (viol []float64,err error) {
-  _tmt580 := len(sub)
-  var num int32 = int32(_tmt580)
-  var _tmt581 *int32
-  if sub != nil { _tmt581 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt582 *float64
+  _tmt570 := len(sub)
+  var num int32 = int32(_tmt570)
+  var _tmt571 *int32
+  if sub != nil { _tmt571 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt572 *float64
   viol := make([]float64,num)
-  if len(viol) > 0 { _tmt582 = (*float64)(&n[0]) }
-  if _tmt583 := MSK_getpviolcones(self.ptr(),whichsol,num,_tmt581,_tmt582); _tmt583 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt583)
+  if len(viol) > 0 { _tmt572 = (*float64)(&n[0]) }
+  if _tmt573 := C.MSK_getpviolcones(self.ptr(),whichsol,num,_tmt571,_tmt572); _tmt573 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt573)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPviolDjc(whichsol Soltype,djcidxlist []int64) (viol []float64,err error) {
-  _tmt584 := len(djcidxlist)
-  var numdjcidx int64 = int32(_tmt584)
-  var _tmt585 *int64
-  if djcidxlist != nil { _tmt585 = (*C.MSKint32t)(&djcidxlist[0]) }
-  var _tmt586 *float64
+  _tmt574 := len(djcidxlist)
+  var numdjcidx int64 = int32(_tmt574)
+  var _tmt575 *int64
+  if djcidxlist != nil { _tmt575 = (*C.MSKint32t)(&djcidxlist[0]) }
+  var _tmt576 *float64
   viol := make([]float64,numdjcidx)
-  if len(viol) > 0 { _tmt586 = (*float64)(&n[0]) }
-  if _tmt587 := MSK_getpvioldjc(self.ptr(),whichsol,numdjcidx,_tmt585,_tmt586); _tmt587 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt587)
+  if len(viol) > 0 { _tmt576 = (*float64)(&n[0]) }
+  if _tmt577 := C.MSK_getpvioldjc(self.ptr(),whichsol,numdjcidx,_tmt575,_tmt576); _tmt577 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt577)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetPviolVar(whichsol Soltype,sub []int32) (viol []float64,err error) {
-  _tmt588 := len(sub)
-  var num int32 = int32(_tmt588)
-  var _tmt589 *int32
-  if sub != nil { _tmt589 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt590 *float64
+  _tmt578 := len(sub)
+  var num int32 = int32(_tmt578)
+  var _tmt579 *int32
+  if sub != nil { _tmt579 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt580 *float64
   viol := make([]float64,num)
-  if len(viol) > 0 { _tmt590 = (*float64)(&n[0]) }
-  if _tmt591 := MSK_getpviolvar(self.ptr(),whichsol,num,_tmt589,_tmt590); _tmt591 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt591)
+  if len(viol) > 0 { _tmt580 = (*float64)(&n[0]) }
+  if _tmt581 := C.MSK_getpviolvar(self.ptr(),whichsol,num,_tmt579,_tmt580); _tmt581 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt581)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetQConK(k int32) (numqcnz int64,qcsubi []int32,qcsubj []int32,qcval []float64,err error) {
-  var _tmt592 int64
-  if _tmt593 := MSK_getnumqconknz64(task.nativep,k,addr(_tmt592)); _tmt593 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt593)
+  var _tmt582 int64
+  if _tmt583 := C.MSK_getnumqconknz64(task.nativep,k,addr(_tmt582)); _tmt583 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt583)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumqcnz int64 = _tmt592
-  var _tmt596 *int32
-  var _tmt594 int64
-  if _tmt595 := MSK_getnumqconknz64(task.nativep,k,addr(_tmt594)); _tmt595 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt595)
+  var maxnumqcnz int64 = _tmt582
+  var _tmt586 *int32
+  var _tmt584 int64
+  if _tmt585 := C.MSK_getnumqconknz64(task.nativep,k,addr(_tmt584)); _tmt585 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt585)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  qcsubi := make([]int32,_tmt594)
-  if len(qcsubi) > 0 { _tmt596 = (*int32)(&n[0]) }
-  var _tmt599 *int32
-  var _tmt597 int64
-  if _tmt598 := MSK_getnumqconknz64(task.nativep,k,addr(_tmt597)); _tmt598 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt598)
+  qcsubi := make([]int32,_tmt584)
+  if len(qcsubi) > 0 { _tmt586 = (*int32)(&n[0]) }
+  var _tmt589 *int32
+  var _tmt587 int64
+  if _tmt588 := C.MSK_getnumqconknz64(task.nativep,k,addr(_tmt587)); _tmt588 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt588)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  qcsubj := make([]int32,_tmt597)
-  if len(qcsubj) > 0 { _tmt599 = (*int32)(&n[0]) }
-  var _tmt602 *float64
-  var _tmt600 int64
-  if _tmt601 := MSK_getnumqconknz64(task.nativep,k,addr(_tmt600)); _tmt601 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt601)
+  qcsubj := make([]int32,_tmt587)
+  if len(qcsubj) > 0 { _tmt589 = (*int32)(&n[0]) }
+  var _tmt592 *float64
+  var _tmt590 int64
+  if _tmt591 := C.MSK_getnumqconknz64(task.nativep,k,addr(_tmt590)); _tmt591 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt591)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  qcval := make([]float64,_tmt600)
-  if len(qcval) > 0 { _tmt602 = (*float64)(&n[0]) }
-  if _tmt603 := MSK_getqconk64(self.ptr(),k,maxnumqcnz,&numqcnz,_tmt596,_tmt599,_tmt602); _tmt603 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt603)
+  qcval := make([]float64,_tmt590)
+  if len(qcval) > 0 { _tmt592 = (*float64)(&n[0]) }
+  if _tmt593 := C.MSK_getqconk64(self.ptr(),k,maxnumqcnz,&numqcnz,_tmt586,_tmt589,_tmt592); _tmt593 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt593)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetQObj() (numqonz int64,qosubi []int32,qosubj []int32,qoval []float64,err error) {
-  var _tmt604 int64
-  if _tmt605 := MSK_getnumqobjnz64(task.nativep,addr(_tmt604)); _tmt605 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt605)
+  var _tmt594 int64
+  if _tmt595 := C.MSK_getnumqobjnz64(task.nativep,addr(_tmt594)); _tmt595 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt595)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxnumqonz int64 = _tmt604
-  var _tmt606 *int32
+  var maxnumqonz int64 = _tmt594
+  var _tmt596 *int32
   qosubi := make([]int32,maxnumqonz)
-  if len(qosubi) > 0 { _tmt606 = (*int32)(&n[0]) }
-  var _tmt607 *int32
+  if len(qosubi) > 0 { _tmt596 = (*int32)(&n[0]) }
+  var _tmt597 *int32
   qosubj := make([]int32,maxnumqonz)
-  if len(qosubj) > 0 { _tmt607 = (*int32)(&n[0]) }
-  var _tmt608 *float64
+  if len(qosubj) > 0 { _tmt597 = (*int32)(&n[0]) }
+  var _tmt598 *float64
   qoval := make([]float64,maxnumqonz)
-  if len(qoval) > 0 { _tmt608 = (*float64)(&n[0]) }
-  if _tmt609 := MSK_getqobj64(self.ptr(),maxnumqonz,&numqonz,_tmt606,_tmt607,_tmt608); _tmt609 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt609)
+  if len(qoval) > 0 { _tmt598 = (*float64)(&n[0]) }
+  if _tmt599 := C.MSK_getqobj64(self.ptr(),maxnumqonz,&numqonz,_tmt596,_tmt597,_tmt598); _tmt599 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt599)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetQObjIJ(i int32,j int32) (qoij float64,err error) {
-  if _tmt610 := MSK_getqobjij(self.ptr(),i,j,&qoij); _tmt610 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt610)
+  if _tmt600 := C.MSK_getqobjij(self.ptr(),i,j,&qoij); _tmt600 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt600)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetReducedCosts(whichsol Soltype,first int32,last int32) (redcosts []float64,err error) {
-  var _tmt611 *float64
+  var _tmt601 *float64
   redcosts := make([]float64,(last - first))
-  if len(redcosts) > 0 { _tmt611 = (*float64)(&n[0]) }
-  if _tmt612 := MSK_getreducedcosts(self.ptr(),whichsol,first,last,_tmt611); _tmt612 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt612)
+  if len(redcosts) > 0 { _tmt601 = (*float64)(&n[0]) }
+  if _tmt602 := C.MSK_getreducedcosts(self.ptr(),whichsol,first,last,_tmt601); _tmt602 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt602)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSkc(whichsol Soltype) (skc []Stakey,err error) {
-  var _tmt615 *Stakey
-  var _tmt613 int32
-  if _tmt614 := MSK_getnumcon(task.nativep,addr(_tmt613)); _tmt614 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt614)
+  var _tmt605 *Stakey
+  var _tmt603 int32
+  if _tmt604 := C.MSK_getnumcon(task.nativep,addr(_tmt603)); _tmt604 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt604)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skc := make([]Stakey,_tmt613)
-  if len(skc) > 0 { _tmt615 = (*Stakey)(&n[0]) }
-  if _tmt616 := MSK_getskc(self.ptr(),whichsol,_tmt615); _tmt616 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt616)
+  skc := make([]Stakey,_tmt603)
+  if len(skc) > 0 { _tmt605 = (*Stakey)(&n[0]) }
+  if _tmt606 := C.MSK_getskc(self.ptr(),whichsol,_tmt605); _tmt606 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt606)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSkcSlice(whichsol Soltype,first int32,last int32) (skc []Stakey,err error) {
-  var _tmt617 *Stakey
+  var _tmt607 *Stakey
   skc := make([]Stakey,(last - first))
-  if len(skc) > 0 { _tmt617 = (*Stakey)(&n[0]) }
-  if _tmt618 := MSK_getskcslice(self.ptr(),whichsol,first,last,_tmt617); _tmt618 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt618)
+  if len(skc) > 0 { _tmt607 = (*Stakey)(&n[0]) }
+  if _tmt608 := C.MSK_getskcslice(self.ptr(),whichsol,first,last,_tmt607); _tmt608 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt608)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSkn(whichsol Soltype) (skn []Stakey,err error) {
-  var _tmt621 *Stakey
-  var _tmt619 int32
-  if _tmt620 := MSK_getnumcone(task.nativep,addr(_tmt619)); _tmt620 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt620)
+  var _tmt611 *Stakey
+  var _tmt609 int32
+  if _tmt610 := C.MSK_getnumcone(task.nativep,addr(_tmt609)); _tmt610 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt610)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skn := make([]Stakey,_tmt619)
-  if len(skn) > 0 { _tmt621 = (*Stakey)(&n[0]) }
-  if _tmt622 := MSK_getskn(self.ptr(),whichsol,_tmt621); _tmt622 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt622)
+  skn := make([]Stakey,_tmt609)
+  if len(skn) > 0 { _tmt611 = (*Stakey)(&n[0]) }
+  if _tmt612 := C.MSK_getskn(self.ptr(),whichsol,_tmt611); _tmt612 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt612)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSkx(whichsol Soltype) (skx []Stakey,err error) {
-  var _tmt625 *Stakey
-  var _tmt623 int32
-  if _tmt624 := MSK_getnumvar(task.nativep,addr(_tmt623)); _tmt624 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt624)
+  var _tmt615 *Stakey
+  var _tmt613 int32
+  if _tmt614 := C.MSK_getnumvar(task.nativep,addr(_tmt613)); _tmt614 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt614)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skx := make([]Stakey,_tmt623)
-  if len(skx) > 0 { _tmt625 = (*Stakey)(&n[0]) }
-  if _tmt626 := MSK_getskx(self.ptr(),whichsol,_tmt625); _tmt626 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt626)
+  skx := make([]Stakey,_tmt613)
+  if len(skx) > 0 { _tmt615 = (*Stakey)(&n[0]) }
+  if _tmt616 := C.MSK_getskx(self.ptr(),whichsol,_tmt615); _tmt616 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt616)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSkxSlice(whichsol Soltype,first int32,last int32) (skx []Stakey,err error) {
-  var _tmt627 *Stakey
+  var _tmt617 *Stakey
   skx := make([]Stakey,(last - first))
-  if len(skx) > 0 { _tmt627 = (*Stakey)(&n[0]) }
-  if _tmt628 := MSK_getskxslice(self.ptr(),whichsol,first,last,_tmt627); _tmt628 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt628)
+  if len(skx) > 0 { _tmt617 = (*Stakey)(&n[0]) }
+  if _tmt618 := C.MSK_getskxslice(self.ptr(),whichsol,first,last,_tmt617); _tmt618 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt618)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSlc(whichsol Soltype) (slc []float64,err error) {
-  var _tmt631 *float64
-  var _tmt629 int32
-  if _tmt630 := MSK_getnumcon(task.nativep,addr(_tmt629)); _tmt630 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt630)
+  var _tmt621 *float64
+  var _tmt619 int32
+  if _tmt620 := C.MSK_getnumcon(task.nativep,addr(_tmt619)); _tmt620 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt620)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  slc := make([]float64,_tmt629)
-  if len(slc) > 0 { _tmt631 = (*float64)(&n[0]) }
-  if _tmt632 := MSK_getslc(self.ptr(),whichsol,_tmt631); _tmt632 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt632)
+  slc := make([]float64,_tmt619)
+  if len(slc) > 0 { _tmt621 = (*float64)(&n[0]) }
+  if _tmt622 := C.MSK_getslc(self.ptr(),whichsol,_tmt621); _tmt622 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt622)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSlcSlice(whichsol Soltype,first int32,last int32) (slc []float64,err error) {
-  var _tmt633 *float64
+  var _tmt623 *float64
   slc := make([]float64,(last - first))
-  if len(slc) > 0 { _tmt633 = (*float64)(&n[0]) }
-  if _tmt634 := MSK_getslcslice(self.ptr(),whichsol,first,last,_tmt633); _tmt634 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt634)
+  if len(slc) > 0 { _tmt623 = (*float64)(&n[0]) }
+  if _tmt624 := C.MSK_getslcslice(self.ptr(),whichsol,first,last,_tmt623); _tmt624 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt624)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSlx(whichsol Soltype) (slx []float64,err error) {
-  var _tmt637 *float64
-  var _tmt635 int32
-  if _tmt636 := MSK_getnumvar(task.nativep,addr(_tmt635)); _tmt636 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt636)
+  var _tmt627 *float64
+  var _tmt625 int32
+  if _tmt626 := C.MSK_getnumvar(task.nativep,addr(_tmt625)); _tmt626 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt626)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  slx := make([]float64,_tmt635)
-  if len(slx) > 0 { _tmt637 = (*float64)(&n[0]) }
-  if _tmt638 := MSK_getslx(self.ptr(),whichsol,_tmt637); _tmt638 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt638)
+  slx := make([]float64,_tmt625)
+  if len(slx) > 0 { _tmt627 = (*float64)(&n[0]) }
+  if _tmt628 := C.MSK_getslx(self.ptr(),whichsol,_tmt627); _tmt628 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt628)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSlxSlice(whichsol Soltype,first int32,last int32) (slx []float64,err error) {
-  var _tmt639 *float64
+  var _tmt629 *float64
   slx := make([]float64,(last - first))
-  if len(slx) > 0 { _tmt639 = (*float64)(&n[0]) }
-  if _tmt640 := MSK_getslxslice(self.ptr(),whichsol,first,last,_tmt639); _tmt640 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt640)
+  if len(slx) > 0 { _tmt629 = (*float64)(&n[0]) }
+  if _tmt630 := C.MSK_getslxslice(self.ptr(),whichsol,first,last,_tmt629); _tmt630 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt630)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSnx(whichsol Soltype) (snx []float64,err error) {
-  var _tmt643 *float64
-  var _tmt641 int32
-  if _tmt642 := MSK_getnumvar(task.nativep,addr(_tmt641)); _tmt642 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt642)
+  var _tmt633 *float64
+  var _tmt631 int32
+  if _tmt632 := C.MSK_getnumvar(task.nativep,addr(_tmt631)); _tmt632 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt632)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  snx := make([]float64,_tmt641)
-  if len(snx) > 0 { _tmt643 = (*float64)(&n[0]) }
-  if _tmt644 := MSK_getsnx(self.ptr(),whichsol,_tmt643); _tmt644 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt644)
+  snx := make([]float64,_tmt631)
+  if len(snx) > 0 { _tmt633 = (*float64)(&n[0]) }
+  if _tmt634 := C.MSK_getsnx(self.ptr(),whichsol,_tmt633); _tmt634 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt634)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSnxSlice(whichsol Soltype,first int32,last int32) (snx []float64,err error) {
-  var _tmt645 *float64
+  var _tmt635 *float64
   snx := make([]float64,(last - first))
-  if len(snx) > 0 { _tmt645 = (*float64)(&n[0]) }
-  if _tmt646 := MSK_getsnxslice(self.ptr(),whichsol,first,last,_tmt645); _tmt646 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt646)
+  if len(snx) > 0 { _tmt635 = (*float64)(&n[0]) }
+  if _tmt636 := C.MSK_getsnxslice(self.ptr(),whichsol,first,last,_tmt635); _tmt636 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt636)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSolSta(whichsol Soltype) (solutionsta Solsta,err error) {
-  if _tmt647 := MSK_getsolsta(self.ptr(),whichsol,&solutionsta); _tmt647 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt647)
+  if _tmt637 := C.MSK_getsolsta(self.ptr(),whichsol,&solutionsta); _tmt637 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt637)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta Solsta,skc []Stakey,skx []Stakey,skn []Stakey,xc []float64,xx []float64,y []float64,slc []float64,suc []float64,slx []float64,sux []float64,snx []float64,err error) {
-  var _tmt650 *Stakey
-  var _tmt648 int32
-  if _tmt649 := MSK_getnumcon(task.nativep,addr(_tmt648)); _tmt649 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt649)
+  var _tmt640 *Stakey
+  var _tmt638 int32
+  if _tmt639 := C.MSK_getnumcon(task.nativep,addr(_tmt638)); _tmt639 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt639)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skc := make([]Stakey,_tmt648)
-  if len(skc) > 0 { _tmt650 = (*Stakey)(&n[0]) }
-  var _tmt653 *Stakey
-  var _tmt651 int32
-  if _tmt652 := MSK_getnumvar(task.nativep,addr(_tmt651)); _tmt652 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt652)
+  skc := make([]Stakey,_tmt638)
+  if len(skc) > 0 { _tmt640 = (*Stakey)(&n[0]) }
+  var _tmt643 *Stakey
+  var _tmt641 int32
+  if _tmt642 := C.MSK_getnumvar(task.nativep,addr(_tmt641)); _tmt642 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt642)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skx := make([]Stakey,_tmt651)
-  if len(skx) > 0 { _tmt653 = (*Stakey)(&n[0]) }
-  var _tmt656 *Stakey
-  var _tmt654 int32
-  if _tmt655 := MSK_getnumcone(task.nativep,addr(_tmt654)); _tmt655 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt655)
+  skx := make([]Stakey,_tmt641)
+  if len(skx) > 0 { _tmt643 = (*Stakey)(&n[0]) }
+  var _tmt646 *Stakey
+  var _tmt644 int32
+  if _tmt645 := C.MSK_getnumcone(task.nativep,addr(_tmt644)); _tmt645 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt645)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skn := make([]Stakey,_tmt654)
-  if len(skn) > 0 { _tmt656 = (*Stakey)(&n[0]) }
-  var _tmt659 *float64
-  var _tmt657 int32
-  if _tmt658 := MSK_getnumcon(task.nativep,addr(_tmt657)); _tmt658 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt658)
+  skn := make([]Stakey,_tmt644)
+  if len(skn) > 0 { _tmt646 = (*Stakey)(&n[0]) }
+  var _tmt649 *float64
+  var _tmt647 int32
+  if _tmt648 := C.MSK_getnumcon(task.nativep,addr(_tmt647)); _tmt648 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt648)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  xc := make([]float64,_tmt657)
-  if len(xc) > 0 { _tmt659 = (*float64)(&n[0]) }
-  var _tmt662 *float64
-  var _tmt660 int32
-  if _tmt661 := MSK_getnumvar(task.nativep,addr(_tmt660)); _tmt661 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt661)
+  xc := make([]float64,_tmt647)
+  if len(xc) > 0 { _tmt649 = (*float64)(&n[0]) }
+  var _tmt652 *float64
+  var _tmt650 int32
+  if _tmt651 := C.MSK_getnumvar(task.nativep,addr(_tmt650)); _tmt651 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt651)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  xx := make([]float64,_tmt660)
-  if len(xx) > 0 { _tmt662 = (*float64)(&n[0]) }
-  var _tmt665 *float64
-  var _tmt663 int32
-  if _tmt664 := MSK_getnumcon(task.nativep,addr(_tmt663)); _tmt664 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt664)
+  xx := make([]float64,_tmt650)
+  if len(xx) > 0 { _tmt652 = (*float64)(&n[0]) }
+  var _tmt655 *float64
+  var _tmt653 int32
+  if _tmt654 := C.MSK_getnumcon(task.nativep,addr(_tmt653)); _tmt654 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt654)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  y := make([]float64,_tmt663)
-  if len(y) > 0 { _tmt665 = (*float64)(&n[0]) }
-  var _tmt668 *float64
-  var _tmt666 int32
-  if _tmt667 := MSK_getnumcon(task.nativep,addr(_tmt666)); _tmt667 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt667)
+  y := make([]float64,_tmt653)
+  if len(y) > 0 { _tmt655 = (*float64)(&n[0]) }
+  var _tmt658 *float64
+  var _tmt656 int32
+  if _tmt657 := C.MSK_getnumcon(task.nativep,addr(_tmt656)); _tmt657 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt657)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  slc := make([]float64,_tmt666)
-  if len(slc) > 0 { _tmt668 = (*float64)(&n[0]) }
-  var _tmt671 *float64
-  var _tmt669 int32
-  if _tmt670 := MSK_getnumcon(task.nativep,addr(_tmt669)); _tmt670 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt670)
+  slc := make([]float64,_tmt656)
+  if len(slc) > 0 { _tmt658 = (*float64)(&n[0]) }
+  var _tmt661 *float64
+  var _tmt659 int32
+  if _tmt660 := C.MSK_getnumcon(task.nativep,addr(_tmt659)); _tmt660 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt660)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  suc := make([]float64,_tmt669)
-  if len(suc) > 0 { _tmt671 = (*float64)(&n[0]) }
-  var _tmt674 *float64
-  var _tmt672 int32
-  if _tmt673 := MSK_getnumvar(task.nativep,addr(_tmt672)); _tmt673 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt673)
+  suc := make([]float64,_tmt659)
+  if len(suc) > 0 { _tmt661 = (*float64)(&n[0]) }
+  var _tmt664 *float64
+  var _tmt662 int32
+  if _tmt663 := C.MSK_getnumvar(task.nativep,addr(_tmt662)); _tmt663 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt663)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  slx := make([]float64,_tmt672)
-  if len(slx) > 0 { _tmt674 = (*float64)(&n[0]) }
-  var _tmt677 *float64
-  var _tmt675 int32
-  if _tmt676 := MSK_getnumvar(task.nativep,addr(_tmt675)); _tmt676 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt676)
+  slx := make([]float64,_tmt662)
+  if len(slx) > 0 { _tmt664 = (*float64)(&n[0]) }
+  var _tmt667 *float64
+  var _tmt665 int32
+  if _tmt666 := C.MSK_getnumvar(task.nativep,addr(_tmt665)); _tmt666 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt666)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  sux := make([]float64,_tmt675)
-  if len(sux) > 0 { _tmt677 = (*float64)(&n[0]) }
-  var _tmt680 *float64
-  var _tmt678 int32
-  if _tmt679 := MSK_getnumvar(task.nativep,addr(_tmt678)); _tmt679 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt679)
+  sux := make([]float64,_tmt665)
+  if len(sux) > 0 { _tmt667 = (*float64)(&n[0]) }
+  var _tmt670 *float64
+  var _tmt668 int32
+  if _tmt669 := C.MSK_getnumvar(task.nativep,addr(_tmt668)); _tmt669 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt669)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  snx := make([]float64,_tmt678)
-  if len(snx) > 0 { _tmt680 = (*float64)(&n[0]) }
-  if _tmt681 := MSK_getsolution(self.ptr(),whichsol,&problemsta,&solutionsta,_tmt650,_tmt653,_tmt656,_tmt659,_tmt662,_tmt665,_tmt668,_tmt671,_tmt674,_tmt677,_tmt680); _tmt681 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt681)
+  snx := make([]float64,_tmt668)
+  if len(snx) > 0 { _tmt670 = (*float64)(&n[0]) }
+  if _tmt671 := C.MSK_getsolution(self.ptr(),whichsol,&problemsta,&solutionsta,_tmt640,_tmt643,_tmt646,_tmt649,_tmt652,_tmt655,_tmt658,_tmt661,_tmt664,_tmt667,_tmt670); _tmt671 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt671)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSolutionInfo(whichsol Soltype) (pobj float64,pviolcon float64,pviolvar float64,pviolbarvar float64,pviolcone float64,pviolitg float64,dobj float64,dviolcon float64,dviolvar float64,dviolbarvar float64,dviolcone float64,err error) {
-  if _tmt682 := MSK_getsolutioninfo(self.ptr(),whichsol,&pobj,&pviolcon,&pviolvar,&pviolbarvar,&pviolcone,&pviolitg,&dobj,&dviolcon,&dviolvar,&dviolbarvar,&dviolcone); _tmt682 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt682)
+  if _tmt672 := C.MSK_getsolutioninfo(self.ptr(),whichsol,&pobj,&pviolcon,&pviolvar,&pviolbarvar,&pviolcone,&pviolitg,&dobj,&dviolcon,&dviolvar,&dviolbarvar,&dviolcone); _tmt672 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt672)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSolutionInfoNew(whichsol Soltype) (pobj float64,pviolcon float64,pviolvar float64,pviolbarvar float64,pviolcone float64,pviolacc float64,pvioldjc float64,pviolitg float64,dobj float64,dviolcon float64,dviolvar float64,dviolbarvar float64,dviolcone float64,dviolacc float64,err error) {
-  if _tmt683 := MSK_getsolutioninfonew(self.ptr(),whichsol,&pobj,&pviolcon,&pviolvar,&pviolbarvar,&pviolcone,&pviolacc,&pvioldjc,&pviolitg,&dobj,&dviolcon,&dviolvar,&dviolbarvar,&dviolcone,&dviolacc); _tmt683 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt683)
+  if _tmt673 := C.MSK_getsolutioninfonew(self.ptr(),whichsol,&pobj,&pviolcon,&pviolvar,&pviolbarvar,&pviolcone,&pviolacc,&pvioldjc,&pviolitg,&dobj,&dviolcon,&dviolvar,&dviolbarvar,&dviolcone,&dviolacc); _tmt673 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt673)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionsta Solsta,skc []Stakey,skx []Stakey,skn []Stakey,xc []float64,xx []float64,y []float64,slc []float64,suc []float64,slx []float64,sux []float64,snx []float64,doty []float64,err error) {
-  var _tmt686 *Stakey
-  var _tmt684 int32
-  if _tmt685 := MSK_getnumcon(task.nativep,addr(_tmt684)); _tmt685 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt685)
+  var _tmt676 *Stakey
+  var _tmt674 int32
+  if _tmt675 := C.MSK_getnumcon(task.nativep,addr(_tmt674)); _tmt675 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt675)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skc := make([]Stakey,_tmt684)
-  if len(skc) > 0 { _tmt686 = (*Stakey)(&n[0]) }
-  var _tmt689 *Stakey
-  var _tmt687 int32
-  if _tmt688 := MSK_getnumvar(task.nativep,addr(_tmt687)); _tmt688 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt688)
+  skc := make([]Stakey,_tmt674)
+  if len(skc) > 0 { _tmt676 = (*Stakey)(&n[0]) }
+  var _tmt679 *Stakey
+  var _tmt677 int32
+  if _tmt678 := C.MSK_getnumvar(task.nativep,addr(_tmt677)); _tmt678 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt678)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skx := make([]Stakey,_tmt687)
-  if len(skx) > 0 { _tmt689 = (*Stakey)(&n[0]) }
-  var _tmt692 *Stakey
-  var _tmt690 int32
-  if _tmt691 := MSK_getnumcone(task.nativep,addr(_tmt690)); _tmt691 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt691)
+  skx := make([]Stakey,_tmt677)
+  if len(skx) > 0 { _tmt679 = (*Stakey)(&n[0]) }
+  var _tmt682 *Stakey
+  var _tmt680 int32
+  if _tmt681 := C.MSK_getnumcone(task.nativep,addr(_tmt680)); _tmt681 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt681)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  skn := make([]Stakey,_tmt690)
-  if len(skn) > 0 { _tmt692 = (*Stakey)(&n[0]) }
-  var _tmt695 *float64
-  var _tmt693 int32
-  if _tmt694 := MSK_getnumcon(task.nativep,addr(_tmt693)); _tmt694 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt694)
+  skn := make([]Stakey,_tmt680)
+  if len(skn) > 0 { _tmt682 = (*Stakey)(&n[0]) }
+  var _tmt685 *float64
+  var _tmt683 int32
+  if _tmt684 := C.MSK_getnumcon(task.nativep,addr(_tmt683)); _tmt684 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt684)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  xc := make([]float64,_tmt693)
-  if len(xc) > 0 { _tmt695 = (*float64)(&n[0]) }
-  var _tmt698 *float64
-  var _tmt696 int32
-  if _tmt697 := MSK_getnumvar(task.nativep,addr(_tmt696)); _tmt697 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt697)
+  xc := make([]float64,_tmt683)
+  if len(xc) > 0 { _tmt685 = (*float64)(&n[0]) }
+  var _tmt688 *float64
+  var _tmt686 int32
+  if _tmt687 := C.MSK_getnumvar(task.nativep,addr(_tmt686)); _tmt687 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt687)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  xx := make([]float64,_tmt696)
-  if len(xx) > 0 { _tmt698 = (*float64)(&n[0]) }
-  var _tmt701 *float64
-  var _tmt699 int32
-  if _tmt700 := MSK_getnumcon(task.nativep,addr(_tmt699)); _tmt700 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt700)
+  xx := make([]float64,_tmt686)
+  if len(xx) > 0 { _tmt688 = (*float64)(&n[0]) }
+  var _tmt691 *float64
+  var _tmt689 int32
+  if _tmt690 := C.MSK_getnumcon(task.nativep,addr(_tmt689)); _tmt690 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt690)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  y := make([]float64,_tmt699)
-  if len(y) > 0 { _tmt701 = (*float64)(&n[0]) }
-  var _tmt704 *float64
-  var _tmt702 int32
-  if _tmt703 := MSK_getnumcon(task.nativep,addr(_tmt702)); _tmt703 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt703)
+  y := make([]float64,_tmt689)
+  if len(y) > 0 { _tmt691 = (*float64)(&n[0]) }
+  var _tmt694 *float64
+  var _tmt692 int32
+  if _tmt693 := C.MSK_getnumcon(task.nativep,addr(_tmt692)); _tmt693 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt693)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  slc := make([]float64,_tmt702)
-  if len(slc) > 0 { _tmt704 = (*float64)(&n[0]) }
-  var _tmt707 *float64
-  var _tmt705 int32
-  if _tmt706 := MSK_getnumcon(task.nativep,addr(_tmt705)); _tmt706 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt706)
+  slc := make([]float64,_tmt692)
+  if len(slc) > 0 { _tmt694 = (*float64)(&n[0]) }
+  var _tmt697 *float64
+  var _tmt695 int32
+  if _tmt696 := C.MSK_getnumcon(task.nativep,addr(_tmt695)); _tmt696 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt696)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  suc := make([]float64,_tmt705)
-  if len(suc) > 0 { _tmt707 = (*float64)(&n[0]) }
-  var _tmt710 *float64
-  var _tmt708 int32
-  if _tmt709 := MSK_getnumvar(task.nativep,addr(_tmt708)); _tmt709 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt709)
+  suc := make([]float64,_tmt695)
+  if len(suc) > 0 { _tmt697 = (*float64)(&n[0]) }
+  var _tmt700 *float64
+  var _tmt698 int32
+  if _tmt699 := C.MSK_getnumvar(task.nativep,addr(_tmt698)); _tmt699 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt699)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  slx := make([]float64,_tmt708)
-  if len(slx) > 0 { _tmt710 = (*float64)(&n[0]) }
-  var _tmt713 *float64
-  var _tmt711 int32
-  if _tmt712 := MSK_getnumvar(task.nativep,addr(_tmt711)); _tmt712 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt712)
+  slx := make([]float64,_tmt698)
+  if len(slx) > 0 { _tmt700 = (*float64)(&n[0]) }
+  var _tmt703 *float64
+  var _tmt701 int32
+  if _tmt702 := C.MSK_getnumvar(task.nativep,addr(_tmt701)); _tmt702 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt702)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  sux := make([]float64,_tmt711)
-  if len(sux) > 0 { _tmt713 = (*float64)(&n[0]) }
-  var _tmt716 *float64
-  var _tmt714 int32
-  if _tmt715 := MSK_getnumvar(task.nativep,addr(_tmt714)); _tmt715 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt715)
+  sux := make([]float64,_tmt701)
+  if len(sux) > 0 { _tmt703 = (*float64)(&n[0]) }
+  var _tmt706 *float64
+  var _tmt704 int32
+  if _tmt705 := C.MSK_getnumvar(task.nativep,addr(_tmt704)); _tmt705 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt705)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  snx := make([]float64,_tmt714)
-  if len(snx) > 0 { _tmt716 = (*float64)(&n[0]) }
-  var _tmt719 *float64
-  var _tmt717 int64
-  if _tmt718 := MSK_getaccntot(task.nativep,addr(_tmt717)); _tmt718 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt718)
+  snx := make([]float64,_tmt704)
+  if len(snx) > 0 { _tmt706 = (*float64)(&n[0]) }
+  var _tmt709 *float64
+  var _tmt707 int64
+  if _tmt708 := C.MSK_getaccntot(task.nativep,addr(_tmt707)); _tmt708 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt708)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  doty := make([]float64,_tmt717)
-  if len(doty) > 0 { _tmt719 = (*float64)(&n[0]) }
-  if _tmt720 := MSK_getsolutionnew(self.ptr(),whichsol,&problemsta,&solutionsta,_tmt686,_tmt689,_tmt692,_tmt695,_tmt698,_tmt701,_tmt704,_tmt707,_tmt710,_tmt713,_tmt716,_tmt719); _tmt720 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt720)
+  doty := make([]float64,_tmt707)
+  if len(doty) > 0 { _tmt709 = (*float64)(&n[0]) }
+  if _tmt710 := C.MSK_getsolutionnew(self.ptr(),whichsol,&problemsta,&solutionsta,_tmt676,_tmt679,_tmt682,_tmt685,_tmt688,_tmt691,_tmt694,_tmt697,_tmt700,_tmt703,_tmt706,_tmt709); _tmt710 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt710)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSolutionSlice(whichsol Soltype,solitem Solitem,first int32,last int32) (values []float64,err error) {
-  var _tmt721 *float64
+  var _tmt711 *float64
   values := make([]float64,(last - first))
-  if len(values) > 0 { _tmt721 = (*float64)(&n[0]) }
-  if _tmt722 := MSK_getsolutionslice(self.ptr(),whichsol,solitem,first,last,_tmt721); _tmt722 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt722)
+  if len(values) > 0 { _tmt711 = (*float64)(&n[0]) }
+  if _tmt712 := C.MSK_getsolutionslice(self.ptr(),whichsol,solitem,first,last,_tmt711); _tmt712 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt712)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSparseSymMat(idx int64) (subi []int32,subj []int32,valij []float64,err error) {
-  var _tmt723 int32
-  var _tmt724 int64
-  var _tmt725 symmattype
-  if _tmt726 := MSK_getsymmatinfo(task.nativep,idx,addr(_tmt723),addr(_tmt724),addr(_tmt725)); _tmt726 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt726)
+  var _tmt713 int32
+  var _tmt714 int64
+  var _tmt715 symmattype
+  if _tmt716 := C.MSK_getsymmatinfo(task.nativep,idx,addr(_tmt713),addr(_tmt714),addr(_tmt715)); _tmt716 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt716)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxlen int64 = _tmt724
-  var _tmt727 *int32
+  var maxlen int64 = _tmt714
+  var _tmt717 *int32
   subi := make([]int32,maxlen)
-  if len(subi) > 0 { _tmt727 = (*int32)(&n[0]) }
-  var _tmt728 *int32
+  if len(subi) > 0 { _tmt717 = (*int32)(&n[0]) }
+  var _tmt718 *int32
   subj := make([]int32,maxlen)
-  if len(subj) > 0 { _tmt728 = (*int32)(&n[0]) }
-  var _tmt729 *float64
+  if len(subj) > 0 { _tmt718 = (*int32)(&n[0]) }
+  var _tmt719 *float64
   valij := make([]float64,maxlen)
-  if len(valij) > 0 { _tmt729 = (*float64)(&n[0]) }
-  if _tmt730 := MSK_getsparsesymmat(self.ptr(),idx,maxlen,_tmt727,_tmt728,_tmt729); _tmt730 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt730)
+  if len(valij) > 0 { _tmt719 = (*float64)(&n[0]) }
+  if _tmt720 := C.MSK_getsparsesymmat(self.ptr(),idx,maxlen,_tmt717,_tmt718,_tmt719); _tmt720 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt720)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetStrParam(param Sparam) (len int32,parvalue string,err error) {
-  var _tmt731 int32
-  if _tmt732 := MSK_getstrparamlen(task.nativep,param,addr(_tmt731)); _tmt732 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt732)
+  var _tmt721 int32
+  if _tmt722 := C.MSK_getstrparamlen(task.nativep,param,addr(_tmt721)); _tmt722 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt722)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var maxlen int32 = (1 + _tmt731)
-  _tmt733 := make([]byte,maxlen)
-  if _tmt734 := MSK_getstrparam(self.ptr(),param,maxlen,&len,C.CString(&tmpvar1[0])); _tmt734 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt734)
+  var maxlen int32 = (1 + _tmt721)
+  _tmt723 := make([]byte,maxlen)
+  if _tmt724 := C.MSK_getstrparam(self.ptr(),param,maxlen,&len,C.CString(&tmpvar1[0])); _tmt724 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt724)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var parvalue string
-  if p := strings.IndexByte(_tmt733,byte(0)); p < 0 {
-    parvalue = string(_tmt733)
+  if p := strings.IndexByte(_tmt723,byte(0)); p < 0 {
+    parvalue = string(_tmt723)
   } else {
-    parvalue = string(_tmt733[:p])
+    parvalue = string(_tmt723[:p])
   }
   return
 }
 func (self *Task) GetStrParamLen(param Sparam) (len int32,err error) {
-  if _tmt735 := MSK_getstrparamlen(self.ptr(),param,&len); _tmt735 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt735)
+  if _tmt725 := C.MSK_getstrparamlen(self.ptr(),param,&len); _tmt725 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt725)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSuc(whichsol Soltype) (suc []float64,err error) {
-  var _tmt738 *float64
-  var _tmt736 int32
-  if _tmt737 := MSK_getnumcon(task.nativep,addr(_tmt736)); _tmt737 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt737)
+  var _tmt728 *float64
+  var _tmt726 int32
+  if _tmt727 := C.MSK_getnumcon(task.nativep,addr(_tmt726)); _tmt727 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt727)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  suc := make([]float64,_tmt736)
-  if len(suc) > 0 { _tmt738 = (*float64)(&n[0]) }
-  if _tmt739 := MSK_getsuc(self.ptr(),whichsol,_tmt738); _tmt739 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt739)
+  suc := make([]float64,_tmt726)
+  if len(suc) > 0 { _tmt728 = (*float64)(&n[0]) }
+  if _tmt729 := C.MSK_getsuc(self.ptr(),whichsol,_tmt728); _tmt729 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt729)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSucSlice(whichsol Soltype,first int32,last int32) (suc []float64,err error) {
-  var _tmt740 *float64
+  var _tmt730 *float64
   suc := make([]float64,(last - first))
-  if len(suc) > 0 { _tmt740 = (*float64)(&n[0]) }
-  if _tmt741 := MSK_getsucslice(self.ptr(),whichsol,first,last,_tmt740); _tmt741 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt741)
+  if len(suc) > 0 { _tmt730 = (*float64)(&n[0]) }
+  if _tmt731 := C.MSK_getsucslice(self.ptr(),whichsol,first,last,_tmt730); _tmt731 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt731)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSux(whichsol Soltype) (sux []float64,err error) {
-  var _tmt744 *float64
-  var _tmt742 int32
-  if _tmt743 := MSK_getnumvar(task.nativep,addr(_tmt742)); _tmt743 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt743)
+  var _tmt734 *float64
+  var _tmt732 int32
+  if _tmt733 := C.MSK_getnumvar(task.nativep,addr(_tmt732)); _tmt733 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt733)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  sux := make([]float64,_tmt742)
-  if len(sux) > 0 { _tmt744 = (*float64)(&n[0]) }
-  if _tmt745 := MSK_getsux(self.ptr(),whichsol,_tmt744); _tmt745 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt745)
+  sux := make([]float64,_tmt732)
+  if len(sux) > 0 { _tmt734 = (*float64)(&n[0]) }
+  if _tmt735 := C.MSK_getsux(self.ptr(),whichsol,_tmt734); _tmt735 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt735)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSuxSlice(whichsol Soltype,first int32,last int32) (sux []float64,err error) {
-  var _tmt746 *float64
+  var _tmt736 *float64
   sux := make([]float64,(last - first))
-  if len(sux) > 0 { _tmt746 = (*float64)(&n[0]) }
-  if _tmt747 := MSK_getsuxslice(self.ptr(),whichsol,first,last,_tmt746); _tmt747 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt747)
+  if len(sux) > 0 { _tmt736 = (*float64)(&n[0]) }
+  if _tmt737 := C.MSK_getsuxslice(self.ptr(),whichsol,first,last,_tmt736); _tmt737 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt737)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetSymMatInfo(idx int64) (dim int32,nz int64,mattype Symmattype,err error) {
-  if _tmt748 := MSK_getsymmatinfo(self.ptr(),idx,&dim,&nz,&mattype); _tmt748 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt748)
+  if _tmt738 := C.MSK_getsymmatinfo(self.ptr(),idx,&dim,&nz,&mattype); _tmt738 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt738)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetTaskName() (taskname string,err error) {
-  var _tmt749 int32
-  if _tmt750 := MSK_gettasknamelen(task.nativep,addr(_tmt749)); _tmt750 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt750)
+  var _tmt739 int32
+  if _tmt740 := C.MSK_gettasknamelen(task.nativep,addr(_tmt739)); _tmt740 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt740)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizetaskname int32 = (1 + _tmt749)
-  _tmt751 := make([]byte,sizetaskname)
-  if _tmt752 := MSK_gettaskname(self.ptr(),sizetaskname,C.CString(&tmpvar1[0])); _tmt752 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt752)
+  var sizetaskname int32 = (1 + _tmt739)
+  _tmt741 := make([]byte,sizetaskname)
+  if _tmt742 := C.MSK_gettaskname(self.ptr(),sizetaskname,C.CString(&tmpvar1[0])); _tmt742 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt742)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var taskname string
-  if p := strings.IndexByte(_tmt751,byte(0)); p < 0 {
-    taskname = string(_tmt751)
+  if p := strings.IndexByte(_tmt741,byte(0)); p < 0 {
+    taskname = string(_tmt741)
   } else {
-    taskname = string(_tmt751[:p])
+    taskname = string(_tmt741[:p])
   }
   return
 }
 func (self *Task) GetTaskNameLen() (len int32,err error) {
-  if _tmt753 := MSK_gettasknamelen(self.ptr(),&len); _tmt753 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt753)
+  if _tmt743 := C.MSK_gettasknamelen(self.ptr(),&len); _tmt743 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt743)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetVarBound(i int32) (bk Boundkey,bl float64,bu float64,err error) {
-  if _tmt754 := MSK_getvarbound(self.ptr(),i,&bk,&bl,&bu); _tmt754 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt754)
+  if _tmt744 := C.MSK_getvarbound(self.ptr(),i,&bk,&bl,&bu); _tmt744 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt744)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetVarBoundSlice(first int32,last int32) (bk []Boundkey,bl []float64,bu []float64,err error) {
-  var _tmt755 *Boundkey
+  var _tmt745 *Boundkey
   bk := make([]Boundkey,(last - first))
-  if len(bk) > 0 { _tmt755 = (*Boundkey)(&n[0]) }
-  var _tmt756 *float64
+  if len(bk) > 0 { _tmt745 = (*Boundkey)(&n[0]) }
+  var _tmt746 *float64
   bl := make([]float64,(last - first))
-  if len(bl) > 0 { _tmt756 = (*float64)(&n[0]) }
-  var _tmt757 *float64
+  if len(bl) > 0 { _tmt746 = (*float64)(&n[0]) }
+  var _tmt747 *float64
   bu := make([]float64,(last - first))
-  if len(bu) > 0 { _tmt757 = (*float64)(&n[0]) }
-  if _tmt758 := MSK_getvarboundslice(self.ptr(),first,last,_tmt755,_tmt756,_tmt757); _tmt758 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt758)
+  if len(bu) > 0 { _tmt747 = (*float64)(&n[0]) }
+  if _tmt748 := C.MSK_getvarboundslice(self.ptr(),first,last,_tmt745,_tmt746,_tmt747); _tmt748 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt748)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetVarName(j int32) (name string,err error) {
-  var _tmt759 int32
-  if _tmt760 := MSK_getvarnamelen(task.nativep,j,addr(_tmt759)); _tmt760 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt760)
+  var _tmt749 int32
+  if _tmt750 := C.MSK_getvarnamelen(task.nativep,j,addr(_tmt749)); _tmt750 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt750)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  var sizename int32 = (1 + _tmt759)
-  _tmt761 := make([]byte,sizename)
-  if _tmt762 := MSK_getvarname(self.ptr(),j,sizename,C.CString(&tmpvar1[0])); _tmt762 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt762)
+  var sizename int32 = (1 + _tmt749)
+  _tmt751 := make([]byte,sizename)
+  if _tmt752 := C.MSK_getvarname(self.ptr(),j,sizename,C.CString(&tmpvar1[0])); _tmt752 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt752)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   var name string
-  if p := strings.IndexByte(_tmt761,byte(0)); p < 0 {
-    name = string(_tmt761)
+  if p := strings.IndexByte(_tmt751,byte(0)); p < 0 {
+    name = string(_tmt751)
   } else {
-    name = string(_tmt761[:p])
+    name = string(_tmt751[:p])
   }
   return
 }
 func (self *Task) GetVarNameIndex(somename string) (asgn int32,index int32,err error) {
-  _tmt763 := C.CString(somename)
-  if _tmt764 := MSK_getvarnameindex(self.ptr(),_tmt763,&asgn,&index); _tmt764 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt764)
+  _tmt753 := C.CString(somename)
+  if _tmt754 := C.MSK_getvarnameindex(self.ptr(),_tmt753,&asgn,&index); _tmt754 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt754)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetVarNameLen(i int32) (len int32,err error) {
-  if _tmt765 := MSK_getvarnamelen(self.ptr(),i,&len); _tmt765 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt765)
+  if _tmt755 := C.MSK_getvarnamelen(self.ptr(),i,&len); _tmt755 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt755)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetVarType(j int32) (vartype Variabletype,err error) {
-  if _tmt766 := MSK_getvartype(self.ptr(),j,&vartype); _tmt766 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt766)
+  if _tmt756 := C.MSK_getvartype(self.ptr(),j,&vartype); _tmt756 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt756)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetVarTypeList(subj []int32) (vartype []Variabletype,err error) {
-  _tmt767 := len(subj)
-  var num int32 = int32(_tmt767)
-  var _tmt768 *int32
-  if subj != nil { _tmt768 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt769 *Variabletype
+  _tmt757 := len(subj)
+  var num int32 = int32(_tmt757)
+  var _tmt758 *int32
+  if subj != nil { _tmt758 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt759 *Variabletype
   vartype := make([]Variabletype,num)
-  if len(vartype) > 0 { _tmt769 = (*Variabletype)(&n[0]) }
-  if _tmt770 := MSK_getvartypelist(self.ptr(),num,_tmt768,_tmt769); _tmt770 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt770)
+  if len(vartype) > 0 { _tmt759 = (*Variabletype)(&n[0]) }
+  if _tmt760 := C.MSK_getvartypelist(self.ptr(),num,_tmt758,_tmt759); _tmt760 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt760)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetXc(whichsol Soltype) (xc []float64,err error) {
-  var _tmt773 *float64
-  var _tmt771 int32
-  if _tmt772 := MSK_getnumcon(task.nativep,addr(_tmt771)); _tmt772 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt772)
+  var _tmt763 *float64
+  var _tmt761 int32
+  if _tmt762 := C.MSK_getnumcon(task.nativep,addr(_tmt761)); _tmt762 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt762)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  xc := make([]float64,_tmt771)
-  if len(xc) > 0 { _tmt773 = (*float64)(&n[0]) }
-  if _tmt774 := MSK_getxc(self.ptr(),whichsol,_tmt773); _tmt774 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt774)
+  xc := make([]float64,_tmt761)
+  if len(xc) > 0 { _tmt763 = (*float64)(&n[0]) }
+  if _tmt764 := C.MSK_getxc(self.ptr(),whichsol,_tmt763); _tmt764 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt764)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetXcSlice(whichsol Soltype,first int32,last int32) (xc []float64,err error) {
-  var _tmt775 *float64
+  var _tmt765 *float64
   xc := make([]float64,(last - first))
-  if len(xc) > 0 { _tmt775 = (*float64)(&n[0]) }
-  if _tmt776 := MSK_getxcslice(self.ptr(),whichsol,first,last,_tmt775); _tmt776 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt776)
+  if len(xc) > 0 { _tmt765 = (*float64)(&n[0]) }
+  if _tmt766 := C.MSK_getxcslice(self.ptr(),whichsol,first,last,_tmt765); _tmt766 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt766)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetXx(whichsol Soltype) (xx []float64,err error) {
-  var _tmt779 *float64
-  var _tmt777 int32
-  if _tmt778 := MSK_getnumvar(task.nativep,addr(_tmt777)); _tmt778 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt778)
+  var _tmt769 *float64
+  var _tmt767 int32
+  if _tmt768 := C.MSK_getnumvar(task.nativep,addr(_tmt767)); _tmt768 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt768)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  xx := make([]float64,_tmt777)
-  if len(xx) > 0 { _tmt779 = (*float64)(&n[0]) }
-  if _tmt780 := MSK_getxx(self.ptr(),whichsol,_tmt779); _tmt780 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt780)
+  xx := make([]float64,_tmt767)
+  if len(xx) > 0 { _tmt769 = (*float64)(&n[0]) }
+  if _tmt770 := C.MSK_getxx(self.ptr(),whichsol,_tmt769); _tmt770 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt770)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetXxSlice(whichsol Soltype,first int32,last int32) (xx []float64,err error) {
-  var _tmt781 *float64
+  var _tmt771 *float64
   xx := make([]float64,(last - first))
-  if len(xx) > 0 { _tmt781 = (*float64)(&n[0]) }
-  if _tmt782 := MSK_getxxslice(self.ptr(),whichsol,first,last,_tmt781); _tmt782 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt782)
+  if len(xx) > 0 { _tmt771 = (*float64)(&n[0]) }
+  if _tmt772 := C.MSK_getxxslice(self.ptr(),whichsol,first,last,_tmt771); _tmt772 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt772)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetY(whichsol Soltype) (y []float64,err error) {
-  var _tmt785 *float64
-  var _tmt783 int32
-  if _tmt784 := MSK_getnumcon(task.nativep,addr(_tmt783)); _tmt784 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt784)
+  var _tmt775 *float64
+  var _tmt773 int32
+  if _tmt774 := C.MSK_getnumcon(task.nativep,addr(_tmt773)); _tmt774 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt774)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  y := make([]float64,_tmt783)
-  if len(y) > 0 { _tmt785 = (*float64)(&n[0]) }
-  if _tmt786 := MSK_gety(self.ptr(),whichsol,_tmt785); _tmt786 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt786)
+  y := make([]float64,_tmt773)
+  if len(y) > 0 { _tmt775 = (*float64)(&n[0]) }
+  if _tmt776 := C.MSK_gety(self.ptr(),whichsol,_tmt775); _tmt776 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt776)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) GetYSlice(whichsol Soltype,first int32,last int32) (y []float64,err error) {
-  var _tmt787 *float64
+  var _tmt777 *float64
   y := make([]float64,(last - first))
-  if len(y) > 0 { _tmt787 = (*float64)(&n[0]) }
-  if _tmt788 := MSK_getyslice(self.ptr(),whichsol,first,last,_tmt787); _tmt788 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt788)
+  if len(y) > 0 { _tmt777 = (*float64)(&n[0]) }
+  if _tmt778 := C.MSK_getyslice(self.ptr(),whichsol,first,last,_tmt777); _tmt778 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt778)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) InfeasibilityReport(whichstream Streamtype,whichsol Soltype) (err error) {
-  if _tmt789 := MSK_infeasibilityreport(self.ptr(),whichstream,whichsol); _tmt789 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt789)
+  if _tmt779 := C.MSK_infeasibilityreport(self.ptr(),whichstream,whichsol); _tmt779 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt779)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) InitBasisSolve() (basis []int32,err error) {
-  var _tmt792 *int32
-  var _tmt790 int32
-  if _tmt791 := MSK_getnumcon(task.nativep,addr(_tmt790)); _tmt791 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt791)
+  var _tmt782 *int32
+  var _tmt780 int32
+  if _tmt781 := C.MSK_getnumcon(task.nativep,addr(_tmt780)); _tmt781 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt781)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  basis := make([]int32,_tmt790)
-  if len(basis) > 0 { _tmt792 = (*int32)(&n[0]) }
-  if _tmt793 := MSK_initbasissolve(self.ptr(),_tmt792); _tmt793 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt793)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  return
-}
-func (self *Task) InputData(maxnumcon int32,maxnumvar int32,c []float64,cfix float64,aptrb []int32,aptre []int32,asub []int32,aval []float64,bkc []Boundkey,blc []float64,buc []float64,bkx []Boundkey,blx []float64,bux []float64) (err error) {
-  _tmt794 := len(buc)
-  if _tmt794 < bkc { _tmt794 = lof["name"] }
-  if _tmt794 < blc { _tmt794 = lof["name"] }
-  var numcon int32 = int32(_tmt794)
-  _tmt795 := len(aptrb)
-  if _tmt795 < blx { _tmt795 = lof["name"] }
-  if _tmt795 < bux { _tmt795 = lof["name"] }
-  if _tmt795 < bkx { _tmt795 = lof["name"] }
-  if _tmt795 < aptre { _tmt795 = lof["name"] }
-  if _tmt795 < c { _tmt795 = lof["name"] }
-  var numvar int32 = int32(_tmt795)
-  var _tmt796 *float64
-  if c != nil { _tmt796 = (*C.MSKint32t)(&c[0]) }
-  var _tmt797 *int32
-  if aptrb != nil { _tmt797 = (*C.MSKint32t)(&aptrb[0]) }
-  var _tmt798 *int32
-  if aptre != nil { _tmt798 = (*C.MSKint32t)(&aptre[0]) }
-  var _tmt799 *int32
-  if asub != nil { _tmt799 = (*C.MSKint32t)(&asub[0]) }
-  var _tmt800 *float64
-  if aval != nil { _tmt800 = (*C.MSKint32t)(&aval[0]) }
-  var _tmt801 *Boundkey
-  if bkc != nil { _tmt801 = (*C.MSKint32t)(&bkc[0]) }
-  var _tmt802 *float64
-  if blc != nil { _tmt802 = (*C.MSKint32t)(&blc[0]) }
-  var _tmt803 *float64
-  if buc != nil { _tmt803 = (*C.MSKint32t)(&buc[0]) }
-  var _tmt804 *Boundkey
-  if bkx != nil { _tmt804 = (*C.MSKint32t)(&bkx[0]) }
-  var _tmt805 *float64
-  if blx != nil { _tmt805 = (*C.MSKint32t)(&blx[0]) }
-  var _tmt806 *float64
-  if bux != nil { _tmt806 = (*C.MSKint32t)(&bux[0]) }
-  if _tmt807 := MSK_inputdata(self.ptr(),maxnumcon,maxnumvar,numcon,numvar,_tmt796,cfix,_tmt797,_tmt798,_tmt799,_tmt800,_tmt801,_tmt802,_tmt803,_tmt804,_tmt805,_tmt806); _tmt807 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt807)
+  basis := make([]int32,_tmt780)
+  if len(basis) > 0 { _tmt782 = (*int32)(&n[0]) }
+  if _tmt783 := C.MSK_initbasissolve(self.ptr(),_tmt782); _tmt783 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt783)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) InputData(maxnumcon int32,maxnumvar int32,c []float64,cfix float64,aptrb []int64,aptre []int64,asub []int32,aval []float64,bkc []Boundkey,blc []float64,buc []float64,bkx []Boundkey,blx []float64,bux []float64) (err error) {
-  _tmt808 := len(buc)
-  if _tmt808 < bkc { _tmt808 = lof["name"] }
-  if _tmt808 < blc { _tmt808 = lof["name"] }
-  var numcon int32 = int32(_tmt808)
-  _tmt809 := len(aptrb)
-  if _tmt809 < blx { _tmt809 = lof["name"] }
-  if _tmt809 < bux { _tmt809 = lof["name"] }
-  if _tmt809 < bkx { _tmt809 = lof["name"] }
-  if _tmt809 < aptre { _tmt809 = lof["name"] }
-  if _tmt809 < c { _tmt809 = lof["name"] }
-  var numvar int32 = int32(_tmt809)
-  var _tmt810 *float64
-  if c != nil { _tmt810 = (*C.MSKint32t)(&c[0]) }
-  var _tmt811 *int64
-  if aptrb != nil { _tmt811 = (*C.MSKint32t)(&aptrb[0]) }
-  var _tmt812 *int64
-  if aptre != nil { _tmt812 = (*C.MSKint32t)(&aptre[0]) }
-  var _tmt813 *int32
-  if asub != nil { _tmt813 = (*C.MSKint32t)(&asub[0]) }
-  var _tmt814 *float64
-  if aval != nil { _tmt814 = (*C.MSKint32t)(&aval[0]) }
-  var _tmt815 *Boundkey
-  if bkc != nil { _tmt815 = (*C.MSKint32t)(&bkc[0]) }
-  var _tmt816 *float64
-  if blc != nil { _tmt816 = (*C.MSKint32t)(&blc[0]) }
-  var _tmt817 *float64
-  if buc != nil { _tmt817 = (*C.MSKint32t)(&buc[0]) }
-  var _tmt818 *Boundkey
-  if bkx != nil { _tmt818 = (*C.MSKint32t)(&bkx[0]) }
-  var _tmt819 *float64
-  if blx != nil { _tmt819 = (*C.MSKint32t)(&blx[0]) }
-  var _tmt820 *float64
-  if bux != nil { _tmt820 = (*C.MSKint32t)(&bux[0]) }
-  if _tmt821 := MSK_inputdata64(self.ptr(),maxnumcon,maxnumvar,numcon,numvar,_tmt810,cfix,_tmt811,_tmt812,_tmt813,_tmt814,_tmt815,_tmt816,_tmt817,_tmt818,_tmt819,_tmt820); _tmt821 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt821)
+  _tmt784 := len(buc)
+  if _tmt784 < bkc { _tmt784 = lof["name"] }
+  if _tmt784 < blc { _tmt784 = lof["name"] }
+  var numcon int32 = int32(_tmt784)
+  _tmt785 := len(aptrb)
+  if _tmt785 < blx { _tmt785 = lof["name"] }
+  if _tmt785 < bux { _tmt785 = lof["name"] }
+  if _tmt785 < bkx { _tmt785 = lof["name"] }
+  if _tmt785 < aptre { _tmt785 = lof["name"] }
+  if _tmt785 < c { _tmt785 = lof["name"] }
+  var numvar int32 = int32(_tmt785)
+  var _tmt786 *float64
+  if c != nil { _tmt786 = (*C.MSKint32t)(&c[0]) }
+  var _tmt787 *int64
+  if aptrb != nil { _tmt787 = (*C.MSKint32t)(&aptrb[0]) }
+  var _tmt788 *int64
+  if aptre != nil { _tmt788 = (*C.MSKint32t)(&aptre[0]) }
+  var _tmt789 *int32
+  if asub != nil { _tmt789 = (*C.MSKint32t)(&asub[0]) }
+  var _tmt790 *float64
+  if aval != nil { _tmt790 = (*C.MSKint32t)(&aval[0]) }
+  var _tmt791 *Boundkey
+  if bkc != nil { _tmt791 = (*C.MSKint32t)(&bkc[0]) }
+  var _tmt792 *float64
+  if blc != nil { _tmt792 = (*C.MSKint32t)(&blc[0]) }
+  var _tmt793 *float64
+  if buc != nil { _tmt793 = (*C.MSKint32t)(&buc[0]) }
+  var _tmt794 *Boundkey
+  if bkx != nil { _tmt794 = (*C.MSKint32t)(&bkx[0]) }
+  var _tmt795 *float64
+  if blx != nil { _tmt795 = (*C.MSKint32t)(&blx[0]) }
+  var _tmt796 *float64
+  if bux != nil { _tmt796 = (*C.MSKint32t)(&bux[0]) }
+  if _tmt797 := C.MSK_inputdata64(self.ptr(),maxnumcon,maxnumvar,numcon,numvar,_tmt786,cfix,_tmt787,_tmt788,_tmt789,_tmt790,_tmt791,_tmt792,_tmt793,_tmt794,_tmt795,_tmt796); _tmt797 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt797)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) IsDouParName(parname string) (param Dparam,err error) {
-  _tmt822 := C.CString(parname)
-  if _tmt823 := MSK_isdouparname(self.ptr(),_tmt822,&param); _tmt823 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt823)
+  _tmt798 := C.CString(parname)
+  if _tmt799 := C.MSK_isdouparname(self.ptr(),_tmt798,&param); _tmt799 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt799)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) IsIntParName(parname string) (param Iparam,err error) {
-  _tmt824 := C.CString(parname)
-  if _tmt825 := MSK_isintparname(self.ptr(),_tmt824,&param); _tmt825 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt825)
+  _tmt800 := C.CString(parname)
+  if _tmt801 := C.MSK_isintparname(self.ptr(),_tmt800,&param); _tmt801 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt801)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) IsStrParName(parname string) (param Sparam,err error) {
-  _tmt826 := C.CString(parname)
-  if _tmt827 := MSK_isstrparname(self.ptr(),_tmt826,&param); _tmt827 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt827)
+  _tmt802 := C.CString(parname)
+  if _tmt803 := C.MSK_isstrparname(self.ptr(),_tmt802,&param); _tmt803 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt803)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) LinkFileToStream(whichstream Streamtype,filename string,append int32) (err error) {
-  _tmt828 := C.CString(filename)
-  if _tmt829 := MSK_linkfiletotaskstream(self.ptr(),whichstream,_tmt828,append); _tmt829 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt829)
+  _tmt804 := C.CString(filename)
+  if _tmt805 := C.MSK_linkfiletotaskstream(self.ptr(),whichstream,_tmt804,append); _tmt805 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt805)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) OneSolutionSummary(whichstream Streamtype,whichsol Soltype) (err error) {
-  if _tmt830 := MSK_onesolutionsummary(self.ptr(),whichstream,whichsol); _tmt830 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt830)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  return
-}
-func (self *Task) OptimizeRmt(address string,accesstoken string) (trmcode Rescode,err error) {
-  _tmt831 := C.CString(address)
-  _tmt832 := C.CString(accesstoken)
-  if _tmt833 := MSK_optimizermt(self.ptr(),_tmt831,_tmt832,&trmcode); _tmt833 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt833)
+  if _tmt806 := C.MSK_onesolutionsummary(self.ptr(),whichstream,whichsol); _tmt806 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt806)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) OptimizerSummary(whichstream Streamtype) (err error) {
-  if _tmt834 := MSK_optimizersummary(self.ptr(),whichstream); _tmt834 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt834)
+  if _tmt807 := C.MSK_optimizersummary(self.ptr(),whichstream); _tmt807 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt807)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) Optimize() (trmcode Rescode,err error) {
-  if _tmt835 := MSK_optimizetrm(self.ptr(),&trmcode); _tmt835 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt835)
+  if _tmt808 := C.MSK_optimizetrm(self.ptr(),&trmcode); _tmt808 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt808)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PrimalRepair(wlc []float64,wuc []float64,wlx []float64,wux []float64) (err error) {
-  var _tmt838 *float64
-  var _tmt836 int32
-  if _tmt837 := MSK_getnumcon(task.nativep,addr(_tmt836)); _tmt837 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt837)
+  var _tmt811 *float64
+  var _tmt809 int32
+  if _tmt810 := C.MSK_getnumcon(task.nativep,addr(_tmt809)); _tmt810 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt810)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(wlc) < _tmt836 {
+  if len(wlc) < _tmt809 {
     err = &ArrayLengthError{fun:"PrimalRepair",arg:"wlc"}
     return
   }
-  if wlc != nil { _tmt838 = (*C.MSKint32t)(&wlc[0]) }
-  var _tmt841 *float64
-  var _tmt839 int32
-  if _tmt840 := MSK_getnumcon(task.nativep,addr(_tmt839)); _tmt840 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt840)
+  if wlc != nil { _tmt811 = (*C.MSKint32t)(&wlc[0]) }
+  var _tmt814 *float64
+  var _tmt812 int32
+  if _tmt813 := C.MSK_getnumcon(task.nativep,addr(_tmt812)); _tmt813 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt813)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(wuc) < _tmt839 {
+  if len(wuc) < _tmt812 {
     err = &ArrayLengthError{fun:"PrimalRepair",arg:"wuc"}
     return
   }
-  if wuc != nil { _tmt841 = (*C.MSKint32t)(&wuc[0]) }
-  var _tmt844 *float64
-  var _tmt842 int32
-  if _tmt843 := MSK_getnumvar(task.nativep,addr(_tmt842)); _tmt843 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt843)
+  if wuc != nil { _tmt814 = (*C.MSKint32t)(&wuc[0]) }
+  var _tmt817 *float64
+  var _tmt815 int32
+  if _tmt816 := C.MSK_getnumvar(task.nativep,addr(_tmt815)); _tmt816 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt816)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(wlx) < _tmt842 {
+  if len(wlx) < _tmt815 {
     err = &ArrayLengthError{fun:"PrimalRepair",arg:"wlx"}
     return
   }
-  if wlx != nil { _tmt844 = (*C.MSKint32t)(&wlx[0]) }
-  var _tmt847 *float64
-  var _tmt845 int32
-  if _tmt846 := MSK_getnumvar(task.nativep,addr(_tmt845)); _tmt846 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt846)
+  if wlx != nil { _tmt817 = (*C.MSKint32t)(&wlx[0]) }
+  var _tmt820 *float64
+  var _tmt818 int32
+  if _tmt819 := C.MSK_getnumvar(task.nativep,addr(_tmt818)); _tmt819 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt819)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(wux) < _tmt845 {
+  if len(wux) < _tmt818 {
     err = &ArrayLengthError{fun:"PrimalRepair",arg:"wux"}
     return
   }
-  if wux != nil { _tmt847 = (*C.MSKint32t)(&wux[0]) }
-  if _tmt848 := MSK_primalrepair(self.ptr(),_tmt838,_tmt841,_tmt844,_tmt847); _tmt848 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt848)
+  if wux != nil { _tmt820 = (*C.MSKint32t)(&wux[0]) }
+  if _tmt821 := C.MSK_primalrepair(self.ptr(),_tmt811,_tmt814,_tmt817,_tmt820); _tmt821 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt821)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PrimalSensitivity(subi []int32,marki []Mark,subj []int32,markj []Mark) (leftpricei []float64,rightpricei []float64,leftrangei []float64,rightrangei []float64,leftpricej []float64,rightpricej []float64,leftrangej []float64,rightrangej []float64,err error) {
-  _tmt849 := len(subi)
-  if _tmt849 < marki { _tmt849 = lof["name"] }
-  var numi int32 = int32(_tmt849)
-  var _tmt850 *int32
-  if subi != nil { _tmt850 = (*C.MSKint32t)(&subi[0]) }
-  var _tmt851 *Mark
-  if marki != nil { _tmt851 = (*C.MSKint32t)(&marki[0]) }
-  _tmt852 := len(markj)
-  if _tmt852 < subj { _tmt852 = lof["name"] }
-  var numj int32 = int32(_tmt852)
-  var _tmt853 *int32
-  if subj != nil { _tmt853 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt854 *Mark
-  if markj != nil { _tmt854 = (*C.MSKint32t)(&markj[0]) }
-  var _tmt855 *float64
+  _tmt822 := len(subi)
+  if _tmt822 < marki { _tmt822 = lof["name"] }
+  var numi int32 = int32(_tmt822)
+  var _tmt823 *int32
+  if subi != nil { _tmt823 = (*C.MSKint32t)(&subi[0]) }
+  var _tmt824 *Mark
+  if marki != nil { _tmt824 = (*C.MSKint32t)(&marki[0]) }
+  _tmt825 := len(markj)
+  if _tmt825 < subj { _tmt825 = lof["name"] }
+  var numj int32 = int32(_tmt825)
+  var _tmt826 *int32
+  if subj != nil { _tmt826 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt827 *Mark
+  if markj != nil { _tmt827 = (*C.MSKint32t)(&markj[0]) }
+  var _tmt828 *float64
   leftpricei := make([]float64,numi)
-  if len(leftpricei) > 0 { _tmt855 = (*float64)(&n[0]) }
-  var _tmt856 *float64
+  if len(leftpricei) > 0 { _tmt828 = (*float64)(&n[0]) }
+  var _tmt829 *float64
   rightpricei := make([]float64,numi)
-  if len(rightpricei) > 0 { _tmt856 = (*float64)(&n[0]) }
-  var _tmt857 *float64
+  if len(rightpricei) > 0 { _tmt829 = (*float64)(&n[0]) }
+  var _tmt830 *float64
   leftrangei := make([]float64,numi)
-  if len(leftrangei) > 0 { _tmt857 = (*float64)(&n[0]) }
-  var _tmt858 *float64
+  if len(leftrangei) > 0 { _tmt830 = (*float64)(&n[0]) }
+  var _tmt831 *float64
   rightrangei := make([]float64,numi)
-  if len(rightrangei) > 0 { _tmt858 = (*float64)(&n[0]) }
-  var _tmt859 *float64
+  if len(rightrangei) > 0 { _tmt831 = (*float64)(&n[0]) }
+  var _tmt832 *float64
   leftpricej := make([]float64,numj)
-  if len(leftpricej) > 0 { _tmt859 = (*float64)(&n[0]) }
-  var _tmt860 *float64
+  if len(leftpricej) > 0 { _tmt832 = (*float64)(&n[0]) }
+  var _tmt833 *float64
   rightpricej := make([]float64,numj)
-  if len(rightpricej) > 0 { _tmt860 = (*float64)(&n[0]) }
-  var _tmt861 *float64
+  if len(rightpricej) > 0 { _tmt833 = (*float64)(&n[0]) }
+  var _tmt834 *float64
   leftrangej := make([]float64,numj)
-  if len(leftrangej) > 0 { _tmt861 = (*float64)(&n[0]) }
-  var _tmt862 *float64
+  if len(leftrangej) > 0 { _tmt834 = (*float64)(&n[0]) }
+  var _tmt835 *float64
   rightrangej := make([]float64,numj)
-  if len(rightrangej) > 0 { _tmt862 = (*float64)(&n[0]) }
-  if _tmt863 := MSK_primalsensitivity(self.ptr(),numi,_tmt850,_tmt851,numj,_tmt853,_tmt854,_tmt855,_tmt856,_tmt857,_tmt858,_tmt859,_tmt860,_tmt861,_tmt862); _tmt863 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt863)
+  if len(rightrangej) > 0 { _tmt835 = (*float64)(&n[0]) }
+  if _tmt836 := C.MSK_primalsensitivity(self.ptr(),numi,_tmt823,_tmt824,numj,_tmt826,_tmt827,_tmt828,_tmt829,_tmt830,_tmt831,_tmt832,_tmt833,_tmt834,_tmt835); _tmt836 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt836)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
+func (self *Task) ProbTypeToStr(probtype Problemtype) (str string,err error) {
+  _tmt837 := make([]byte,max_str_len)
+  if _tmt838 := C.MSK_probtypetostr(self.ptr(),probtype,C.CString(&tmpvar1[0])); _tmt838 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt838)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  var str string
+  if p := strings.IndexByte(_tmt837,byte(0)); p < 0 {
+    str = string(_tmt837)
+  } else {
+    str = string(_tmt837[:p])
+  }
+  return
+}
+func (self *Task) ProStaToStr(problemsta Prosta) (str string,err error) {
+  _tmt839 := make([]byte,max_str_len)
+  if _tmt840 := C.MSK_prostatostr(self.ptr(),problemsta,C.CString(&tmpvar1[0])); _tmt840 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt840)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  var str string
+  if p := strings.IndexByte(_tmt839,byte(0)); p < 0 {
+    str = string(_tmt839)
+  } else {
+    str = string(_tmt839[:p])
+  }
+  return
+}
 func (self *Task) PutAcc(accidx int64,domidx int64,afeidxlist []int64,b []float64) (err error) {
-  _tmt864 := len(afeidxlist)
-  var numafeidx int64 = int32(_tmt864)
-  var _tmt865 *int64
-  if afeidxlist != nil { _tmt865 = (*C.MSKint32t)(&afeidxlist[0]) }
-  var _tmt866 *float64
+  _tmt841 := len(afeidxlist)
+  var numafeidx int64 = int32(_tmt841)
+  var _tmt842 *int64
+  if afeidxlist != nil { _tmt842 = (*C.MSKint32t)(&afeidxlist[0]) }
+  var _tmt843 *float64
   if len(b) < numafeidx {
     err = &ArrayLengthError{fun:"PutAcc",arg:"b"}
     return
   }
-  if b != nil { _tmt866 = (*C.MSKint32t)(&b[0]) }
-  if _tmt867 := MSK_putacc(self.ptr(),accidx,domidx,numafeidx,_tmt865,_tmt866); _tmt867 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt867)
+  if b != nil { _tmt843 = (*C.MSKint32t)(&b[0]) }
+  if _tmt844 := C.MSK_putacc(self.ptr(),accidx,domidx,numafeidx,_tmt842,_tmt843); _tmt844 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt844)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAccB(accidx int64,b []float64) (err error) {
-  _tmt868 := len(b)
-  var lengthb int64 = int32(_tmt868)
-  var _tmt869 *float64
-  if b != nil { _tmt869 = (*C.MSKint32t)(&b[0]) }
-  if _tmt870 := MSK_putaccb(self.ptr(),accidx,lengthb,_tmt869); _tmt870 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt870)
+  _tmt845 := len(b)
+  var lengthb int64 = int32(_tmt845)
+  var _tmt846 *float64
+  if b != nil { _tmt846 = (*C.MSKint32t)(&b[0]) }
+  if _tmt847 := C.MSK_putaccb(self.ptr(),accidx,lengthb,_tmt846); _tmt847 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt847)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAccBJ(accidx int64,j int64,bj float64) (err error) {
-  if _tmt871 := MSK_putaccbj(self.ptr(),accidx,j,bj); _tmt871 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt871)
+  if _tmt848 := C.MSK_putaccbj(self.ptr(),accidx,j,bj); _tmt848 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt848)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAccDotY(whichsol Soltype,accidx int64) (doty []float64,err error) {
-  var _tmt874 *float64
-  var _tmt872 int64
-  if _tmt873 := MSK_getaccn(task.nativep,accidx,addr(_tmt872)); _tmt873 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt873)
+  var _tmt851 *float64
+  var _tmt849 int64
+  if _tmt850 := C.MSK_getaccn(task.nativep,accidx,addr(_tmt849)); _tmt850 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt850)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  doty := make([]float64,_tmt872)
-  if len(doty) > 0 { _tmt874 = (*float64)(&n[0]) }
-  if _tmt875 := MSK_putaccdoty(self.ptr(),whichsol,accidx,_tmt874); _tmt875 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt875)
+  doty := make([]float64,_tmt849)
+  if len(doty) > 0 { _tmt851 = (*float64)(&n[0]) }
+  if _tmt852 := C.MSK_putaccdoty(self.ptr(),whichsol,accidx,_tmt851); _tmt852 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt852)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAccList(accidxs []int64,domidxs []int64,afeidxlist []int64,b []float64) (err error) {
-  _tmt876 := len(accidxs)
-  if _tmt876 < domidxs { _tmt876 = lof["name"] }
-  var numaccs int64 = int32(_tmt876)
-  var _tmt877 *int64
-  if accidxs != nil { _tmt877 = (*C.MSKint32t)(&accidxs[0]) }
-  var _tmt878 *int64
-  if domidxs != nil { _tmt878 = (*C.MSKint32t)(&domidxs[0]) }
-  _tmt879 := len(afeidxlist)
-  var numafeidx int64 = int32(_tmt879)
-  var _tmt880 *int64
-  if afeidxlist != nil { _tmt880 = (*C.MSKint32t)(&afeidxlist[0]) }
-  var _tmt881 *float64
+  _tmt853 := len(accidxs)
+  if _tmt853 < domidxs { _tmt853 = lof["name"] }
+  var numaccs int64 = int32(_tmt853)
+  var _tmt854 *int64
+  if accidxs != nil { _tmt854 = (*C.MSKint32t)(&accidxs[0]) }
+  var _tmt855 *int64
+  if domidxs != nil { _tmt855 = (*C.MSKint32t)(&domidxs[0]) }
+  _tmt856 := len(afeidxlist)
+  var numafeidx int64 = int32(_tmt856)
+  var _tmt857 *int64
+  if afeidxlist != nil { _tmt857 = (*C.MSKint32t)(&afeidxlist[0]) }
+  var _tmt858 *float64
   if len(b) < numafeidx {
     err = &ArrayLengthError{fun:"PutAccList",arg:"b"}
     return
   }
-  if b != nil { _tmt881 = (*C.MSKint32t)(&b[0]) }
-  if _tmt882 := MSK_putacclist(self.ptr(),numaccs,_tmt877,_tmt878,numafeidx,_tmt880,_tmt881); _tmt882 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt882)
+  if b != nil { _tmt858 = (*C.MSKint32t)(&b[0]) }
+  if _tmt859 := C.MSK_putacclist(self.ptr(),numaccs,_tmt854,_tmt855,numafeidx,_tmt857,_tmt858); _tmt859 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt859)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAccName(accidx int64,name string) (err error) {
-  _tmt883 := C.CString(name)
-  if _tmt884 := MSK_putaccname(self.ptr(),accidx,_tmt883); _tmt884 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt884)
+  _tmt860 := C.CString(name)
+  if _tmt861 := C.MSK_putaccname(self.ptr(),accidx,_tmt860); _tmt861 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt861)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutACol(j int32,subj []int32,valj []float64) (err error) {
-  _tmt885 := len(valj)
-  if _tmt885 < subj { _tmt885 = lof["name"] }
-  var nzj int32 = int32(_tmt885)
-  var _tmt886 *int32
-  if subj != nil { _tmt886 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt887 *float64
-  if valj != nil { _tmt887 = (*C.MSKint32t)(&valj[0]) }
-  if _tmt888 := MSK_putacol(self.ptr(),j,nzj,_tmt886,_tmt887); _tmt888 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt888)
+  _tmt862 := len(valj)
+  if _tmt862 < subj { _tmt862 = lof["name"] }
+  var nzj int32 = int32(_tmt862)
+  var _tmt863 *int32
+  if subj != nil { _tmt863 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt864 *float64
+  if valj != nil { _tmt864 = (*C.MSKint32t)(&valj[0]) }
+  if _tmt865 := C.MSK_putacol(self.ptr(),j,nzj,_tmt863,_tmt864); _tmt865 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt865)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
-func (self *Task) PutAColList(sub []int32,ptrb []int64,ptre []int64,asub []int32,aval []float64) (err error) {
-  _tmt889 := len(ptrb)
-  if _tmt889 < ptre { _tmt889 = lof["name"] }
-  if _tmt889 < sub { _tmt889 = lof["name"] }
-  var num int32 = int32(_tmt889)
-  var _tmt890 *int32
-  if sub != nil { _tmt890 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt891 *int64
-  if ptrb != nil { _tmt891 = (*C.MSKint32t)(&ptrb[0]) }
-  var _tmt892 *int64
-  if ptre != nil { _tmt892 = (*C.MSKint32t)(&ptre[0]) }
-  var _tmt893 *int32
-  if asub != nil { _tmt893 = (*C.MSKint32t)(&asub[0]) }
-  var _tmt894 *float64
-  if aval != nil { _tmt894 = (*C.MSKint32t)(&aval[0]) }
-  if _tmt895 := MSK_putacollist64(self.ptr(),num,_tmt890,_tmt891,_tmt892,_tmt893,_tmt894); _tmt895 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt895)
+func (self *Task) PutAColList(sub []int32,ptrb []int32,ptre []int32,asub []int32,aval []float64) (err error) {
+  _tmt866 := len(ptrb)
+  if _tmt866 < ptre { _tmt866 = lof["name"] }
+  if _tmt866 < sub { _tmt866 = lof["name"] }
+  var num int32 = int32(_tmt866)
+  var _tmt867 *int32
+  if sub != nil { _tmt867 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt868 *int32
+  if ptrb != nil { _tmt868 = (*C.MSKint32t)(&ptrb[0]) }
+  var _tmt869 *int32
+  if ptre != nil { _tmt869 = (*C.MSKint32t)(&ptre[0]) }
+  var _tmt870 *int32
+  if asub != nil { _tmt870 = (*C.MSKint32t)(&asub[0]) }
+  var _tmt871 *float64
+  if aval != nil { _tmt871 = (*C.MSKint32t)(&aval[0]) }
+  if _tmt872 := C.MSK_putacollist(self.ptr(),num,_tmt867,_tmt868,_tmt869,_tmt870,_tmt871); _tmt872 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt872)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  return
+}
+func (self *Task) PutAColSlice(first int32,last int32,ptrb []int64,ptre []int64,asub []int32,aval []float64) (err error) {
+  var _tmt873 *int64
+  if ptrb != nil { _tmt873 = (*C.MSKint32t)(&ptrb[0]) }
+  var _tmt874 *int64
+  if ptre != nil { _tmt874 = (*C.MSKint32t)(&ptre[0]) }
+  var _tmt875 *int32
+  if asub != nil { _tmt875 = (*C.MSKint32t)(&asub[0]) }
+  var _tmt876 *float64
+  if aval != nil { _tmt876 = (*C.MSKint32t)(&aval[0]) }
+  if _tmt877 := C.MSK_putacolslice64(self.ptr(),first,last,_tmt873,_tmt874,_tmt875,_tmt876); _tmt877 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt877)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeBarfBlockTriplet(afeidx []int64,barvaridx []int32,subk []int32,subl []int32,valkl []float64) (err error) {
-  _tmt896 := len(subl)
-  if _tmt896 < subk { _tmt896 = lof["name"] }
-  if _tmt896 < barvaridx { _tmt896 = lof["name"] }
-  if _tmt896 < valkl { _tmt896 = lof["name"] }
-  if _tmt896 < afeidx { _tmt896 = lof["name"] }
-  var numtrip int64 = int32(_tmt896)
-  var _tmt897 *int64
+  _tmt878 := len(subl)
+  if _tmt878 < subk { _tmt878 = lof["name"] }
+  if _tmt878 < barvaridx { _tmt878 = lof["name"] }
+  if _tmt878 < valkl { _tmt878 = lof["name"] }
+  if _tmt878 < afeidx { _tmt878 = lof["name"] }
+  var numtrip int64 = int32(_tmt878)
+  var _tmt879 *int64
   if len(afeidx) < numtrip {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"afeidx"}
     return
   }
-  if afeidx != nil { _tmt897 = (*C.MSKint32t)(&afeidx[0]) }
-  var _tmt898 *int32
+  if afeidx != nil { _tmt879 = (*C.MSKint32t)(&afeidx[0]) }
+  var _tmt880 *int32
   if len(barvaridx) < numtrip {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"barvaridx"}
     return
   }
-  if barvaridx != nil { _tmt898 = (*C.MSKint32t)(&barvaridx[0]) }
-  var _tmt899 *int32
+  if barvaridx != nil { _tmt880 = (*C.MSKint32t)(&barvaridx[0]) }
+  var _tmt881 *int32
   if len(subk) < numtrip {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"subk"}
     return
   }
-  if subk != nil { _tmt899 = (*C.MSKint32t)(&subk[0]) }
-  var _tmt900 *int32
+  if subk != nil { _tmt881 = (*C.MSKint32t)(&subk[0]) }
+  var _tmt882 *int32
   if len(subl) < numtrip {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"subl"}
     return
   }
-  if subl != nil { _tmt900 = (*C.MSKint32t)(&subl[0]) }
-  var _tmt901 *float64
+  if subl != nil { _tmt882 = (*C.MSKint32t)(&subl[0]) }
+  var _tmt883 *float64
   if len(valkl) < numtrip {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"valkl"}
     return
   }
-  if valkl != nil { _tmt901 = (*C.MSKint32t)(&valkl[0]) }
-  if _tmt902 := MSK_putafebarfblocktriplet(self.ptr(),numtrip,_tmt897,_tmt898,_tmt899,_tmt900,_tmt901); _tmt902 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt902)
+  if valkl != nil { _tmt883 = (*C.MSKint32t)(&valkl[0]) }
+  if _tmt884 := C.MSK_putafebarfblocktriplet(self.ptr(),numtrip,_tmt879,_tmt880,_tmt881,_tmt882,_tmt883); _tmt884 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt884)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeBarfEntry(afeidx int64,barvaridx int32,termidx []int64,termweight []float64) (err error) {
-  _tmt903 := len(termidx)
-  if _tmt903 < termweight { _tmt903 = lof["name"] }
-  var numterm int64 = int32(_tmt903)
-  var _tmt904 *int64
-  if termidx != nil { _tmt904 = (*C.MSKint32t)(&termidx[0]) }
-  var _tmt905 *float64
-  if termweight != nil { _tmt905 = (*C.MSKint32t)(&termweight[0]) }
-  if _tmt906 := MSK_putafebarfentry(self.ptr(),afeidx,barvaridx,numterm,_tmt904,_tmt905); _tmt906 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt906)
+  _tmt885 := len(termidx)
+  if _tmt885 < termweight { _tmt885 = lof["name"] }
+  var numterm int64 = int32(_tmt885)
+  var _tmt886 *int64
+  if termidx != nil { _tmt886 = (*C.MSKint32t)(&termidx[0]) }
+  var _tmt887 *float64
+  if termweight != nil { _tmt887 = (*C.MSKint32t)(&termweight[0]) }
+  if _tmt888 := C.MSK_putafebarfentry(self.ptr(),afeidx,barvaridx,numterm,_tmt886,_tmt887); _tmt888 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt888)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeBarfEntryList(afeidx []int64,barvaridx []int32,numterm []int64,ptrterm []int64,termidx []int64,termweight []float64) (err error) {
-  _tmt907 := len(barvaridx)
-  if _tmt907 < ptrterm { _tmt907 = lof["name"] }
-  if _tmt907 < numterm { _tmt907 = lof["name"] }
-  if _tmt907 < afeidx { _tmt907 = lof["name"] }
-  var numafeidx int64 = int32(_tmt907)
-  var _tmt908 *int64
-  if afeidx != nil { _tmt908 = (*C.MSKint32t)(&afeidx[0]) }
-  var _tmt909 *int32
-  if barvaridx != nil { _tmt909 = (*C.MSKint32t)(&barvaridx[0]) }
-  var _tmt910 *int64
-  if numterm != nil { _tmt910 = (*C.MSKint32t)(&numterm[0]) }
-  var _tmt911 *int64
-  if ptrterm != nil { _tmt911 = (*C.MSKint32t)(&ptrterm[0]) }
-  _tmt912 := len(termidx)
-  if _tmt912 < termweight { _tmt912 = lof["name"] }
-  var lenterm int64 = int32(_tmt912)
-  var _tmt913 *int64
-  if termidx != nil { _tmt913 = (*C.MSKint32t)(&termidx[0]) }
-  var _tmt914 *float64
-  if termweight != nil { _tmt914 = (*C.MSKint32t)(&termweight[0]) }
-  if _tmt915 := MSK_putafebarfentrylist(self.ptr(),numafeidx,_tmt908,_tmt909,_tmt910,_tmt911,lenterm,_tmt913,_tmt914); _tmt915 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt915)
+  _tmt889 := len(barvaridx)
+  if _tmt889 < ptrterm { _tmt889 = lof["name"] }
+  if _tmt889 < numterm { _tmt889 = lof["name"] }
+  if _tmt889 < afeidx { _tmt889 = lof["name"] }
+  var numafeidx int64 = int32(_tmt889)
+  var _tmt890 *int64
+  if afeidx != nil { _tmt890 = (*C.MSKint32t)(&afeidx[0]) }
+  var _tmt891 *int32
+  if barvaridx != nil { _tmt891 = (*C.MSKint32t)(&barvaridx[0]) }
+  var _tmt892 *int64
+  if numterm != nil { _tmt892 = (*C.MSKint32t)(&numterm[0]) }
+  var _tmt893 *int64
+  if ptrterm != nil { _tmt893 = (*C.MSKint32t)(&ptrterm[0]) }
+  _tmt894 := len(termidx)
+  if _tmt894 < termweight { _tmt894 = lof["name"] }
+  var lenterm int64 = int32(_tmt894)
+  var _tmt895 *int64
+  if termidx != nil { _tmt895 = (*C.MSKint32t)(&termidx[0]) }
+  var _tmt896 *float64
+  if termweight != nil { _tmt896 = (*C.MSKint32t)(&termweight[0]) }
+  if _tmt897 := C.MSK_putafebarfentrylist(self.ptr(),numafeidx,_tmt890,_tmt891,_tmt892,_tmt893,lenterm,_tmt895,_tmt896); _tmt897 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt897)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeBarfRow(afeidx int64,barvaridx []int32,numterm []int64,ptrterm []int64,termidx []int64,termweight []float64) (err error) {
-  _tmt916 := len(barvaridx)
-  if _tmt916 < ptrterm { _tmt916 = lof["name"] }
-  if _tmt916 < numterm { _tmt916 = lof["name"] }
-  var numentr int32 = int32(_tmt916)
-  var _tmt917 *int32
-  if barvaridx != nil { _tmt917 = (*C.MSKint32t)(&barvaridx[0]) }
-  var _tmt918 *int64
-  if numterm != nil { _tmt918 = (*C.MSKint32t)(&numterm[0]) }
-  var _tmt919 *int64
-  if ptrterm != nil { _tmt919 = (*C.MSKint32t)(&ptrterm[0]) }
-  _tmt920 := len(termidx)
-  if _tmt920 < termweight { _tmt920 = lof["name"] }
-  var lenterm int64 = int32(_tmt920)
-  var _tmt921 *int64
-  if termidx != nil { _tmt921 = (*C.MSKint32t)(&termidx[0]) }
-  var _tmt922 *float64
-  if termweight != nil { _tmt922 = (*C.MSKint32t)(&termweight[0]) }
-  if _tmt923 := MSK_putafebarfrow(self.ptr(),afeidx,numentr,_tmt917,_tmt918,_tmt919,lenterm,_tmt921,_tmt922); _tmt923 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt923)
+  _tmt898 := len(barvaridx)
+  if _tmt898 < ptrterm { _tmt898 = lof["name"] }
+  if _tmt898 < numterm { _tmt898 = lof["name"] }
+  var numentr int32 = int32(_tmt898)
+  var _tmt899 *int32
+  if barvaridx != nil { _tmt899 = (*C.MSKint32t)(&barvaridx[0]) }
+  var _tmt900 *int64
+  if numterm != nil { _tmt900 = (*C.MSKint32t)(&numterm[0]) }
+  var _tmt901 *int64
+  if ptrterm != nil { _tmt901 = (*C.MSKint32t)(&ptrterm[0]) }
+  _tmt902 := len(termidx)
+  if _tmt902 < termweight { _tmt902 = lof["name"] }
+  var lenterm int64 = int32(_tmt902)
+  var _tmt903 *int64
+  if termidx != nil { _tmt903 = (*C.MSKint32t)(&termidx[0]) }
+  var _tmt904 *float64
+  if termweight != nil { _tmt904 = (*C.MSKint32t)(&termweight[0]) }
+  if _tmt905 := C.MSK_putafebarfrow(self.ptr(),afeidx,numentr,_tmt899,_tmt900,_tmt901,lenterm,_tmt903,_tmt904); _tmt905 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt905)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeFCol(varidx int32,afeidx []int64,val []float64) (err error) {
-  _tmt924 := len(val)
-  if _tmt924 < afeidx { _tmt924 = lof["name"] }
-  var numnz int64 = int32(_tmt924)
-  var _tmt925 *int64
-  if afeidx != nil { _tmt925 = (*C.MSKint32t)(&afeidx[0]) }
-  var _tmt926 *float64
-  if val != nil { _tmt926 = (*C.MSKint32t)(&val[0]) }
-  if _tmt927 := MSK_putafefcol(self.ptr(),varidx,numnz,_tmt925,_tmt926); _tmt927 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt927)
+  _tmt906 := len(val)
+  if _tmt906 < afeidx { _tmt906 = lof["name"] }
+  var numnz int64 = int32(_tmt906)
+  var _tmt907 *int64
+  if afeidx != nil { _tmt907 = (*C.MSKint32t)(&afeidx[0]) }
+  var _tmt908 *float64
+  if val != nil { _tmt908 = (*C.MSKint32t)(&val[0]) }
+  if _tmt909 := C.MSK_putafefcol(self.ptr(),varidx,numnz,_tmt907,_tmt908); _tmt909 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt909)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeFEntry(afeidx int64,varidx int32,value float64) (err error) {
-  if _tmt928 := MSK_putafefentry(self.ptr(),afeidx,varidx,value); _tmt928 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt928)
+  if _tmt910 := C.MSK_putafefentry(self.ptr(),afeidx,varidx,value); _tmt910 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt910)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeFEntryList(afeidx []int64,varidx []int32,val []float64) (err error) {
-  _tmt929 := len(val)
-  if _tmt929 < varidx { _tmt929 = lof["name"] }
-  if _tmt929 < afeidx { _tmt929 = lof["name"] }
-  var numentr int64 = int32(_tmt929)
-  var _tmt930 *int64
-  if afeidx != nil { _tmt930 = (*C.MSKint32t)(&afeidx[0]) }
-  var _tmt931 *int32
-  if varidx != nil { _tmt931 = (*C.MSKint32t)(&varidx[0]) }
-  var _tmt932 *float64
-  if val != nil { _tmt932 = (*C.MSKint32t)(&val[0]) }
-  if _tmt933 := MSK_putafefentrylist(self.ptr(),numentr,_tmt930,_tmt931,_tmt932); _tmt933 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt933)
+  _tmt911 := len(val)
+  if _tmt911 < varidx { _tmt911 = lof["name"] }
+  if _tmt911 < afeidx { _tmt911 = lof["name"] }
+  var numentr int64 = int32(_tmt911)
+  var _tmt912 *int64
+  if afeidx != nil { _tmt912 = (*C.MSKint32t)(&afeidx[0]) }
+  var _tmt913 *int32
+  if varidx != nil { _tmt913 = (*C.MSKint32t)(&varidx[0]) }
+  var _tmt914 *float64
+  if val != nil { _tmt914 = (*C.MSKint32t)(&val[0]) }
+  if _tmt915 := C.MSK_putafefentrylist(self.ptr(),numentr,_tmt912,_tmt913,_tmt914); _tmt915 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt915)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeFRow(afeidx int64,varidx []int32,val []float64) (err error) {
-  _tmt934 := len(varidx)
-  if _tmt934 < val { _tmt934 = lof["name"] }
-  var numnz int32 = int32(_tmt934)
-  var _tmt935 *int32
-  if varidx != nil { _tmt935 = (*C.MSKint32t)(&varidx[0]) }
-  var _tmt936 *float64
-  if val != nil { _tmt936 = (*C.MSKint32t)(&val[0]) }
-  if _tmt937 := MSK_putafefrow(self.ptr(),afeidx,numnz,_tmt935,_tmt936); _tmt937 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt937)
+  _tmt916 := len(varidx)
+  if _tmt916 < val { _tmt916 = lof["name"] }
+  var numnz int32 = int32(_tmt916)
+  var _tmt917 *int32
+  if varidx != nil { _tmt917 = (*C.MSKint32t)(&varidx[0]) }
+  var _tmt918 *float64
+  if val != nil { _tmt918 = (*C.MSKint32t)(&val[0]) }
+  if _tmt919 := C.MSK_putafefrow(self.ptr(),afeidx,numnz,_tmt917,_tmt918); _tmt919 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt919)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeFRowList(afeidx []int64,numnzrow []int32,ptrrow []int64,varidx []int32,val []float64) (err error) {
-  _tmt938 := len(ptrrow)
-  if _tmt938 < numnzrow { _tmt938 = lof["name"] }
-  if _tmt938 < afeidx { _tmt938 = lof["name"] }
-  var numafeidx int64 = int32(_tmt938)
-  var _tmt939 *int64
-  if afeidx != nil { _tmt939 = (*C.MSKint32t)(&afeidx[0]) }
-  var _tmt940 *int32
-  if numnzrow != nil { _tmt940 = (*C.MSKint32t)(&numnzrow[0]) }
-  var _tmt941 *int64
-  if ptrrow != nil { _tmt941 = (*C.MSKint32t)(&ptrrow[0]) }
-  _tmt942 := len(varidx)
-  if _tmt942 < val { _tmt942 = lof["name"] }
-  var lenidxval int64 = int32(_tmt942)
-  var _tmt943 *int32
-  if varidx != nil { _tmt943 = (*C.MSKint32t)(&varidx[0]) }
-  var _tmt944 *float64
-  if val != nil { _tmt944 = (*C.MSKint32t)(&val[0]) }
-  if _tmt945 := MSK_putafefrowlist(self.ptr(),numafeidx,_tmt939,_tmt940,_tmt941,lenidxval,_tmt943,_tmt944); _tmt945 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt945)
+  _tmt920 := len(ptrrow)
+  if _tmt920 < numnzrow { _tmt920 = lof["name"] }
+  if _tmt920 < afeidx { _tmt920 = lof["name"] }
+  var numafeidx int64 = int32(_tmt920)
+  var _tmt921 *int64
+  if afeidx != nil { _tmt921 = (*C.MSKint32t)(&afeidx[0]) }
+  var _tmt922 *int32
+  if numnzrow != nil { _tmt922 = (*C.MSKint32t)(&numnzrow[0]) }
+  var _tmt923 *int64
+  if ptrrow != nil { _tmt923 = (*C.MSKint32t)(&ptrrow[0]) }
+  _tmt924 := len(varidx)
+  if _tmt924 < val { _tmt924 = lof["name"] }
+  var lenidxval int64 = int32(_tmt924)
+  var _tmt925 *int32
+  if varidx != nil { _tmt925 = (*C.MSKint32t)(&varidx[0]) }
+  var _tmt926 *float64
+  if val != nil { _tmt926 = (*C.MSKint32t)(&val[0]) }
+  if _tmt927 := C.MSK_putafefrowlist(self.ptr(),numafeidx,_tmt921,_tmt922,_tmt923,lenidxval,_tmt925,_tmt926); _tmt927 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt927)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeG(afeidx int64,g float64) (err error) {
-  if _tmt946 := MSK_putafeg(self.ptr(),afeidx,g); _tmt946 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt946)
+  if _tmt928 := C.MSK_putafeg(self.ptr(),afeidx,g); _tmt928 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt928)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeGList(afeidx []int64,g []float64) (err error) {
-  _tmt947 := len(g)
-  if _tmt947 < afeidx { _tmt947 = lof["name"] }
-  var numafeidx int64 = int32(_tmt947)
-  var _tmt948 *int64
-  if afeidx != nil { _tmt948 = (*C.MSKint32t)(&afeidx[0]) }
-  var _tmt949 *float64
-  if g != nil { _tmt949 = (*C.MSKint32t)(&g[0]) }
-  if _tmt950 := MSK_putafeglist(self.ptr(),numafeidx,_tmt948,_tmt949); _tmt950 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt950)
+  _tmt929 := len(g)
+  if _tmt929 < afeidx { _tmt929 = lof["name"] }
+  var numafeidx int64 = int32(_tmt929)
+  var _tmt930 *int64
+  if afeidx != nil { _tmt930 = (*C.MSKint32t)(&afeidx[0]) }
+  var _tmt931 *float64
+  if g != nil { _tmt931 = (*C.MSKint32t)(&g[0]) }
+  if _tmt932 := C.MSK_putafeglist(self.ptr(),numafeidx,_tmt930,_tmt931); _tmt932 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt932)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAfeGSlice(first int64,last int64,slice []float64) (err error) {
-  var _tmt951 *float64
+  var _tmt933 *float64
   if len(slice) < (last - first) {
     err = &ArrayLengthError{fun:"PutAfeGSlice",arg:"slice"}
     return
   }
-  if slice != nil { _tmt951 = (*C.MSKint32t)(&slice[0]) }
-  if _tmt952 := MSK_putafegslice(self.ptr(),first,last,_tmt951); _tmt952 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt952)
+  if slice != nil { _tmt933 = (*C.MSKint32t)(&slice[0]) }
+  if _tmt934 := C.MSK_putafegslice(self.ptr(),first,last,_tmt933); _tmt934 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt934)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAij(i int32,j int32,aij float64) (err error) {
-  if _tmt953 := MSK_putaij(self.ptr(),i,j,aij); _tmt953 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt953)
+  if _tmt935 := C.MSK_putaij(self.ptr(),i,j,aij); _tmt935 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt935)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutAijList(subi []int32,subj []int32,valij []float64) (err error) {
-  _tmt954 := len(subi)
-  if _tmt954 < valij { _tmt954 = lof["name"] }
-  if _tmt954 < subj { _tmt954 = lof["name"] }
-  var num int64 = int32(_tmt954)
-  var _tmt955 *int32
-  if subi != nil { _tmt955 = (*C.MSKint32t)(&subi[0]) }
-  var _tmt956 *int32
-  if subj != nil { _tmt956 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt957 *float64
-  if valij != nil { _tmt957 = (*C.MSKint32t)(&valij[0]) }
-  if _tmt958 := MSK_putaijlist64(self.ptr(),num,_tmt955,_tmt956,_tmt957); _tmt958 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt958)
+  _tmt936 := len(subi)
+  if _tmt936 < valij { _tmt936 = lof["name"] }
+  if _tmt936 < subj { _tmt936 = lof["name"] }
+  var num int64 = int32(_tmt936)
+  var _tmt937 *int32
+  if subi != nil { _tmt937 = (*C.MSKint32t)(&subi[0]) }
+  var _tmt938 *int32
+  if subj != nil { _tmt938 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt939 *float64
+  if valij != nil { _tmt939 = (*C.MSKint32t)(&valij[0]) }
+  if _tmt940 := C.MSK_putaijlist64(self.ptr(),num,_tmt937,_tmt938,_tmt939); _tmt940 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt940)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutARow(i int32,subi []int32,vali []float64) (err error) {
-  _tmt959 := len(vali)
-  if _tmt959 < subi { _tmt959 = lof["name"] }
-  var nzi int32 = int32(_tmt959)
-  var _tmt960 *int32
-  if subi != nil { _tmt960 = (*C.MSKint32t)(&subi[0]) }
-  var _tmt961 *float64
-  if vali != nil { _tmt961 = (*C.MSKint32t)(&vali[0]) }
-  if _tmt962 := MSK_putarow(self.ptr(),i,nzi,_tmt960,_tmt961); _tmt962 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt962)
+  _tmt941 := len(vali)
+  if _tmt941 < subi { _tmt941 = lof["name"] }
+  var nzi int32 = int32(_tmt941)
+  var _tmt942 *int32
+  if subi != nil { _tmt942 = (*C.MSKint32t)(&subi[0]) }
+  var _tmt943 *float64
+  if vali != nil { _tmt943 = (*C.MSKint32t)(&vali[0]) }
+  if _tmt944 := C.MSK_putarow(self.ptr(),i,nzi,_tmt942,_tmt943); _tmt944 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt944)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutARowList(sub []int32,ptrb []int64,ptre []int64,asub []int32,aval []float64) (err error) {
-  _tmt963 := len(ptrb)
-  if _tmt963 < ptre { _tmt963 = lof["name"] }
-  if _tmt963 < sub { _tmt963 = lof["name"] }
-  var num int32 = int32(_tmt963)
-  var _tmt964 *int32
-  if sub != nil { _tmt964 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt965 *int64
-  if ptrb != nil { _tmt965 = (*C.MSKint32t)(&ptrb[0]) }
-  var _tmt966 *int64
-  if ptre != nil { _tmt966 = (*C.MSKint32t)(&ptre[0]) }
-  var _tmt967 *int32
-  if asub != nil { _tmt967 = (*C.MSKint32t)(&asub[0]) }
-  var _tmt968 *float64
-  if aval != nil { _tmt968 = (*C.MSKint32t)(&aval[0]) }
-  if _tmt969 := MSK_putarowlist64(self.ptr(),num,_tmt964,_tmt965,_tmt966,_tmt967,_tmt968); _tmt969 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt969)
+  _tmt945 := len(ptrb)
+  if _tmt945 < ptre { _tmt945 = lof["name"] }
+  if _tmt945 < sub { _tmt945 = lof["name"] }
+  var num int32 = int32(_tmt945)
+  var _tmt946 *int32
+  if sub != nil { _tmt946 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt947 *int64
+  if ptrb != nil { _tmt947 = (*C.MSKint32t)(&ptrb[0]) }
+  var _tmt948 *int64
+  if ptre != nil { _tmt948 = (*C.MSKint32t)(&ptre[0]) }
+  var _tmt949 *int32
+  if asub != nil { _tmt949 = (*C.MSKint32t)(&asub[0]) }
+  var _tmt950 *float64
+  if aval != nil { _tmt950 = (*C.MSKint32t)(&aval[0]) }
+  if _tmt951 := C.MSK_putarowlist64(self.ptr(),num,_tmt946,_tmt947,_tmt948,_tmt949,_tmt950); _tmt951 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt951)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  return
+}
+func (self *Task) PutARowSlice(first int32,last int32,ptrb []int64,ptre []int64,asub []int32,aval []float64) (err error) {
+  var _tmt952 *int64
+  if len(ptrb) < (last - first) {
+    err = &ArrayLengthError{fun:"PutARowSlice",arg:"ptrb"}
+    return
+  }
+  if ptrb != nil { _tmt952 = (*C.MSKint32t)(&ptrb[0]) }
+  var _tmt953 *int64
+  if len(ptre) < (last - first) {
+    err = &ArrayLengthError{fun:"PutARowSlice",arg:"ptre"}
+    return
+  }
+  if ptre != nil { _tmt953 = (*C.MSKint32t)(&ptre[0]) }
+  var _tmt954 *int32
+  if asub != nil { _tmt954 = (*C.MSKint32t)(&asub[0]) }
+  var _tmt955 *float64
+  if aval != nil { _tmt955 = (*C.MSKint32t)(&aval[0]) }
+  if _tmt956 := C.MSK_putarowslice64(self.ptr(),first,last,_tmt952,_tmt953,_tmt954,_tmt955); _tmt956 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt956)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutATruncateTol(tolzero float64) (err error) {
-  if _tmt970 := MSK_putatruncatetol(self.ptr(),tolzero); _tmt970 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt970)
+  if _tmt957 := C.MSK_putatruncatetol(self.ptr(),tolzero); _tmt957 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt957)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBaraBlockTriplet(subi []int32,subj []int32,subk []int32,subl []int32,valijkl []float64) (err error) {
-  _tmt971 := len(subl)
-  if _tmt971 < valijkl { _tmt971 = lof["name"] }
-  if _tmt971 < subk { _tmt971 = lof["name"] }
-  if _tmt971 < subj { _tmt971 = lof["name"] }
-  var num int64 = int32(_tmt971)
-  var _tmt972 *int32
+  _tmt958 := len(subl)
+  if _tmt958 < valijkl { _tmt958 = lof["name"] }
+  if _tmt958 < subk { _tmt958 = lof["name"] }
+  if _tmt958 < subj { _tmt958 = lof["name"] }
+  var num int64 = int32(_tmt958)
+  var _tmt959 *int32
   if len(subi) < num {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"subi"}
     return
   }
-  if subi != nil { _tmt972 = (*C.MSKint32t)(&subi[0]) }
-  var _tmt973 *int32
+  if subi != nil { _tmt959 = (*C.MSKint32t)(&subi[0]) }
+  var _tmt960 *int32
   if len(subj) < num {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"subj"}
     return
   }
-  if subj != nil { _tmt973 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt974 *int32
+  if subj != nil { _tmt960 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt961 *int32
   if len(subk) < num {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"subk"}
     return
   }
-  if subk != nil { _tmt974 = (*C.MSKint32t)(&subk[0]) }
-  var _tmt975 *int32
+  if subk != nil { _tmt961 = (*C.MSKint32t)(&subk[0]) }
+  var _tmt962 *int32
   if len(subl) < num {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"subl"}
     return
   }
-  if subl != nil { _tmt975 = (*C.MSKint32t)(&subl[0]) }
-  var _tmt976 *float64
+  if subl != nil { _tmt962 = (*C.MSKint32t)(&subl[0]) }
+  var _tmt963 *float64
   if len(valijkl) < num {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"valijkl"}
     return
   }
-  if valijkl != nil { _tmt976 = (*C.MSKint32t)(&valijkl[0]) }
-  if _tmt977 := MSK_putbarablocktriplet(self.ptr(),num,_tmt972,_tmt973,_tmt974,_tmt975,_tmt976); _tmt977 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt977)
+  if valijkl != nil { _tmt963 = (*C.MSKint32t)(&valijkl[0]) }
+  if _tmt964 := C.MSK_putbarablocktriplet(self.ptr(),num,_tmt959,_tmt960,_tmt961,_tmt962,_tmt963); _tmt964 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt964)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBaraIj(i int32,j int32,sub []int64,weights []float64) (err error) {
-  _tmt978 := len(weights)
-  if _tmt978 < sub { _tmt978 = lof["name"] }
-  var num int64 = int32(_tmt978)
-  var _tmt979 *int64
-  if sub != nil { _tmt979 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt980 *float64
-  if weights != nil { _tmt980 = (*C.MSKint32t)(&weights[0]) }
-  if _tmt981 := MSK_putbaraij(self.ptr(),i,j,num,_tmt979,_tmt980); _tmt981 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt981)
+  _tmt965 := len(weights)
+  if _tmt965 < sub { _tmt965 = lof["name"] }
+  var num int64 = int32(_tmt965)
+  var _tmt966 *int64
+  if sub != nil { _tmt966 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt967 *float64
+  if weights != nil { _tmt967 = (*C.MSKint32t)(&weights[0]) }
+  if _tmt968 := C.MSK_putbaraij(self.ptr(),i,j,num,_tmt966,_tmt967); _tmt968 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt968)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBaraIjList(subi []int32,subj []int32,alphaptrb []int64,alphaptre []int64,matidx []int64,weights []float64) (err error) {
-  _tmt982 := len(alphaptrb)
-  if _tmt982 < subi { _tmt982 = lof["name"] }
-  if _tmt982 < alphaptre { _tmt982 = lof["name"] }
-  if _tmt982 < subj { _tmt982 = lof["name"] }
-  var num int32 = int32(_tmt982)
-  var _tmt983 *int32
-  if subi != nil { _tmt983 = (*C.MSKint32t)(&subi[0]) }
-  var _tmt984 *int32
-  if subj != nil { _tmt984 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt985 *int64
-  if alphaptrb != nil { _tmt985 = (*C.MSKint32t)(&alphaptrb[0]) }
-  var _tmt986 *int64
-  if alphaptre != nil { _tmt986 = (*C.MSKint32t)(&alphaptre[0]) }
-  var _tmt987 *int64
-  if matidx != nil { _tmt987 = (*C.MSKint32t)(&matidx[0]) }
-  var _tmt988 *float64
-  if weights != nil { _tmt988 = (*C.MSKint32t)(&weights[0]) }
-  if _tmt989 := MSK_putbaraijlist(self.ptr(),num,_tmt983,_tmt984,_tmt985,_tmt986,_tmt987,_tmt988); _tmt989 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt989)
+  _tmt969 := len(alphaptrb)
+  if _tmt969 < subi { _tmt969 = lof["name"] }
+  if _tmt969 < alphaptre { _tmt969 = lof["name"] }
+  if _tmt969 < subj { _tmt969 = lof["name"] }
+  var num int32 = int32(_tmt969)
+  var _tmt970 *int32
+  if subi != nil { _tmt970 = (*C.MSKint32t)(&subi[0]) }
+  var _tmt971 *int32
+  if subj != nil { _tmt971 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt972 *int64
+  if alphaptrb != nil { _tmt972 = (*C.MSKint32t)(&alphaptrb[0]) }
+  var _tmt973 *int64
+  if alphaptre != nil { _tmt973 = (*C.MSKint32t)(&alphaptre[0]) }
+  var _tmt974 *int64
+  if matidx != nil { _tmt974 = (*C.MSKint32t)(&matidx[0]) }
+  var _tmt975 *float64
+  if weights != nil { _tmt975 = (*C.MSKint32t)(&weights[0]) }
+  if _tmt976 := C.MSK_putbaraijlist(self.ptr(),num,_tmt970,_tmt971,_tmt972,_tmt973,_tmt974,_tmt975); _tmt976 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt976)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBaraRowList(subi []int32,ptrb []int64,ptre []int64,subj []int32,nummat []int64,matidx []int64,weights []float64) (err error) {
-  _tmt990 := len(ptrb)
-  if _tmt990 < ptre { _tmt990 = lof["name"] }
-  if _tmt990 < subi { _tmt990 = lof["name"] }
-  var num int32 = int32(_tmt990)
-  var _tmt991 *int32
-  if subi != nil { _tmt991 = (*C.MSKint32t)(&subi[0]) }
-  var _tmt992 *int64
-  if ptrb != nil { _tmt992 = (*C.MSKint32t)(&ptrb[0]) }
-  var _tmt993 *int64
-  if ptre != nil { _tmt993 = (*C.MSKint32t)(&ptre[0]) }
-  var _tmt994 *int32
-  if subj != nil { _tmt994 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt995 *int64
+  _tmt977 := len(ptrb)
+  if _tmt977 < ptre { _tmt977 = lof["name"] }
+  if _tmt977 < subi { _tmt977 = lof["name"] }
+  var num int32 = int32(_tmt977)
+  var _tmt978 *int32
+  if subi != nil { _tmt978 = (*C.MSKint32t)(&subi[0]) }
+  var _tmt979 *int64
+  if ptrb != nil { _tmt979 = (*C.MSKint32t)(&ptrb[0]) }
+  var _tmt980 *int64
+  if ptre != nil { _tmt980 = (*C.MSKint32t)(&ptre[0]) }
+  var _tmt981 *int32
+  if subj != nil { _tmt981 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt982 *int64
   if len(nummat) < cast[int32](subj.len) {
     err = &ArrayLengthError{fun:"PutBaraRowList",arg:"nummat"}
     return
   }
-  if nummat != nil { _tmt995 = (*C.MSKint32t)(&nummat[0]) }
-  var _tmt996 *int64
+  if nummat != nil { _tmt982 = (*C.MSKint32t)(&nummat[0]) }
+  var _tmt983 *int64
   if len(matidx) < nummat.foldl(a+b) {
     err = &ArrayLengthError{fun:"PutBaraRowList",arg:"matidx"}
     return
   }
-  if matidx != nil { _tmt996 = (*C.MSKint32t)(&matidx[0]) }
-  var _tmt997 *float64
+  if matidx != nil { _tmt983 = (*C.MSKint32t)(&matidx[0]) }
+  var _tmt984 *float64
   if len(weights) < nummat.foldl(a+b) {
     err = &ArrayLengthError{fun:"PutBaraRowList",arg:"weights"}
     return
   }
-  if weights != nil { _tmt997 = (*C.MSKint32t)(&weights[0]) }
-  if _tmt998 := MSK_putbararowlist(self.ptr(),num,_tmt991,_tmt992,_tmt993,_tmt994,_tmt995,_tmt996,_tmt997); _tmt998 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt998)
+  if weights != nil { _tmt984 = (*C.MSKint32t)(&weights[0]) }
+  if _tmt985 := C.MSK_putbararowlist(self.ptr(),num,_tmt978,_tmt979,_tmt980,_tmt981,_tmt982,_tmt983,_tmt984); _tmt985 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt985)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBarcBlockTriplet(subj []int32,subk []int32,subl []int32,valjkl []float64) (err error) {
-  _tmt999 := len(valjkl)
-  if _tmt999 < subl { _tmt999 = lof["name"] }
-  if _tmt999 < subk { _tmt999 = lof["name"] }
-  if _tmt999 < subj { _tmt999 = lof["name"] }
-  var num int64 = int32(_tmt999)
-  var _tmt1000 *int32
+  _tmt986 := len(valjkl)
+  if _tmt986 < subl { _tmt986 = lof["name"] }
+  if _tmt986 < subk { _tmt986 = lof["name"] }
+  if _tmt986 < subj { _tmt986 = lof["name"] }
+  var num int64 = int32(_tmt986)
+  var _tmt987 *int32
   if len(subj) < num {
     err = &ArrayLengthError{fun:"PutBarcBlockTriplet",arg:"subj"}
     return
   }
-  if subj != nil { _tmt1000 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt1001 *int32
+  if subj != nil { _tmt987 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt988 *int32
   if len(subk) < num {
     err = &ArrayLengthError{fun:"PutBarcBlockTriplet",arg:"subk"}
     return
   }
-  if subk != nil { _tmt1001 = (*C.MSKint32t)(&subk[0]) }
-  var _tmt1002 *int32
+  if subk != nil { _tmt988 = (*C.MSKint32t)(&subk[0]) }
+  var _tmt989 *int32
   if len(subl) < num {
     err = &ArrayLengthError{fun:"PutBarcBlockTriplet",arg:"subl"}
     return
   }
-  if subl != nil { _tmt1002 = (*C.MSKint32t)(&subl[0]) }
-  var _tmt1003 *float64
+  if subl != nil { _tmt989 = (*C.MSKint32t)(&subl[0]) }
+  var _tmt990 *float64
   if len(valjkl) < num {
     err = &ArrayLengthError{fun:"PutBarcBlockTriplet",arg:"valjkl"}
     return
   }
-  if valjkl != nil { _tmt1003 = (*C.MSKint32t)(&valjkl[0]) }
-  if _tmt1004 := MSK_putbarcblocktriplet(self.ptr(),num,_tmt1000,_tmt1001,_tmt1002,_tmt1003); _tmt1004 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1004)
+  if valjkl != nil { _tmt990 = (*C.MSKint32t)(&valjkl[0]) }
+  if _tmt991 := C.MSK_putbarcblocktriplet(self.ptr(),num,_tmt987,_tmt988,_tmt989,_tmt990); _tmt991 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt991)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBarcJ(j int32,sub []int64,weights []float64) (err error) {
-  _tmt1005 := len(weights)
-  if _tmt1005 < sub { _tmt1005 = lof["name"] }
-  var num int64 = int32(_tmt1005)
-  var _tmt1006 *int64
-  if sub != nil { _tmt1006 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt1007 *float64
-  if weights != nil { _tmt1007 = (*C.MSKint32t)(&weights[0]) }
-  if _tmt1008 := MSK_putbarcj(self.ptr(),j,num,_tmt1006,_tmt1007); _tmt1008 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1008)
+  _tmt992 := len(weights)
+  if _tmt992 < sub { _tmt992 = lof["name"] }
+  var num int64 = int32(_tmt992)
+  var _tmt993 *int64
+  if sub != nil { _tmt993 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt994 *float64
+  if weights != nil { _tmt994 = (*C.MSKint32t)(&weights[0]) }
+  if _tmt995 := C.MSK_putbarcj(self.ptr(),j,num,_tmt993,_tmt994); _tmt995 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt995)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBarsJ(whichsol Soltype,j int32,barsj []float64) (err error) {
-  var _tmt1011 *float64
-  var _tmt1009 int64
-  if _tmt1010 := MSK_getlenbarvarj(task.nativep,j,addr(_tmt1009)); _tmt1010 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1010)
+  var _tmt998 *float64
+  var _tmt996 int64
+  if _tmt997 := C.MSK_getlenbarvarj(task.nativep,j,addr(_tmt996)); _tmt997 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt997)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(barsj) < _tmt1009 {
+  if len(barsj) < _tmt996 {
     err = &ArrayLengthError{fun:"PutBarsJ",arg:"barsj"}
     return
   }
-  if barsj != nil { _tmt1011 = (*C.MSKint32t)(&barsj[0]) }
-  if _tmt1012 := MSK_putbarsj(self.ptr(),whichsol,j,_tmt1011); _tmt1012 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1012)
+  if barsj != nil { _tmt998 = (*C.MSKint32t)(&barsj[0]) }
+  if _tmt999 := C.MSK_putbarsj(self.ptr(),whichsol,j,_tmt998); _tmt999 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt999)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBarvarName(j int32,name string) (err error) {
-  _tmt1013 := C.CString(name)
-  if _tmt1014 := MSK_putbarvarname(self.ptr(),j,_tmt1013); _tmt1014 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1014)
+  _tmt1000 := C.CString(name)
+  if _tmt1001 := C.MSK_putbarvarname(self.ptr(),j,_tmt1000); _tmt1001 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1001)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutBarxJ(whichsol Soltype,j int32,barxj []float64) (err error) {
-  var _tmt1017 *float64
-  var _tmt1015 int64
-  if _tmt1016 := MSK_getlenbarvarj(task.nativep,j,addr(_tmt1015)); _tmt1016 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1016)
+  var _tmt1004 *float64
+  var _tmt1002 int64
+  if _tmt1003 := C.MSK_getlenbarvarj(task.nativep,j,addr(_tmt1002)); _tmt1003 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1003)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(barxj) < _tmt1015 {
+  if len(barxj) < _tmt1002 {
     err = &ArrayLengthError{fun:"PutBarxJ",arg:"barxj"}
     return
   }
-  if barxj != nil { _tmt1017 = (*C.MSKint32t)(&barxj[0]) }
-  if _tmt1018 := MSK_putbarxj(self.ptr(),whichsol,j,_tmt1017); _tmt1018 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1018)
+  if barxj != nil { _tmt1004 = (*C.MSKint32t)(&barxj[0]) }
+  if _tmt1005 := C.MSK_putbarxj(self.ptr(),whichsol,j,_tmt1004); _tmt1005 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1005)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutCfix(cfix float64) (err error) {
-  if _tmt1019 := MSK_putcfix(self.ptr(),cfix); _tmt1019 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1019)
+  if _tmt1006 := C.MSK_putcfix(self.ptr(),cfix); _tmt1006 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1006)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutCJ(j int32,cj float64) (err error) {
-  if _tmt1020 := MSK_putcj(self.ptr(),j,cj); _tmt1020 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1020)
+  if _tmt1007 := C.MSK_putcj(self.ptr(),j,cj); _tmt1007 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1007)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutCList(subj []int32,val []float64) (err error) {
-  _tmt1021 := len(val)
-  if _tmt1021 < subj { _tmt1021 = lof["name"] }
-  var num int32 = int32(_tmt1021)
-  var _tmt1022 *int32
-  if subj != nil { _tmt1022 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt1023 *float64
-  if val != nil { _tmt1023 = (*C.MSKint32t)(&val[0]) }
-  if _tmt1024 := MSK_putclist(self.ptr(),num,_tmt1022,_tmt1023); _tmt1024 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1024)
+  _tmt1008 := len(val)
+  if _tmt1008 < subj { _tmt1008 = lof["name"] }
+  var num int32 = int32(_tmt1008)
+  var _tmt1009 *int32
+  if subj != nil { _tmt1009 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt1010 *float64
+  if val != nil { _tmt1010 = (*C.MSKint32t)(&val[0]) }
+  if _tmt1011 := C.MSK_putclist(self.ptr(),num,_tmt1009,_tmt1010); _tmt1011 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1011)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutConBound(i int32,bkc Boundkey,blc float64,buc float64) (err error) {
-  if _tmt1025 := MSK_putconbound(self.ptr(),i,bkc,blc,buc); _tmt1025 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1025)
+  if _tmt1012 := C.MSK_putconbound(self.ptr(),i,bkc,blc,buc); _tmt1012 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1012)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutConBoundList(sub []int32,bkc []Boundkey,blc []float64,buc []float64) (err error) {
-  _tmt1026 := len(bkc)
-  if _tmt1026 < blc { _tmt1026 = lof["name"] }
-  if _tmt1026 < buc { _tmt1026 = lof["name"] }
-  if _tmt1026 < sub { _tmt1026 = lof["name"] }
-  var num int32 = int32(_tmt1026)
-  var _tmt1027 *int32
-  if sub != nil { _tmt1027 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt1028 *Boundkey
-  if bkc != nil { _tmt1028 = (*C.MSKint32t)(&bkc[0]) }
-  var _tmt1029 *float64
-  if blc != nil { _tmt1029 = (*C.MSKint32t)(&blc[0]) }
-  var _tmt1030 *float64
-  if buc != nil { _tmt1030 = (*C.MSKint32t)(&buc[0]) }
-  if _tmt1031 := MSK_putconboundlist(self.ptr(),num,_tmt1027,_tmt1028,_tmt1029,_tmt1030); _tmt1031 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1031)
+  _tmt1013 := len(bkc)
+  if _tmt1013 < blc { _tmt1013 = lof["name"] }
+  if _tmt1013 < buc { _tmt1013 = lof["name"] }
+  if _tmt1013 < sub { _tmt1013 = lof["name"] }
+  var num int32 = int32(_tmt1013)
+  var _tmt1014 *int32
+  if sub != nil { _tmt1014 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt1015 *Boundkey
+  if bkc != nil { _tmt1015 = (*C.MSKint32t)(&bkc[0]) }
+  var _tmt1016 *float64
+  if blc != nil { _tmt1016 = (*C.MSKint32t)(&blc[0]) }
+  var _tmt1017 *float64
+  if buc != nil { _tmt1017 = (*C.MSKint32t)(&buc[0]) }
+  if _tmt1018 := C.MSK_putconboundlist(self.ptr(),num,_tmt1014,_tmt1015,_tmt1016,_tmt1017); _tmt1018 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1018)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutConBoundListConst(sub []int32,bkc Boundkey,blc float64,buc float64) (err error) {
-  _tmt1032 := len(sub)
-  var num int32 = int32(_tmt1032)
-  var _tmt1033 *int32
-  if sub != nil { _tmt1033 = (*C.MSKint32t)(&sub[0]) }
-  if _tmt1034 := MSK_putconboundlistconst(self.ptr(),num,_tmt1033,bkc,blc,buc); _tmt1034 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1034)
+  _tmt1019 := len(sub)
+  var num int32 = int32(_tmt1019)
+  var _tmt1020 *int32
+  if sub != nil { _tmt1020 = (*C.MSKint32t)(&sub[0]) }
+  if _tmt1021 := C.MSK_putconboundlistconst(self.ptr(),num,_tmt1020,bkc,blc,buc); _tmt1021 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1021)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutConBoundSlice(first int32,last int32,bkc []Boundkey,blc []float64,buc []float64) (err error) {
-  var _tmt1035 *Boundkey
+  var _tmt1022 *Boundkey
   if len(bkc) < (last - first) {
     err = &ArrayLengthError{fun:"PutConBoundSlice",arg:"bkc"}
     return
   }
-  if bkc != nil { _tmt1035 = (*C.MSKint32t)(&bkc[0]) }
-  var _tmt1036 *float64
+  if bkc != nil { _tmt1022 = (*C.MSKint32t)(&bkc[0]) }
+  var _tmt1023 *float64
   if len(blc) < (last - first) {
     err = &ArrayLengthError{fun:"PutConBoundSlice",arg:"blc"}
     return
   }
-  if blc != nil { _tmt1036 = (*C.MSKint32t)(&blc[0]) }
-  var _tmt1037 *float64
+  if blc != nil { _tmt1023 = (*C.MSKint32t)(&blc[0]) }
+  var _tmt1024 *float64
   if len(buc) < (last - first) {
     err = &ArrayLengthError{fun:"PutConBoundSlice",arg:"buc"}
     return
   }
-  if buc != nil { _tmt1037 = (*C.MSKint32t)(&buc[0]) }
-  if _tmt1038 := MSK_putconboundslice(self.ptr(),first,last,_tmt1035,_tmt1036,_tmt1037); _tmt1038 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1038)
+  if buc != nil { _tmt1024 = (*C.MSKint32t)(&buc[0]) }
+  if _tmt1025 := C.MSK_putconboundslice(self.ptr(),first,last,_tmt1022,_tmt1023,_tmt1024); _tmt1025 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1025)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutConBoundSliceConst(first int32,last int32,bkc Boundkey,blc float64,buc float64) (err error) {
-  if _tmt1039 := MSK_putconboundsliceconst(self.ptr(),first,last,bkc,blc,buc); _tmt1039 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1039)
+  if _tmt1026 := C.MSK_putconboundsliceconst(self.ptr(),first,last,bkc,blc,buc); _tmt1026 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1026)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutCone(k int32,ct Conetype,conepar float64,submem []int32) (err error) {
-  _tmt1040 := len(submem)
-  var nummem int32 = int32(_tmt1040)
-  var _tmt1041 *int32
-  if submem != nil { _tmt1041 = (*C.MSKint32t)(&submem[0]) }
-  if _tmt1042 := MSK_putcone(self.ptr(),k,ct,conepar,nummem,_tmt1041); _tmt1042 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1042)
+  _tmt1027 := len(submem)
+  var nummem int32 = int32(_tmt1027)
+  var _tmt1028 *int32
+  if submem != nil { _tmt1028 = (*C.MSKint32t)(&submem[0]) }
+  if _tmt1029 := C.MSK_putcone(self.ptr(),k,ct,conepar,nummem,_tmt1028); _tmt1029 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1029)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutConeName(j int32,name string) (err error) {
-  _tmt1043 := C.CString(name)
-  if _tmt1044 := MSK_putconename(self.ptr(),j,_tmt1043); _tmt1044 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1044)
+  _tmt1030 := C.CString(name)
+  if _tmt1031 := C.MSK_putconename(self.ptr(),j,_tmt1030); _tmt1031 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1031)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutConName(i int32,name string) (err error) {
-  _tmt1045 := C.CString(name)
-  if _tmt1046 := MSK_putconname(self.ptr(),i,_tmt1045); _tmt1046 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1046)
+  _tmt1032 := C.CString(name)
+  if _tmt1033 := C.MSK_putconname(self.ptr(),i,_tmt1032); _tmt1033 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1033)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutConSolutionI(i int32,whichsol Soltype,sk Stakey,x float64,sl float64,su float64) (err error) {
-  if _tmt1047 := MSK_putconsolutioni(self.ptr(),i,whichsol,sk,x,sl,su); _tmt1047 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1047)
+  if _tmt1034 := C.MSK_putconsolutioni(self.ptr(),i,whichsol,sk,x,sl,su); _tmt1034 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1034)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutCSlice(first int32,last int32,slice []float64) (err error) {
-  var _tmt1048 *float64
+  var _tmt1035 *float64
   if len(slice) < (last - first) {
     err = &ArrayLengthError{fun:"PutCSlice",arg:"slice"}
     return
   }
-  if slice != nil { _tmt1048 = (*C.MSKint32t)(&slice[0]) }
-  if _tmt1049 := MSK_putcslice(self.ptr(),first,last,_tmt1048); _tmt1049 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1049)
+  if slice != nil { _tmt1035 = (*C.MSKint32t)(&slice[0]) }
+  if _tmt1036 := C.MSK_putcslice(self.ptr(),first,last,_tmt1035); _tmt1036 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1036)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutDjc(djcidx int64,domidxlist []int64,afeidxlist []int64,b []float64,termsizelist []int64) (err error) {
-  _tmt1050 := len(domidxlist)
-  var numdomidx int64 = int32(_tmt1050)
-  var _tmt1051 *int64
-  if domidxlist != nil { _tmt1051 = (*C.MSKint32t)(&domidxlist[0]) }
-  _tmt1052 := len(afeidxlist)
-  var numafeidx int64 = int32(_tmt1052)
-  var _tmt1053 *int64
-  if afeidxlist != nil { _tmt1053 = (*C.MSKint32t)(&afeidxlist[0]) }
-  var _tmt1054 *float64
+  _tmt1037 := len(domidxlist)
+  var numdomidx int64 = int32(_tmt1037)
+  var _tmt1038 *int64
+  if domidxlist != nil { _tmt1038 = (*C.MSKint32t)(&domidxlist[0]) }
+  _tmt1039 := len(afeidxlist)
+  var numafeidx int64 = int32(_tmt1039)
+  var _tmt1040 *int64
+  if afeidxlist != nil { _tmt1040 = (*C.MSKint32t)(&afeidxlist[0]) }
+  var _tmt1041 *float64
   if len(b) < numafeidx {
     err = &ArrayLengthError{fun:"PutDjc",arg:"b"}
     return
   }
-  if b != nil { _tmt1054 = (*C.MSKint32t)(&b[0]) }
-  _tmt1055 := len(termsizelist)
-  var numterms int64 = int32(_tmt1055)
-  var _tmt1056 *int64
-  if termsizelist != nil { _tmt1056 = (*C.MSKint32t)(&termsizelist[0]) }
-  if _tmt1057 := MSK_putdjc(self.ptr(),djcidx,numdomidx,_tmt1051,numafeidx,_tmt1053,_tmt1054,numterms,_tmt1056); _tmt1057 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1057)
+  if b != nil { _tmt1041 = (*C.MSKint32t)(&b[0]) }
+  _tmt1042 := len(termsizelist)
+  var numterms int64 = int32(_tmt1042)
+  var _tmt1043 *int64
+  if termsizelist != nil { _tmt1043 = (*C.MSKint32t)(&termsizelist[0]) }
+  if _tmt1044 := C.MSK_putdjc(self.ptr(),djcidx,numdomidx,_tmt1038,numafeidx,_tmt1040,_tmt1041,numterms,_tmt1043); _tmt1044 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1044)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutDjcName(djcidx int64,name string) (err error) {
-  _tmt1058 := C.CString(name)
-  if _tmt1059 := MSK_putdjcname(self.ptr(),djcidx,_tmt1058); _tmt1059 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1059)
+  _tmt1045 := C.CString(name)
+  if _tmt1046 := C.MSK_putdjcname(self.ptr(),djcidx,_tmt1045); _tmt1046 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1046)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutDjcSlice(idxfirst int64,idxlast int64,domidxlist []int64,afeidxlist []int64,b []float64,termsizelist []int64,termsindjc []int64) (err error) {
-  _tmt1060 := len(domidxlist)
-  var numdomidx int64 = int32(_tmt1060)
-  var _tmt1061 *int64
-  if domidxlist != nil { _tmt1061 = (*C.MSKint32t)(&domidxlist[0]) }
-  _tmt1062 := len(afeidxlist)
-  var numafeidx int64 = int32(_tmt1062)
-  var _tmt1063 *int64
-  if afeidxlist != nil { _tmt1063 = (*C.MSKint32t)(&afeidxlist[0]) }
-  var _tmt1064 *float64
+  _tmt1047 := len(domidxlist)
+  var numdomidx int64 = int32(_tmt1047)
+  var _tmt1048 *int64
+  if domidxlist != nil { _tmt1048 = (*C.MSKint32t)(&domidxlist[0]) }
+  _tmt1049 := len(afeidxlist)
+  var numafeidx int64 = int32(_tmt1049)
+  var _tmt1050 *int64
+  if afeidxlist != nil { _tmt1050 = (*C.MSKint32t)(&afeidxlist[0]) }
+  var _tmt1051 *float64
   if len(b) < numafeidx {
     err = &ArrayLengthError{fun:"PutDjcSlice",arg:"b"}
     return
   }
-  if b != nil { _tmt1064 = (*C.MSKint32t)(&b[0]) }
-  _tmt1065 := len(termsizelist)
-  var numterms int64 = int32(_tmt1065)
-  var _tmt1066 *int64
-  if termsizelist != nil { _tmt1066 = (*C.MSKint32t)(&termsizelist[0]) }
-  var _tmt1067 *int64
+  if b != nil { _tmt1051 = (*C.MSKint32t)(&b[0]) }
+  _tmt1052 := len(termsizelist)
+  var numterms int64 = int32(_tmt1052)
+  var _tmt1053 *int64
+  if termsizelist != nil { _tmt1053 = (*C.MSKint32t)(&termsizelist[0]) }
+  var _tmt1054 *int64
   if len(termsindjc) < (idxlast - idxfirst) {
     err = &ArrayLengthError{fun:"PutDjcSlice",arg:"termsindjc"}
     return
   }
-  if termsindjc != nil { _tmt1067 = (*C.MSKint32t)(&termsindjc[0]) }
-  if _tmt1068 := MSK_putdjcslice(self.ptr(),idxfirst,idxlast,numdomidx,_tmt1061,numafeidx,_tmt1063,_tmt1064,numterms,_tmt1066,_tmt1067); _tmt1068 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1068)
+  if termsindjc != nil { _tmt1054 = (*C.MSKint32t)(&termsindjc[0]) }
+  if _tmt1055 := C.MSK_putdjcslice(self.ptr(),idxfirst,idxlast,numdomidx,_tmt1048,numafeidx,_tmt1050,_tmt1051,numterms,_tmt1053,_tmt1054); _tmt1055 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1055)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutDomainName(domidx int64,name string) (err error) {
-  _tmt1069 := C.CString(name)
-  if _tmt1070 := MSK_putdomainname(self.ptr(),domidx,_tmt1069); _tmt1070 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1070)
+  _tmt1056 := C.CString(name)
+  if _tmt1057 := C.MSK_putdomainname(self.ptr(),domidx,_tmt1056); _tmt1057 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1057)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutDouParam(param Dparam,parvalue float64) (err error) {
-  if _tmt1071 := MSK_putdouparam(self.ptr(),param,parvalue); _tmt1071 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1071)
+  if _tmt1058 := C.MSK_putdouparam(self.ptr(),param,parvalue); _tmt1058 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1058)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutIntParam(param Iparam,parvalue int32) (err error) {
-  if _tmt1072 := MSK_putintparam(self.ptr(),param,parvalue); _tmt1072 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1072)
+  if _tmt1059 := C.MSK_putintparam(self.ptr(),param,parvalue); _tmt1059 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1059)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumAcc(maxnumacc int64) (err error) {
-  if _tmt1073 := MSK_putmaxnumacc(self.ptr(),maxnumacc); _tmt1073 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1073)
+  if _tmt1060 := C.MSK_putmaxnumacc(self.ptr(),maxnumacc); _tmt1060 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1060)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumAfe(maxnumafe int64) (err error) {
-  if _tmt1074 := MSK_putmaxnumafe(self.ptr(),maxnumafe); _tmt1074 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1074)
+  if _tmt1061 := C.MSK_putmaxnumafe(self.ptr(),maxnumafe); _tmt1061 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1061)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumANz(maxnumanz int64) (err error) {
-  if _tmt1075 := MSK_putmaxnumanz(self.ptr(),maxnumanz); _tmt1075 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1075)
+  if _tmt1062 := C.MSK_putmaxnumanz(self.ptr(),maxnumanz); _tmt1062 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1062)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumBarvar(maxnumbarvar int32) (err error) {
-  if _tmt1076 := MSK_putmaxnumbarvar(self.ptr(),maxnumbarvar); _tmt1076 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1076)
+  if _tmt1063 := C.MSK_putmaxnumbarvar(self.ptr(),maxnumbarvar); _tmt1063 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1063)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumCon(maxnumcon int32) (err error) {
-  if _tmt1077 := MSK_putmaxnumcon(self.ptr(),maxnumcon); _tmt1077 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1077)
+  if _tmt1064 := C.MSK_putmaxnumcon(self.ptr(),maxnumcon); _tmt1064 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1064)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumCone(maxnumcone int32) (err error) {
-  if _tmt1078 := MSK_putmaxnumcone(self.ptr(),maxnumcone); _tmt1078 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1078)
+  if _tmt1065 := C.MSK_putmaxnumcone(self.ptr(),maxnumcone); _tmt1065 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1065)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumDjc(maxnumdjc int64) (err error) {
-  if _tmt1079 := MSK_putmaxnumdjc(self.ptr(),maxnumdjc); _tmt1079 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1079)
+  if _tmt1066 := C.MSK_putmaxnumdjc(self.ptr(),maxnumdjc); _tmt1066 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1066)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumDomain(maxnumdomain int64) (err error) {
-  if _tmt1080 := MSK_putmaxnumdomain(self.ptr(),maxnumdomain); _tmt1080 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1080)
+  if _tmt1067 := C.MSK_putmaxnumdomain(self.ptr(),maxnumdomain); _tmt1067 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1067)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumQNz(maxnumqnz int64) (err error) {
-  if _tmt1081 := MSK_putmaxnumqnz(self.ptr(),maxnumqnz); _tmt1081 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1081)
+  if _tmt1068 := C.MSK_putmaxnumqnz(self.ptr(),maxnumqnz); _tmt1068 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1068)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutMaxNumVar(maxnumvar int32) (err error) {
-  if _tmt1082 := MSK_putmaxnumvar(self.ptr(),maxnumvar); _tmt1082 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1082)
+  if _tmt1069 := C.MSK_putmaxnumvar(self.ptr(),maxnumvar); _tmt1069 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1069)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutNaDouParam(paramname string,parvalue float64) (err error) {
-  _tmt1083 := C.CString(paramname)
-  if _tmt1084 := MSK_putnadouparam(self.ptr(),_tmt1083,parvalue); _tmt1084 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1084)
+  _tmt1070 := C.CString(paramname)
+  if _tmt1071 := C.MSK_putnadouparam(self.ptr(),_tmt1070,parvalue); _tmt1071 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1071)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutNaIntParam(paramname string,parvalue int32) (err error) {
-  _tmt1085 := C.CString(paramname)
-  if _tmt1086 := MSK_putnaintparam(self.ptr(),_tmt1085,parvalue); _tmt1086 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1086)
+  _tmt1072 := C.CString(paramname)
+  if _tmt1073 := C.MSK_putnaintparam(self.ptr(),_tmt1072,parvalue); _tmt1073 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1073)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutNaStrParam(paramname string,parvalue string) (err error) {
-  _tmt1087 := C.CString(paramname)
-  _tmt1088 := C.CString(parvalue)
-  if _tmt1089 := MSK_putnastrparam(self.ptr(),_tmt1087,_tmt1088); _tmt1089 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1089)
+  _tmt1074 := C.CString(paramname)
+  _tmt1075 := C.CString(parvalue)
+  if _tmt1076 := C.MSK_putnastrparam(self.ptr(),_tmt1074,_tmt1075); _tmt1076 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1076)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutObjName(objname string) (err error) {
-  _tmt1090 := C.CString(objname)
-  if _tmt1091 := MSK_putobjname(self.ptr(),_tmt1090); _tmt1091 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1091)
+  _tmt1077 := C.CString(objname)
+  if _tmt1078 := C.MSK_putobjname(self.ptr(),_tmt1077); _tmt1078 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1078)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutObjSense(sense Objsense) (err error) {
-  if _tmt1092 := MSK_putobjsense(self.ptr(),sense); _tmt1092 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1092)
+  if _tmt1079 := C.MSK_putobjsense(self.ptr(),sense); _tmt1079 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1079)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutOptserverHost(host string) (err error) {
-  _tmt1093 := C.CString(host)
-  if _tmt1094 := MSK_putoptserverhost(self.ptr(),_tmt1093); _tmt1094 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1094)
+  _tmt1080 := C.CString(host)
+  if _tmt1081 := C.MSK_putoptserverhost(self.ptr(),_tmt1080); _tmt1081 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1081)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutParam(parname string,parvalue string) (err error) {
-  _tmt1095 := C.CString(parname)
-  _tmt1096 := C.CString(parvalue)
-  if _tmt1097 := MSK_putparam(self.ptr(),_tmt1095,_tmt1096); _tmt1097 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1097)
+  _tmt1082 := C.CString(parname)
+  _tmt1083 := C.CString(parvalue)
+  if _tmt1084 := C.MSK_putparam(self.ptr(),_tmt1082,_tmt1083); _tmt1084 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1084)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutQCon(qcsubk []int32,qcsubi []int32,qcsubj []int32,qcval []float64) (err error) {
-  _tmt1098 := len(qcval)
-  if _tmt1098 < qcsubi { _tmt1098 = lof["name"] }
-  if _tmt1098 < qcsubj { _tmt1098 = lof["name"] }
-  var numqcnz int32 = int32(_tmt1098)
-  var _tmt1099 *int32
-  if qcsubk != nil { _tmt1099 = (*C.MSKint32t)(&qcsubk[0]) }
-  var _tmt1100 *int32
-  if qcsubi != nil { _tmt1100 = (*C.MSKint32t)(&qcsubi[0]) }
-  var _tmt1101 *int32
-  if qcsubj != nil { _tmt1101 = (*C.MSKint32t)(&qcsubj[0]) }
-  var _tmt1102 *float64
-  if qcval != nil { _tmt1102 = (*C.MSKint32t)(&qcval[0]) }
-  if _tmt1103 := MSK_putqcon(self.ptr(),numqcnz,_tmt1099,_tmt1100,_tmt1101,_tmt1102); _tmt1103 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1103)
+  _tmt1085 := len(qcval)
+  if _tmt1085 < qcsubi { _tmt1085 = lof["name"] }
+  if _tmt1085 < qcsubj { _tmt1085 = lof["name"] }
+  var numqcnz int32 = int32(_tmt1085)
+  var _tmt1086 *int32
+  if qcsubk != nil { _tmt1086 = (*C.MSKint32t)(&qcsubk[0]) }
+  var _tmt1087 *int32
+  if qcsubi != nil { _tmt1087 = (*C.MSKint32t)(&qcsubi[0]) }
+  var _tmt1088 *int32
+  if qcsubj != nil { _tmt1088 = (*C.MSKint32t)(&qcsubj[0]) }
+  var _tmt1089 *float64
+  if qcval != nil { _tmt1089 = (*C.MSKint32t)(&qcval[0]) }
+  if _tmt1090 := C.MSK_putqcon(self.ptr(),numqcnz,_tmt1086,_tmt1087,_tmt1088,_tmt1089); _tmt1090 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1090)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutQConK(k int32,qcsubi []int32,qcsubj []int32,qcval []float64) (err error) {
-  _tmt1104 := len(qcval)
-  if _tmt1104 < qcsubi { _tmt1104 = lof["name"] }
-  if _tmt1104 < qcsubj { _tmt1104 = lof["name"] }
-  var numqcnz int32 = int32(_tmt1104)
-  var _tmt1105 *int32
-  if qcsubi != nil { _tmt1105 = (*C.MSKint32t)(&qcsubi[0]) }
-  var _tmt1106 *int32
-  if qcsubj != nil { _tmt1106 = (*C.MSKint32t)(&qcsubj[0]) }
-  var _tmt1107 *float64
-  if qcval != nil { _tmt1107 = (*C.MSKint32t)(&qcval[0]) }
-  if _tmt1108 := MSK_putqconk(self.ptr(),k,numqcnz,_tmt1105,_tmt1106,_tmt1107); _tmt1108 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1108)
+  _tmt1091 := len(qcval)
+  if _tmt1091 < qcsubi { _tmt1091 = lof["name"] }
+  if _tmt1091 < qcsubj { _tmt1091 = lof["name"] }
+  var numqcnz int32 = int32(_tmt1091)
+  var _tmt1092 *int32
+  if qcsubi != nil { _tmt1092 = (*C.MSKint32t)(&qcsubi[0]) }
+  var _tmt1093 *int32
+  if qcsubj != nil { _tmt1093 = (*C.MSKint32t)(&qcsubj[0]) }
+  var _tmt1094 *float64
+  if qcval != nil { _tmt1094 = (*C.MSKint32t)(&qcval[0]) }
+  if _tmt1095 := C.MSK_putqconk(self.ptr(),k,numqcnz,_tmt1092,_tmt1093,_tmt1094); _tmt1095 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1095)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutQObj(qosubi []int32,qosubj []int32,qoval []float64) (err error) {
-  _tmt1109 := len(qosubi)
-  if _tmt1109 < qoval { _tmt1109 = lof["name"] }
-  if _tmt1109 < qosubj { _tmt1109 = lof["name"] }
-  var numqonz int32 = int32(_tmt1109)
-  var _tmt1110 *int32
-  if qosubi != nil { _tmt1110 = (*C.MSKint32t)(&qosubi[0]) }
-  var _tmt1111 *int32
-  if qosubj != nil { _tmt1111 = (*C.MSKint32t)(&qosubj[0]) }
-  var _tmt1112 *float64
-  if qoval != nil { _tmt1112 = (*C.MSKint32t)(&qoval[0]) }
-  if _tmt1113 := MSK_putqobj(self.ptr(),numqonz,_tmt1110,_tmt1111,_tmt1112); _tmt1113 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1113)
+  _tmt1096 := len(qosubi)
+  if _tmt1096 < qoval { _tmt1096 = lof["name"] }
+  if _tmt1096 < qosubj { _tmt1096 = lof["name"] }
+  var numqonz int32 = int32(_tmt1096)
+  var _tmt1097 *int32
+  if qosubi != nil { _tmt1097 = (*C.MSKint32t)(&qosubi[0]) }
+  var _tmt1098 *int32
+  if qosubj != nil { _tmt1098 = (*C.MSKint32t)(&qosubj[0]) }
+  var _tmt1099 *float64
+  if qoval != nil { _tmt1099 = (*C.MSKint32t)(&qoval[0]) }
+  if _tmt1100 := C.MSK_putqobj(self.ptr(),numqonz,_tmt1097,_tmt1098,_tmt1099); _tmt1100 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1100)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutQObjIJ(i int32,j int32,qoij float64) (err error) {
-  if _tmt1114 := MSK_putqobjij(self.ptr(),i,j,qoij); _tmt1114 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1114)
+  if _tmt1101 := C.MSK_putqobjij(self.ptr(),i,j,qoij); _tmt1101 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1101)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSkc(whichsol Soltype,skc []Stakey) (err error) {
-  var _tmt1117 *Stakey
-  var _tmt1115 int32
-  if _tmt1116 := MSK_getnumcon(task.nativep,addr(_tmt1115)); _tmt1116 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1116)
+  var _tmt1104 *Stakey
+  var _tmt1102 int32
+  if _tmt1103 := C.MSK_getnumcon(task.nativep,addr(_tmt1102)); _tmt1103 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1103)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(skc) < _tmt1115 {
+  if len(skc) < _tmt1102 {
     err = &ArrayLengthError{fun:"PutSkc",arg:"skc"}
     return
   }
-  if skc != nil { _tmt1117 = (*C.MSKint32t)(&skc[0]) }
-  if _tmt1118 := MSK_putskc(self.ptr(),whichsol,_tmt1117); _tmt1118 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1118)
+  if skc != nil { _tmt1104 = (*C.MSKint32t)(&skc[0]) }
+  if _tmt1105 := C.MSK_putskc(self.ptr(),whichsol,_tmt1104); _tmt1105 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1105)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSkcSlice(whichsol Soltype,first int32,last int32,skc []Stakey) (err error) {
-  var _tmt1119 *Stakey
+  var _tmt1106 *Stakey
   if len(skc) < (last - first) {
     err = &ArrayLengthError{fun:"PutSkcSlice",arg:"skc"}
     return
   }
-  if skc != nil { _tmt1119 = (*C.MSKint32t)(&skc[0]) }
-  if _tmt1120 := MSK_putskcslice(self.ptr(),whichsol,first,last,_tmt1119); _tmt1120 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1120)
+  if skc != nil { _tmt1106 = (*C.MSKint32t)(&skc[0]) }
+  if _tmt1107 := C.MSK_putskcslice(self.ptr(),whichsol,first,last,_tmt1106); _tmt1107 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1107)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSkx(whichsol Soltype,skx []Stakey) (err error) {
-  var _tmt1123 *Stakey
-  var _tmt1121 int32
-  if _tmt1122 := MSK_getnumvar(task.nativep,addr(_tmt1121)); _tmt1122 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1122)
+  var _tmt1110 *Stakey
+  var _tmt1108 int32
+  if _tmt1109 := C.MSK_getnumvar(task.nativep,addr(_tmt1108)); _tmt1109 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1109)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(skx) < _tmt1121 {
+  if len(skx) < _tmt1108 {
     err = &ArrayLengthError{fun:"PutSkx",arg:"skx"}
     return
   }
-  if skx != nil { _tmt1123 = (*C.MSKint32t)(&skx[0]) }
-  if _tmt1124 := MSK_putskx(self.ptr(),whichsol,_tmt1123); _tmt1124 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1124)
+  if skx != nil { _tmt1110 = (*C.MSKint32t)(&skx[0]) }
+  if _tmt1111 := C.MSK_putskx(self.ptr(),whichsol,_tmt1110); _tmt1111 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1111)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSkxSlice(whichsol Soltype,first int32,last int32,skx []Stakey) (err error) {
-  var _tmt1125 *Stakey
+  var _tmt1112 *Stakey
   if len(skx) < (last - first) {
     err = &ArrayLengthError{fun:"PutSkxSlice",arg:"skx"}
     return
   }
-  if skx != nil { _tmt1125 = (*C.MSKint32t)(&skx[0]) }
-  if _tmt1126 := MSK_putskxslice(self.ptr(),whichsol,first,last,_tmt1125); _tmt1126 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1126)
+  if skx != nil { _tmt1112 = (*C.MSKint32t)(&skx[0]) }
+  if _tmt1113 := C.MSK_putskxslice(self.ptr(),whichsol,first,last,_tmt1112); _tmt1113 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1113)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSlc(whichsol Soltype,slc []float64) (err error) {
-  var _tmt1129 *float64
-  var _tmt1127 int32
-  if _tmt1128 := MSK_getnumcon(task.nativep,addr(_tmt1127)); _tmt1128 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1128)
+  var _tmt1116 *float64
+  var _tmt1114 int32
+  if _tmt1115 := C.MSK_getnumcon(task.nativep,addr(_tmt1114)); _tmt1115 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1115)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(slc) < _tmt1127 {
+  if len(slc) < _tmt1114 {
     err = &ArrayLengthError{fun:"PutSlc",arg:"slc"}
     return
   }
-  if slc != nil { _tmt1129 = (*C.MSKint32t)(&slc[0]) }
-  if _tmt1130 := MSK_putslc(self.ptr(),whichsol,_tmt1129); _tmt1130 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1130)
+  if slc != nil { _tmt1116 = (*C.MSKint32t)(&slc[0]) }
+  if _tmt1117 := C.MSK_putslc(self.ptr(),whichsol,_tmt1116); _tmt1117 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1117)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSlcSlice(whichsol Soltype,first int32,last int32,slc []float64) (err error) {
-  var _tmt1131 *float64
+  var _tmt1118 *float64
   if len(slc) < (last - first) {
     err = &ArrayLengthError{fun:"PutSlcSlice",arg:"slc"}
     return
   }
-  if slc != nil { _tmt1131 = (*C.MSKint32t)(&slc[0]) }
-  if _tmt1132 := MSK_putslcslice(self.ptr(),whichsol,first,last,_tmt1131); _tmt1132 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1132)
+  if slc != nil { _tmt1118 = (*C.MSKint32t)(&slc[0]) }
+  if _tmt1119 := C.MSK_putslcslice(self.ptr(),whichsol,first,last,_tmt1118); _tmt1119 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1119)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSlx(whichsol Soltype,slx []float64) (err error) {
-  var _tmt1135 *float64
-  var _tmt1133 int32
-  if _tmt1134 := MSK_getnumvar(task.nativep,addr(_tmt1133)); _tmt1134 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1134)
+  var _tmt1122 *float64
+  var _tmt1120 int32
+  if _tmt1121 := C.MSK_getnumvar(task.nativep,addr(_tmt1120)); _tmt1121 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1121)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(slx) < _tmt1133 {
+  if len(slx) < _tmt1120 {
     err = &ArrayLengthError{fun:"PutSlx",arg:"slx"}
     return
   }
-  if slx != nil { _tmt1135 = (*C.MSKint32t)(&slx[0]) }
-  if _tmt1136 := MSK_putslx(self.ptr(),whichsol,_tmt1135); _tmt1136 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1136)
+  if slx != nil { _tmt1122 = (*C.MSKint32t)(&slx[0]) }
+  if _tmt1123 := C.MSK_putslx(self.ptr(),whichsol,_tmt1122); _tmt1123 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1123)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSlxSlice(whichsol Soltype,first int32,last int32,slx []float64) (err error) {
-  var _tmt1137 *float64
+  var _tmt1124 *float64
   if len(slx) < (last - first) {
     err = &ArrayLengthError{fun:"PutSlxSlice",arg:"slx"}
     return
   }
-  if slx != nil { _tmt1137 = (*C.MSKint32t)(&slx[0]) }
-  if _tmt1138 := MSK_putslxslice(self.ptr(),whichsol,first,last,_tmt1137); _tmt1138 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1138)
+  if slx != nil { _tmt1124 = (*C.MSKint32t)(&slx[0]) }
+  if _tmt1125 := C.MSK_putslxslice(self.ptr(),whichsol,first,last,_tmt1124); _tmt1125 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1125)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSnx(whichsol Soltype,sux []float64) (err error) {
-  var _tmt1141 *float64
-  var _tmt1139 int32
-  if _tmt1140 := MSK_getnumvar(task.nativep,addr(_tmt1139)); _tmt1140 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1140)
+  var _tmt1128 *float64
+  var _tmt1126 int32
+  if _tmt1127 := C.MSK_getnumvar(task.nativep,addr(_tmt1126)); _tmt1127 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1127)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(sux) < _tmt1139 {
+  if len(sux) < _tmt1126 {
     err = &ArrayLengthError{fun:"PutSnx",arg:"sux"}
     return
   }
-  if sux != nil { _tmt1141 = (*C.MSKint32t)(&sux[0]) }
-  if _tmt1142 := MSK_putsnx(self.ptr(),whichsol,_tmt1141); _tmt1142 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1142)
+  if sux != nil { _tmt1128 = (*C.MSKint32t)(&sux[0]) }
+  if _tmt1129 := C.MSK_putsnx(self.ptr(),whichsol,_tmt1128); _tmt1129 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1129)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSnxSlice(whichsol Soltype,first int32,last int32,snx []float64) (err error) {
-  var _tmt1143 *float64
+  var _tmt1130 *float64
   if len(snx) < (last - first) {
     err = &ArrayLengthError{fun:"PutSnxSlice",arg:"snx"}
     return
   }
-  if snx != nil { _tmt1143 = (*C.MSKint32t)(&snx[0]) }
-  if _tmt1144 := MSK_putsnxslice(self.ptr(),whichsol,first,last,_tmt1143); _tmt1144 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1144)
+  if snx != nil { _tmt1130 = (*C.MSKint32t)(&snx[0]) }
+  if _tmt1131 := C.MSK_putsnxslice(self.ptr(),whichsol,first,last,_tmt1130); _tmt1131 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1131)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSolution(whichsol Soltype,skc []Stakey,skx []Stakey,skn []Stakey,xc []float64,xx []float64,y []float64,slc []float64,suc []float64,slx []float64,sux []float64,snx []float64) (err error) {
-  var _tmt1145 *Stakey
-  if skc != nil { _tmt1145 = (*C.MSKint32t)(&skc[0]) }
-  var _tmt1146 *Stakey
-  if skx != nil { _tmt1146 = (*C.MSKint32t)(&skx[0]) }
-  var _tmt1147 *Stakey
-  if skn != nil { _tmt1147 = (*C.MSKint32t)(&skn[0]) }
-  var _tmt1148 *float64
-  if xc != nil { _tmt1148 = (*C.MSKint32t)(&xc[0]) }
-  var _tmt1149 *float64
-  if xx != nil { _tmt1149 = (*C.MSKint32t)(&xx[0]) }
-  var _tmt1150 *float64
-  if y != nil { _tmt1150 = (*C.MSKint32t)(&y[0]) }
-  var _tmt1151 *float64
-  if slc != nil { _tmt1151 = (*C.MSKint32t)(&slc[0]) }
-  var _tmt1152 *float64
-  if suc != nil { _tmt1152 = (*C.MSKint32t)(&suc[0]) }
-  var _tmt1153 *float64
-  if slx != nil { _tmt1153 = (*C.MSKint32t)(&slx[0]) }
-  var _tmt1154 *float64
-  if sux != nil { _tmt1154 = (*C.MSKint32t)(&sux[0]) }
-  var _tmt1155 *float64
-  if snx != nil { _tmt1155 = (*C.MSKint32t)(&snx[0]) }
-  if _tmt1156 := MSK_putsolution(self.ptr(),whichsol,_tmt1145,_tmt1146,_tmt1147,_tmt1148,_tmt1149,_tmt1150,_tmt1151,_tmt1152,_tmt1153,_tmt1154,_tmt1155); _tmt1156 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1156)
+  var _tmt1132 *Stakey
+  if skc != nil { _tmt1132 = (*C.MSKint32t)(&skc[0]) }
+  var _tmt1133 *Stakey
+  if skx != nil { _tmt1133 = (*C.MSKint32t)(&skx[0]) }
+  var _tmt1134 *Stakey
+  if skn != nil { _tmt1134 = (*C.MSKint32t)(&skn[0]) }
+  var _tmt1135 *float64
+  if xc != nil { _tmt1135 = (*C.MSKint32t)(&xc[0]) }
+  var _tmt1136 *float64
+  if xx != nil { _tmt1136 = (*C.MSKint32t)(&xx[0]) }
+  var _tmt1137 *float64
+  if y != nil { _tmt1137 = (*C.MSKint32t)(&y[0]) }
+  var _tmt1138 *float64
+  if slc != nil { _tmt1138 = (*C.MSKint32t)(&slc[0]) }
+  var _tmt1139 *float64
+  if suc != nil { _tmt1139 = (*C.MSKint32t)(&suc[0]) }
+  var _tmt1140 *float64
+  if slx != nil { _tmt1140 = (*C.MSKint32t)(&slx[0]) }
+  var _tmt1141 *float64
+  if sux != nil { _tmt1141 = (*C.MSKint32t)(&sux[0]) }
+  var _tmt1142 *float64
+  if snx != nil { _tmt1142 = (*C.MSKint32t)(&snx[0]) }
+  if _tmt1143 := C.MSK_putsolution(self.ptr(),whichsol,_tmt1132,_tmt1133,_tmt1134,_tmt1135,_tmt1136,_tmt1137,_tmt1138,_tmt1139,_tmt1140,_tmt1141,_tmt1142); _tmt1143 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1143)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSolutionNew(whichsol Soltype,skc []Stakey,skx []Stakey,skn []Stakey,xc []float64,xx []float64,y []float64,slc []float64,suc []float64,slx []float64,sux []float64,snx []float64,doty []float64) (err error) {
-  var _tmt1157 *Stakey
-  if skc != nil { _tmt1157 = (*C.MSKint32t)(&skc[0]) }
-  var _tmt1158 *Stakey
-  if skx != nil { _tmt1158 = (*C.MSKint32t)(&skx[0]) }
-  var _tmt1159 *Stakey
-  if skn != nil { _tmt1159 = (*C.MSKint32t)(&skn[0]) }
-  var _tmt1160 *float64
-  if xc != nil { _tmt1160 = (*C.MSKint32t)(&xc[0]) }
-  var _tmt1161 *float64
-  if xx != nil { _tmt1161 = (*C.MSKint32t)(&xx[0]) }
-  var _tmt1162 *float64
-  if y != nil { _tmt1162 = (*C.MSKint32t)(&y[0]) }
-  var _tmt1163 *float64
-  if slc != nil { _tmt1163 = (*C.MSKint32t)(&slc[0]) }
-  var _tmt1164 *float64
-  if suc != nil { _tmt1164 = (*C.MSKint32t)(&suc[0]) }
-  var _tmt1165 *float64
-  if slx != nil { _tmt1165 = (*C.MSKint32t)(&slx[0]) }
-  var _tmt1166 *float64
-  if sux != nil { _tmt1166 = (*C.MSKint32t)(&sux[0]) }
-  var _tmt1167 *float64
-  if snx != nil { _tmt1167 = (*C.MSKint32t)(&snx[0]) }
-  var _tmt1168 *float64
-  if doty != nil { _tmt1168 = (*C.MSKint32t)(&doty[0]) }
-  if _tmt1169 := MSK_putsolutionnew(self.ptr(),whichsol,_tmt1157,_tmt1158,_tmt1159,_tmt1160,_tmt1161,_tmt1162,_tmt1163,_tmt1164,_tmt1165,_tmt1166,_tmt1167,_tmt1168); _tmt1169 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1169)
+  var _tmt1144 *Stakey
+  if skc != nil { _tmt1144 = (*C.MSKint32t)(&skc[0]) }
+  var _tmt1145 *Stakey
+  if skx != nil { _tmt1145 = (*C.MSKint32t)(&skx[0]) }
+  var _tmt1146 *Stakey
+  if skn != nil { _tmt1146 = (*C.MSKint32t)(&skn[0]) }
+  var _tmt1147 *float64
+  if xc != nil { _tmt1147 = (*C.MSKint32t)(&xc[0]) }
+  var _tmt1148 *float64
+  if xx != nil { _tmt1148 = (*C.MSKint32t)(&xx[0]) }
+  var _tmt1149 *float64
+  if y != nil { _tmt1149 = (*C.MSKint32t)(&y[0]) }
+  var _tmt1150 *float64
+  if slc != nil { _tmt1150 = (*C.MSKint32t)(&slc[0]) }
+  var _tmt1151 *float64
+  if suc != nil { _tmt1151 = (*C.MSKint32t)(&suc[0]) }
+  var _tmt1152 *float64
+  if slx != nil { _tmt1152 = (*C.MSKint32t)(&slx[0]) }
+  var _tmt1153 *float64
+  if sux != nil { _tmt1153 = (*C.MSKint32t)(&sux[0]) }
+  var _tmt1154 *float64
+  if snx != nil { _tmt1154 = (*C.MSKint32t)(&snx[0]) }
+  var _tmt1155 *float64
+  if doty != nil { _tmt1155 = (*C.MSKint32t)(&doty[0]) }
+  if _tmt1156 := C.MSK_putsolutionnew(self.ptr(),whichsol,_tmt1144,_tmt1145,_tmt1146,_tmt1147,_tmt1148,_tmt1149,_tmt1150,_tmt1151,_tmt1152,_tmt1153,_tmt1154,_tmt1155); _tmt1156 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1156)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSolutionYI(i int32,whichsol Soltype,y float64) (err error) {
-  if _tmt1170 := MSK_putsolutionyi(self.ptr(),i,whichsol,y); _tmt1170 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1170)
+  if _tmt1157 := C.MSK_putsolutionyi(self.ptr(),i,whichsol,y); _tmt1157 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1157)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutStrParam(param Sparam,parvalue string) (err error) {
-  _tmt1171 := C.CString(parvalue)
-  if _tmt1172 := MSK_putstrparam(self.ptr(),param,_tmt1171); _tmt1172 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1172)
+  _tmt1158 := C.CString(parvalue)
+  if _tmt1159 := C.MSK_putstrparam(self.ptr(),param,_tmt1158); _tmt1159 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1159)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSuc(whichsol Soltype,suc []float64) (err error) {
-  var _tmt1175 *float64
-  var _tmt1173 int32
-  if _tmt1174 := MSK_getnumcon(task.nativep,addr(_tmt1173)); _tmt1174 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1174)
+  var _tmt1162 *float64
+  var _tmt1160 int32
+  if _tmt1161 := C.MSK_getnumcon(task.nativep,addr(_tmt1160)); _tmt1161 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1161)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(suc) < _tmt1173 {
+  if len(suc) < _tmt1160 {
     err = &ArrayLengthError{fun:"PutSuc",arg:"suc"}
     return
   }
-  if suc != nil { _tmt1175 = (*C.MSKint32t)(&suc[0]) }
-  if _tmt1176 := MSK_putsuc(self.ptr(),whichsol,_tmt1175); _tmt1176 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1176)
+  if suc != nil { _tmt1162 = (*C.MSKint32t)(&suc[0]) }
+  if _tmt1163 := C.MSK_putsuc(self.ptr(),whichsol,_tmt1162); _tmt1163 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1163)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSucSlice(whichsol Soltype,first int32,last int32,suc []float64) (err error) {
-  var _tmt1177 *float64
+  var _tmt1164 *float64
   if len(suc) < (last - first) {
     err = &ArrayLengthError{fun:"PutSucSlice",arg:"suc"}
     return
   }
-  if suc != nil { _tmt1177 = (*C.MSKint32t)(&suc[0]) }
-  if _tmt1178 := MSK_putsucslice(self.ptr(),whichsol,first,last,_tmt1177); _tmt1178 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1178)
+  if suc != nil { _tmt1164 = (*C.MSKint32t)(&suc[0]) }
+  if _tmt1165 := C.MSK_putsucslice(self.ptr(),whichsol,first,last,_tmt1164); _tmt1165 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1165)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSux(whichsol Soltype,sux []float64) (err error) {
-  var _tmt1181 *float64
-  var _tmt1179 int32
-  if _tmt1180 := MSK_getnumvar(task.nativep,addr(_tmt1179)); _tmt1180 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1180)
+  var _tmt1168 *float64
+  var _tmt1166 int32
+  if _tmt1167 := C.MSK_getnumvar(task.nativep,addr(_tmt1166)); _tmt1167 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1167)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(sux) < _tmt1179 {
+  if len(sux) < _tmt1166 {
     err = &ArrayLengthError{fun:"PutSux",arg:"sux"}
     return
   }
-  if sux != nil { _tmt1181 = (*C.MSKint32t)(&sux[0]) }
-  if _tmt1182 := MSK_putsux(self.ptr(),whichsol,_tmt1181); _tmt1182 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1182)
+  if sux != nil { _tmt1168 = (*C.MSKint32t)(&sux[0]) }
+  if _tmt1169 := C.MSK_putsux(self.ptr(),whichsol,_tmt1168); _tmt1169 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1169)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutSuxSlice(whichsol Soltype,first int32,last int32,sux []float64) (err error) {
-  var _tmt1183 *float64
+  var _tmt1170 *float64
   if len(sux) < (last - first) {
     err = &ArrayLengthError{fun:"PutSuxSlice",arg:"sux"}
     return
   }
-  if sux != nil { _tmt1183 = (*C.MSKint32t)(&sux[0]) }
-  if _tmt1184 := MSK_putsuxslice(self.ptr(),whichsol,first,last,_tmt1183); _tmt1184 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1184)
+  if sux != nil { _tmt1170 = (*C.MSKint32t)(&sux[0]) }
+  if _tmt1171 := C.MSK_putsuxslice(self.ptr(),whichsol,first,last,_tmt1170); _tmt1171 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1171)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutTaskName(taskname string) (err error) {
-  _tmt1185 := C.CString(taskname)
-  if _tmt1186 := MSK_puttaskname(self.ptr(),_tmt1185); _tmt1186 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1186)
+  _tmt1172 := C.CString(taskname)
+  if _tmt1173 := C.MSK_puttaskname(self.ptr(),_tmt1172); _tmt1173 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1173)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarBound(j int32,bkx Boundkey,blx float64,bux float64) (err error) {
-  if _tmt1187 := MSK_putvarbound(self.ptr(),j,bkx,blx,bux); _tmt1187 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1187)
+  if _tmt1174 := C.MSK_putvarbound(self.ptr(),j,bkx,blx,bux); _tmt1174 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1174)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarBoundList(sub []int32,bkx []Boundkey,blx []float64,bux []float64) (err error) {
-  _tmt1188 := len(bkx)
-  if _tmt1188 < blx { _tmt1188 = lof["name"] }
-  if _tmt1188 < bux { _tmt1188 = lof["name"] }
-  if _tmt1188 < sub { _tmt1188 = lof["name"] }
-  var num int32 = int32(_tmt1188)
-  var _tmt1189 *int32
-  if sub != nil { _tmt1189 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt1190 *Boundkey
-  if bkx != nil { _tmt1190 = (*C.MSKint32t)(&bkx[0]) }
-  var _tmt1191 *float64
-  if blx != nil { _tmt1191 = (*C.MSKint32t)(&blx[0]) }
-  var _tmt1192 *float64
-  if bux != nil { _tmt1192 = (*C.MSKint32t)(&bux[0]) }
-  if _tmt1193 := MSK_putvarboundlist(self.ptr(),num,_tmt1189,_tmt1190,_tmt1191,_tmt1192); _tmt1193 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1193)
+  _tmt1175 := len(bkx)
+  if _tmt1175 < blx { _tmt1175 = lof["name"] }
+  if _tmt1175 < bux { _tmt1175 = lof["name"] }
+  if _tmt1175 < sub { _tmt1175 = lof["name"] }
+  var num int32 = int32(_tmt1175)
+  var _tmt1176 *int32
+  if sub != nil { _tmt1176 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt1177 *Boundkey
+  if bkx != nil { _tmt1177 = (*C.MSKint32t)(&bkx[0]) }
+  var _tmt1178 *float64
+  if blx != nil { _tmt1178 = (*C.MSKint32t)(&blx[0]) }
+  var _tmt1179 *float64
+  if bux != nil { _tmt1179 = (*C.MSKint32t)(&bux[0]) }
+  if _tmt1180 := C.MSK_putvarboundlist(self.ptr(),num,_tmt1176,_tmt1177,_tmt1178,_tmt1179); _tmt1180 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1180)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarBoundListConst(sub []int32,bkx Boundkey,blx float64,bux float64) (err error) {
-  _tmt1194 := len(sub)
-  var num int32 = int32(_tmt1194)
-  var _tmt1195 *int32
-  if sub != nil { _tmt1195 = (*C.MSKint32t)(&sub[0]) }
-  if _tmt1196 := MSK_putvarboundlistconst(self.ptr(),num,_tmt1195,bkx,blx,bux); _tmt1196 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1196)
+  _tmt1181 := len(sub)
+  var num int32 = int32(_tmt1181)
+  var _tmt1182 *int32
+  if sub != nil { _tmt1182 = (*C.MSKint32t)(&sub[0]) }
+  if _tmt1183 := C.MSK_putvarboundlistconst(self.ptr(),num,_tmt1182,bkx,blx,bux); _tmt1183 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1183)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarBoundSlice(first int32,last int32,bkx []Boundkey,blx []float64,bux []float64) (err error) {
-  var _tmt1197 *Boundkey
+  var _tmt1184 *Boundkey
   if len(bkx) < (last - first) {
     err = &ArrayLengthError{fun:"PutVarBoundSlice",arg:"bkx"}
     return
   }
-  if bkx != nil { _tmt1197 = (*C.MSKint32t)(&bkx[0]) }
-  var _tmt1198 *float64
+  if bkx != nil { _tmt1184 = (*C.MSKint32t)(&bkx[0]) }
+  var _tmt1185 *float64
   if len(blx) < (last - first) {
     err = &ArrayLengthError{fun:"PutVarBoundSlice",arg:"blx"}
     return
   }
-  if blx != nil { _tmt1198 = (*C.MSKint32t)(&blx[0]) }
-  var _tmt1199 *float64
+  if blx != nil { _tmt1185 = (*C.MSKint32t)(&blx[0]) }
+  var _tmt1186 *float64
   if len(bux) < (last - first) {
     err = &ArrayLengthError{fun:"PutVarBoundSlice",arg:"bux"}
     return
   }
-  if bux != nil { _tmt1199 = (*C.MSKint32t)(&bux[0]) }
-  if _tmt1200 := MSK_putvarboundslice(self.ptr(),first,last,_tmt1197,_tmt1198,_tmt1199); _tmt1200 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1200)
+  if bux != nil { _tmt1186 = (*C.MSKint32t)(&bux[0]) }
+  if _tmt1187 := C.MSK_putvarboundslice(self.ptr(),first,last,_tmt1184,_tmt1185,_tmt1186); _tmt1187 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1187)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarBoundSliceConst(first int32,last int32,bkx Boundkey,blx float64,bux float64) (err error) {
-  if _tmt1201 := MSK_putvarboundsliceconst(self.ptr(),first,last,bkx,blx,bux); _tmt1201 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1201)
+  if _tmt1188 := C.MSK_putvarboundsliceconst(self.ptr(),first,last,bkx,blx,bux); _tmt1188 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1188)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarName(j int32,name string) (err error) {
-  _tmt1202 := C.CString(name)
-  if _tmt1203 := MSK_putvarname(self.ptr(),j,_tmt1202); _tmt1203 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1203)
+  _tmt1189 := C.CString(name)
+  if _tmt1190 := C.MSK_putvarname(self.ptr(),j,_tmt1189); _tmt1190 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1190)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarSolutionJ(j int32,whichsol Soltype,sk Stakey,x float64,sl float64,su float64,sn float64) (err error) {
-  if _tmt1204 := MSK_putvarsolutionj(self.ptr(),j,whichsol,sk,x,sl,su,sn); _tmt1204 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1204)
+  if _tmt1191 := C.MSK_putvarsolutionj(self.ptr(),j,whichsol,sk,x,sl,su,sn); _tmt1191 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1191)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarType(j int32,vartype Variabletype) (err error) {
-  if _tmt1205 := MSK_putvartype(self.ptr(),j,vartype); _tmt1205 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1205)
+  if _tmt1192 := C.MSK_putvartype(self.ptr(),j,vartype); _tmt1192 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1192)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutVarTypeList(subj []int32,vartype []Variabletype) (err error) {
-  _tmt1206 := len(vartype)
-  if _tmt1206 < subj { _tmt1206 = lof["name"] }
-  var num int32 = int32(_tmt1206)
-  var _tmt1207 *int32
-  if subj != nil { _tmt1207 = (*C.MSKint32t)(&subj[0]) }
-  var _tmt1208 *Variabletype
-  if vartype != nil { _tmt1208 = (*C.MSKint32t)(&vartype[0]) }
-  if _tmt1209 := MSK_putvartypelist(self.ptr(),num,_tmt1207,_tmt1208); _tmt1209 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1209)
+  _tmt1193 := len(vartype)
+  if _tmt1193 < subj { _tmt1193 = lof["name"] }
+  var num int32 = int32(_tmt1193)
+  var _tmt1194 *int32
+  if subj != nil { _tmt1194 = (*C.MSKint32t)(&subj[0]) }
+  var _tmt1195 *Variabletype
+  if vartype != nil { _tmt1195 = (*C.MSKint32t)(&vartype[0]) }
+  if _tmt1196 := C.MSK_putvartypelist(self.ptr(),num,_tmt1194,_tmt1195); _tmt1196 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1196)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutXc(whichsol Soltype) (xc []float64,err error) {
-  var _tmt1212 *float64
-  var _tmt1210 int32
-  if _tmt1211 := MSK_getnumcon(task.nativep,addr(_tmt1210)); _tmt1211 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1211)
+  var _tmt1199 *float64
+  var _tmt1197 int32
+  if _tmt1198 := C.MSK_getnumcon(task.nativep,addr(_tmt1197)); _tmt1198 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1198)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  xc := make([]float64,_tmt1210)
-  if len(xc) > 0 { _tmt1212 = (*float64)(&n[0]) }
-  if _tmt1213 := MSK_putxc(self.ptr(),whichsol,_tmt1212); _tmt1213 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1213)
+  xc := make([]float64,_tmt1197)
+  if len(xc) > 0 { _tmt1199 = (*float64)(&n[0]) }
+  if _tmt1200 := C.MSK_putxc(self.ptr(),whichsol,_tmt1199); _tmt1200 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1200)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutXcSlice(whichsol Soltype,first int32,last int32,xc []float64) (err error) {
-  var _tmt1214 *float64
+  var _tmt1201 *float64
   if len(xc) < (last - first) {
     err = &ArrayLengthError{fun:"PutXcSlice",arg:"xc"}
     return
   }
-  if xc != nil { _tmt1214 = (*C.MSKint32t)(&xc[0]) }
-  if _tmt1215 := MSK_putxcslice(self.ptr(),whichsol,first,last,_tmt1214); _tmt1215 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1215)
+  if xc != nil { _tmt1201 = (*C.MSKint32t)(&xc[0]) }
+  if _tmt1202 := C.MSK_putxcslice(self.ptr(),whichsol,first,last,_tmt1201); _tmt1202 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1202)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutXx(whichsol Soltype,xx []float64) (err error) {
-  var _tmt1218 *float64
-  var _tmt1216 int32
-  if _tmt1217 := MSK_getnumvar(task.nativep,addr(_tmt1216)); _tmt1217 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1217)
+  var _tmt1205 *float64
+  var _tmt1203 int32
+  if _tmt1204 := C.MSK_getnumvar(task.nativep,addr(_tmt1203)); _tmt1204 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1204)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(xx) < _tmt1216 {
+  if len(xx) < _tmt1203 {
     err = &ArrayLengthError{fun:"PutXx",arg:"xx"}
     return
   }
-  if xx != nil { _tmt1218 = (*C.MSKint32t)(&xx[0]) }
-  if _tmt1219 := MSK_putxx(self.ptr(),whichsol,_tmt1218); _tmt1219 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1219)
+  if xx != nil { _tmt1205 = (*C.MSKint32t)(&xx[0]) }
+  if _tmt1206 := C.MSK_putxx(self.ptr(),whichsol,_tmt1205); _tmt1206 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1206)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutXxSlice(whichsol Soltype,first int32,last int32,xx []float64) (err error) {
-  var _tmt1220 *float64
+  var _tmt1207 *float64
   if len(xx) < (last - first) {
     err = &ArrayLengthError{fun:"PutXxSlice",arg:"xx"}
     return
   }
-  if xx != nil { _tmt1220 = (*C.MSKint32t)(&xx[0]) }
-  if _tmt1221 := MSK_putxxslice(self.ptr(),whichsol,first,last,_tmt1220); _tmt1221 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1221)
+  if xx != nil { _tmt1207 = (*C.MSKint32t)(&xx[0]) }
+  if _tmt1208 := C.MSK_putxxslice(self.ptr(),whichsol,first,last,_tmt1207); _tmt1208 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1208)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutY(whichsol Soltype,y []float64) (err error) {
-  var _tmt1224 *float64
-  var _tmt1222 int32
-  if _tmt1223 := MSK_getnumcon(task.nativep,addr(_tmt1222)); _tmt1223 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1223)
+  var _tmt1211 *float64
+  var _tmt1209 int32
+  if _tmt1210 := C.MSK_getnumcon(task.nativep,addr(_tmt1209)); _tmt1210 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1210)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(y) < _tmt1222 {
+  if len(y) < _tmt1209 {
     err = &ArrayLengthError{fun:"PutY",arg:"y"}
     return
   }
-  if y != nil { _tmt1224 = (*C.MSKint32t)(&y[0]) }
-  if _tmt1225 := MSK_puty(self.ptr(),whichsol,_tmt1224); _tmt1225 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1225)
+  if y != nil { _tmt1211 = (*C.MSKint32t)(&y[0]) }
+  if _tmt1212 := C.MSK_puty(self.ptr(),whichsol,_tmt1211); _tmt1212 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1212)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) PutYSlice(whichsol Soltype,first int32,last int32,y []float64) (err error) {
-  var _tmt1226 *float64
+  var _tmt1213 *float64
   if len(y) < (last - first) {
     err = &ArrayLengthError{fun:"PutYSlice",arg:"y"}
     return
   }
-  if y != nil { _tmt1226 = (*C.MSKint32t)(&y[0]) }
-  if _tmt1227 := MSK_putyslice(self.ptr(),whichsol,first,last,_tmt1226); _tmt1227 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1227)
+  if y != nil { _tmt1213 = (*C.MSKint32t)(&y[0]) }
+  if _tmt1214 := C.MSK_putyslice(self.ptr(),whichsol,first,last,_tmt1213); _tmt1214 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1214)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadBSolution(filename string,compress Compresstype) (err error) {
-  _tmt1228 := C.CString(filename)
-  if _tmt1229 := MSK_readbsolution(self.ptr(),_tmt1228,compress); _tmt1229 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1229)
+  _tmt1215 := C.CString(filename)
+  if _tmt1216 := C.MSK_readbsolution(self.ptr(),_tmt1215,compress); _tmt1216 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1216)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadData(filename string) (err error) {
-  _tmt1230 := C.CString(filename)
-  if _tmt1231 := MSK_readdataautoformat(self.ptr(),_tmt1230); _tmt1231 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1231)
+  _tmt1217 := C.CString(filename)
+  if _tmt1218 := C.MSK_readdataautoformat(self.ptr(),_tmt1217); _tmt1218 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1218)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadDataFormat(filename string,format Dataformat,compress Compresstype) (err error) {
-  _tmt1232 := C.CString(filename)
-  if _tmt1233 := MSK_readdataformat(self.ptr(),_tmt1232,format,compress); _tmt1233 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1233)
+  _tmt1219 := C.CString(filename)
+  if _tmt1220 := C.MSK_readdataformat(self.ptr(),_tmt1219,format,compress); _tmt1220 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1220)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadJsonSol(filename string) (err error) {
-  _tmt1234 := C.CString(filename)
-  if _tmt1235 := MSK_readjsonsol(self.ptr(),_tmt1234); _tmt1235 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1235)
+  _tmt1221 := C.CString(filename)
+  if _tmt1222 := C.MSK_readjsonsol(self.ptr(),_tmt1221); _tmt1222 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1222)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadJsonString(data string) (err error) {
-  _tmt1236 := C.CString(data)
-  if _tmt1237 := MSK_readjsonstring(self.ptr(),_tmt1236); _tmt1237 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1237)
+  _tmt1223 := C.CString(data)
+  if _tmt1224 := C.MSK_readjsonstring(self.ptr(),_tmt1223); _tmt1224 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1224)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadLpString(data string) (err error) {
-  _tmt1238 := C.CString(data)
-  if _tmt1239 := MSK_readlpstring(self.ptr(),_tmt1238); _tmt1239 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1239)
+  _tmt1225 := C.CString(data)
+  if _tmt1226 := C.MSK_readlpstring(self.ptr(),_tmt1225); _tmt1226 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1226)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadOpfString(data string) (err error) {
-  _tmt1240 := C.CString(data)
-  if _tmt1241 := MSK_readopfstring(self.ptr(),_tmt1240); _tmt1241 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1241)
+  _tmt1227 := C.CString(data)
+  if _tmt1228 := C.MSK_readopfstring(self.ptr(),_tmt1227); _tmt1228 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1228)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadParamFile(filename string) (err error) {
-  _tmt1242 := C.CString(filename)
-  if _tmt1243 := MSK_readparamfile(self.ptr(),_tmt1242); _tmt1243 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1243)
+  _tmt1229 := C.CString(filename)
+  if _tmt1230 := C.MSK_readparamfile(self.ptr(),_tmt1229); _tmt1230 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1230)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadPtfString(data string) (err error) {
-  _tmt1244 := C.CString(data)
-  if _tmt1245 := MSK_readptfstring(self.ptr(),_tmt1244); _tmt1245 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1245)
+  _tmt1231 := C.CString(data)
+  if _tmt1232 := C.MSK_readptfstring(self.ptr(),_tmt1231); _tmt1232 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1232)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadSolution(whichsol Soltype,filename string) (err error) {
-  _tmt1246 := C.CString(filename)
-  if _tmt1247 := MSK_readsolution(self.ptr(),whichsol,_tmt1246); _tmt1247 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1247)
+  _tmt1233 := C.CString(filename)
+  if _tmt1234 := C.MSK_readsolution(self.ptr(),whichsol,_tmt1233); _tmt1234 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1234)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadSolutionFile(filename string) (err error) {
-  _tmt1248 := C.CString(filename)
-  if _tmt1249 := MSK_readsolutionfile(self.ptr(),_tmt1248); _tmt1249 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1249)
+  _tmt1235 := C.CString(filename)
+  if _tmt1236 := C.MSK_readsolutionfile(self.ptr(),_tmt1235); _tmt1236 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1236)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadSummary(whichstream Streamtype) (err error) {
-  if _tmt1250 := MSK_readsummary(self.ptr(),whichstream); _tmt1250 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1250)
+  if _tmt1237 := C.MSK_readsummary(self.ptr(),whichstream); _tmt1237 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1237)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ReadTask(filename string) (err error) {
-  _tmt1251 := C.CString(filename)
-  if _tmt1252 := MSK_readtask(self.ptr(),_tmt1251); _tmt1252 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1252)
+  _tmt1238 := C.CString(filename)
+  if _tmt1239 := C.MSK_readtask(self.ptr(),_tmt1238); _tmt1239 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1239)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) RemoveBarvars(subset []int32) (err error) {
-  _tmt1253 := len(subset)
-  var num int32 = int32(_tmt1253)
-  var _tmt1254 *int32
-  if subset != nil { _tmt1254 = (*C.MSKint32t)(&subset[0]) }
-  if _tmt1255 := MSK_removebarvars(self.ptr(),num,_tmt1254); _tmt1255 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1255)
+  _tmt1240 := len(subset)
+  var num int32 = int32(_tmt1240)
+  var _tmt1241 *int32
+  if subset != nil { _tmt1241 = (*C.MSKint32t)(&subset[0]) }
+  if _tmt1242 := C.MSK_removebarvars(self.ptr(),num,_tmt1241); _tmt1242 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1242)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) RemoveCones(subset []int32) (err error) {
-  _tmt1256 := len(subset)
-  var num int32 = int32(_tmt1256)
-  var _tmt1257 *int32
-  if subset != nil { _tmt1257 = (*C.MSKint32t)(&subset[0]) }
-  if _tmt1258 := MSK_removecones(self.ptr(),num,_tmt1257); _tmt1258 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1258)
+  _tmt1243 := len(subset)
+  var num int32 = int32(_tmt1243)
+  var _tmt1244 *int32
+  if subset != nil { _tmt1244 = (*C.MSKint32t)(&subset[0]) }
+  if _tmt1245 := C.MSK_removecones(self.ptr(),num,_tmt1244); _tmt1245 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1245)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) RemoveCons(subset []int32) (err error) {
-  _tmt1259 := len(subset)
-  var num int32 = int32(_tmt1259)
-  var _tmt1260 *int32
-  if subset != nil { _tmt1260 = (*C.MSKint32t)(&subset[0]) }
-  if _tmt1261 := MSK_removecons(self.ptr(),num,_tmt1260); _tmt1261 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1261)
+  _tmt1246 := len(subset)
+  var num int32 = int32(_tmt1246)
+  var _tmt1247 *int32
+  if subset != nil { _tmt1247 = (*C.MSKint32t)(&subset[0]) }
+  if _tmt1248 := C.MSK_removecons(self.ptr(),num,_tmt1247); _tmt1248 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1248)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) RemoveVars(subset []int32) (err error) {
-  _tmt1262 := len(subset)
-  var num int32 = int32(_tmt1262)
-  var _tmt1263 *int32
-  if subset != nil { _tmt1263 = (*C.MSKint32t)(&subset[0]) }
-  if _tmt1264 := MSK_removevars(self.ptr(),num,_tmt1263); _tmt1264 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1264)
+  _tmt1249 := len(subset)
+  var num int32 = int32(_tmt1249)
+  var _tmt1250 *int32
+  if subset != nil { _tmt1250 = (*C.MSKint32t)(&subset[0]) }
+  if _tmt1251 := C.MSK_removevars(self.ptr(),num,_tmt1250); _tmt1251 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1251)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) ResizeTask(maxnumcon int32,maxnumvar int32,maxnumcone int32,maxnumanz int64,maxnumqnz int64) (err error) {
-  if _tmt1265 := MSK_resizetask(self.ptr(),maxnumcon,maxnumvar,maxnumcone,maxnumanz,maxnumqnz); _tmt1265 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1265)
+  if _tmt1252 := C.MSK_resizetask(self.ptr(),maxnumcon,maxnumvar,maxnumcone,maxnumanz,maxnumqnz); _tmt1252 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1252)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) SensitivityReport(whichstream Streamtype) (err error) {
-  if _tmt1266 := MSK_sensitivityreport(self.ptr(),whichstream); _tmt1266 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1266)
+  if _tmt1253 := C.MSK_sensitivityreport(self.ptr(),whichstream); _tmt1253 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1253)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) SetDefaults() (err error) {
-  if _tmt1267 := MSK_setdefaults(self.ptr()); _tmt1267 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1267)
+  if _tmt1254 := C.MSK_setdefaults(self.ptr()); _tmt1254 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1254)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
+func (self *Task) SkToStr(sk Stakey) (str string,err error) {
+  _tmt1255 := make([]byte,max_str_len)
+  if _tmt1256 := C.MSK_sktostr(self.ptr(),sk,C.CString(&tmpvar1[0])); _tmt1256 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1256)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  var str string
+  if p := strings.IndexByte(_tmt1255,byte(0)); p < 0 {
+    str = string(_tmt1255)
+  } else {
+    str = string(_tmt1255[:p])
+  }
+  return
+}
+func (self *Task) SolStaToStr(solutionsta Solsta) (str string,err error) {
+  _tmt1257 := make([]byte,max_str_len)
+  if _tmt1258 := C.MSK_solstatostr(self.ptr(),solutionsta,C.CString(&tmpvar1[0])); _tmt1258 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1258)
+    err = &MosekError{code:lastcode,msg:lastmsg}
+    return
+  }
+  var str string
+  if p := strings.IndexByte(_tmt1257,byte(0)); p < 0 {
+    str = string(_tmt1257)
+  } else {
+    str = string(_tmt1257[:p])
+  }
+  return
+}
 func (self *Task) SolutionDef(whichsol Soltype) (isdef bool,err error) {
-  if _tmt1268 := MSK_solutiondef(self.ptr(),whichsol,&isdef); _tmt1268 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1268)
+  if _tmt1259 := C.MSK_solutiondef(self.ptr(),whichsol,&isdef); _tmt1259 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1259)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) SolutionSummary(whichstream Streamtype) (err error) {
-  if _tmt1269 := MSK_solutionsummary(self.ptr(),whichstream); _tmt1269 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1269)
+  if _tmt1260 := C.MSK_solutionsummary(self.ptr(),whichstream); _tmt1260 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1260)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) SolveWithBasis(transp bool,numnz int32,sub []int32,val []float64) (numnzout int32,err error) {
-  var _tmt1272 *int32
-  var _tmt1270 int32
-  if _tmt1271 := MSK_getnumcon(task.nativep,addr(_tmt1270)); _tmt1271 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1271)
+  var _tmt1263 *int32
+  var _tmt1261 int32
+  if _tmt1262 := C.MSK_getnumcon(task.nativep,addr(_tmt1261)); _tmt1262 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1262)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(sub) < _tmt1270 {
+  if len(sub) < _tmt1261 {
     err = &ArrayLengthError{fun:"SolveWithBasis",arg:"sub"}
     return
   }
-  if sub != nil { _tmt1272 = (*C.MSKint32t)(&sub[0]) }
-  var _tmt1275 *float64
-  var _tmt1273 int32
-  if _tmt1274 := MSK_getnumcon(task.nativep,addr(_tmt1273)); _tmt1274 != 0 {
-    lastcode,lastmsg = self.getlasterror(_tmt1274)
+  if sub != nil { _tmt1263 = (*C.MSKint32t)(&sub[0]) }
+  var _tmt1266 *float64
+  var _tmt1264 int32
+  if _tmt1265 := C.MSK_getnumcon(task.nativep,addr(_tmt1264)); _tmt1265 != 0 {
+    lastcode,lastmsg = self.getlasterror(_tmt1265)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(val) < _tmt1273 {
+  if len(val) < _tmt1264 {
     err = &ArrayLengthError{fun:"SolveWithBasis",arg:"val"}
     return
   }
-  if val != nil { _tmt1275 = (*C.MSKint32t)(&val[0]) }
-  if _tmt1276 := MSK_solvewithbasis(self.ptr(),transp,numnz,_tmt1272,_tmt1275,&numnzout); _tmt1276 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1276)
+  if val != nil { _tmt1266 = (*C.MSKint32t)(&val[0]) }
+  if _tmt1267 := C.MSK_solvewithbasis(self.ptr(),transp,numnz,_tmt1263,_tmt1266,&numnzout); _tmt1267 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1267)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) StrToConeType(str string) (conetype Conetype,err error) {
-  _tmt1277 := C.CString(str)
-  if _tmt1278 := MSK_strtoconetype(self.ptr(),_tmt1277,&conetype); _tmt1278 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1278)
+  _tmt1268 := C.CString(str)
+  if _tmt1269 := C.MSK_strtoconetype(self.ptr(),_tmt1268,&conetype); _tmt1269 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1269)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) StrToSk(str string) (sk Stakey,err error) {
-  _tmt1279 := C.CString(str)
-  if _tmt1280 := MSK_strtosk(self.ptr(),_tmt1279,&sk); _tmt1280 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1280)
+  _tmt1270 := C.CString(str)
+  if _tmt1271 := C.MSK_strtosk(self.ptr(),_tmt1270,&sk); _tmt1271 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1271)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) Toconic() (err error) {
-  if _tmt1281 := MSK_toconic(self.ptr()); _tmt1281 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1281)
+  if _tmt1272 := C.MSK_toconic(self.ptr()); _tmt1272 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1272)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) UpdateSolutionInfo(whichsol Soltype) (err error) {
-  if _tmt1282 := MSK_updatesolutioninfo(self.ptr(),whichsol); _tmt1282 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1282)
+  if _tmt1273 := C.MSK_updatesolutioninfo(self.ptr(),whichsol); _tmt1273 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1273)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) WriteBSolution(filename string,compress Compresstype) (err error) {
-  _tmt1283 := C.CString(filename)
-  if _tmt1284 := MSK_writebsolution(self.ptr(),_tmt1283,compress); _tmt1284 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1284)
+  _tmt1274 := C.CString(filename)
+  if _tmt1275 := C.MSK_writebsolution(self.ptr(),_tmt1274,compress); _tmt1275 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1275)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) WriteData(filename string) (err error) {
-  _tmt1285 := C.CString(filename)
-  if _tmt1286 := MSK_writedata(self.ptr(),_tmt1285); _tmt1286 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1286)
+  _tmt1276 := C.CString(filename)
+  if _tmt1277 := C.MSK_writedata(self.ptr(),_tmt1276); _tmt1277 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1277)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) WriteJsonSol(filename string) (err error) {
-  _tmt1287 := C.CString(filename)
-  if _tmt1288 := MSK_writejsonsol(self.ptr(),_tmt1287); _tmt1288 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1288)
+  _tmt1278 := C.CString(filename)
+  if _tmt1279 := C.MSK_writejsonsol(self.ptr(),_tmt1278); _tmt1279 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1279)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) WriteParamFile(filename string) (err error) {
-  _tmt1289 := C.CString(filename)
-  if _tmt1290 := MSK_writeparamfile(self.ptr(),_tmt1289); _tmt1290 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1290)
+  _tmt1280 := C.CString(filename)
+  if _tmt1281 := C.MSK_writeparamfile(self.ptr(),_tmt1280); _tmt1281 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1281)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) WriteSolution(whichsol Soltype,filename string) (err error) {
-  _tmt1291 := C.CString(filename)
-  if _tmt1292 := MSK_writesolution(self.ptr(),whichsol,_tmt1291); _tmt1292 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1292)
+  _tmt1282 := C.CString(filename)
+  if _tmt1283 := C.MSK_writesolution(self.ptr(),whichsol,_tmt1282); _tmt1283 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1283)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) WriteSolutionFile(filename string) (err error) {
-  _tmt1293 := C.CString(filename)
-  if _tmt1294 := MSK_writesolutionfile(self.ptr(),_tmt1293); _tmt1294 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1294)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  return
-}
-func (self *Task) WriteStat(filename string) (err error) {
-  _tmt1295 := C.CString(filename)
-  if _tmt1296 := MSK_writestat(self.ptr(),_tmt1295); _tmt1296 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1296)
+  _tmt1284 := C.CString(filename)
+  if _tmt1285 := C.MSK_writesolutionfile(self.ptr(),_tmt1284); _tmt1285 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1285)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Task) WriteTask(filename string) (err error) {
-  _tmt1297 := C.CString(filename)
-  if _tmt1298 := MSK_writetask(self.ptr(),_tmt1297); _tmt1298 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1298)
+  _tmt1287 := C.CString(filename)
+  if _tmt1288 := C.MSK_writetask(self.ptr(),_tmt1287); _tmt1288 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1288)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Axpy(n int32,alpha float64,x []float64,y []float64) (err error) {
-  var _tmt1299 *float64
+  var _tmt1289 *float64
   if len(x) < n {
     err = &ArrayLengthError{fun:"Axpy",arg:"x"}
     return
   }
-  if x != nil { _tmt1299 = (*C.MSKint32t)(&x[0]) }
-  var _tmt1300 *float64
+  if x != nil { _tmt1289 = (*C.MSKint32t)(&x[0]) }
+  var _tmt1290 *float64
   if len(y) < n {
     err = &ArrayLengthError{fun:"Axpy",arg:"y"}
     return
   }
-  if y != nil { _tmt1300 = (*C.MSKint32t)(&y[0]) }
-  if _tmt1301 := MSK_axpy(self.ptr(),n,alpha,_tmt1299,_tmt1300); _tmt1301 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1301)
+  if y != nil { _tmt1290 = (*C.MSKint32t)(&y[0]) }
+  if _tmt1291 := C.MSK_axpy(self.ptr(),n,alpha,_tmt1289,_tmt1290); _tmt1291 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1291)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) CheckInAll() (err error) {
-  if _tmt1302 := MSK_checkinall(self.ptr()); _tmt1302 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1302)
+  if _tmt1292 := C.MSK_checkinall(self.ptr()); _tmt1292 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1292)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) CheckInLicense(feature Feature) (err error) {
-  if _tmt1303 := MSK_checkinlicense(self.ptr(),feature); _tmt1303 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1303)
+  if _tmt1293 := C.MSK_checkinlicense(self.ptr(),feature); _tmt1293 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1293)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) CheckOutLicense(feature Feature) (err error) {
-  if _tmt1304 := MSK_checkoutlicense(self.ptr(),feature); _tmt1304 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1304)
+  if _tmt1294 := C.MSK_checkoutlicense(self.ptr(),feature); _tmt1294 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1294)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Dot(n int32,x []float64,y []float64) (xty float64,err error) {
-  var _tmt1310 *float64
+  var _tmt1295 *float64
   if len(x) < n {
     err = &ArrayLengthError{fun:"Dot",arg:"x"}
     return
   }
-  if x != nil { _tmt1310 = (*C.MSKint32t)(&x[0]) }
-  var _tmt1311 *float64
+  if x != nil { _tmt1295 = (*C.MSKint32t)(&x[0]) }
+  var _tmt1296 *float64
   if len(y) < n {
     err = &ArrayLengthError{fun:"Dot",arg:"y"}
     return
   }
-  if y != nil { _tmt1311 = (*C.MSKint32t)(&y[0]) }
-  if _tmt1312 := MSK_dot(self.ptr(),n,_tmt1310,_tmt1311,&xty); _tmt1312 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1312)
+  if y != nil { _tmt1296 = (*C.MSKint32t)(&y[0]) }
+  if _tmt1297 := C.MSK_dot(self.ptr(),n,_tmt1295,_tmt1296,&xty); _tmt1297 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1297)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) EchoIntro(longver int32) (err error) {
-  if _tmt1313 := MSK_echointro(self.ptr(),longver); _tmt1313 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1313)
+  if _tmt1298 := C.MSK_echointro(self.ptr(),longver); _tmt1298 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1298)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Expirylicenses() (expiry int64,err error) {
-  if _tmt1314 := MSK_expirylicenses(self.ptr(),&expiry); _tmt1314 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1314)
+  if _tmt1299 := C.MSK_expirylicenses(self.ptr(),&expiry); _tmt1299 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1299)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Gemm(transa Transpose,transb Transpose,m int32,n int32,k int32,alpha float64,a []float64,b []float64,beta float64,c []float64) (err error) {
-  var _tmt1315 *float64
+  var _tmt1300 *float64
   if len(a) < (m * k) {
     err = &ArrayLengthError{fun:"Gemm",arg:"a"}
     return
   }
-  if a != nil { _tmt1315 = (*C.MSKint32t)(&a[0]) }
-  var _tmt1316 *float64
+  if a != nil { _tmt1300 = (*C.MSKint32t)(&a[0]) }
+  var _tmt1301 *float64
   if len(b) < (k * n) {
     err = &ArrayLengthError{fun:"Gemm",arg:"b"}
     return
   }
-  if b != nil { _tmt1316 = (*C.MSKint32t)(&b[0]) }
-  var _tmt1317 *float64
+  if b != nil { _tmt1301 = (*C.MSKint32t)(&b[0]) }
+  var _tmt1302 *float64
   if len(c) < (m * n) {
     err = &ArrayLengthError{fun:"Gemm",arg:"c"}
     return
   }
-  if c != nil { _tmt1317 = (*C.MSKint32t)(&c[0]) }
-  if _tmt1318 := MSK_gemm(self.ptr(),transa,transb,m,n,k,alpha,_tmt1315,_tmt1316,beta,_tmt1317); _tmt1318 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1318)
+  if c != nil { _tmt1302 = (*C.MSKint32t)(&c[0]) }
+  if _tmt1303 := C.MSK_gemm(self.ptr(),transa,transb,m,n,k,alpha,_tmt1300,_tmt1301,beta,_tmt1302); _tmt1303 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1303)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Gemv(transa Transpose,m int32,n int32,alpha float64,a []float64,x []float64,beta float64,y []float64) (err error) {
-  var _tmt1319 *float64
+  var _tmt1304 *float64
   if len(a) < (n * m) {
     err = &ArrayLengthError{fun:"Gemv",arg:"a"}
     return
   }
-  if a != nil { _tmt1319 = (*C.MSKint32t)(&a[0]) }
-  var _tmt1321 *float64
-  var _tmt1320 int32
+  if a != nil { _tmt1304 = (*C.MSKint32t)(&a[0]) }
+  var _tmt1306 *float64
+  var _tmt1305 int32
   if (transa == transpose_no) {
-    _tmt1320 = n
+    _tmt1305 = n
   } else {
-    _tmt1320 = m
+    _tmt1305 = m
   }
-  if len(x) < _tmt1320 {
+  if len(x) < _tmt1305 {
     err = &ArrayLengthError{fun:"Gemv",arg:"x"}
     return
   }
-  if x != nil { _tmt1321 = (*C.MSKint32t)(&x[0]) }
-  var _tmt1323 *float64
-  var _tmt1322 int32
+  if x != nil { _tmt1306 = (*C.MSKint32t)(&x[0]) }
+  var _tmt1308 *float64
+  var _tmt1307 int32
   if (transa == transpose_no) {
-    _tmt1322 = m
+    _tmt1307 = m
   } else {
-    _tmt1322 = n
+    _tmt1307 = n
   }
-  if len(y) < _tmt1322 {
+  if len(y) < _tmt1307 {
     err = &ArrayLengthError{fun:"Gemv",arg:"y"}
     return
   }
-  if y != nil { _tmt1323 = (*C.MSKint32t)(&y[0]) }
-  if _tmt1324 := MSK_gemv(self.ptr(),transa,m,n,alpha,_tmt1319,_tmt1321,beta,_tmt1323); _tmt1324 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1324)
+  if y != nil { _tmt1308 = (*C.MSKint32t)(&y[0]) }
+  if _tmt1309 := C.MSK_gemv(self.ptr(),transa,m,n,alpha,_tmt1304,_tmt1306,beta,_tmt1308); _tmt1309 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1309)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
-func GetBuildInfo() (buildstate string,builddate string,err error) {
-  _tmt1325 := make([]byte,max_str_len)
-  _tmt1326 := make([]byte,max_str_len)
-  if _tmt1327 := MSK_getbuildinfo(C.CString(&tmpvar1[0]),C.CString(&tmpvar1[0])); _tmt1327 != 0 {
-    err = &MosekError{ code:_tmt1327 }
-    return
-  }
-  var buildstate string
-  if p := strings.IndexByte(_tmt1325,byte(0)); p < 0 {
-    buildstate = string(_tmt1325)
-  } else {
-    buildstate = string(_tmt1325[:p])
-  }
-  var builddate string
-  if p := strings.IndexByte(_tmt1326,byte(0)); p < 0 {
-    builddate = string(_tmt1326)
-  } else {
-    builddate = string(_tmt1326[:p])
-  }
-  return
-}
 func GetCodeDesc(code Rescode) (symname string,str string,err error) {
-  _tmt1328 := make([]byte,max_str_len)
-  _tmt1329 := make([]byte,max_str_len)
-  if _tmt1330 := MSK_getcodedesc(code,C.CString(&tmpvar1[0]),C.CString(&tmpvar1[0])); _tmt1330 != 0 {
-    err = &MosekError{ code:_tmt1330 }
+  _tmt1310 := make([]byte,max_str_len)
+  _tmt1311 := make([]byte,max_str_len)
+  if _tmt1312 := C.MSK_getcodedesc(code,C.CString(&tmpvar1[0]),C.CString(&tmpvar1[0])); _tmt1312 != 0 {
+    err = &MosekError{ code:_tmt1312 }
     return
   }
   var symname string
-  if p := strings.IndexByte(_tmt1328,byte(0)); p < 0 {
-    symname = string(_tmt1328)
+  if p := strings.IndexByte(_tmt1310,byte(0)); p < 0 {
+    symname = string(_tmt1310)
   } else {
-    symname = string(_tmt1328[:p])
+    symname = string(_tmt1310[:p])
   }
   var str string
-  if p := strings.IndexByte(_tmt1329,byte(0)); p < 0 {
-    str = string(_tmt1329)
+  if p := strings.IndexByte(_tmt1311,byte(0)); p < 0 {
+    str = string(_tmt1311)
   } else {
-    str = string(_tmt1329[:p])
+    str = string(_tmt1311[:p])
   }
   return
 }
 func GetVersion() (major int32,minor int32,revision int32,err error) {
-  if _tmt1331 := MSK_getversion(&major,&minor,&revision); _tmt1331 != 0 {
-    err = &MosekError{ code:_tmt1331 }
+  if _tmt1313 := C.MSK_getversion(&major,&minor,&revision); _tmt1313 != 0 {
+    err = &MosekError{ code:_tmt1313 }
     return
   }
   return
 }
 func LicenseCleanup() (err error) {
-  if _tmt1332 := MSK_licensecleanup(); _tmt1332 != 0 {
-    err = &MosekError{ code:_tmt1332 }
+  if _tmt1314 := C.MSK_licensecleanup(); _tmt1314 != 0 {
+    err = &MosekError{ code:_tmt1314 }
     return
   }
   return
 }
 func (self *Env) Linkfiletostream(whichstream Streamtype,filename string,append int32) (err error) {
-  _tmt1333 := C.CString(filename)
-  if _tmt1334 := MSK_linkfiletoenvstream(self.ptr(),whichstream,_tmt1333,append); _tmt1334 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1334)
+  _tmt1315 := C.CString(filename)
+  if _tmt1316 := C.MSK_linkfiletoenvstream(self.ptr(),whichstream,_tmt1315,append); _tmt1316 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1316)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Potrf(uplo Uplo,n int32,a []float64) (err error) {
-  var _tmt1336 *float64
+  var _tmt1317 *float64
   if len(a) < (n * n) {
     err = &ArrayLengthError{fun:"Potrf",arg:"a"}
     return
   }
-  if a != nil { _tmt1336 = (*C.MSKint32t)(&a[0]) }
-  if _tmt1337 := MSK_potrf(self.ptr(),uplo,n,_tmt1336); _tmt1337 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1337)
+  if a != nil { _tmt1317 = (*C.MSKint32t)(&a[0]) }
+  if _tmt1318 := C.MSK_potrf(self.ptr(),uplo,n,_tmt1317); _tmt1318 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1318)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) PutLicenseCode(code []int32) (err error) {
-  var _tmt1338 *int32
+  var _tmt1319 *int32
   if len(code) < license_buffer_length {
     err = &ArrayLengthError{fun:"PutLicenseCode",arg:"code"}
     return
   }
-  if code != nil { _tmt1338 = (*C.MSKint32t)(&code[0]) }
-  if _tmt1339 := MSK_putlicensecode(self.ptr(),_tmt1338); _tmt1339 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1339)
+  if code != nil { _tmt1319 = (*C.MSKint32t)(&code[0]) }
+  if _tmt1320 := C.MSK_putlicensecode(self.ptr(),_tmt1319); _tmt1320 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1320)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) PutLicenseDebug(licdebug int32) (err error) {
-  if _tmt1340 := MSK_putlicensedebug(self.ptr(),licdebug); _tmt1340 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1340)
+  if _tmt1321 := C.MSK_putlicensedebug(self.ptr(),licdebug); _tmt1321 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1321)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) PutLicensePath(licensepath string) (err error) {
-  _tmt1341 := C.CString(licensepath)
-  if _tmt1342 := MSK_putlicensepath(self.ptr(),_tmt1341); _tmt1342 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1342)
+  _tmt1322 := C.CString(licensepath)
+  if _tmt1323 := C.MSK_putlicensepath(self.ptr(),_tmt1322); _tmt1323 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1323)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) PutLicenseWait(licwait int32) (err error) {
-  if _tmt1343 := MSK_putlicensewait(self.ptr(),licwait); _tmt1343 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1343)
+  if _tmt1324 := C.MSK_putlicensewait(self.ptr(),licwait); _tmt1324 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1324)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) ResetExpiryLicenses() (err error) {
-  if _tmt1344 := MSK_resetexpirylicenses(self.ptr()); _tmt1344 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1344)
-    err = &MosekError{code:lastcode,msg:lastmsg}
-    return
-  }
-  return
-}
-func (self *Env) SparseTriangularSolveDense(transposed Transpose,lnzc []int32,lptrc []int64,lsubc []int32,lvalc []float64,b []float64) (err error) {
-  _tmt1345 := len(lnzc)
-  if _tmt1345 < b { _tmt1345 = lof["name"] }
-  if _tmt1345 < lptrc { _tmt1345 = lof["name"] }
-  var n int32 = int32(_tmt1345)
-  var _tmt1346 *int32
-  if len(lnzc) < n {
-    err = &ArrayLengthError{fun:"SparseTriangularSolveDense",arg:"lnzc"}
-    return
-  }
-  if lnzc != nil { _tmt1346 = (*C.MSKint32t)(&lnzc[0]) }
-  var _tmt1347 *int64
-  if len(lptrc) < n {
-    err = &ArrayLengthError{fun:"SparseTriangularSolveDense",arg:"lptrc"}
-    return
-  }
-  if lptrc != nil { _tmt1347 = (*C.MSKint32t)(&lptrc[0]) }
-  _tmt1348 := len(lsubc)
-  if _tmt1348 < lvalc { _tmt1348 = lof["name"] }
-  var lensubnval int64 = int32(_tmt1348)
-  var _tmt1349 *int32
-  if len(lsubc) < lensubnval {
-    err = &ArrayLengthError{fun:"SparseTriangularSolveDense",arg:"lsubc"}
-    return
-  }
-  if lsubc != nil { _tmt1349 = (*C.MSKint32t)(&lsubc[0]) }
-  var _tmt1350 *float64
-  if len(lvalc) < lensubnval {
-    err = &ArrayLengthError{fun:"SparseTriangularSolveDense",arg:"lvalc"}
-    return
-  }
-  if lvalc != nil { _tmt1350 = (*C.MSKint32t)(&lvalc[0]) }
-  var _tmt1351 *float64
-  if len(b) < n {
-    err = &ArrayLengthError{fun:"SparseTriangularSolveDense",arg:"b"}
-    return
-  }
-  if b != nil { _tmt1351 = (*C.MSKint32t)(&b[0]) }
-  if _tmt1352 := MSK_sparsetriangularsolvedense(self.ptr(),transposed,n,_tmt1346,_tmt1347,lensubnval,_tmt1349,_tmt1350,_tmt1351); _tmt1352 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1352)
+  if _tmt1325 := C.MSK_resetexpirylicenses(self.ptr()); _tmt1325 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1325)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Syeig(uplo Uplo,n int32,a []float64) (w []float64,err error) {
-  var _tmt1353 *float64
+  var _tmt1326 *float64
   if len(a) < (n * n) {
     err = &ArrayLengthError{fun:"Syeig",arg:"a"}
     return
   }
-  if a != nil { _tmt1353 = (*C.MSKint32t)(&a[0]) }
-  var _tmt1354 *float64
+  if a != nil { _tmt1326 = (*C.MSKint32t)(&a[0]) }
+  var _tmt1327 *float64
   w := make([]float64,n)
-  if len(w) > 0 { _tmt1354 = (*float64)(&n[0]) }
-  if _tmt1355 := MSK_syeig(self.ptr(),uplo,n,_tmt1353,_tmt1354); _tmt1355 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1355)
+  if len(w) > 0 { _tmt1327 = (*float64)(&n[0]) }
+  if _tmt1328 := C.MSK_syeig(self.ptr(),uplo,n,_tmt1326,_tmt1327); _tmt1328 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1328)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Syevd(uplo Uplo,n int32,a []float64) (w []float64,err error) {
-  var _tmt1356 *float64
+  var _tmt1329 *float64
   if len(a) < (n * n) {
     err = &ArrayLengthError{fun:"Syevd",arg:"a"}
     return
   }
-  if a != nil { _tmt1356 = (*C.MSKint32t)(&a[0]) }
-  var _tmt1357 *float64
+  if a != nil { _tmt1329 = (*C.MSKint32t)(&a[0]) }
+  var _tmt1330 *float64
   w := make([]float64,n)
-  if len(w) > 0 { _tmt1357 = (*float64)(&n[0]) }
-  if _tmt1358 := MSK_syevd(self.ptr(),uplo,n,_tmt1356,_tmt1357); _tmt1358 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1358)
+  if len(w) > 0 { _tmt1330 = (*float64)(&n[0]) }
+  if _tmt1331 := C.MSK_syevd(self.ptr(),uplo,n,_tmt1329,_tmt1330); _tmt1331 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1331)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }
   return
 }
 func (self *Env) Syrk(uplo Uplo,trans Transpose,n int32,k int32,alpha float64,a []float64,beta float64,c []float64) (err error) {
-  var _tmt1359 *float64
+  var _tmt1332 *float64
   if len(a) < (n * k) {
     err = &ArrayLengthError{fun:"Syrk",arg:"a"}
     return
   }
-  if a != nil { _tmt1359 = (*C.MSKint32t)(&a[0]) }
-  var _tmt1360 *float64
+  if a != nil { _tmt1332 = (*C.MSKint32t)(&a[0]) }
+  var _tmt1333 *float64
   if len(c) < (n * n) {
     err = &ArrayLengthError{fun:"Syrk",arg:"c"}
     return
   }
-  if c != nil { _tmt1360 = (*C.MSKint32t)(&c[0]) }
-  if _tmt1361 := MSK_syrk(self.ptr(),uplo,trans,n,k,alpha,_tmt1359,beta,_tmt1360); _tmt1361 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmt1361)
+  if c != nil { _tmt1333 = (*C.MSKint32t)(&c[0]) }
+  if _tmt1334 := C.MSK_syrk(self.ptr(),uplo,trans,n,k,alpha,_tmt1332,beta,_tmt1333); _tmt1334 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmt1334)
     err = &MosekError{code:lastcode,msg:lastmsg}
     return
   }

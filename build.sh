@@ -3,6 +3,7 @@
 
 cd $(dirname $0)
 
+python gen/gen.py -o mosek.go gen/ais.json
 
 MOSEKMAJORVER=$(sed 's/\([0-9]\+\)\.\([0-9]\+\)/\1/' < MOSEKVER)
 MOSEKMINORVER=$(sed 's/\([0-9]\+\)\.\([0-9]\+\)/\2/' < MOSEKVER)

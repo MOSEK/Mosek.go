@@ -10,14 +10,14 @@ package mosek
 // extern void streamfunc_wrn(void *, char *);
 // extern void streamfunc_msg(void *, char *);
 // extern void streamfunc_err(void *, char *);
-// extern int callbackfunc(void *, void *, int, double *, int *, long long *);
+// extern int callbackfunc(void *, void *, int, MSKrealt *, MSKint32t*, MSKint64t *);
+import "C"
+
 import (
-    "C"
     "unsafe"
     "fmt"
     "golang.org/x/exp/constraints"
 )
-
 //<consts>
 
 
@@ -40,12 +40,12 @@ func (self*ArrayLengthError) Error() string {
 
 
 type Env struct {
-        r    int32
+        r    Rescode
         cptr unsafe.Pointer
 }
 
 type Task struct {
-        r               int32
+        r               Rescode
         cptr            unsafe.Pointer
 	streamfunc      [4]func(string)
 	callbackfunc    func(int32)int
@@ -55,20 +55,20 @@ type Task struct {
 func (t * Task) ptr() C.MSKtask_t { return C.MSKtask_t(t.cptr) }
 func (e * Env)  ptr() C.MSKenv_t  { return C.MSKenv_t(e.cptr) }
 
-func (self * Task) getlasterror(res int32) (int32,string) {
-    return res,""
+func (self * Env) getlasterror(res C.MSKrescodee) (Rescode,string) {
+    return Rescode(res),""
 }
-func (self * Task) getlasterror(res int32) (int32,string) {
-    var lastcode int32 = res
-    var lastmsglen int64
-    if 0 != MSK_getlasterror64(self.ptr(),&lastcode,0, &lastmsglen, nil) {
-        return lastcode,""
+func (self * Task) getlasterror(res C.MSKrescodee) (Rescode,string) {
+    var lastcode C.MSKrescodee = res
+    var lastmsglen C.long
+    if 0 != C.MSK_getlasterror64(self.ptr(),&lastcode,0, &lastmsglen, nil) {
+        return Rescode(lastcode),""
     } else {
-        lastmsgbytes := make([]byte,lastmsglen+1)
-        if 0 != MSK_getlasterror64(self.ptr(),&lastcode,lastmsglen,&lastmsglen,&lastmsgbytes[0]) {
-            return lastcode,""
+        lastmsgbytes := make([]C.char,lastmsglen+1)
+        if 0 != C.MSK_getlasterror64(self.ptr(),&lastcode,lastmsglen,&lastmsglen,(*C.char)(&lastmsgbytes[0])) {
+            return Rescode(lastcode),""
         } else {
-            return lastcode,string(lastmsgbytes[:lastmsglen])
+            return Rescode(lastcode),C.GoString(&lastmsgbytes[0])
         }
     }
 }
@@ -77,25 +77,25 @@ func (self * Task) getlasterror(res int32) (int32,string) {
 //export streamfunc_log
 func streamfunc_log(handle unsafe.Pointer, msg * C.char) {
 	task := (*Task)(handle)
-	if task.streamfunc[STREAM_LOG] != nil { task.streamfunc[STREAM_LOG](C.GoString(msg)) }
+	if task.streamfunc[MSK_STREAM_LOG] != nil { task.streamfunc[MSK_STREAM_LOG](C.GoString(msg)) }
 }
 
 //export streamfunc_msg
 func streamfunc_msg(handle unsafe.Pointer, msg * C.char) {
 	task := (*Task)(handle)
-	if task.streamfunc[STREAM_MSG] != nil { task.streamfunc[STREAM_MSG](C.GoString(msg)) }
+	if task.streamfunc[MSK_STREAM_MSG] != nil { task.streamfunc[MSK_STREAM_MSG](C.GoString(msg)) }
 }
 
 //export streamfunc_wrn
 func streamfunc_wrn(handle unsafe.Pointer, msg * C.char) {
 	task := (*Task)(handle)
-	if task.streamfunc[STREAM_WRN] != nil { task.streamfunc[STREAM_WRN](C.GoString(msg)) }
+	if task.streamfunc[MSK_STREAM_WRN] != nil { task.streamfunc[MSK_STREAM_WRN](C.GoString(msg)) }
 }
 
 //export streamfunc_err
 func streamfunc_err(handle unsafe.Pointer, msg * C.char) {
 	task := (*Task)(handle)
-	if task.streamfunc[STREAM_ERR] != nil { task.streamfunc[STREAM_ERR](C.GoString(msg)) }
+	if task.streamfunc[MSK_STREAM_ERR] != nil { task.streamfunc[MSK_STREAM_ERR](C.GoString(msg)) }
 }
 
 //export callbackfunc
@@ -112,9 +112,9 @@ func callbackfunc(
 	var r int = 0
 
 	if task.infcallbackfunc != nil {
-		_dinf  := (*[int(DINF_END)]float64)(unsafe.Pointer(dinf))[0:DINF_END]
-		_iinf  := (*[int(IINF_END)]int32)  (unsafe.Pointer(iinf))[0:IINF_END]
-		_liinf := (*[int(LIINF_END)]int64) (unsafe.Pointer(liinf))[0:LIINF_END]
+		_dinf  := (*[int(MSK_DINF_END)]float64)(unsafe.Pointer(dinf))[0:MSK_DINF_END]
+		_iinf  := (*[int(MSK_IINF_END)]int32)  (unsafe.Pointer(iinf))[0:MSK_IINF_END]
+		_liinf := (*[int(MSK_LIINF_END)]int64) (unsafe.Pointer(liinf))[0:MSK_LIINF_END]
 
 		r = task.infcallbackfunc(int32(code),_dinf,_iinf,_liinf)
 	} else if task.callbackfunc != nil {
@@ -160,7 +160,7 @@ func (t *Task) Delete() {
         t.cptr = nil
 }
 
-func (t *Task) PutStreamFunc(whichstream int32, fun func(string)) {
+func (t *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) {
 	t.streamfunc[whichstream] = fun
 
 	if fun == nil {
@@ -172,10 +172,10 @@ func (t *Task) PutStreamFunc(whichstream int32, fun func(string)) {
 	} else {
 		var strmfun (*[0]byte)
 		switch whichstream {
-		case STREAM_MSG: strmfun = (*[0]byte)(C.streamfunc_msg)
-		case STREAM_LOG: strmfun = (*[0]byte)(C.streamfunc_log)
-		case STREAM_ERR: strmfun = (*[0]byte)(C.streamfunc_err)
-		case STREAM_WRN: strmfun = (*[0]byte)(C.streamfunc_wrn)
+		case MSK_STREAM_MSG: strmfun = (*[0]byte)(C.streamfunc_msg)
+		case MSK_STREAM_LOG: strmfun = (*[0]byte)(C.streamfunc_log)
+		case MSK_STREAM_ERR: strmfun = (*[0]byte)(C.streamfunc_err)
+		case MSK_STREAM_WRN: strmfun = (*[0]byte)(C.streamfunc_wrn)
 		}
 
 		C.MSK_linkfunctotaskstream(
@@ -204,11 +204,11 @@ func (t *Task) PutInfoCallbackFunc(fun func(int32,[]float64,[]int32,[]int64) int
 	}
 }
 
-func (e * Env)  ClearError() { e.r = RES_OK }
-func (t * Task) ClearError() { t.r = RES_OK }
+func (e * Env)  ClearError() { e.r = MSK_RES_OK }
+func (t * Task) ClearError() { t.r = MSK_RES_OK }
 
-func (e * Env)  GetRes() int32 { return e.r }
-func (t * Task) GetRes() int32 { return t.r }
+//func (e * Env)  GetRes() int32 { return e.r }
+//func (t * Task) GetRes() int32 { return t.r }
 
 func minint(a []int) (r int) {
         if len(a) == 0 { panic("Minimum of empty array") }
@@ -219,10 +219,10 @@ func minint(a []int) (r int) {
         return
 }
 
-func sum[T Number](data []T) T {
+func sum[T int32|int64|float64](data []T) T {
     var r T
-    for _,v := range(self) { r += v }
-    return v
+    for _,v := range data { r += v }
+    return r
 }
 
 
