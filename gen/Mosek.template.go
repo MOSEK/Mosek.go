@@ -15,7 +15,7 @@ import (
     "fmt"
 )
 
-//{consts}
+//<consts>
 
 
 type MosekError struct {
@@ -51,6 +51,25 @@ type Task struct {
 
 func (t * Task) ptr() C.MSKtask_t { return C.MSKtask_t(t.cptr) }
 func (e * Env)  ptr() C.MSKenv_t  { return C.MSKenv_t(e.cptr) }
+
+func (self * Task) getlasterror(res int32) (int32,string) {
+    return res,""
+}
+func (self * Task) getlasterror(res int32) (int32,string) {
+    var lastcode int32 = res
+    var lastmsglen int64
+    if 0 != MSK_getlasterror64(self.ptr(),&lastcode,0, &lastmsglen, nil) {
+        return lastcode,""
+    } else {
+        lastmsgbytes := make([]byte,lastmsglen+1)
+        if 0 != MSK_getlasterror64(self.ptr(),&lastcode,lastmsglen,&lastmsglen,&lastmsgbytes[0]) {
+            return lastcode,""
+        } else {
+            return lastcode,string(lastmsgbytes[:lastmsglen])
+        }
+    }
+}
+
 
 //export streamfunc_log
 func streamfunc_log(handle unsafe.Pointer, msg * C.char) {
@@ -197,3 +216,9 @@ func minint(a []int) (r int) {
         return
 }
 
+
+
+
+
+
+//<funimpl>

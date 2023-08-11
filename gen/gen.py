@@ -143,6 +143,7 @@ class FuncGen(ag.BaseFuncGenerator):
                          tmpvargen = tmpvargen,
                          addcollectors = ['nativearg'])
         self.__cls = cls
+        self.__clsarg = None
         self.__func = func
         self.funname = func['name']
         self.funapiname = func.get('api-name',self.funname)
@@ -154,6 +155,7 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_classarg(self,a,tp,atn,ctn,n,argbrief,argdesc):
         self['callarg'].append(f'self.ptr()')
         self['selfarg'] = f'self *{objecttypemap[atn]}'
+        self.__clsarg = a
         #self['funarg'].append(f'{n} {objecttypemap[atn]}')
     def arg_ptr(self,a,basetp,atn,ctn,n,minlength,indexof,isdefaultoarg,argbrief,argdesc):
         if atn == 'enum':
@@ -236,58 +238,69 @@ _
     def arg_computed_value(self,a,tp,atn,ctn,n,lengthof,code,argbrief,argdesc):
         argtp = atype2nimdecl(atn)
         if lengthof:
-            minlen = f'len({lengthof[0]["name"]})'
+            tmp = self.tmpvargen()
+            self['prelude'].append(f'{tmp} := len({lengthof[0]["name"]})')
             for lof in lengthof[1:]:
-                minlen = f'min({minlen},{lof["name"]}.len)'
+                self['prelude'].append(f'if {tmp} < {lof["name"]} { {tmp} = lof["name"]}')
 
             if argtp == ag.agtype('int64'):
-                self['prelude'].append(f'var {n} : {argtp} = {minlen}')
+                self['prelude'].append(f'var {n} int64 = {minlen}')
             else:
-                self['prelude'].append(f'var {n} : {argtp} = cast[int32]({minlen})')
+                self['prelude'].append(f'var {n} {argtp} = int32({minlen})')
             self['callarg'].append(n)
         elif code:
             argtp = atype2nimdecl(atn)
             self['prelude'].extend(code.code)
-            self['prelude'].append(f'var {n} : {argtp} = {code.value}')
+            self['prelude'].append(f'var {n} {argtp} = {code.value}')
 
             self['callarg'].append(n)
         else:
             assert False
-        self['nativearg'].append(f'{n} : {argtp}')
     def arg_obj(self,a,tp,atn,ctn,n,argbrief,argdesc):
         raise ag.DontGenerate(self.funname,"Not supported: Non-class-arg object arguments")
-        assert False
     def arg_value(self,a,tp,atn,ctn,n,argbrief,argdesc):
         if atn == 'enum':
-            if self.jtis["constclasses"][ctn]['is-enumerable']:
-                argtp = ctn
-            else:
-                argtp = 'int32'
+            argtp = 'int32'
         else:
             argtp = atype2nimdecl(atn)
 
-        self['funarg'].append(f'{n} : {argtp}')
+        self['funarg'].append(f'{n} {argtp}')
         self['callarg'].append(n)
-        self['nativearg'].append(f'{n} : {argtp}')
     def genfunc(self,d,func,funname,apiname,brief,desc):
         callargs = ','.join(self['callarg'])
         funargs  = ','.join(self['funarg'])
         nfunargs = ','.join(self['nativearg'])
 
-        assert len(self['retval']) in [0,1]
-        if self['retval']: retstr = ' : '+self['rettype'][0]
-        else: retstr = ''
 
-        d['nativehdrs'].append(f'proc MSK_{funname}({nfunargs}) : rescode {{. cdecl, importc .}}')
-        d['funimpl'].append(f'proc {self.funapiname}*({funargs}){retstr} =')
+        rets = [ f'{n} {t}' for n,t in self['retarg'] ]
+        rets.append('err error')
+
+        if len(rets) == 0: retstr = ''
+        elif len(rets) == 1: retstr = ' ' + rets[0]
+        else: retstr = ' (' + ','.join(rets) + ')'
+        
+        funcname = re.sub(r'-.',lambda o: o.group(0)[1].upper(), self.funapiname)
+        d['funimpl'].append(f'func {funcapiname}*({funargs}){retstr} {{')
         d['funimpl'].extend(['  '+l for l in self['prelude']])
-        if func['args'] and func['args'][0]['name'] == 'task' and func['args'][0]['classarg']:
-            d['funimpl'].append(f'  handle_res(task,MSK_{self.funname}({callargs}))')
+
+        tmp = self.tmpvargen()
+        argstr = ','.join(self["callarg"])
+        d['funimpl'].append( f'  {tmp} := MSK_{self.funname}({argstr})')
+        if self.__clsarg is not None:
+            d['funimpl'].extend([f'  if {tmp} != 0 {{',
+                                 f'    lastcode,lastmsg := self.getlasterror({tmp})',
+                                 '    err = &MosekError{code:lastcode,msg:lastmsg}',
+                                 '    return'
+                                 '  }'])
         else:
-            d['funimpl'].append(f'  handle_res(MSK_{self.funname}({callargs}))')
+            d['funimpl'].extend([f'if {tmp} != 0 {{',
+                                 f'  err = &MosekError{{ code:{tmp} }}',
+                                 '  return',
+                                 '}'])
+
         d['funimpl'].extend(['  '+l for l in self['postlude']])
-        if self['retval']:
-            d['funimpl'].append(f'  return {self["retval"][0]}')
+        d['funimpl'].append('  return')
+        d['funimpl'].append('}')
 
 class APIGen(ag.BaseAPIGenerator):
     def __init__(self,
@@ -343,7 +356,7 @@ if __name__ == '__main__':
 
         f.write('# Generated for MOSEK %s' % mosek_version)
         p = 0
-        for o in re.finditer(r'^##<([A-Z0-9]+)>.*$',template,re.MULTILINE):
+        for o in re.finditer(r'^//<([A-Za-z0-9]+)>.*$',template,re.MULTILINE):
             f.write(template[p:o.start()])
             p = o.end()
             if o.group(1) == 'ENUMS':
