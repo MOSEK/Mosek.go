@@ -24,6 +24,12 @@ typemap = {
     'int32_t'      : 'int32',
     'int64_t'      : 'int64',
     }
+t2cmap = {
+    'int32'  : 'C.MSKint32t',   
+    'int64'  : 'C.MSKint32t',
+    'float64': 'C.MSKrealt',
+    'bool': 'C.int',
+    }
 
 atypemap = {
     'int32'        : 'int32',
@@ -191,7 +197,7 @@ class FuncGen(ag.BaseFuncGenerator):
                                         f'''  err = &ArrayLengthError{{fun:"{self.funapiname}",arg:"{n}"}}''',
                                         '  return',
                                         '}'])
-            self['prelude'].append(f'if {n} != nil {{ {tmp} = (*C.MSKint32t)(&{n}[0]) }}')
+            self['prelude'].append(f'if {n} != nil {{ {tmp} = (*{argtp})(&{n}[0]) }}')
             self['funarg'].append(f'{n} []{argtp}')
 
             if indexof:
@@ -219,14 +225,17 @@ class FuncGen(ag.BaseFuncGenerator):
 #        self['callarg'].append(f'unsafeAddr({n})')
 #        self['nativearg'].append(f'{n} : ptr {argtp}')
     def arg_ref(self,a,basetp,atn,ctn,n,indexof,isdefaultoarg,argbrief,argdesc):
+        assert a['mode'] != 'io'
         if atn == 'enum':
             argtp = ctn.capitalize()
+            tmp = self.tmpvargen()
+            self['prelude'].append(f'var {tmp} C.MSK{ctn}e')
+            self['callarg'].append(f'&{tmp}')
+            self['postlude'].append(f'{n} = {argtp}({tmp})')
         else:
             argtp = atype2nimdecl(atn)
-
-        assert a['mode'] != 'io'
+            self['callarg'].append(f'&{n}')
         self['retarg'].append((n,argtp))
-        self['callarg'].append(f'&{n}')
     def arg_ref_func(self,a,tp,rettype,argtypes,n,isdefaultoarg,argbrief,argdesc):
         raise DontGenerate("arg_ref_func() not implemented")
     def arg_refobj(self,a,basetp,atn,ctn,n,isdefaultoarg,argbrief,argdesc):
@@ -252,6 +261,7 @@ class FuncGen(ag.BaseFuncGenerator):
         self['retarg'].append((n,'string'))
     def arg_computed_value(self,a,tp,atn,ctn,n,lengthof,code,argbrief,argdesc):
         argtp = atype2nimdecl(atn)
+        ctp = t2cmap[argtp]
         if lengthof:
             tmp = self.tmpvargen()
             self['prelude'].append(f'{tmp} := len({lengthof[0]["name"]})')
@@ -259,14 +269,14 @@ class FuncGen(ag.BaseFuncGenerator):
                 self['prelude'].append(f'if {tmp} < {lof["name"]} {{ {tmp} = lof["name"] }}')
 
             if argtp == ag.agtype('int64'):
-                self['prelude'].append(f'var {n} int64 = {tmp}')
+                self['prelude'].append(f'var {n} int64 = int64({tmp})')
             else:
-                self['prelude'].append(f'var {n} {argtp} = int32({tmp})')
-            self['callarg'].append(n)
+                self['prelude'].append(f'var {n} {argtp} = {argtp}({tmp})')
+            self['callarg'].append(f'{ctp}({n})')
         elif code:
             argtp = atype2nimdecl(atn)
             self['prelude'].extend(code.code)
-            self['prelude'].append(f'var {n} {argtp} = {code.value}')
+            self['prelude'].append(f'var {n} {argtp} = {argtp}({code.value})')
 
             self['callarg'].append(n)
         else:
@@ -276,11 +286,13 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_value(self,a,tp,atn,ctn,n,argbrief,argdesc):
         if atn == 'enum':
             argtp = ctn.capitalize()
+            self['callarg'].append(f'C.MSK{ctn}e({n})')
         else:
             argtp = atype2nimdecl(atn)
+            ctp = t2cmap[argtp]
+            self['callarg'].append(f'{ctp}({n})')
 
         self['funarg'].append(f'{n} {argtp}')
-        self['callarg'].append(n)
     def genfunc(self,d,func,funname,apiname,brief,desc):
         if func['status'] == 'internal':
             raise ag.DontGenerate(self.__func['name'],"Invalid type") 
@@ -373,7 +385,7 @@ if __name__ == '__main__':
         d = {'const'      : ['// Constants'],
              'funimpl'    : ['// Methods']}
 
-        APIGen(jtis,ag.TempVarNameGenerator(prefix="_tmt",postfix="",init=0)).run(d)
+        APIGen(jtis,ag.TempVarNameGenerator(prefix="_tmp",postfix="",init=0)).run(d)
 
         p = 0
         for o in re.finditer(r'^//<([A-Za-z0-9]+)>.*$',template,re.MULTILINE):

@@ -22,7 +22,7 @@ import (
 
 
 type MosekError struct {
-    code int32
+    code Rescode
     msg string
 }
 func (self*MosekError) Error() string {
