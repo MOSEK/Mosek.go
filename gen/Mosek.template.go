@@ -1,5 +1,7 @@
 package mosek
 
+//<comment>
+
 // #include <stdlib.h>
 // #include <mosek.h>
 // #cgo LDFLAGS: -lmosek64
@@ -13,6 +15,7 @@ import (
     "C"
     "unsafe"
     "fmt"
+    "golang.org/x/exp/constraints"
 )
 
 //<consts>
@@ -147,13 +150,13 @@ func (env *Env) MakeTask() (task Task, res int32) {
 
 func (e *Env) Delete() {
         envptr := e.ptr()
-        C.MSK_deleteenv(&envptr)
+        _ = C.MSK_deleteenv(&envptr)
         e.cptr = nil
 }
 
 func (t *Task) Delete() {
         taskptr := t.ptr()
-        C.MSK_deletetask(&taskptr)
+        _ = C.MSK_deletetask(&taskptr)
         t.cptr = nil
 }
 
@@ -216,9 +219,11 @@ func minint(a []int) (r int) {
         return
 }
 
+func sum[T Number](data []T) T {
+    var r T
+    for _,v := range(self) { r += v }
+    return v
+}
 
 
-
-
-
-//<funimpl>
+//<methods>

@@ -16,7 +16,6 @@ case "$(uname)" in
         ;;
     *)  echo "Unsupported platform!"
         exit 1
-        ll
 esac
 
 MOSEK_INST_DIR=${MOSEK_INST_DIR:-$HOME}
@@ -26,6 +25,10 @@ MOSEK_INC_DIR=$MOSEK_INST_DIR/mosek/$MOSEKMAJORVER.$MOSEKMINORVER/tools/platform
 
 export CGO_CFLAGS="-I$MOSEK_INC_DIR"
 export CGO_LDFLAGS="-L$MOSEK_BIN_DIR -Xlinker -rpath-link=$MOSEK_BIN_DIR -Xlinker -rpath=$MOSEK_BIN_DIR"
+
+
+echo CGO_CFLAGS: $CGO_CFLAGS
+echo CGO_LDFLAGS: $CGO_LDFLAGS
 
 go build && \
 go build examples/lo1.go && \

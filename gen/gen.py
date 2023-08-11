@@ -90,13 +90,14 @@ class ComputeGen(ag.BaseComputeGenerator):
         code = []
         tmpvar = self.tmpvargen()
         code.extend(cond.code)
-        code.append(f'var {tmpvar} : {atype2nimdecl(thenitem.type)}')
-        code.append(f'if {cond.value}:')
+        code.append(f'var {tmpvar} {atype2nimdecl(thenitem.type)}')
+        code.append(f'if {cond.value} {{')
         code.extend(['  ' + l for l in thenitem.code])
         code.append(f'  {tmpvar} = {thenitem.value}')
-        code.append(f'else:')
+        code.append(f'}} else {{')
         code.extend(['  ' + l for l in elseitem.code])
         code.append(f'  {tmpvar} = {elseitem.value}')
+        code.append( '}')
 
         return ag.ComputeNodePartial(tmpvar,code)
     def constref(self,cc,name):
@@ -119,10 +120,10 @@ class ComputeGen(ag.BaseComputeGenerator):
             elif isinstance(a,ag.DummyArg) or isinstance(a,ag.ReturnArg):
                 tmpvar = self.tmpvargen()
                 if isinstance(a.type, ag.agref):
-                    code.append(f'var {tmpvar} : {atype2nimdecl(a.type.t)}')
+                    code.append(f'var {tmpvar} {atype2nimdecl(a.type.t)}')
                     callargs.append(f'addr({tmpvar})')
                 else:
-                    code.append('var {tmpvar} : {atype2nimdecl(a.type)}')
+                    code.append('var {tmpvar} {atype2nimdecl(a.type)}')
                     callargs.append(f'{tmpvar}')
 
                 if isinstance(a,ag.ReturnArg):
@@ -131,7 +132,12 @@ class ComputeGen(ag.BaseComputeGenerator):
                 code.extend(a.code)
                 callargs.append(a.value)
         callargs = ','.join(callargs)
-        code.append(f'handle_res(MSK_{func["name"]}({callargs}))')
+        tmpres = self.tmpvargen()
+        code.extend([f'if {tmpres} := MSK_{func["name"]}({callargs}); {tmpres} != 0 {{',
+                     f'  lastcode,lastmsg = self.getlasterror({tmpres})',
+                     '   err = MosekError{ code:lastcode,msg:lastmsg}',
+                     '  return',
+                     '}'])
         return ag.ComputeNodePartial(value,code)
 
 class FuncGen(ag.BaseFuncGenerator):
@@ -141,12 +147,14 @@ class FuncGen(ag.BaseFuncGenerator):
                          cls,
                          func,
                          tmpvargen = tmpvargen,
-                         addcollectors = ['nativearg'])
+                         addcollectors = ['nativearg','retarg'])
         self.__cls = cls
         self.__clsarg = None
+        self.__clstp = None
         self.__func = func
+        self.__selfarg = None
         self.funname = func['name']
-        self.funapiname = func.get('api-name',self.funname)
+        self.funapiname = re.sub('-.',lambda o: o.group(0)[1].upper(),func.get('api-caml-name').capitalize())
     def warn(self,msg,*args): logging.warning(msg,*args)
     def error(self,msg,*args): logging.error(msg,*args)
     def info(self,msg,*args): logging.info(msg,*args)
@@ -154,29 +162,36 @@ class FuncGen(ag.BaseFuncGenerator):
         return ComputeGen(code,self.jtis,self.__cls,self.__func,self.__tmpvargen)()
     def arg_classarg(self,a,tp,atn,ctn,n,argbrief,argdesc):
         self['callarg'].append(f'self.ptr()')
-        self['selfarg'] = f'self *{objecttypemap[atn]}'
+        self.__selfarg = f'self *{objecttypemap[atn]}'
         self.__clsarg = a
+        self.__clstp = atn
         #self['funarg'].append(f'{n} {objecttypemap[atn]}')
     def arg_ptr(self,a,basetp,atn,ctn,n,minlength,indexof,isdefaultoarg,argbrief,argdesc):
         if atn == 'enum':
-            argtp = 'int32' 
+            argtp = ctn.capitalize() 
         else:
-            argtp = atype2nimdecl(atn)
+            try:
+                argtp = atype2nimdecl(atn)
+            except KeyError:
+                raise ag.DontGenerate(self.__func['name'],"Invalid type") 
             if argtp == 'void':
                 raise ag.DontGenerate(self.__func['name'],"Void pointer arguments not supported")
         
         tmp = self.tmpvargen()
-        
-        assert minlength
+
         self['prelude'].extend([f'var {tmp} *{argtp}'])
-        self['prelude'].extend(minlength.code)
+
+
+        if minlength:
+            self['prelude'].extend(minlength.code)
 
         if 'i' in a['mode']:
-            self['prelude'].extend([f'if len({n}) < {minlength.value} {{',
-                                    f'''  err = &ArrayLengthError{fun:"{self.funapiname}",arg:"{n}"}''',
-                                    '  return',
-                                    '}',
-                                    f'if {n} != nil {{ {tmp} = (*MSKint32t)(&{n}[0]) }}'])
+            if minlength:
+                self['prelude'].extend([f'if len({n}) < {minlength.value} {{',
+                                        f'''  err = &ArrayLengthError{{fun:"{self.funapiname}",arg:"{n}"}}''',
+                                        '  return',
+                                        '}'])
+            self['prelude'].append(f'if {n} != nil {{ {tmp} = (*C.MSKint32t)(&{n}[0]) }}')
             self['funarg'].append(f'{n} []{argtp}')
 
             if indexof:
@@ -184,11 +199,12 @@ class FuncGen(ag.BaseFuncGenerator):
                 ixcheck = ' || '.join([f'{tmpvar} >= len({ix})' for ix in indexof])
                 self['prelude'].extend([f'for _,{tmpvar} := range {n} {{',
                                         f'  if {tmpvar} < 0 || {ixcheck} {{',
-                                        f'    err = &ArrayLengthError("{self.funapiname}","{n}")',
+                                        f'    err = &ArrayLengthError{{"{self.funapiname}","{n}"}}',
                                         '    return',
                                         '  }',
                                         '}'])
         else:
+            assert minlength
             self['prelude'].extend([f'{n} := make([]{argtp},{minlength.value})',
                                     f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&n[0]) }}'])
             self['retarg'].append((n,f'[]{argtp}'))
@@ -204,13 +220,12 @@ class FuncGen(ag.BaseFuncGenerator):
 #        self['nativearg'].append(f'{n} : ptr {argtp}')
     def arg_ref(self,a,basetp,atn,ctn,n,indexof,isdefaultoarg,argbrief,argdesc):
         if atn == 'enum':
-            argtp = 'int32'
+            argtp = ctn.capitalize()
         else:
             argtp = atype2nimdecl(atn)
 
         assert a['mode'] != 'io'
         self['retarg'].append((n,argtp))
-_
         self['callarg'].append(f'&{n}')
     def arg_ref_func(self,a,tp,rettype,argtypes,n,isdefaultoarg,argbrief,argdesc):
         raise DontGenerate("arg_ref_func() not implemented")
@@ -226,10 +241,10 @@ _
     def arg_outstring(self,a,tp,atn,ctn,n,minlength,isdefaultoarg,argbrief,argdesc):
         tmpvar1 = self.tmpvargen()
         self['prelude'].extend(minlength.code)
-        self['prelude'].append(f'{tmpvar1} := make([[]byte,{minlength.value})')
+        self['prelude'].append(f'{tmpvar1} := make([]byte,{minlength.value})')
         self['callarg'].append(f'C.CString(&tmpvar1[0])')
         self['postlude'].extend([f'var {n} string',
-                                 f"if p := strings.IndexByte({tmpvar1},'\\0'); p < 0 {{",
+                                 f"if p := strings.IndexByte({tmpvar1},byte(0)); p < 0 {{",
                                  f'  {n} = string({tmpvar1})',
                                  '} else {',
                                  f'  {n} = string({tmpvar1}[:p])',
@@ -241,12 +256,12 @@ _
             tmp = self.tmpvargen()
             self['prelude'].append(f'{tmp} := len({lengthof[0]["name"]})')
             for lof in lengthof[1:]:
-                self['prelude'].append(f'if {tmp} < {lof["name"]} { {tmp} = lof["name"]}')
+                self['prelude'].append(f'if {tmp} < {lof["name"]} {{ {tmp} = lof["name"] }}')
 
             if argtp == ag.agtype('int64'):
-                self['prelude'].append(f'var {n} int64 = {minlen}')
+                self['prelude'].append(f'var {n} int64 = {tmp}')
             else:
-                self['prelude'].append(f'var {n} {argtp} = int32({minlen})')
+                self['prelude'].append(f'var {n} {argtp} = int32({tmp})')
             self['callarg'].append(n)
         elif code:
             argtp = atype2nimdecl(atn)
@@ -260,7 +275,7 @@ _
         raise ag.DontGenerate(self.funname,"Not supported: Non-class-arg object arguments")
     def arg_value(self,a,tp,atn,ctn,n,argbrief,argdesc):
         if atn == 'enum':
-            argtp = 'int32'
+            argtp = ctn.capitalize()
         else:
             argtp = atype2nimdecl(atn)
 
@@ -276,27 +291,27 @@ _
         rets.append('err error')
 
         if len(rets) == 0: retstr = ''
-        elif len(rets) == 1: retstr = ' ' + rets[0]
         else: retstr = ' (' + ','.join(rets) + ')'
         
-        funcname = re.sub(r'-.',lambda o: o.group(0)[1].upper(), self.funapiname)
-        d['funimpl'].append(f'func {funcapiname}*({funargs}){retstr} {{')
+        if self.__clsarg is not None:
+            d['funimpl'].append(f'func (self *{self.__clstp}) {self.funapiname}({funargs}){retstr} {{')
+        else:
+            d['funimpl'].append(f'func {self.funapiname}({funargs}){retstr} {{')
+
+
         d['funimpl'].extend(['  '+l for l in self['prelude']])
 
         tmp = self.tmpvargen()
         argstr = ','.join(self["callarg"])
-        d['funimpl'].append( f'  {tmp} := MSK_{self.funname}({argstr})')
+        d['funimpl'].append( f'  if {tmp} := MSK_{self.funname}({argstr}); {tmp} != 0 {{')
         if self.__clsarg is not None:
-            d['funimpl'].extend([f'  if {tmp} != 0 {{',
-                                 f'    lastcode,lastmsg := self.getlasterror({tmp})',
+            d['funimpl'].extend([f'    lastcode,lastmsg := self.getlasterror({tmp})',
                                  '    err = &MosekError{code:lastcode,msg:lastmsg}',
-                                 '    return'
-                                 '  }'])
+                                 '    return'])
         else:
-            d['funimpl'].extend([f'if {tmp} != 0 {{',
-                                 f'  err = &MosekError{{ code:{tmp} }}',
-                                 '  return',
-                                 '}'])
+            d['funimpl'].extend([f'    err = &MosekError{{ code:{tmp} }}',
+                                 '    return'])
+        d['funimpl'].append('  }')
 
         d['funimpl'].extend(['  '+l for l in self['postlude']])
         d['funimpl'].append('  return')
@@ -319,9 +334,11 @@ class APIGen(ag.BaseAPIGenerator):
             ccname = cc['name']
             pfx = cc['prefix'].upper()
 
+            cname = ccname.capitalize()
+            d['const'].append(f'type {cname} int32')
             d['const'].append('const (')
             for k,v in L:
-                d['const'].append('    MSK_{pfx}{k} int32 = {v}')
+                d['const'].append(f'    MSK_{pfx}{k.upper()} {cname} = {v}')
             d['const'].append(')')
 
     def genfunc(self,dfunc,func,cls):
@@ -346,43 +363,30 @@ if __name__ == '__main__':
     assert REQUIRE_JAIS <= tuple(jtis['jsonais-version'])
 
     with open(a.target,'wt') as f:
+        print(f"Write to {a.target}")
 
-        d = {'const'      : [],
-             'nativehdrs' : [],
-             'funimpl'    : [],
-             'inftypes'   : []}
+        d = {'const'      : ['// Constants'],
+             'funimpl'    : ['// Methods']}
 
-        APIGen(jtis,ag.TempVarNameGenerator(prefix="AUX",postfix="",init=0)).run(d)
+        APIGen(jtis,ag.TempVarNameGenerator(prefix="_tmt",postfix="",init=0)).run(d)
 
-        f.write('# Generated for MOSEK %s' % mosek_version)
         p = 0
         for o in re.finditer(r'^//<([A-Za-z0-9]+)>.*$',template,re.MULTILINE):
             f.write(template[p:o.start()])
             p = o.end()
-            if o.group(1) == 'ENUMS':
-                f.write('type\n')
-                for l in d['enum']:
-                    f.write('  '+l)
-                    f.write('\n')
-                f.write('\n')
-                f.write('const\n')
+            if o.group(1) == 'consts':
                 for l in d['const']:
-                    f.write('  '+l)
-                    f.write('\n')
-            elif o.group(1) == 'FFIDECL':
-                for l in d['nativehdrs']:
                     f.write(l)
                     f.write('\n')
-                f.write('\n')
-            elif o.group(1) == 'PROCS':
+            elif o.group(1) == 'methods':
                 for l in d['funimpl']:
                     f.write(l)
                     f.write('\n')
                 f.write('\n')
-            elif o.group(1) == 'INFTYPES':
-                for l in d['inftypes']:
-                    f.write('  ')
-                    f.write(l)
-                    f.write('\n')
+            elif o.group(1) == 'comment':
+                f.write('// Generated for MOSEK %s' % mosek_version)
+            else:
+                print(f"Warning! Unknown label '{o.group(1)}'")
+
         f.write(template[p:])
 
