@@ -1,16 +1,445 @@
 package mosek
 
-// Generated for MOSEK [10, 1, 8]
+// /*<comment>*/
 
 // #include <stdlib.h>
-// #include <mosek.h>
+// #include <stdint.h>
 // #cgo LDFLAGS: -lmosek64
+//
+// typedef const char * string_t;
 //
 // extern void streamfunc_log(void *, char *);
 // extern void streamfunc_wrn(void *, char *);
 // extern void streamfunc_msg(void *, char *);
 // extern void streamfunc_err(void *, char *);
-// extern int callbackfunc(void *, void *, int, MSKrealt *, MSKint32t*, MSKint64t *);
+// extern int callbackfunc(void *, void *, int, double*,int32_t*, int64_t*);
+// extern int MSK_analyzenames(void *,int,int);
+// extern int MSK_analyzeproblem(void *,int);
+// extern int MSK_analyzesolution(void *,int,int);
+// extern int MSK_appendacc(void *,int64_t,int64_t *,int64_t *,double *);
+// extern int MSK_appendaccs(void *,int64_t *,int64_t *,int64_t *,int64_t *,double *);
+// extern int MSK_appendaccseq(void *,int64_t,int64_t *,int64_t,double *);
+// extern int MSK_appendaccsseq(void *,int64_t *,int64_t *,int64_t,int64_t,double *);
+// extern int MSK_appendafes(void *,int64_t);
+// extern int MSK_appendbarvars(void *,int32_t *,int32_t *);
+// extern int MSK_appendcone(void *,int,double,int32_t *,int32_t *);
+// extern int MSK_appendconeseq(void *,int,double,int32_t,int32_t);
+// extern int MSK_appendconesseq(void *,int32_t *,int *,double *,int32_t *,int32_t);
+// extern int MSK_appendcons(void *,int32_t);
+// extern int MSK_appenddjcs(void *,int64_t);
+// extern int MSK_appenddualexpconedomain(void *,int64_t *);
+// extern int MSK_appenddualgeomeanconedomain(void *,int64_t,int64_t *);
+// extern int MSK_appenddualpowerconedomain(void *,int64_t,int64_t *,double *,int64_t *);
+// extern int MSK_appendprimalexpconedomain(void *,int64_t *);
+// extern int MSK_appendprimalgeomeanconedomain(void *,int64_t,int64_t *);
+// extern int MSK_appendprimalpowerconedomain(void *,int64_t,int64_t *,double *,int64_t *);
+// extern int MSK_appendquadraticconedomain(void *,int64_t,int64_t *);
+// extern int MSK_appendrdomain(void *,int64_t,int64_t *);
+// extern int MSK_appendrminusdomain(void *,int64_t,int64_t *);
+// extern int MSK_appendrplusdomain(void *,int64_t,int64_t *);
+// extern int MSK_appendrquadraticconedomain(void *,int64_t,int64_t *);
+// extern int MSK_appendrzerodomain(void *,int64_t,int64_t *);
+// extern int MSK_appendsparsesymmat(void *,int32_t,int64_t *,int32_t *,int32_t *,double *,int64_t *);
+// extern int MSK_appendsparsesymmatlist(void *,int32_t *,int32_t *,int64_t *,int32_t *,int32_t *,double *,int64_t *);
+// extern int MSK_appendsvecpsdconedomain(void *,int64_t,int64_t *);
+// extern int MSK_appendvars(void *,int32_t);
+// extern int MSK_basiscond(void *,double *,double *);
+// extern int MSK_checkmemtask(void *,const char *,int32_t);
+// extern int MSK_chgconbound(void *,int32_t,int32_t,int32_t,double);
+// extern int MSK_chgvarbound(void *,int32_t,int32_t,int32_t,double);
+// extern int MSK_commitchanges(void *);
+// extern int MSK_deletesolution(void *,int);
+// extern int MSK_dualsensitivity(void *,int32_t *,int32_t *,double *,double *,double *,double *);
+// extern int MSK_emptyafebarfrow(void *,int64_t);
+// extern int MSK_emptyafebarfrowlist(void *,int64_t *,int64_t *);
+// extern int MSK_emptyafefcol(void *,int32_t);
+// extern int MSK_emptyafefcollist(void *,int64_t *,int32_t *);
+// extern int MSK_emptyafefrow(void *,int64_t);
+// extern int MSK_emptyafefrowlist(void *,int64_t *,int64_t *);
+// extern int MSK_evaluateacc(void *,int,int64_t,double *);
+// extern int MSK_evaluateaccs(void *,int,double *);
+// extern int MSK_generateaccnames(void *,int64_t *,int64_t *,const char *,int32_t *,int32_t *,int64_t *,int32_t *,int32_t *,int64_t *,string_t *);
+// extern int MSK_generatebarvarnames(void *,int32_t *,int32_t *,const char *,int32_t *,int32_t *,int64_t *,int32_t *,int32_t *,int64_t *,string_t *);
+// extern int MSK_generateconenames(void *,int32_t *,int32_t *,const char *,int32_t *,int32_t *,int64_t *,int32_t *,int32_t *,int64_t *,string_t *);
+// extern int MSK_generateconnames(void *,int32_t *,int32_t *,const char *,int32_t *,int32_t *,int64_t *,int32_t *,int32_t *,int64_t *,string_t *);
+// extern int MSK_generatedjcnames(void *,int64_t *,int64_t *,const char *,int32_t *,int32_t *,int64_t *,int32_t *,int32_t *,int64_t *,string_t *);
+// extern int MSK_generatevarnames(void *,int32_t *,int32_t *,const char *,int32_t *,int32_t *,int64_t *,int32_t *,int32_t *,int64_t *,string_t *);
+// extern int MSK_getaccafeidxlist(void *,int64_t,int64_t *);
+// extern int MSK_getaccb(void *,int64_t,double *);
+// extern int MSK_getaccbarfblocktriplet(void *,int64_t *,int64_t *,int64_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getaccbarfnumblocktriplets(void *,int64_t *);
+// extern int MSK_getaccdomain(void *,int64_t,int64_t *);
+// extern int MSK_getaccdoty(void *,int,int64_t,double *);
+// extern int MSK_getaccdotys(void *,int,double *);
+// extern int MSK_getaccfnumnz(void *,int64_t *);
+// extern int MSK_getaccftrip(void *,int64_t *,int32_t *,double *);
+// extern int MSK_getaccgvector(void *,double *);
+// extern int MSK_getaccn(void *,int64_t,int64_t *);
+// extern int MSK_getaccname(void *,int64_t,int32_t *,char *);
+// extern int MSK_getaccnamelen(void *,int64_t,int32_t *);
+// extern int MSK_getaccntot(void *,int64_t *);
+// extern int MSK_getaccs(void *,int64_t *,int64_t *,double *);
+// extern int MSK_getacol(void *,int32_t,int32_t *,int32_t *,double *);
+// extern int MSK_getacolnumnz(void *,int32_t,int32_t *);
+// extern int MSK_getacolslice64(void *,int32_t,int32_t,int64_t *,int64_t *,int64_t *,int32_t *,double *);
+// extern int MSK_getacolslicenumnz64(void *,int32_t,int32_t,int64_t *);
+// extern int MSK_getacolslicetrip(void *,int32_t,int32_t,int64_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getafebarfblocktriplet(void *,int64_t *,int64_t *,int64_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getafebarfnumblocktriplets(void *,int64_t *);
+// extern int MSK_getafebarfnumrowentries(void *,int64_t,int32_t *);
+// extern int MSK_getafebarfrow(void *,int64_t,int32_t *,int64_t *,int64_t *,int64_t *,double *);
+// extern int MSK_getafebarfrowinfo(void *,int64_t,int32_t *,int64_t *);
+// extern int MSK_getafefnumnz(void *,int64_t *);
+// extern int MSK_getafefrow(void *,int64_t,int32_t *,int32_t *,double *);
+// extern int MSK_getafefrownumnz(void *,int64_t,int32_t *);
+// extern int MSK_getafeftrip(void *,int64_t *,int32_t *,double *);
+// extern int MSK_getafeg(void *,int64_t,double *);
+// extern int MSK_getafegslice(void *,int64_t,int64_t,double *);
+// extern int MSK_getaij(void *,int32_t,int32_t,double *);
+// extern int MSK_getapiecenumnz(void *,int32_t,int32_t,int32_t,int32_t,int32_t *);
+// extern int MSK_getarow(void *,int32_t,int32_t *,int32_t *,double *);
+// extern int MSK_getarownumnz(void *,int32_t,int32_t *);
+// extern int MSK_getarowslice64(void *,int32_t,int32_t,int64_t *,int64_t *,int64_t *,int32_t *,double *);
+// extern int MSK_getarowslicenumnz64(void *,int32_t,int32_t,int64_t *);
+// extern int MSK_getarowslicetrip(void *,int32_t,int32_t,int64_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getatrip(void *,int64_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getatruncatetol(void *,double *);
+// extern int MSK_getbarablocktriplet(void *,int64_t *,int64_t *,int32_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getbaraidx(void *,int64_t,int64_t *,int32_t *,int32_t *,int64_t *,int64_t *,double *);
+// extern int MSK_getbaraidxij(void *,int64_t,int32_t *,int32_t *);
+// extern int MSK_getbaraidxinfo(void *,int64_t,int64_t *);
+// extern int MSK_getbarasparsity(void *,int64_t *,int64_t *,int64_t *);
+// extern int MSK_getbarcblocktriplet(void *,int64_t *,int64_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getbarcidx(void *,int64_t,int64_t *,int32_t *,int64_t *,int64_t *,double *);
+// extern int MSK_getbarcidxinfo(void *,int64_t,int64_t *);
+// extern int MSK_getbarcidxj(void *,int64_t,int32_t *);
+// extern int MSK_getbarcsparsity(void *,int64_t *,int64_t *,int64_t *);
+// extern int MSK_getbarsj(void *,int,int32_t,double *);
+// extern int MSK_getbarsslice(void *,int,int32_t,int32_t,int64_t,double *);
+// extern int MSK_getbarvarname(void *,int32_t,int32_t *,char *);
+// extern int MSK_getbarvarnameindex(void *,const char *,int32_t *,int32_t *);
+// extern int MSK_getbarvarnamelen(void *,int32_t,int32_t *);
+// extern int MSK_getbarxj(void *,int,int32_t,double *);
+// extern int MSK_getbarxslice(void *,int,int32_t,int32_t,int64_t,double *);
+// extern int MSK_getc(void *,double *);
+// extern int MSK_getcfix(void *,double *);
+// extern int MSK_getcj(void *,int32_t,double *);
+// extern int MSK_getclist(void *,int32_t *,int32_t *,double *);
+// extern int MSK_getconbound(void *,int32_t,int *,double *,double *);
+// extern int MSK_getconboundslice(void *,int32_t,int32_t,int *,double *,double *);
+// extern int MSK_getcone(void *,int32_t,int *,double *,int32_t *,int32_t *);
+// extern int MSK_getconeinfo(void *,int32_t,int *,double *,int32_t *);
+// extern int MSK_getconename(void *,int32_t,int32_t *,char *);
+// extern int MSK_getconenameindex(void *,const char *,int32_t *,int32_t *);
+// extern int MSK_getconenamelen(void *,int32_t,int32_t *);
+// extern int MSK_getconname(void *,int32_t,int32_t *,char *);
+// extern int MSK_getconnameindex(void *,const char *,int32_t *,int32_t *);
+// extern int MSK_getconnamelen(void *,int32_t,int32_t *);
+// extern int MSK_getcslice(void *,int32_t,int32_t,double *);
+// extern int MSK_getdimbarvarj(void *,int32_t,int32_t *);
+// extern int MSK_getdjcafeidxlist(void *,int64_t,int64_t *);
+// extern int MSK_getdjcb(void *,int64_t,double *);
+// extern int MSK_getdjcdomainidxlist(void *,int64_t,int64_t *);
+// extern int MSK_getdjcname(void *,int64_t,int32_t *,char *);
+// extern int MSK_getdjcnamelen(void *,int64_t,int32_t *);
+// extern int MSK_getdjcnumafe(void *,int64_t,int64_t *);
+// extern int MSK_getdjcnumafetot(void *,int64_t *);
+// extern int MSK_getdjcnumdomain(void *,int64_t,int64_t *);
+// extern int MSK_getdjcnumdomaintot(void *,int64_t *);
+// extern int MSK_getdjcnumterm(void *,int64_t,int64_t *);
+// extern int MSK_getdjcnumtermtot(void *,int64_t *);
+// extern int MSK_getdjcs(void *,int64_t *,int64_t *,double *,int64_t *,int64_t *);
+// extern int MSK_getdjctermsizelist(void *,int64_t,int64_t *);
+// extern int MSK_getdomainn(void *,int64_t,int64_t *);
+// extern int MSK_getdomainname(void *,int64_t,int32_t *,char *);
+// extern int MSK_getdomainnamelen(void *,int64_t,int32_t *);
+// extern int MSK_getdomaintype(void *,int64_t,int *);
+// extern int MSK_getdouinf(void *,int,double *);
+// extern int MSK_getdouparam(void *,int,double *);
+// extern int MSK_getdualobj(void *,int,double *);
+// extern int MSK_getdualsolutionnorms(void *,int,double *,double *,double *,double *,double *,double *,double *);
+// extern int MSK_getdviolacc(void *,int,int64_t *,int64_t *,double *);
+// extern int MSK_getdviolbarvar(void *,int,int32_t *,int32_t *,double *);
+// extern int MSK_getdviolcon(void *,int,int32_t *,int32_t *,double *);
+// extern int MSK_getdviolcones(void *,int,int32_t *,int32_t *,double *);
+// extern int MSK_getdviolvar(void *,int,int32_t *,int32_t *,double *);
+// extern int MSK_getinfindex(void *,int,const char *,int32_t *);
+// extern int MSK_getinfmax(void *,int,int32_t *);
+// extern int MSK_getinfname(void *,int,int32_t,char *);
+// extern int MSK_getintinf(void *,int,int32_t *);
+// extern int MSK_getintparam(void *,int,int32_t *);
+// extern int MSK_getlenbarvarj(void *,int32_t,int64_t *);
+// extern int MSK_getlintinf(void *,int,int64_t *);
+// extern int MSK_getmaxnumanz64(void *,int64_t *);
+// extern int MSK_getmaxnumbarvar(void *,int32_t *);
+// extern int MSK_getmaxnumcon(void *,int32_t *);
+// extern int MSK_getmaxnumcone(void *,int32_t *);
+// extern int MSK_getmaxnumqnz64(void *,int64_t *);
+// extern int MSK_getmaxnumvar(void *,int32_t *);
+// extern int MSK_getmemusagetask(void *,int64_t *,int64_t *);
+// extern int MSK_getnumacc(void *,int64_t *);
+// extern int MSK_getnumafe(void *,int64_t *);
+// extern int MSK_getnumanz(void *,int32_t *);
+// extern int MSK_getnumanz64(void *,int64_t *);
+// extern int MSK_getnumbarablocktriplets(void *,int64_t *);
+// extern int MSK_getnumbaranz(void *,int64_t *);
+// extern int MSK_getnumbarcblocktriplets(void *,int64_t *);
+// extern int MSK_getnumbarcnz(void *,int64_t *);
+// extern int MSK_getnumbarvar(void *,int32_t *);
+// extern int MSK_getnumcon(void *,int32_t *);
+// extern int MSK_getnumcone(void *,int32_t *);
+// extern int MSK_getnumconemem(void *,int32_t,int32_t *);
+// extern int MSK_getnumdjc(void *,int64_t *);
+// extern int MSK_getnumdomain(void *,int64_t *);
+// extern int MSK_getnumintvar(void *,int32_t *);
+// extern int MSK_getnumparam(void *,int,int32_t *);
+// extern int MSK_getnumqconknz64(void *,int32_t,int64_t *);
+// extern int MSK_getnumqobjnz64(void *,int64_t *);
+// extern int MSK_getnumsymmat(void *,int64_t *);
+// extern int MSK_getnumvar(void *,int32_t *);
+// extern int MSK_getobjname(void *,int32_t *,char *);
+// extern int MSK_getobjnamelen(void *,int32_t *);
+// extern int MSK_getobjsense(void *,int *);
+// extern int MSK_getparammax(void *,int,int32_t *);
+// extern int MSK_getparamname(void *,int,int32_t,char *);
+// extern int MSK_getpowerdomainalpha(void *,int64_t,double *);
+// extern int MSK_getpowerdomaininfo(void *,int64_t,int64_t *,int64_t *);
+// extern int MSK_getprimalobj(void *,int,double *);
+// extern int MSK_getprimalsolutionnorms(void *,int,double *,double *,double *);
+// extern int MSK_getprobtype(void *,int *);
+// extern int MSK_getprosta(void *,int,int *);
+// extern int MSK_getpviolacc(void *,int,int64_t *,int64_t *,double *);
+// extern int MSK_getpviolbarvar(void *,int,int32_t *,int32_t *,double *);
+// extern int MSK_getpviolcon(void *,int,int32_t *,int32_t *,double *);
+// extern int MSK_getpviolcones(void *,int,int32_t *,int32_t *,double *);
+// extern int MSK_getpvioldjc(void *,int,int64_t *,int64_t *,double *);
+// extern int MSK_getpviolvar(void *,int,int32_t *,int32_t *,double *);
+// extern int MSK_getqconk64(void *,int32_t,int64_t *,int64_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getqobj64(void *,int64_t *,int64_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getqobjij(void *,int32_t,int32_t,double *);
+// extern int MSK_getreducedcosts(void *,int,int32_t,int32_t,double *);
+// extern int MSK_getskc(void *,int,int *);
+// extern int MSK_getskcslice(void *,int,int32_t,int32_t,int *);
+// extern int MSK_getskn(void *,int,int *);
+// extern int MSK_getskx(void *,int,int *);
+// extern int MSK_getskxslice(void *,int,int32_t,int32_t,int *);
+// extern int MSK_getslc(void *,int,double *);
+// extern int MSK_getslcslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_getslx(void *,int,double *);
+// extern int MSK_getslxslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_getsnx(void *,int,double *);
+// extern int MSK_getsnxslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_getsolsta(void *,int,int *);
+// extern int MSK_getsolution(void *,int,int *,int *,int *,int *,int *,double *,double *,double *,double *,double *,double *,double *,double *);
+// extern int MSK_getsolutioninfo(void *,int,double *,double *,double *,double *,double *,double *,double *,double *,double *,double *,double *);
+// extern int MSK_getsolutioninfonew(void *,int,double *,double *,double *,double *,double *,double *,double *,double *,double *,double *,double *,double *,double *,double *);
+// extern int MSK_getsolutionnew(void *,int,int *,int *,int *,int *,int *,double *,double *,double *,double *,double *,double *,double *,double *,double *);
+// extern int MSK_getsolutionslice(void *,int,int,int32_t,int32_t,double *);
+// extern int MSK_getsparsesymmat(void *,int64_t,int64_t *,int32_t *,int32_t *,double *);
+// extern int MSK_getstrparam(void *,int,int32_t *,int32_t *,char *);
+// extern int MSK_getstrparamlen(void *,int,int32_t *);
+// extern int MSK_getsuc(void *,int,double *);
+// extern int MSK_getsucslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_getsux(void *,int,double *);
+// extern int MSK_getsuxslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_getsymmatinfo(void *,int64_t,int32_t *,int64_t *,int *);
+// extern int MSK_gettaskname(void *,int32_t *,char *);
+// extern int MSK_gettasknamelen(void *,int32_t *);
+// extern int MSK_getvarbound(void *,int32_t,int *,double *,double *);
+// extern int MSK_getvarboundslice(void *,int32_t,int32_t,int *,double *,double *);
+// extern int MSK_getvarname(void *,int32_t,int32_t *,char *);
+// extern int MSK_getvarnameindex(void *,const char *,int32_t *,int32_t *);
+// extern int MSK_getvarnamelen(void *,int32_t,int32_t *);
+// extern int MSK_getvartype(void *,int32_t,int *);
+// extern int MSK_getvartypelist(void *,int32_t *,int32_t *,int *);
+// extern int MSK_getxc(void *,int,double *);
+// extern int MSK_getxcslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_getxx(void *,int,double *);
+// extern int MSK_getxxslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_gety(void *,int,double *);
+// extern int MSK_getyslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_infeasibilityreport(void *,int,int);
+// extern int MSK_initbasissolve(void *,int32_t *);
+// extern int MSK_inputdata64(void *,int32_t,int32_t,int32_t *,int32_t *,double *,double,int64_t *,int64_t *,int32_t *,double *,int *,double *,double *,int *,double *,double *);
+// extern int MSK_isdouparname(void *,const char *,int *);
+// extern int MSK_isintparname(void *,const char *,int *);
+// extern int MSK_isstrparname(void *,const char *,int *);
+// extern int MSK_linkfiletotaskstream(void *,int,const char *,int32_t);
+// extern int MSK_onesolutionsummary(void *,int,int);
+// extern int MSK_optimizersummary(void *,int);
+// extern int MSK_optimizetrm(void *,int *);
+// extern int MSK_primalrepair(void *,double *,double *,double *,double *);
+// extern int MSK_primalsensitivity(void *,int32_t *,int32_t *,int *,int32_t *,int32_t *,int *,double *,double *,double *,double *,double *,double *,double *,double *);
+// extern int MSK_probtypetostr(void *,int,char *);
+// extern int MSK_prostatostr(void *,int,char *);
+// extern int MSK_putacc(void *,int64_t,int64_t,int64_t *,int64_t *,double *);
+// extern int MSK_putaccb(void *,int64_t,int64_t *,double *);
+// extern int MSK_putaccbj(void *,int64_t,int64_t,double);
+// extern int MSK_putaccdoty(void *,int,int64_t,double *);
+// extern int MSK_putacclist(void *,int64_t *,int64_t *,int64_t *,int64_t *,int64_t *,double *);
+// extern int MSK_putaccname(void *,int64_t,const char *);
+// extern int MSK_putacol(void *,int32_t,int32_t *,int32_t *,double *);
+// extern int MSK_putacollist(void *,int32_t *,int32_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_putacolslice64(void *,int32_t,int32_t,int64_t *,int64_t *,int32_t *,double *);
+// extern int MSK_putafebarfblocktriplet(void *,int64_t *,int64_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_putafebarfentry(void *,int64_t,int32_t,int64_t *,int64_t *,double *);
+// extern int MSK_putafebarfentrylist(void *,int64_t *,int64_t *,int32_t *,int64_t *,int64_t *,int64_t *,int64_t *,double *);
+// extern int MSK_putafebarfrow(void *,int64_t,int32_t *,int32_t *,int64_t *,int64_t *,int64_t *,int64_t *,double *);
+// extern int MSK_putafefcol(void *,int32_t,int64_t *,int64_t *,double *);
+// extern int MSK_putafefentry(void *,int64_t,int32_t,double);
+// extern int MSK_putafefentrylist(void *,int64_t *,int64_t *,int32_t *,double *);
+// extern int MSK_putafefrow(void *,int64_t,int32_t *,int32_t *,double *);
+// extern int MSK_putafefrowlist(void *,int64_t *,int64_t *,int32_t *,int64_t *,int64_t *,int32_t *,double *);
+// extern int MSK_putafeg(void *,int64_t,double);
+// extern int MSK_putafeglist(void *,int64_t *,int64_t *,double *);
+// extern int MSK_putafegslice(void *,int64_t,int64_t,double *);
+// extern int MSK_putaij(void *,int32_t,int32_t,double);
+// extern int MSK_putaijlist64(void *,int64_t *,int32_t *,int32_t *,double *);
+// extern int MSK_putarow(void *,int32_t,int32_t *,int32_t *,double *);
+// extern int MSK_putarowlist64(void *,int32_t *,int32_t *,int64_t *,int64_t *,int32_t *,double *);
+// extern int MSK_putarowslice64(void *,int32_t,int32_t,int64_t *,int64_t *,int32_t *,double *);
+// extern int MSK_putatruncatetol(void *,double);
+// extern int MSK_putbarablocktriplet(void *,int64_t *,int32_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_putbaraij(void *,int32_t,int32_t,int64_t *,int64_t *,double *);
+// extern int MSK_putbaraijlist(void *,int32_t *,int32_t *,int32_t *,int64_t *,int64_t *,int64_t *,double *);
+// extern int MSK_putbararowlist(void *,int32_t *,int32_t *,int64_t *,int64_t *,int32_t *,int64_t *,int64_t *,double *);
+// extern int MSK_putbarcblocktriplet(void *,int64_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_putbarcj(void *,int32_t,int64_t *,int64_t *,double *);
+// extern int MSK_putbarsj(void *,int,int32_t,double *);
+// extern int MSK_putbarvarname(void *,int32_t,const char *);
+// extern int MSK_putbarxj(void *,int,int32_t,double *);
+// extern int MSK_putcfix(void *,double);
+// extern int MSK_putcj(void *,int32_t,double);
+// extern int MSK_putclist(void *,int32_t *,int32_t *,double *);
+// extern int MSK_putconbound(void *,int32_t,int,double,double);
+// extern int MSK_putconboundlist(void *,int32_t *,int32_t *,int *,double *,double *);
+// extern int MSK_putconboundlistconst(void *,int32_t *,int32_t *,int,double,double);
+// extern int MSK_putconboundslice(void *,int32_t,int32_t,int *,double *,double *);
+// extern int MSK_putconboundsliceconst(void *,int32_t,int32_t,int,double,double);
+// extern int MSK_putcone(void *,int32_t,int,double,int32_t *,int32_t *);
+// extern int MSK_putconename(void *,int32_t,const char *);
+// extern int MSK_putconname(void *,int32_t,const char *);
+// extern int MSK_putconsolutioni(void *,int32_t,int,int,double,double,double);
+// extern int MSK_putcslice(void *,int32_t,int32_t,double *);
+// extern int MSK_putdjc(void *,int64_t,int64_t *,int64_t *,int64_t *,int64_t *,double *,int64_t *,int64_t *);
+// extern int MSK_putdjcname(void *,int64_t,const char *);
+// extern int MSK_putdjcslice(void *,int64_t,int64_t,int64_t *,int64_t *,int64_t *,int64_t *,double *,int64_t *,int64_t *,int64_t *);
+// extern int MSK_putdomainname(void *,int64_t,const char *);
+// extern int MSK_putdouparam(void *,int,double);
+// extern int MSK_putintparam(void *,int,int32_t);
+// extern int MSK_putmaxnumacc(void *,int64_t);
+// extern int MSK_putmaxnumafe(void *,int64_t);
+// extern int MSK_putmaxnumanz(void *,int64_t);
+// extern int MSK_putmaxnumbarvar(void *,int32_t);
+// extern int MSK_putmaxnumcon(void *,int32_t);
+// extern int MSK_putmaxnumcone(void *,int32_t);
+// extern int MSK_putmaxnumdjc(void *,int64_t);
+// extern int MSK_putmaxnumdomain(void *,int64_t);
+// extern int MSK_putmaxnumqnz(void *,int64_t);
+// extern int MSK_putmaxnumvar(void *,int32_t);
+// extern int MSK_putnadouparam(void *,const char *,double);
+// extern int MSK_putnaintparam(void *,const char *,int32_t);
+// extern int MSK_putnastrparam(void *,const char *,const char *);
+// extern int MSK_putobjname(void *,const char *);
+// extern int MSK_putobjsense(void *,int);
+// extern int MSK_putoptserverhost(void *,const char *);
+// extern int MSK_putparam(void *,const char *,const char *);
+// extern int MSK_putqcon(void *,int32_t *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_putqconk(void *,int32_t,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_putqobj(void *,int32_t *,int32_t *,int32_t *,double *);
+// extern int MSK_putqobjij(void *,int32_t,int32_t,double);
+// extern int MSK_putskc(void *,int,int *);
+// extern int MSK_putskcslice(void *,int,int32_t,int32_t,int *);
+// extern int MSK_putskx(void *,int,int *);
+// extern int MSK_putskxslice(void *,int,int32_t,int32_t,int *);
+// extern int MSK_putslc(void *,int,double *);
+// extern int MSK_putslcslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_putslx(void *,int,double *);
+// extern int MSK_putslxslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_putsnx(void *,int,double *);
+// extern int MSK_putsnxslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_putsolution(void *,int,int *,int *,int *,double *,double *,double *,double *,double *,double *,double *,double *);
+// extern int MSK_putsolutionnew(void *,int,int *,int *,int *,double *,double *,double *,double *,double *,double *,double *,double *,double *);
+// extern int MSK_putsolutionyi(void *,int32_t,int,double);
+// extern int MSK_putstrparam(void *,int,const char *);
+// extern int MSK_putsuc(void *,int,double *);
+// extern int MSK_putsucslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_putsux(void *,int,double *);
+// extern int MSK_putsuxslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_puttaskname(void *,const char *);
+// extern int MSK_putvarbound(void *,int32_t,int,double,double);
+// extern int MSK_putvarboundlist(void *,int32_t *,int32_t *,int *,double *,double *);
+// extern int MSK_putvarboundlistconst(void *,int32_t *,int32_t *,int,double,double);
+// extern int MSK_putvarboundslice(void *,int32_t,int32_t,int *,double *,double *);
+// extern int MSK_putvarboundsliceconst(void *,int32_t,int32_t,int,double,double);
+// extern int MSK_putvarname(void *,int32_t,const char *);
+// extern int MSK_putvarsolutionj(void *,int32_t,int,int,double,double,double,double);
+// extern int MSK_putvartype(void *,int32_t,int);
+// extern int MSK_putvartypelist(void *,int32_t *,int32_t *,int *);
+// extern int MSK_putxc(void *,int,double *);
+// extern int MSK_putxcslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_putxx(void *,int,double *);
+// extern int MSK_putxxslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_puty(void *,int,double *);
+// extern int MSK_putyslice(void *,int,int32_t,int32_t,double *);
+// extern int MSK_readbsolution(void *,const char *,int);
+// extern int MSK_readdataautoformat(void *,const char *);
+// extern int MSK_readdataformat(void *,const char *,int,int);
+// extern int MSK_readjsonsol(void *,const char *);
+// extern int MSK_readjsonstring(void *,const char *);
+// extern int MSK_readlpstring(void *,const char *);
+// extern int MSK_readopfstring(void *,const char *);
+// extern int MSK_readparamfile(void *,const char *);
+// extern int MSK_readptfstring(void *,const char *);
+// extern int MSK_readsolution(void *,int,const char *);
+// extern int MSK_readsolutionfile(void *,const char *);
+// extern int MSK_readsummary(void *,int);
+// extern int MSK_readtask(void *,const char *);
+// extern int MSK_removebarvars(void *,int32_t *,int32_t *);
+// extern int MSK_removecones(void *,int32_t *,int32_t *);
+// extern int MSK_removecons(void *,int32_t *,int32_t *);
+// extern int MSK_removevars(void *,int32_t *,int32_t *);
+// extern int MSK_resizetask(void *,int32_t,int32_t,int32_t,int64_t,int64_t);
+// extern int MSK_sensitivityreport(void *,int);
+// extern int MSK_setdefaults(void *);
+// extern int MSK_sktostr(void *,int,char *);
+// extern int MSK_solstatostr(void *,int,char *);
+// extern int MSK_solutiondef(void *,int,int *);
+// extern int MSK_solutionsummary(void *,int);
+// extern int MSK_solvewithbasis(void *,int,int32_t,int32_t *,double *,int32_t *);
+// extern int MSK_strtoconetype(void *,const char *,int *);
+// extern int MSK_strtosk(void *,const char *,int *);
+// extern int MSK_toconic(void *);
+// extern int MSK_updatesolutioninfo(void *,int);
+// extern int MSK_writebsolution(void *,const char *,int);
+// extern int MSK_writedata(void *,const char *);
+// extern int MSK_writejsonsol(void *,const char *);
+// extern int MSK_writeparamfile(void *,const char *);
+// extern int MSK_writesolution(void *,int,const char *);
+// extern int MSK_writesolutionfile(void *,const char *);
+// extern int MSK_writetask(void *,const char *);
+// extern int MSK_axpy(void *,int32_t,double,double *,double *);
+// extern int MSK_checkinall(void *);
+// extern int MSK_checkinlicense(void *,int);
+// extern int MSK_checkoutlicense(void *,int);
+// extern int MSK_dot(void *,int32_t,double *,double *,double *);
+// extern int MSK_echointro(void *,int32_t);
+// extern int MSK_expirylicenses(void *,int64_t *);
+// extern int MSK_gemm(void *,int,int,int32_t,int32_t,int32_t,double,double *,double *,double,double *);
+// extern int MSK_gemv(void *,int,int32_t,int32_t,double,double *,double *,double,double *);
+// extern int MSK_getcodedesc(int,char *,char *);
+// extern int MSK_getversion(int32_t *,int32_t *,int32_t *);
+// extern int MSK_licensecleanup();
+// extern int MSK_linkfiletoenvstream(void *,int,const char *,int32_t);
+// extern int MSK_potrf(void *,int,int32_t,double *);
+// extern int MSK_putlicensecode(void *,int32_t *);
+// extern int MSK_putlicensedebug(void *,int32_t);
+// extern int MSK_putlicensepath(void *,const char *);
+// extern int MSK_putlicensewait(void *,int32_t);
+// extern int MSK_resetexpirylicenses(void *);
+// extern int MSK_syeig(void *,int,int32_t,double *,double *);
+// extern int MSK_syevd(void *,int,int32_t,double *,double *);
+// extern int MSK_syrk(void *,int,int,int32_t,int32_t,double,double *,double,double *);
 import "C"
 
 import (
@@ -1652,7 +2081,6 @@ const (
 )
 
 
-
 type MosekError struct {
     code Rescode
     msg string
@@ -1889,7 +2317,7 @@ func (self *Task) AppendAcc(domidx int64,afeidxlist []int64,b []float64) (err er
   var _tmp4 *int64
   if afeidxlist != nil { _tmp4 = (*int64)(&afeidxlist[0]) }
   var _tmp5 *float64
-  if len(b) < numafeidx {
+  if int64(len(b)) < int64(numafeidx) {
     err = &ArrayLengthError{fun:"AppendAcc",arg:"b"}
     return
   }
@@ -1911,7 +2339,7 @@ func (self *Task) AppendAccs(domidxs []int64,afeidxlist []int64,b []float64) (er
   var _tmp10 *int64
   if afeidxlist != nil { _tmp10 = (*int64)(&afeidxlist[0]) }
   var _tmp11 *float64
-  if len(b) < numafeidx {
+  if int64(len(b)) < int64(numafeidx) {
     err = &ArrayLengthError{fun:"AppendAccs",arg:"b"}
     return
   }
@@ -1925,14 +2353,14 @@ func (self *Task) AppendAccs(domidxs []int64,afeidxlist []int64,b []float64) (er
 }
 func (self *Task) AppendAccSeq(domidx int64,afeidxfirst int64,b []float64) (err error) {
   var _tmp13 int64
-  if _tmp14 := C.MSK_getdomainn(task.nativep,domidx,addr(_tmp13)); _tmp14 != 0 {
+  if _tmp14 := C.MSK_getdomainn(self.ptr(),domidx,addr(_tmp13)); _tmp14 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp14)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
   var numafeidx int64 = int64(_tmp13)
   var _tmp15 *float64
-  if len(b) < numafeidx {
+  if int64(len(b)) < int64(numafeidx) {
     err = &ArrayLengthError{fun:"AppendAccSeq",arg:"b"}
     return
   }
@@ -1950,7 +2378,7 @@ func (self *Task) AppendAccsSeq(domidxs []int64,numafeidx int64,afeidxfirst int6
   var _tmp18 *int64
   if domidxs != nil { _tmp18 = (*int64)(&domidxs[0]) }
   var _tmp19 *float64
-  if len(b) < numafeidx {
+  if int64(len(b)) < int64(numafeidx) {
     err = &ArrayLengthError{fun:"AppendAccsSeq",arg:"b"}
     return
   }
@@ -2167,19 +2595,19 @@ func (self *Task) AppendSparseSymMatList(dims []int32,nz []int64,subi []int32,su
   var _tmp59 *int64
   if nz != nil { _tmp59 = (*int64)(&nz[0]) }
   var _tmp60 *int32
-  if len(subi) < nz.foldl(a+b) {
+  if int64(len(subi)) < int64(nz.foldl(a+b)) {
     err = &ArrayLengthError{fun:"AppendSparseSymMatList",arg:"subi"}
     return
   }
   if subi != nil { _tmp60 = (*int32)(&subi[0]) }
   var _tmp61 *int32
-  if len(subj) < nz.foldl(a+b) {
+  if int64(len(subj)) < int64(nz.foldl(a+b)) {
     err = &ArrayLengthError{fun:"AppendSparseSymMatList",arg:"subj"}
     return
   }
   if subj != nil { _tmp61 = (*int32)(&subj[0]) }
   var _tmp62 *float64
-  if len(valij) < nz.foldl(a+b) {
+  if int64(len(valij)) < int64(nz.foldl(a+b)) {
     err = &ArrayLengthError{fun:"AppendSparseSymMatList",arg:"valij"}
     return
   }
@@ -2346,7 +2774,7 @@ func (self *Task) EmptyAfeFRowList(afeidx []int64) (err error) {
 func (self *Task) EvaluateAcc(whichsol Soltype,accidx int64) (activity []float64,err error) {
   var _tmp95 *float64
   var _tmp93 int64
-  if _tmp94 := C.MSK_getaccn(task.nativep,accidx,addr(_tmp93)); _tmp94 != 0 {
+  if _tmp94 := C.MSK_getaccn(self.ptr(),accidx,addr(_tmp93)); _tmp94 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp94)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2363,7 +2791,7 @@ func (self *Task) EvaluateAcc(whichsol Soltype,accidx int64) (activity []float64
 func (self *Task) EvaluateAccs(whichsol Soltype) (activity []float64,err error) {
   var _tmp99 *float64
   var _tmp97 int64
-  if _tmp98 := C.MSK_getaccntot(task.nativep,addr(_tmp97)); _tmp98 != 0 {
+  if _tmp98 := C.MSK_getaccntot(self.ptr(),addr(_tmp97)); _tmp98 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp98)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2388,7 +2816,7 @@ func (self *Task) GenerateAccNames(sub []int64,fmt string,dims []int32,sp []int6
   var _tmp105 *int32
   if dims != nil { _tmp105 = (*int32)(&dims[0]) }
   var _tmp106 *int64
-  if len(sp) < num {
+  if int64(len(sp)) < int64(num) {
     err = &ArrayLengthError{fun:"GenerateAccNames",arg:"sp"}
     return
   }
@@ -2419,7 +2847,7 @@ func (self *Task) GenerateBarvarNames(subj []int32,fmt string,dims []int32,sp []
   var _tmp116 *int32
   if dims != nil { _tmp116 = (*int32)(&dims[0]) }
   var _tmp117 *int64
-  if len(sp) < num {
+  if int64(len(sp)) < int64(num) {
     err = &ArrayLengthError{fun:"GenerateBarvarNames",arg:"sp"}
     return
   }
@@ -2450,7 +2878,7 @@ func (self *Task) GenerateConeNames(subk []int32,fmt string,dims []int32,sp []in
   var _tmp127 *int32
   if dims != nil { _tmp127 = (*int32)(&dims[0]) }
   var _tmp128 *int64
-  if len(sp) < num {
+  if int64(len(sp)) < int64(num) {
     err = &ArrayLengthError{fun:"GenerateConeNames",arg:"sp"}
     return
   }
@@ -2481,7 +2909,7 @@ func (self *Task) GenerateConNames(subi []int32,fmt string,dims []int32,sp []int
   var _tmp138 *int32
   if dims != nil { _tmp138 = (*int32)(&dims[0]) }
   var _tmp139 *int64
-  if len(sp) < num {
+  if int64(len(sp)) < int64(num) {
     err = &ArrayLengthError{fun:"GenerateConNames",arg:"sp"}
     return
   }
@@ -2512,7 +2940,7 @@ func (self *Task) GenerateDjcNames(sub []int64,fmt string,dims []int32,sp []int6
   var _tmp149 *int32
   if dims != nil { _tmp149 = (*int32)(&dims[0]) }
   var _tmp150 *int64
-  if len(sp) < num {
+  if int64(len(sp)) < int64(num) {
     err = &ArrayLengthError{fun:"GenerateDjcNames",arg:"sp"}
     return
   }
@@ -2543,7 +2971,7 @@ func (self *Task) GenerateVarNames(subj []int32,fmt string,dims []int32,sp []int
   var _tmp160 *int32
   if dims != nil { _tmp160 = (*int32)(&dims[0]) }
   var _tmp161 *int64
-  if len(sp) < num {
+  if int64(len(sp)) < int64(num) {
     err = &ArrayLengthError{fun:"GenerateVarNames",arg:"sp"}
     return
   }
@@ -2566,7 +2994,7 @@ func (self *Task) GenerateVarNames(subj []int32,fmt string,dims []int32,sp []int
 func (self *Task) GetAccAfeIdxList(accidx int64) (afeidxlist []int64,err error) {
   var _tmp169 *int64
   var _tmp167 int64
-  if _tmp168 := C.MSK_getaccn(task.nativep,accidx,addr(_tmp167)); _tmp168 != 0 {
+  if _tmp168 := C.MSK_getaccn(self.ptr(),accidx,addr(_tmp167)); _tmp168 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp168)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2583,7 +3011,7 @@ func (self *Task) GetAccAfeIdxList(accidx int64) (afeidxlist []int64,err error) 
 func (self *Task) GetAccB(accidx int64) (b []float64,err error) {
   var _tmp173 *float64
   var _tmp171 int64
-  if _tmp172 := C.MSK_getaccn(task.nativep,accidx,addr(_tmp171)); _tmp172 != 0 {
+  if _tmp172 := C.MSK_getaccn(self.ptr(),accidx,addr(_tmp171)); _tmp172 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp172)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2599,7 +3027,7 @@ func (self *Task) GetAccB(accidx int64) (b []float64,err error) {
 }
 func (self *Task) GetAccBarfBlockTriplet() (numtrip int64,acc_afe []int64,bar_var []int32,blk_row []int32,blk_col []int32,blk_val []float64,err error) {
   var _tmp175 int64
-  if _tmp176 := C.MSK_getaccbarfnumblocktriplets(task.nativep,addr(_tmp175)); _tmp176 != 0 {
+  if _tmp176 := C.MSK_getaccbarfnumblocktriplets(self.ptr(),addr(_tmp175)); _tmp176 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp176)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2646,7 +3074,7 @@ func (self *Task) GetAccDomain(accidx int64) (domidx int64,err error) {
 func (self *Task) GetAccDotY(whichsol Soltype,accidx int64) (doty []float64,err error) {
   var _tmp187 *float64
   var _tmp185 int64
-  if _tmp186 := C.MSK_getaccn(task.nativep,accidx,addr(_tmp185)); _tmp186 != 0 {
+  if _tmp186 := C.MSK_getaccn(self.ptr(),accidx,addr(_tmp185)); _tmp186 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp186)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2663,7 +3091,7 @@ func (self *Task) GetAccDotY(whichsol Soltype,accidx int64) (doty []float64,err 
 func (self *Task) GetAccDotYS(whichsol Soltype) (doty []float64,err error) {
   var _tmp191 *float64
   var _tmp189 int64
-  if _tmp190 := C.MSK_getaccntot(task.nativep,addr(_tmp189)); _tmp190 != 0 {
+  if _tmp190 := C.MSK_getaccntot(self.ptr(),addr(_tmp189)); _tmp190 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp190)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2688,7 +3116,7 @@ func (self *Task) GetAccFNumnz() (accfnnz int64,err error) {
 func (self *Task) GetAccFTrip() (frow []int64,fcol []int32,fval []float64,err error) {
   var _tmp196 *int64
   var _tmp194 int64
-  if _tmp195 := C.MSK_getaccfnumnz(task.nativep,addr(_tmp194)); _tmp195 != 0 {
+  if _tmp195 := C.MSK_getaccfnumnz(self.ptr(),addr(_tmp194)); _tmp195 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp195)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2697,7 +3125,7 @@ func (self *Task) GetAccFTrip() (frow []int64,fcol []int32,fval []float64,err er
   if len(frow) > 0 { _tmp196 = (*int64)(&n[0]) }
   var _tmp199 *int32
   var _tmp197 int64
-  if _tmp198 := C.MSK_getaccfnumnz(task.nativep,addr(_tmp197)); _tmp198 != 0 {
+  if _tmp198 := C.MSK_getaccfnumnz(self.ptr(),addr(_tmp197)); _tmp198 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp198)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2706,7 +3134,7 @@ func (self *Task) GetAccFTrip() (frow []int64,fcol []int32,fval []float64,err er
   if len(fcol) > 0 { _tmp199 = (*int32)(&n[0]) }
   var _tmp202 *float64
   var _tmp200 int64
-  if _tmp201 := C.MSK_getaccfnumnz(task.nativep,addr(_tmp200)); _tmp201 != 0 {
+  if _tmp201 := C.MSK_getaccfnumnz(self.ptr(),addr(_tmp200)); _tmp201 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp201)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2723,7 +3151,7 @@ func (self *Task) GetAccFTrip() (frow []int64,fcol []int32,fval []float64,err er
 func (self *Task) GetAccGVector() (g []float64,err error) {
   var _tmp206 *float64
   var _tmp204 int64
-  if _tmp205 := C.MSK_getaccntot(task.nativep,addr(_tmp204)); _tmp205 != 0 {
+  if _tmp205 := C.MSK_getaccntot(self.ptr(),addr(_tmp204)); _tmp205 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp205)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2747,7 +3175,7 @@ func (self *Task) GetAccN(accidx int64) (n int64,err error) {
 }
 func (self *Task) GetAccName(accidx int64) (name string,err error) {
   var _tmp209 int32
-  if _tmp210 := C.MSK_getaccnamelen(task.nativep,accidx,addr(_tmp209)); _tmp210 != 0 {
+  if _tmp210 := C.MSK_getaccnamelen(self.ptr(),accidx,addr(_tmp209)); _tmp210 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp210)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2786,7 +3214,7 @@ func (self *Task) GetAccNTot() (n int64,err error) {
 func (self *Task) GetAccs() (domidxlist []int64,afeidxlist []int64,b []float64,err error) {
   var _tmp217 *int64
   var _tmp215 int64
-  if _tmp216 := C.MSK_getnumacc(task.nativep,addr(_tmp215)); _tmp216 != 0 {
+  if _tmp216 := C.MSK_getnumacc(self.ptr(),addr(_tmp215)); _tmp216 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp216)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2795,7 +3223,7 @@ func (self *Task) GetAccs() (domidxlist []int64,afeidxlist []int64,b []float64,e
   if len(domidxlist) > 0 { _tmp217 = (*int64)(&n[0]) }
   var _tmp220 *int64
   var _tmp218 int64
-  if _tmp219 := C.MSK_getaccntot(task.nativep,addr(_tmp218)); _tmp219 != 0 {
+  if _tmp219 := C.MSK_getaccntot(self.ptr(),addr(_tmp218)); _tmp219 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp219)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2804,7 +3232,7 @@ func (self *Task) GetAccs() (domidxlist []int64,afeidxlist []int64,b []float64,e
   if len(afeidxlist) > 0 { _tmp220 = (*int64)(&n[0]) }
   var _tmp223 *float64
   var _tmp221 int64
-  if _tmp222 := C.MSK_getaccntot(task.nativep,addr(_tmp221)); _tmp222 != 0 {
+  if _tmp222 := C.MSK_getaccntot(self.ptr(),addr(_tmp221)); _tmp222 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp222)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2821,7 +3249,7 @@ func (self *Task) GetAccs() (domidxlist []int64,afeidxlist []int64,b []float64,e
 func (self *Task) GetACol(j int32) (nzj int32,subj []int32,valj []float64,err error) {
   var _tmp227 *int32
   var _tmp225 int32
-  if _tmp226 := C.MSK_getacolnumnz(task.nativep,j,addr(_tmp225)); _tmp226 != 0 {
+  if _tmp226 := C.MSK_getacolnumnz(self.ptr(),j,addr(_tmp225)); _tmp226 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp226)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2830,7 +3258,7 @@ func (self *Task) GetACol(j int32) (nzj int32,subj []int32,valj []float64,err er
   if len(subj) > 0 { _tmp227 = (*int32)(&n[0]) }
   var _tmp230 *float64
   var _tmp228 int32
-  if _tmp229 := C.MSK_getacolnumnz(task.nativep,j,addr(_tmp228)); _tmp229 != 0 {
+  if _tmp229 := C.MSK_getacolnumnz(self.ptr(),j,addr(_tmp228)); _tmp229 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp229)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2854,7 +3282,7 @@ func (self *Task) GetAColNumNz(i int32) (nzj int32,err error) {
 }
 func (self *Task) GetAColSlice(first int32,last int32) (ptrb []int64,ptre []int64,sub []int32,val []float64,err error) {
   var _tmp233 int64
-  if _tmp234 := C.MSK_getacolslicenumnz64(task.nativep,first,last,addr(_tmp233)); _tmp234 != 0 {
+  if _tmp234 := C.MSK_getacolslicenumnz64(self.ptr(),first,last,addr(_tmp233)); _tmp234 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp234)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2889,7 +3317,7 @@ func (self *Task) GetAColSliceNumNz(first int32,last int32) (numnz int64,err err
 }
 func (self *Task) GetAColSliceTrip(first int32,last int32) (subi []int32,subj []int32,val []float64,err error) {
   var _tmp241 int64
-  if _tmp242 := C.MSK_getacolslicenumnz64(task.nativep,first,last,addr(_tmp241)); _tmp242 != 0 {
+  if _tmp242 := C.MSK_getacolslicenumnz64(self.ptr(),first,last,addr(_tmp241)); _tmp242 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp242)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2913,7 +3341,7 @@ func (self *Task) GetAColSliceTrip(first int32,last int32) (subi []int32,subj []
 }
 func (self *Task) GetAfeBarfBlockTriplet() (numtrip int64,afeidx []int64,barvaridx []int32,subk []int32,subl []int32,valkl []float64,err error) {
   var _tmp247 int64
-  if _tmp248 := C.MSK_getafebarfnumblocktriplets(task.nativep,addr(_tmp247)); _tmp248 != 0 {
+  if _tmp248 := C.MSK_getafebarfnumblocktriplets(self.ptr(),addr(_tmp247)); _tmp248 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp248)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2961,7 +3389,7 @@ func (self *Task) GetAfeBarfRow(afeidx int64) (barvaridx []int32,ptrterm []int64
   var _tmp260 *int32
   var _tmp257 int32
   var _tmp258 int64
-  if _tmp259 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmp257),addr(_tmp258)); _tmp259 != 0 {
+  if _tmp259 := C.MSK_getafebarfrowinfo(self.ptr(),afeidx,addr(_tmp257),addr(_tmp258)); _tmp259 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp259)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2971,7 +3399,7 @@ func (self *Task) GetAfeBarfRow(afeidx int64) (barvaridx []int32,ptrterm []int64
   var _tmp264 *int64
   var _tmp261 int32
   var _tmp262 int64
-  if _tmp263 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmp261),addr(_tmp262)); _tmp263 != 0 {
+  if _tmp263 := C.MSK_getafebarfrowinfo(self.ptr(),afeidx,addr(_tmp261),addr(_tmp262)); _tmp263 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp263)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2981,7 +3409,7 @@ func (self *Task) GetAfeBarfRow(afeidx int64) (barvaridx []int32,ptrterm []int64
   var _tmp268 *int64
   var _tmp265 int32
   var _tmp266 int64
-  if _tmp267 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmp265),addr(_tmp266)); _tmp267 != 0 {
+  if _tmp267 := C.MSK_getafebarfrowinfo(self.ptr(),afeidx,addr(_tmp265),addr(_tmp266)); _tmp267 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp267)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -2991,7 +3419,7 @@ func (self *Task) GetAfeBarfRow(afeidx int64) (barvaridx []int32,ptrterm []int64
   var _tmp272 *int64
   var _tmp269 int32
   var _tmp270 int64
-  if _tmp271 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmp269),addr(_tmp270)); _tmp271 != 0 {
+  if _tmp271 := C.MSK_getafebarfrowinfo(self.ptr(),afeidx,addr(_tmp269),addr(_tmp270)); _tmp271 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp271)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3001,7 +3429,7 @@ func (self *Task) GetAfeBarfRow(afeidx int64) (barvaridx []int32,ptrterm []int64
   var _tmp276 *float64
   var _tmp273 int32
   var _tmp274 int64
-  if _tmp275 := C.MSK_getafebarfrowinfo(task.nativep,afeidx,addr(_tmp273),addr(_tmp274)); _tmp275 != 0 {
+  if _tmp275 := C.MSK_getafebarfrowinfo(self.ptr(),afeidx,addr(_tmp273),addr(_tmp274)); _tmp275 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp275)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3034,7 +3462,7 @@ func (self *Task) GetAfeFNumNz() (numnz int64,err error) {
 func (self *Task) GetAfeFRow(afeidx int64) (numnz int32,varidx []int32,val []float64,err error) {
   var _tmp282 *int32
   var _tmp280 int32
-  if _tmp281 := C.MSK_getafefrownumnz(task.nativep,afeidx,addr(_tmp280)); _tmp281 != 0 {
+  if _tmp281 := C.MSK_getafefrownumnz(self.ptr(),afeidx,addr(_tmp280)); _tmp281 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp281)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3043,7 +3471,7 @@ func (self *Task) GetAfeFRow(afeidx int64) (numnz int32,varidx []int32,val []flo
   if len(varidx) > 0 { _tmp282 = (*int32)(&n[0]) }
   var _tmp285 *float64
   var _tmp283 int32
-  if _tmp284 := C.MSK_getafefrownumnz(task.nativep,afeidx,addr(_tmp283)); _tmp284 != 0 {
+  if _tmp284 := C.MSK_getafefrownumnz(self.ptr(),afeidx,addr(_tmp283)); _tmp284 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp284)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3068,7 +3496,7 @@ func (self *Task) GetAfeFRowNumNz(afeidx int64) (numnz int32,err error) {
 func (self *Task) GetAfeFTrip() (afeidx []int64,varidx []int32,val []float64,err error) {
   var _tmp290 *int64
   var _tmp288 int64
-  if _tmp289 := C.MSK_getafefnumnz(task.nativep,addr(_tmp288)); _tmp289 != 0 {
+  if _tmp289 := C.MSK_getafefnumnz(self.ptr(),addr(_tmp288)); _tmp289 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp289)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3077,7 +3505,7 @@ func (self *Task) GetAfeFTrip() (afeidx []int64,varidx []int32,val []float64,err
   if len(afeidx) > 0 { _tmp290 = (*int64)(&n[0]) }
   var _tmp293 *int32
   var _tmp291 int64
-  if _tmp292 := C.MSK_getafefnumnz(task.nativep,addr(_tmp291)); _tmp292 != 0 {
+  if _tmp292 := C.MSK_getafefnumnz(self.ptr(),addr(_tmp291)); _tmp292 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp292)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3086,7 +3514,7 @@ func (self *Task) GetAfeFTrip() (afeidx []int64,varidx []int32,val []float64,err
   if len(varidx) > 0 { _tmp293 = (*int32)(&n[0]) }
   var _tmp296 *float64
   var _tmp294 int64
-  if _tmp295 := C.MSK_getafefnumnz(task.nativep,addr(_tmp294)); _tmp295 != 0 {
+  if _tmp295 := C.MSK_getafefnumnz(self.ptr(),addr(_tmp294)); _tmp295 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp295)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3138,7 +3566,7 @@ func (self *Task) GetAPieceNumNz(firsti int32,lasti int32,firstj int32,lastj int
 func (self *Task) GetARow(i int32) (nzi int32,subi []int32,vali []float64,err error) {
   var _tmp305 *int32
   var _tmp303 int32
-  if _tmp304 := C.MSK_getarownumnz(task.nativep,i,addr(_tmp303)); _tmp304 != 0 {
+  if _tmp304 := C.MSK_getarownumnz(self.ptr(),i,addr(_tmp303)); _tmp304 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp304)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3147,7 +3575,7 @@ func (self *Task) GetARow(i int32) (nzi int32,subi []int32,vali []float64,err er
   if len(subi) > 0 { _tmp305 = (*int32)(&n[0]) }
   var _tmp308 *float64
   var _tmp306 int32
-  if _tmp307 := C.MSK_getarownumnz(task.nativep,i,addr(_tmp306)); _tmp307 != 0 {
+  if _tmp307 := C.MSK_getarownumnz(self.ptr(),i,addr(_tmp306)); _tmp307 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp307)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3171,7 +3599,7 @@ func (self *Task) GetARowNumNz(i int32) (nzi int32,err error) {
 }
 func (self *Task) GetARowSlice(first int32,last int32) (ptrb []int64,ptre []int64,sub []int32,val []float64,err error) {
   var _tmp311 int64
-  if _tmp312 := C.MSK_getarowslicenumnz64(task.nativep,first,last,addr(_tmp311)); _tmp312 != 0 {
+  if _tmp312 := C.MSK_getarowslicenumnz64(self.ptr(),first,last,addr(_tmp311)); _tmp312 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp312)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3206,7 +3634,7 @@ func (self *Task) GetARowSliceNumNz(first int32,last int32) (numnz int64,err err
 }
 func (self *Task) GetARowSliceTrip(first int32,last int32) (subi []int32,subj []int32,val []float64,err error) {
   var _tmp319 int64
-  if _tmp320 := C.MSK_getarowslicenumnz64(task.nativep,first,last,addr(_tmp319)); _tmp320 != 0 {
+  if _tmp320 := C.MSK_getarowslicenumnz64(self.ptr(),first,last,addr(_tmp319)); _tmp320 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp320)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3230,7 +3658,7 @@ func (self *Task) GetARowSliceTrip(first int32,last int32) (subi []int32,subj []
 }
 func (self *Task) GetATrip() (subi []int32,subj []int32,val []float64,err error) {
   var _tmp325 int64
-  if _tmp326 := C.MSK_getnumanz64(task.nativep,addr(_tmp325)); _tmp326 != 0 {
+  if _tmp326 := C.MSK_getnumanz64(self.ptr(),addr(_tmp325)); _tmp326 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp326)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3265,7 +3693,7 @@ func (self *Task) GetATruncateTol() (tolzero []float64,err error) {
 }
 func (self *Task) GetBaraBlockTriplet() (num int64,subi []int32,subj []int32,subk []int32,subl []int32,valijkl []float64,err error) {
   var _tmp333 int64
-  if _tmp334 := C.MSK_getnumbarablocktriplets(task.nativep,addr(_tmp333)); _tmp334 != 0 {
+  if _tmp334 := C.MSK_getnumbarablocktriplets(self.ptr(),addr(_tmp333)); _tmp334 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp334)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3295,7 +3723,7 @@ func (self *Task) GetBaraBlockTriplet() (num int64,subi []int32,subj []int32,sub
 }
 func (self *Task) GetBaraIdx(idx int64) (i int32,j int32,num int64,sub []int64,weights []float64,err error) {
   var _tmp341 int64
-  if _tmp342 := C.MSK_getbaraidxinfo(task.nativep,idx,addr(_tmp341)); _tmp342 != 0 {
+  if _tmp342 := C.MSK_getbaraidxinfo(self.ptr(),idx,addr(_tmp341)); _tmp342 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp342)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3332,7 +3760,7 @@ func (self *Task) GetBaraIdxInfo(idx int64) (num int64,err error) {
 }
 func (self *Task) GetBaraSparsity() (numnz int64,idxij []int64,err error) {
   var _tmp348 int64
-  if _tmp349 := C.MSK_getnumbaranz(task.nativep,addr(_tmp348)); _tmp349 != 0 {
+  if _tmp349 := C.MSK_getnumbaranz(self.ptr(),addr(_tmp348)); _tmp349 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp349)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3350,7 +3778,7 @@ func (self *Task) GetBaraSparsity() (numnz int64,idxij []int64,err error) {
 }
 func (self *Task) GetBarcBlockTriplet() (num int64,subj []int32,subk []int32,subl []int32,valjkl []float64,err error) {
   var _tmp352 int64
-  if _tmp353 := C.MSK_getnumbarcblocktriplets(task.nativep,addr(_tmp352)); _tmp353 != 0 {
+  if _tmp353 := C.MSK_getnumbarcblocktriplets(self.ptr(),addr(_tmp352)); _tmp353 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp353)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3377,7 +3805,7 @@ func (self *Task) GetBarcBlockTriplet() (num int64,subj []int32,subk []int32,sub
 }
 func (self *Task) GetBarcIdx(idx int64) (j int32,num int64,sub []int64,weights []float64,err error) {
   var _tmp359 int64
-  if _tmp360 := C.MSK_getbarcidxinfo(task.nativep,idx,addr(_tmp359)); _tmp360 != 0 {
+  if _tmp360 := C.MSK_getbarcidxinfo(self.ptr(),idx,addr(_tmp359)); _tmp360 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp360)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3414,7 +3842,7 @@ func (self *Task) GetBarcIdxJ(idx int64) (j int32,err error) {
 }
 func (self *Task) GetBarcSparsity() (numnz int64,idxj []int64,err error) {
   var _tmp366 int64
-  if _tmp367 := C.MSK_getnumbarcnz(task.nativep,addr(_tmp366)); _tmp367 != 0 {
+  if _tmp367 := C.MSK_getnumbarcnz(self.ptr(),addr(_tmp366)); _tmp367 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp367)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3433,7 +3861,7 @@ func (self *Task) GetBarcSparsity() (numnz int64,idxj []int64,err error) {
 func (self *Task) GetBarsJ(whichsol Soltype,j int32) (barsj []float64,err error) {
   var _tmp372 *float64
   var _tmp370 int64
-  if _tmp371 := C.MSK_getlenbarvarj(task.nativep,j,addr(_tmp370)); _tmp371 != 0 {
+  if _tmp371 := C.MSK_getlenbarvarj(self.ptr(),j,addr(_tmp370)); _tmp371 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp371)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3460,7 +3888,7 @@ func (self *Task) GetBarsSlice(whichsol Soltype,first int32,last int32,slicesize
 }
 func (self *Task) GetBarvarName(i int32) (name string,err error) {
   var _tmp376 int32
-  if _tmp377 := C.MSK_getbarvarnamelen(task.nativep,i,addr(_tmp376)); _tmp377 != 0 {
+  if _tmp377 := C.MSK_getbarvarnamelen(self.ptr(),i,addr(_tmp376)); _tmp377 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp377)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3500,7 +3928,7 @@ func (self *Task) GetBarvarNameLen(i int32) (len int32,err error) {
 func (self *Task) GetBarxJ(whichsol Soltype,j int32) (barxj []float64,err error) {
   var _tmp385 *float64
   var _tmp383 int64
-  if _tmp384 := C.MSK_getlenbarvarj(task.nativep,j,addr(_tmp383)); _tmp384 != 0 {
+  if _tmp384 := C.MSK_getlenbarvarj(self.ptr(),j,addr(_tmp383)); _tmp384 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp384)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3528,7 +3956,7 @@ func (self *Task) GetBarxSlice(whichsol Soltype,first int32,last int32,slicesize
 func (self *Task) GetC() (c []float64,err error) {
   var _tmp391 *float64
   var _tmp389 int32
-  if _tmp390 := C.MSK_getnumvar(task.nativep,addr(_tmp389)); _tmp390 != 0 {
+  if _tmp390 := C.MSK_getnumvar(self.ptr(),addr(_tmp389)); _tmp390 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp390)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3606,7 +4034,7 @@ func (self *Task) GetCone(k int32) (ct Conetype,conepar float64,nummem int32,sub
   var _tmp406 conetype
   var _tmp407 float64
   var _tmp408 int32
-  if _tmp409 := C.MSK_getconeinfo(task.nativep,k,addr(_tmp406),addr(_tmp407),addr(_tmp408)); _tmp409 != 0 {
+  if _tmp409 := C.MSK_getconeinfo(self.ptr(),k,addr(_tmp406),addr(_tmp407),addr(_tmp408)); _tmp409 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp409)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3633,7 +4061,7 @@ func (self *Task) GetConeInfo(k int32) (ct Conetype,conepar float64,nummem int32
 }
 func (self *Task) GetConeName(i int32) (name string,err error) {
   var _tmp414 int32
-  if _tmp415 := C.MSK_getconenamelen(task.nativep,i,addr(_tmp414)); _tmp415 != 0 {
+  if _tmp415 := C.MSK_getconenamelen(self.ptr(),i,addr(_tmp414)); _tmp415 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp415)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3672,7 +4100,7 @@ func (self *Task) GetConeNameLen(i int32) (len int32,err error) {
 }
 func (self *Task) GetConName(i int32) (name string,err error) {
   var _tmp421 int32
-  if _tmp422 := C.MSK_getconnamelen(task.nativep,i,addr(_tmp421)); _tmp422 != 0 {
+  if _tmp422 := C.MSK_getconnamelen(self.ptr(),i,addr(_tmp421)); _tmp422 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp422)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3731,7 +4159,7 @@ func (self *Task) GetDimBarvarJ(j int32) (dimbarvarj int32,err error) {
 func (self *Task) GetDjcAfeIdxList(djcidx int64) (afeidxlist []int64,err error) {
   var _tmp433 *int64
   var _tmp431 int64
-  if _tmp432 := C.MSK_getdjcnumafe(task.nativep,djcidx,addr(_tmp431)); _tmp432 != 0 {
+  if _tmp432 := C.MSK_getdjcnumafe(self.ptr(),djcidx,addr(_tmp431)); _tmp432 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp432)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3748,7 +4176,7 @@ func (self *Task) GetDjcAfeIdxList(djcidx int64) (afeidxlist []int64,err error) 
 func (self *Task) GetDjcB(djcidx int64) (b []float64,err error) {
   var _tmp437 *float64
   var _tmp435 int64
-  if _tmp436 := C.MSK_getdjcnumafe(task.nativep,djcidx,addr(_tmp435)); _tmp436 != 0 {
+  if _tmp436 := C.MSK_getdjcnumafe(self.ptr(),djcidx,addr(_tmp435)); _tmp436 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp436)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3765,7 +4193,7 @@ func (self *Task) GetDjcB(djcidx int64) (b []float64,err error) {
 func (self *Task) GetDjcDomainIdxList(djcidx int64) (domidxlist []int64,err error) {
   var _tmp441 *int64
   var _tmp439 int64
-  if _tmp440 := C.MSK_getdjcnumdomain(task.nativep,djcidx,addr(_tmp439)); _tmp440 != 0 {
+  if _tmp440 := C.MSK_getdjcnumdomain(self.ptr(),djcidx,addr(_tmp439)); _tmp440 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp440)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3781,7 +4209,7 @@ func (self *Task) GetDjcDomainIdxList(djcidx int64) (domidxlist []int64,err erro
 }
 func (self *Task) GetDjcName(djcidx int64) (name string,err error) {
   var _tmp443 int32
-  if _tmp444 := C.MSK_getdjcnamelen(task.nativep,djcidx,addr(_tmp443)); _tmp444 != 0 {
+  if _tmp444 := C.MSK_getdjcnamelen(self.ptr(),djcidx,addr(_tmp443)); _tmp444 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp444)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3860,7 +4288,7 @@ func (self *Task) GetDjcNumTermTot() (numtermtot int64,err error) {
 func (self *Task) GetDjcs() (domidxlist []int64,afeidxlist []int64,b []float64,termsizelist []int64,numterms []int64,err error) {
   var _tmp456 *int64
   var _tmp454 int64
-  if _tmp455 := C.MSK_getdjcnumdomaintot(task.nativep,addr(_tmp454)); _tmp455 != 0 {
+  if _tmp455 := C.MSK_getdjcnumdomaintot(self.ptr(),addr(_tmp454)); _tmp455 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp455)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3869,7 +4297,7 @@ func (self *Task) GetDjcs() (domidxlist []int64,afeidxlist []int64,b []float64,t
   if len(domidxlist) > 0 { _tmp456 = (*int64)(&n[0]) }
   var _tmp459 *int64
   var _tmp457 int64
-  if _tmp458 := C.MSK_getdjcnumafetot(task.nativep,addr(_tmp457)); _tmp458 != 0 {
+  if _tmp458 := C.MSK_getdjcnumafetot(self.ptr(),addr(_tmp457)); _tmp458 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp458)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3878,7 +4306,7 @@ func (self *Task) GetDjcs() (domidxlist []int64,afeidxlist []int64,b []float64,t
   if len(afeidxlist) > 0 { _tmp459 = (*int64)(&n[0]) }
   var _tmp462 *float64
   var _tmp460 int64
-  if _tmp461 := C.MSK_getdjcnumafetot(task.nativep,addr(_tmp460)); _tmp461 != 0 {
+  if _tmp461 := C.MSK_getdjcnumafetot(self.ptr(),addr(_tmp460)); _tmp461 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp461)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3887,7 +4315,7 @@ func (self *Task) GetDjcs() (domidxlist []int64,afeidxlist []int64,b []float64,t
   if len(b) > 0 { _tmp462 = (*float64)(&n[0]) }
   var _tmp465 *int64
   var _tmp463 int64
-  if _tmp464 := C.MSK_getdjcnumtermtot(task.nativep,addr(_tmp463)); _tmp464 != 0 {
+  if _tmp464 := C.MSK_getdjcnumtermtot(self.ptr(),addr(_tmp463)); _tmp464 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp464)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3896,7 +4324,7 @@ func (self *Task) GetDjcs() (domidxlist []int64,afeidxlist []int64,b []float64,t
   if len(termsizelist) > 0 { _tmp465 = (*int64)(&n[0]) }
   var _tmp468 *int64
   var _tmp466 int64
-  if _tmp467 := C.MSK_getnumdjc(task.nativep,addr(_tmp466)); _tmp467 != 0 {
+  if _tmp467 := C.MSK_getnumdjc(self.ptr(),addr(_tmp466)); _tmp467 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp467)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3913,7 +4341,7 @@ func (self *Task) GetDjcs() (domidxlist []int64,afeidxlist []int64,b []float64,t
 func (self *Task) GetDjcTermSizeList(djcidx int64) (termsizelist []int64,err error) {
   var _tmp472 *int64
   var _tmp470 int64
-  if _tmp471 := C.MSK_getdjcnumterm(task.nativep,djcidx,addr(_tmp470)); _tmp471 != 0 {
+  if _tmp471 := C.MSK_getdjcnumterm(self.ptr(),djcidx,addr(_tmp470)); _tmp471 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp471)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -3937,7 +4365,7 @@ func (self *Task) GetDomainN(domidx int64) (n int64,err error) {
 }
 func (self *Task) GetDomainName(domidx int64) (name string,err error) {
   var _tmp475 int32
-  if _tmp476 := C.MSK_getdomainnamelen(task.nativep,domidx,addr(_tmp475)); _tmp476 != 0 {
+  if _tmp476 := C.MSK_getdomainnamelen(self.ptr(),domidx,addr(_tmp475)); _tmp476 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp476)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4367,7 +4795,7 @@ func (self *Task) GetNumVar() (numvar int32,err error) {
 }
 func (self *Task) GetObjName() (objname string,err error) {
   var _tmp543 int32
-  if _tmp544 := C.MSK_getobjnamelen(task.nativep,addr(_tmp543)); _tmp544 != 0 {
+  if _tmp544 := C.MSK_getobjnamelen(self.ptr(),addr(_tmp543)); _tmp544 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp544)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4432,7 +4860,7 @@ func (self *Task) GetPowerDomainAlpha(domidx int64) (alpha []float64,err error) 
   var _tmp556 *float64
   var _tmp553 int64
   var _tmp554 int64
-  if _tmp555 := C.MSK_getpowerdomaininfo(task.nativep,domidx,addr(_tmp553),addr(_tmp554)); _tmp555 != 0 {
+  if _tmp555 := C.MSK_getpowerdomaininfo(self.ptr(),domidx,addr(_tmp553),addr(_tmp554)); _tmp555 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp555)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4582,7 +5010,7 @@ func (self *Task) GetPviolVar(whichsol Soltype,sub []int32) (viol []float64,err 
 }
 func (self *Task) GetQConK(k int32) (numqcnz int64,qcsubi []int32,qcsubj []int32,qcval []float64,err error) {
   var _tmp589 int64
-  if _tmp590 := C.MSK_getnumqconknz64(task.nativep,k,addr(_tmp589)); _tmp590 != 0 {
+  if _tmp590 := C.MSK_getnumqconknz64(self.ptr(),k,addr(_tmp589)); _tmp590 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp590)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4590,7 +5018,7 @@ func (self *Task) GetQConK(k int32) (numqcnz int64,qcsubi []int32,qcsubj []int32
   var maxnumqcnz int64 = int64(_tmp589)
   var _tmp593 *int32
   var _tmp591 int64
-  if _tmp592 := C.MSK_getnumqconknz64(task.nativep,k,addr(_tmp591)); _tmp592 != 0 {
+  if _tmp592 := C.MSK_getnumqconknz64(self.ptr(),k,addr(_tmp591)); _tmp592 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp592)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4599,7 +5027,7 @@ func (self *Task) GetQConK(k int32) (numqcnz int64,qcsubi []int32,qcsubj []int32
   if len(qcsubi) > 0 { _tmp593 = (*int32)(&n[0]) }
   var _tmp596 *int32
   var _tmp594 int64
-  if _tmp595 := C.MSK_getnumqconknz64(task.nativep,k,addr(_tmp594)); _tmp595 != 0 {
+  if _tmp595 := C.MSK_getnumqconknz64(self.ptr(),k,addr(_tmp594)); _tmp595 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp595)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4608,7 +5036,7 @@ func (self *Task) GetQConK(k int32) (numqcnz int64,qcsubi []int32,qcsubj []int32
   if len(qcsubj) > 0 { _tmp596 = (*int32)(&n[0]) }
   var _tmp599 *float64
   var _tmp597 int64
-  if _tmp598 := C.MSK_getnumqconknz64(task.nativep,k,addr(_tmp597)); _tmp598 != 0 {
+  if _tmp598 := C.MSK_getnumqconknz64(self.ptr(),k,addr(_tmp597)); _tmp598 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp598)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4624,7 +5052,7 @@ func (self *Task) GetQConK(k int32) (numqcnz int64,qcsubi []int32,qcsubj []int32
 }
 func (self *Task) GetQObj() (numqonz int64,qosubi []int32,qosubj []int32,qoval []float64,err error) {
   var _tmp601 int64
-  if _tmp602 := C.MSK_getnumqobjnz64(task.nativep,addr(_tmp601)); _tmp602 != 0 {
+  if _tmp602 := C.MSK_getnumqobjnz64(self.ptr(),addr(_tmp601)); _tmp602 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp602)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4668,7 +5096,7 @@ func (self *Task) GetReducedCosts(whichsol Soltype,first int32,last int32) (redc
 func (self *Task) GetSkc(whichsol Soltype) (skc []Stakey,err error) {
   var _tmp612 *Stakey
   var _tmp610 int32
-  if _tmp611 := C.MSK_getnumcon(task.nativep,addr(_tmp610)); _tmp611 != 0 {
+  if _tmp611 := C.MSK_getnumcon(self.ptr(),addr(_tmp610)); _tmp611 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp611)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4696,7 +5124,7 @@ func (self *Task) GetSkcSlice(whichsol Soltype,first int32,last int32) (skc []St
 func (self *Task) GetSkn(whichsol Soltype) (skn []Stakey,err error) {
   var _tmp618 *Stakey
   var _tmp616 int32
-  if _tmp617 := C.MSK_getnumcone(task.nativep,addr(_tmp616)); _tmp617 != 0 {
+  if _tmp617 := C.MSK_getnumcone(self.ptr(),addr(_tmp616)); _tmp617 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp617)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4713,7 +5141,7 @@ func (self *Task) GetSkn(whichsol Soltype) (skn []Stakey,err error) {
 func (self *Task) GetSkx(whichsol Soltype) (skx []Stakey,err error) {
   var _tmp622 *Stakey
   var _tmp620 int32
-  if _tmp621 := C.MSK_getnumvar(task.nativep,addr(_tmp620)); _tmp621 != 0 {
+  if _tmp621 := C.MSK_getnumvar(self.ptr(),addr(_tmp620)); _tmp621 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp621)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4741,7 +5169,7 @@ func (self *Task) GetSkxSlice(whichsol Soltype,first int32,last int32) (skx []St
 func (self *Task) GetSlc(whichsol Soltype) (slc []float64,err error) {
   var _tmp628 *float64
   var _tmp626 int32
-  if _tmp627 := C.MSK_getnumcon(task.nativep,addr(_tmp626)); _tmp627 != 0 {
+  if _tmp627 := C.MSK_getnumcon(self.ptr(),addr(_tmp626)); _tmp627 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp627)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4769,7 +5197,7 @@ func (self *Task) GetSlcSlice(whichsol Soltype,first int32,last int32) (slc []fl
 func (self *Task) GetSlx(whichsol Soltype) (slx []float64,err error) {
   var _tmp634 *float64
   var _tmp632 int32
-  if _tmp633 := C.MSK_getnumvar(task.nativep,addr(_tmp632)); _tmp633 != 0 {
+  if _tmp633 := C.MSK_getnumvar(self.ptr(),addr(_tmp632)); _tmp633 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp633)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4797,7 +5225,7 @@ func (self *Task) GetSlxSlice(whichsol Soltype,first int32,last int32) (slx []fl
 func (self *Task) GetSnx(whichsol Soltype) (snx []float64,err error) {
   var _tmp640 *float64
   var _tmp638 int32
-  if _tmp639 := C.MSK_getnumvar(task.nativep,addr(_tmp638)); _tmp639 != 0 {
+  if _tmp639 := C.MSK_getnumvar(self.ptr(),addr(_tmp638)); _tmp639 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp639)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4837,7 +5265,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   var _tmp647 C.MSKsolstae
   var _tmp650 *Stakey
   var _tmp648 int32
-  if _tmp649 := C.MSK_getnumcon(task.nativep,addr(_tmp648)); _tmp649 != 0 {
+  if _tmp649 := C.MSK_getnumcon(self.ptr(),addr(_tmp648)); _tmp649 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp649)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4846,7 +5274,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(skc) > 0 { _tmp650 = (*Stakey)(&n[0]) }
   var _tmp653 *Stakey
   var _tmp651 int32
-  if _tmp652 := C.MSK_getnumvar(task.nativep,addr(_tmp651)); _tmp652 != 0 {
+  if _tmp652 := C.MSK_getnumvar(self.ptr(),addr(_tmp651)); _tmp652 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp652)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4855,7 +5283,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(skx) > 0 { _tmp653 = (*Stakey)(&n[0]) }
   var _tmp656 *Stakey
   var _tmp654 int32
-  if _tmp655 := C.MSK_getnumcone(task.nativep,addr(_tmp654)); _tmp655 != 0 {
+  if _tmp655 := C.MSK_getnumcone(self.ptr(),addr(_tmp654)); _tmp655 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp655)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4864,7 +5292,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(skn) > 0 { _tmp656 = (*Stakey)(&n[0]) }
   var _tmp659 *float64
   var _tmp657 int32
-  if _tmp658 := C.MSK_getnumcon(task.nativep,addr(_tmp657)); _tmp658 != 0 {
+  if _tmp658 := C.MSK_getnumcon(self.ptr(),addr(_tmp657)); _tmp658 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp658)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4873,7 +5301,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(xc) > 0 { _tmp659 = (*float64)(&n[0]) }
   var _tmp662 *float64
   var _tmp660 int32
-  if _tmp661 := C.MSK_getnumvar(task.nativep,addr(_tmp660)); _tmp661 != 0 {
+  if _tmp661 := C.MSK_getnumvar(self.ptr(),addr(_tmp660)); _tmp661 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp661)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4882,7 +5310,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(xx) > 0 { _tmp662 = (*float64)(&n[0]) }
   var _tmp665 *float64
   var _tmp663 int32
-  if _tmp664 := C.MSK_getnumcon(task.nativep,addr(_tmp663)); _tmp664 != 0 {
+  if _tmp664 := C.MSK_getnumcon(self.ptr(),addr(_tmp663)); _tmp664 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp664)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4891,7 +5319,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(y) > 0 { _tmp665 = (*float64)(&n[0]) }
   var _tmp668 *float64
   var _tmp666 int32
-  if _tmp667 := C.MSK_getnumcon(task.nativep,addr(_tmp666)); _tmp667 != 0 {
+  if _tmp667 := C.MSK_getnumcon(self.ptr(),addr(_tmp666)); _tmp667 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp667)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4900,7 +5328,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(slc) > 0 { _tmp668 = (*float64)(&n[0]) }
   var _tmp671 *float64
   var _tmp669 int32
-  if _tmp670 := C.MSK_getnumcon(task.nativep,addr(_tmp669)); _tmp670 != 0 {
+  if _tmp670 := C.MSK_getnumcon(self.ptr(),addr(_tmp669)); _tmp670 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp670)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4909,7 +5337,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(suc) > 0 { _tmp671 = (*float64)(&n[0]) }
   var _tmp674 *float64
   var _tmp672 int32
-  if _tmp673 := C.MSK_getnumvar(task.nativep,addr(_tmp672)); _tmp673 != 0 {
+  if _tmp673 := C.MSK_getnumvar(self.ptr(),addr(_tmp672)); _tmp673 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp673)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4918,7 +5346,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(slx) > 0 { _tmp674 = (*float64)(&n[0]) }
   var _tmp677 *float64
   var _tmp675 int32
-  if _tmp676 := C.MSK_getnumvar(task.nativep,addr(_tmp675)); _tmp676 != 0 {
+  if _tmp676 := C.MSK_getnumvar(self.ptr(),addr(_tmp675)); _tmp676 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp676)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4927,7 +5355,7 @@ func (self *Task) GetSolution(whichsol Soltype) (problemsta Prosta,solutionsta S
   if len(sux) > 0 { _tmp677 = (*float64)(&n[0]) }
   var _tmp680 *float64
   var _tmp678 int32
-  if _tmp679 := C.MSK_getnumvar(task.nativep,addr(_tmp678)); _tmp679 != 0 {
+  if _tmp679 := C.MSK_getnumvar(self.ptr(),addr(_tmp678)); _tmp679 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp679)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4964,7 +5392,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   var _tmp685 C.MSKsolstae
   var _tmp688 *Stakey
   var _tmp686 int32
-  if _tmp687 := C.MSK_getnumcon(task.nativep,addr(_tmp686)); _tmp687 != 0 {
+  if _tmp687 := C.MSK_getnumcon(self.ptr(),addr(_tmp686)); _tmp687 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp687)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4973,7 +5401,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(skc) > 0 { _tmp688 = (*Stakey)(&n[0]) }
   var _tmp691 *Stakey
   var _tmp689 int32
-  if _tmp690 := C.MSK_getnumvar(task.nativep,addr(_tmp689)); _tmp690 != 0 {
+  if _tmp690 := C.MSK_getnumvar(self.ptr(),addr(_tmp689)); _tmp690 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp690)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4982,7 +5410,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(skx) > 0 { _tmp691 = (*Stakey)(&n[0]) }
   var _tmp694 *Stakey
   var _tmp692 int32
-  if _tmp693 := C.MSK_getnumcone(task.nativep,addr(_tmp692)); _tmp693 != 0 {
+  if _tmp693 := C.MSK_getnumcone(self.ptr(),addr(_tmp692)); _tmp693 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp693)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -4991,7 +5419,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(skn) > 0 { _tmp694 = (*Stakey)(&n[0]) }
   var _tmp697 *float64
   var _tmp695 int32
-  if _tmp696 := C.MSK_getnumcon(task.nativep,addr(_tmp695)); _tmp696 != 0 {
+  if _tmp696 := C.MSK_getnumcon(self.ptr(),addr(_tmp695)); _tmp696 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp696)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5000,7 +5428,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(xc) > 0 { _tmp697 = (*float64)(&n[0]) }
   var _tmp700 *float64
   var _tmp698 int32
-  if _tmp699 := C.MSK_getnumvar(task.nativep,addr(_tmp698)); _tmp699 != 0 {
+  if _tmp699 := C.MSK_getnumvar(self.ptr(),addr(_tmp698)); _tmp699 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp699)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5009,7 +5437,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(xx) > 0 { _tmp700 = (*float64)(&n[0]) }
   var _tmp703 *float64
   var _tmp701 int32
-  if _tmp702 := C.MSK_getnumcon(task.nativep,addr(_tmp701)); _tmp702 != 0 {
+  if _tmp702 := C.MSK_getnumcon(self.ptr(),addr(_tmp701)); _tmp702 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp702)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5018,7 +5446,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(y) > 0 { _tmp703 = (*float64)(&n[0]) }
   var _tmp706 *float64
   var _tmp704 int32
-  if _tmp705 := C.MSK_getnumcon(task.nativep,addr(_tmp704)); _tmp705 != 0 {
+  if _tmp705 := C.MSK_getnumcon(self.ptr(),addr(_tmp704)); _tmp705 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp705)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5027,7 +5455,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(slc) > 0 { _tmp706 = (*float64)(&n[0]) }
   var _tmp709 *float64
   var _tmp707 int32
-  if _tmp708 := C.MSK_getnumcon(task.nativep,addr(_tmp707)); _tmp708 != 0 {
+  if _tmp708 := C.MSK_getnumcon(self.ptr(),addr(_tmp707)); _tmp708 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp708)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5036,7 +5464,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(suc) > 0 { _tmp709 = (*float64)(&n[0]) }
   var _tmp712 *float64
   var _tmp710 int32
-  if _tmp711 := C.MSK_getnumvar(task.nativep,addr(_tmp710)); _tmp711 != 0 {
+  if _tmp711 := C.MSK_getnumvar(self.ptr(),addr(_tmp710)); _tmp711 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp711)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5045,7 +5473,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(slx) > 0 { _tmp712 = (*float64)(&n[0]) }
   var _tmp715 *float64
   var _tmp713 int32
-  if _tmp714 := C.MSK_getnumvar(task.nativep,addr(_tmp713)); _tmp714 != 0 {
+  if _tmp714 := C.MSK_getnumvar(self.ptr(),addr(_tmp713)); _tmp714 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp714)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5054,7 +5482,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(sux) > 0 { _tmp715 = (*float64)(&n[0]) }
   var _tmp718 *float64
   var _tmp716 int32
-  if _tmp717 := C.MSK_getnumvar(task.nativep,addr(_tmp716)); _tmp717 != 0 {
+  if _tmp717 := C.MSK_getnumvar(self.ptr(),addr(_tmp716)); _tmp717 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp717)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5063,7 +5491,7 @@ func (self *Task) GetSolutionNew(whichsol Soltype) (problemsta Prosta,solutionst
   if len(snx) > 0 { _tmp718 = (*float64)(&n[0]) }
   var _tmp721 *float64
   var _tmp719 int64
-  if _tmp720 := C.MSK_getaccntot(task.nativep,addr(_tmp719)); _tmp720 != 0 {
+  if _tmp720 := C.MSK_getaccntot(self.ptr(),addr(_tmp719)); _tmp720 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp720)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5094,7 +5522,7 @@ func (self *Task) GetSparseSymMat(idx int64) (subi []int32,subj []int32,valij []
   var _tmp725 int32
   var _tmp726 int64
   var _tmp727 symmattype
-  if _tmp728 := C.MSK_getsymmatinfo(task.nativep,idx,addr(_tmp725),addr(_tmp726),addr(_tmp727)); _tmp728 != 0 {
+  if _tmp728 := C.MSK_getsymmatinfo(self.ptr(),idx,addr(_tmp725),addr(_tmp726),addr(_tmp727)); _tmp728 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp728)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5118,7 +5546,7 @@ func (self *Task) GetSparseSymMat(idx int64) (subi []int32,subj []int32,valij []
 }
 func (self *Task) GetStrParam(param Sparam) (len int32,parvalue string,err error) {
   var _tmp733 int32
-  if _tmp734 := C.MSK_getstrparamlen(task.nativep,param,addr(_tmp733)); _tmp734 != 0 {
+  if _tmp734 := C.MSK_getstrparamlen(self.ptr(),param,addr(_tmp733)); _tmp734 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp734)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5149,7 +5577,7 @@ func (self *Task) GetStrParamLen(param Sparam) (len int32,err error) {
 func (self *Task) GetSuc(whichsol Soltype) (suc []float64,err error) {
   var _tmp740 *float64
   var _tmp738 int32
-  if _tmp739 := C.MSK_getnumcon(task.nativep,addr(_tmp738)); _tmp739 != 0 {
+  if _tmp739 := C.MSK_getnumcon(self.ptr(),addr(_tmp738)); _tmp739 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp739)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5177,7 +5605,7 @@ func (self *Task) GetSucSlice(whichsol Soltype,first int32,last int32) (suc []fl
 func (self *Task) GetSux(whichsol Soltype) (sux []float64,err error) {
   var _tmp746 *float64
   var _tmp744 int32
-  if _tmp745 := C.MSK_getnumvar(task.nativep,addr(_tmp744)); _tmp745 != 0 {
+  if _tmp745 := C.MSK_getnumvar(self.ptr(),addr(_tmp744)); _tmp745 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp745)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5214,7 +5642,7 @@ func (self *Task) GetSymMatInfo(idx int64) (dim int32,nz int64,mattype Symmattyp
 }
 func (self *Task) GetTaskName() (taskname string,err error) {
   var _tmp752 int32
-  if _tmp753 := C.MSK_gettasknamelen(task.nativep,addr(_tmp752)); _tmp753 != 0 {
+  if _tmp753 := C.MSK_gettasknamelen(self.ptr(),addr(_tmp752)); _tmp753 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp753)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5271,7 +5699,7 @@ func (self *Task) GetVarBoundSlice(first int32,last int32) (bk []Boundkey,bl []f
 }
 func (self *Task) GetVarName(j int32) (name string,err error) {
   var _tmp763 int32
-  if _tmp764 := C.MSK_getvarnamelen(task.nativep,j,addr(_tmp763)); _tmp764 != 0 {
+  if _tmp764 := C.MSK_getvarnamelen(self.ptr(),j,addr(_tmp763)); _tmp764 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp764)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5336,7 +5764,7 @@ func (self *Task) GetVarTypeList(subj []int32) (vartype []Variabletype,err error
 func (self *Task) GetXc(whichsol Soltype) (xc []float64,err error) {
   var _tmp778 *float64
   var _tmp776 int32
-  if _tmp777 := C.MSK_getnumcon(task.nativep,addr(_tmp776)); _tmp777 != 0 {
+  if _tmp777 := C.MSK_getnumcon(self.ptr(),addr(_tmp776)); _tmp777 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp777)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5364,7 +5792,7 @@ func (self *Task) GetXcSlice(whichsol Soltype,first int32,last int32) (xc []floa
 func (self *Task) GetXx(whichsol Soltype) (xx []float64,err error) {
   var _tmp784 *float64
   var _tmp782 int32
-  if _tmp783 := C.MSK_getnumvar(task.nativep,addr(_tmp782)); _tmp783 != 0 {
+  if _tmp783 := C.MSK_getnumvar(self.ptr(),addr(_tmp782)); _tmp783 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp783)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5392,7 +5820,7 @@ func (self *Task) GetXxSlice(whichsol Soltype,first int32,last int32) (xx []floa
 func (self *Task) GetY(whichsol Soltype) (y []float64,err error) {
   var _tmp790 *float64
   var _tmp788 int32
-  if _tmp789 := C.MSK_getnumcon(task.nativep,addr(_tmp788)); _tmp789 != 0 {
+  if _tmp789 := C.MSK_getnumcon(self.ptr(),addr(_tmp788)); _tmp789 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp789)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5428,7 +5856,7 @@ func (self *Task) InfeasibilityReport(whichstream Streamtype,whichsol Soltype) (
 func (self *Task) InitBasisSolve() (basis []int32,err error) {
   var _tmp797 *int32
   var _tmp795 int32
-  if _tmp796 := C.MSK_getnumcon(task.nativep,addr(_tmp795)); _tmp796 != 0 {
+  if _tmp796 := C.MSK_getnumcon(self.ptr(),addr(_tmp795)); _tmp796 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp796)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5554,48 +5982,48 @@ func (self *Task) Optimize() (trmcode Rescode,err error) {
 func (self *Task) PrimalRepair(wlc []float64,wuc []float64,wlx []float64,wux []float64) (err error) {
   var _tmp830 *float64
   var _tmp828 int32
-  if _tmp829 := C.MSK_getnumcon(task.nativep,addr(_tmp828)); _tmp829 != 0 {
+  if _tmp829 := C.MSK_getnumcon(self.ptr(),addr(_tmp828)); _tmp829 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp829)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(wlc) < _tmp828 {
+  if int64(len(wlc)) < int64(_tmp828) {
     err = &ArrayLengthError{fun:"PrimalRepair",arg:"wlc"}
     return
   }
   if wlc != nil { _tmp830 = (*float64)(&wlc[0]) }
   var _tmp833 *float64
   var _tmp831 int32
-  if _tmp832 := C.MSK_getnumcon(task.nativep,addr(_tmp831)); _tmp832 != 0 {
+  if _tmp832 := C.MSK_getnumcon(self.ptr(),addr(_tmp831)); _tmp832 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp832)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(wuc) < _tmp831 {
+  if int64(len(wuc)) < int64(_tmp831) {
     err = &ArrayLengthError{fun:"PrimalRepair",arg:"wuc"}
     return
   }
   if wuc != nil { _tmp833 = (*float64)(&wuc[0]) }
   var _tmp836 *float64
   var _tmp834 int32
-  if _tmp835 := C.MSK_getnumvar(task.nativep,addr(_tmp834)); _tmp835 != 0 {
+  if _tmp835 := C.MSK_getnumvar(self.ptr(),addr(_tmp834)); _tmp835 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp835)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(wlx) < _tmp834 {
+  if int64(len(wlx)) < int64(_tmp834) {
     err = &ArrayLengthError{fun:"PrimalRepair",arg:"wlx"}
     return
   }
   if wlx != nil { _tmp836 = (*float64)(&wlx[0]) }
   var _tmp839 *float64
   var _tmp837 int32
-  if _tmp838 := C.MSK_getnumvar(task.nativep,addr(_tmp837)); _tmp838 != 0 {
+  if _tmp838 := C.MSK_getnumvar(self.ptr(),addr(_tmp837)); _tmp838 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp838)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(wux) < _tmp837 {
+  if int64(len(wux)) < int64(_tmp837) {
     err = &ArrayLengthError{fun:"PrimalRepair",arg:"wux"}
     return
   }
@@ -5689,7 +6117,7 @@ func (self *Task) PutAcc(accidx int64,domidx int64,afeidxlist []int64,b []float6
   var _tmp861 *int64
   if afeidxlist != nil { _tmp861 = (*int64)(&afeidxlist[0]) }
   var _tmp862 *float64
-  if len(b) < numafeidx {
+  if int64(len(b)) < int64(numafeidx) {
     err = &ArrayLengthError{fun:"PutAcc",arg:"b"}
     return
   }
@@ -5724,7 +6152,7 @@ func (self *Task) PutAccBJ(accidx int64,j int64,bj float64) (err error) {
 func (self *Task) PutAccDotY(whichsol Soltype,accidx int64) (doty []float64,err error) {
   var _tmp870 *float64
   var _tmp868 int64
-  if _tmp869 := C.MSK_getaccn(task.nativep,accidx,addr(_tmp868)); _tmp869 != 0 {
+  if _tmp869 := C.MSK_getaccn(self.ptr(),accidx,addr(_tmp868)); _tmp869 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp869)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -5751,7 +6179,7 @@ func (self *Task) PutAccList(accidxs []int64,domidxs []int64,afeidxlist []int64,
   var _tmp876 *int64
   if afeidxlist != nil { _tmp876 = (*int64)(&afeidxlist[0]) }
   var _tmp877 *float64
-  if len(b) < numafeidx {
+  if int64(len(b)) < int64(numafeidx) {
     err = &ArrayLengthError{fun:"PutAccList",arg:"b"}
     return
   }
@@ -5833,31 +6261,31 @@ func (self *Task) PutAfeBarfBlockTriplet(afeidx []int64,barvaridx []int32,subk [
   if _tmp897 < afeidx { _tmp897 = lof["name"] }
   var numtrip int64 = int64(_tmp897)
   var _tmp898 *int64
-  if len(afeidx) < numtrip {
+  if int64(len(afeidx)) < int64(numtrip) {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"afeidx"}
     return
   }
   if afeidx != nil { _tmp898 = (*int64)(&afeidx[0]) }
   var _tmp899 *int32
-  if len(barvaridx) < numtrip {
+  if int64(len(barvaridx)) < int64(numtrip) {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"barvaridx"}
     return
   }
   if barvaridx != nil { _tmp899 = (*int32)(&barvaridx[0]) }
   var _tmp900 *int32
-  if len(subk) < numtrip {
+  if int64(len(subk)) < int64(numtrip) {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"subk"}
     return
   }
   if subk != nil { _tmp900 = (*int32)(&subk[0]) }
   var _tmp901 *int32
-  if len(subl) < numtrip {
+  if int64(len(subl)) < int64(numtrip) {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"subl"}
     return
   }
   if subl != nil { _tmp901 = (*int32)(&subl[0]) }
   var _tmp902 *float64
-  if len(valkl) < numtrip {
+  if int64(len(valkl)) < int64(numtrip) {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"valkl"}
     return
   }
@@ -6043,7 +6471,7 @@ func (self *Task) PutAfeGList(afeidx []int64,g []float64) (err error) {
 }
 func (self *Task) PutAfeGSlice(first int64,last int64,slice []float64) (err error) {
   var _tmp952 *float64
-  if len(slice) < (last - first) {
+  if int64(len(slice)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutAfeGSlice",arg:"slice"}
     return
   }
@@ -6120,13 +6548,13 @@ func (self *Task) PutARowList(sub []int32,ptrb []int64,ptre []int64,asub []int32
 }
 func (self *Task) PutARowSlice(first int32,last int32,ptrb []int64,ptre []int64,asub []int32,aval []float64) (err error) {
   var _tmp971 *int64
-  if len(ptrb) < (last - first) {
+  if int64(len(ptrb)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutARowSlice",arg:"ptrb"}
     return
   }
   if ptrb != nil { _tmp971 = (*int64)(&ptrb[0]) }
   var _tmp972 *int64
-  if len(ptre) < (last - first) {
+  if int64(len(ptre)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutARowSlice",arg:"ptre"}
     return
   }
@@ -6157,31 +6585,31 @@ func (self *Task) PutBaraBlockTriplet(subi []int32,subj []int32,subk []int32,sub
   if _tmp977 < subj { _tmp977 = lof["name"] }
   var num int64 = int64(_tmp977)
   var _tmp978 *int32
-  if len(subi) < num {
+  if int64(len(subi)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"subi"}
     return
   }
   if subi != nil { _tmp978 = (*int32)(&subi[0]) }
   var _tmp979 *int32
-  if len(subj) < num {
+  if int64(len(subj)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"subj"}
     return
   }
   if subj != nil { _tmp979 = (*int32)(&subj[0]) }
   var _tmp980 *int32
-  if len(subk) < num {
+  if int64(len(subk)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"subk"}
     return
   }
   if subk != nil { _tmp980 = (*int32)(&subk[0]) }
   var _tmp981 *int32
-  if len(subl) < num {
+  if int64(len(subl)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"subl"}
     return
   }
   if subl != nil { _tmp981 = (*int32)(&subl[0]) }
   var _tmp982 *float64
-  if len(valijkl) < num {
+  if int64(len(valijkl)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBaraBlockTriplet",arg:"valijkl"}
     return
   }
@@ -6247,19 +6675,19 @@ func (self *Task) PutBaraRowList(subi []int32,ptrb []int64,ptre []int64,subj []i
   var _tmp1000 *int32
   if subj != nil { _tmp1000 = (*int32)(&subj[0]) }
   var _tmp1001 *int64
-  if len(nummat) < cast[int32](subj.len) {
+  if int64(len(nummat)) < int64(cast[int32](subj.len)) {
     err = &ArrayLengthError{fun:"PutBaraRowList",arg:"nummat"}
     return
   }
   if nummat != nil { _tmp1001 = (*int64)(&nummat[0]) }
   var _tmp1002 *int64
-  if len(matidx) < nummat.foldl(a+b) {
+  if int64(len(matidx)) < int64(nummat.foldl(a+b)) {
     err = &ArrayLengthError{fun:"PutBaraRowList",arg:"matidx"}
     return
   }
   if matidx != nil { _tmp1002 = (*int64)(&matidx[0]) }
   var _tmp1003 *float64
-  if len(weights) < nummat.foldl(a+b) {
+  if int64(len(weights)) < int64(nummat.foldl(a+b)) {
     err = &ArrayLengthError{fun:"PutBaraRowList",arg:"weights"}
     return
   }
@@ -6278,25 +6706,25 @@ func (self *Task) PutBarcBlockTriplet(subj []int32,subk []int32,subl []int32,val
   if _tmp1005 < subj { _tmp1005 = lof["name"] }
   var num int64 = int64(_tmp1005)
   var _tmp1006 *int32
-  if len(subj) < num {
+  if int64(len(subj)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBarcBlockTriplet",arg:"subj"}
     return
   }
   if subj != nil { _tmp1006 = (*int32)(&subj[0]) }
   var _tmp1007 *int32
-  if len(subk) < num {
+  if int64(len(subk)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBarcBlockTriplet",arg:"subk"}
     return
   }
   if subk != nil { _tmp1007 = (*int32)(&subk[0]) }
   var _tmp1008 *int32
-  if len(subl) < num {
+  if int64(len(subl)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBarcBlockTriplet",arg:"subl"}
     return
   }
   if subl != nil { _tmp1008 = (*int32)(&subl[0]) }
   var _tmp1009 *float64
-  if len(valjkl) < num {
+  if int64(len(valjkl)) < int64(num) {
     err = &ArrayLengthError{fun:"PutBarcBlockTriplet",arg:"valjkl"}
     return
   }
@@ -6326,12 +6754,12 @@ func (self *Task) PutBarcJ(j int32,sub []int64,weights []float64) (err error) {
 func (self *Task) PutBarsJ(whichsol Soltype,j int32,barsj []float64) (err error) {
   var _tmp1017 *float64
   var _tmp1015 int64
-  if _tmp1016 := C.MSK_getlenbarvarj(task.nativep,j,addr(_tmp1015)); _tmp1016 != 0 {
+  if _tmp1016 := C.MSK_getlenbarvarj(self.ptr(),j,addr(_tmp1015)); _tmp1016 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1016)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(barsj) < _tmp1015 {
+  if int64(len(barsj)) < int64(_tmp1015) {
     err = &ArrayLengthError{fun:"PutBarsJ",arg:"barsj"}
     return
   }
@@ -6355,12 +6783,12 @@ func (self *Task) PutBarvarName(j int32,name string) (err error) {
 func (self *Task) PutBarxJ(whichsol Soltype,j int32,barxj []float64) (err error) {
   var _tmp1023 *float64
   var _tmp1021 int64
-  if _tmp1022 := C.MSK_getlenbarvarj(task.nativep,j,addr(_tmp1021)); _tmp1022 != 0 {
+  if _tmp1022 := C.MSK_getlenbarvarj(self.ptr(),j,addr(_tmp1021)); _tmp1022 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1022)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(barxj) < _tmp1021 {
+  if int64(len(barxj)) < int64(_tmp1021) {
     err = &ArrayLengthError{fun:"PutBarxJ",arg:"barxj"}
     return
   }
@@ -6446,19 +6874,19 @@ func (self *Task) PutConBoundListConst(sub []int32,bkc Boundkey,blc float64,buc 
 }
 func (self *Task) PutConBoundSlice(first int32,last int32,bkc []Boundkey,blc []float64,buc []float64) (err error) {
   var _tmp1041 *Boundkey
-  if len(bkc) < (last - first) {
+  if int64(len(bkc)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutConBoundSlice",arg:"bkc"}
     return
   }
   if bkc != nil { _tmp1041 = (*Boundkey)(&bkc[0]) }
   var _tmp1042 *float64
-  if len(blc) < (last - first) {
+  if int64(len(blc)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutConBoundSlice",arg:"blc"}
     return
   }
   if blc != nil { _tmp1042 = (*float64)(&blc[0]) }
   var _tmp1043 *float64
-  if len(buc) < (last - first) {
+  if int64(len(buc)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutConBoundSlice",arg:"buc"}
     return
   }
@@ -6518,7 +6946,7 @@ func (self *Task) PutConSolutionI(i int32,whichsol Soltype,sk Stakey,x float64,s
 }
 func (self *Task) PutCSlice(first int32,last int32,slice []float64) (err error) {
   var _tmp1054 *float64
-  if len(slice) < (last - first) {
+  if int64(len(slice)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutCSlice",arg:"slice"}
     return
   }
@@ -6540,7 +6968,7 @@ func (self *Task) PutDjc(djcidx int64,domidxlist []int64,afeidxlist []int64,b []
   var _tmp1059 *int64
   if afeidxlist != nil { _tmp1059 = (*int64)(&afeidxlist[0]) }
   var _tmp1060 *float64
-  if len(b) < numafeidx {
+  if int64(len(b)) < int64(numafeidx) {
     err = &ArrayLengthError{fun:"PutDjc",arg:"b"}
     return
   }
@@ -6575,7 +7003,7 @@ func (self *Task) PutDjcSlice(idxfirst int64,idxlast int64,domidxlist []int64,af
   var _tmp1069 *int64
   if afeidxlist != nil { _tmp1069 = (*int64)(&afeidxlist[0]) }
   var _tmp1070 *float64
-  if len(b) < numafeidx {
+  if int64(len(b)) < int64(numafeidx) {
     err = &ArrayLengthError{fun:"PutDjcSlice",arg:"b"}
     return
   }
@@ -6585,7 +7013,7 @@ func (self *Task) PutDjcSlice(idxfirst int64,idxlast int64,domidxlist []int64,af
   var _tmp1072 *int64
   if termsizelist != nil { _tmp1072 = (*int64)(&termsizelist[0]) }
   var _tmp1073 *int64
-  if len(termsindjc) < (idxlast - idxfirst) {
+  if int64(len(termsindjc)) < int64((idxlast - idxfirst)) {
     err = &ArrayLengthError{fun:"PutDjcSlice",arg:"termsindjc"}
     return
   }
@@ -6833,12 +7261,12 @@ func (self *Task) PutQObjIJ(i int32,j int32,qoij float64) (err error) {
 func (self *Task) PutSkc(whichsol Soltype,skc []Stakey) (err error) {
   var _tmp1123 *Stakey
   var _tmp1121 int32
-  if _tmp1122 := C.MSK_getnumcon(task.nativep,addr(_tmp1121)); _tmp1122 != 0 {
+  if _tmp1122 := C.MSK_getnumcon(self.ptr(),addr(_tmp1121)); _tmp1122 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1122)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(skc) < _tmp1121 {
+  if int64(len(skc)) < int64(_tmp1121) {
     err = &ArrayLengthError{fun:"PutSkc",arg:"skc"}
     return
   }
@@ -6852,7 +7280,7 @@ func (self *Task) PutSkc(whichsol Soltype,skc []Stakey) (err error) {
 }
 func (self *Task) PutSkcSlice(whichsol Soltype,first int32,last int32,skc []Stakey) (err error) {
   var _tmp1125 *Stakey
-  if len(skc) < (last - first) {
+  if int64(len(skc)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutSkcSlice",arg:"skc"}
     return
   }
@@ -6867,12 +7295,12 @@ func (self *Task) PutSkcSlice(whichsol Soltype,first int32,last int32,skc []Stak
 func (self *Task) PutSkx(whichsol Soltype,skx []Stakey) (err error) {
   var _tmp1129 *Stakey
   var _tmp1127 int32
-  if _tmp1128 := C.MSK_getnumvar(task.nativep,addr(_tmp1127)); _tmp1128 != 0 {
+  if _tmp1128 := C.MSK_getnumvar(self.ptr(),addr(_tmp1127)); _tmp1128 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1128)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(skx) < _tmp1127 {
+  if int64(len(skx)) < int64(_tmp1127) {
     err = &ArrayLengthError{fun:"PutSkx",arg:"skx"}
     return
   }
@@ -6886,7 +7314,7 @@ func (self *Task) PutSkx(whichsol Soltype,skx []Stakey) (err error) {
 }
 func (self *Task) PutSkxSlice(whichsol Soltype,first int32,last int32,skx []Stakey) (err error) {
   var _tmp1131 *Stakey
-  if len(skx) < (last - first) {
+  if int64(len(skx)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutSkxSlice",arg:"skx"}
     return
   }
@@ -6901,12 +7329,12 @@ func (self *Task) PutSkxSlice(whichsol Soltype,first int32,last int32,skx []Stak
 func (self *Task) PutSlc(whichsol Soltype,slc []float64) (err error) {
   var _tmp1135 *float64
   var _tmp1133 int32
-  if _tmp1134 := C.MSK_getnumcon(task.nativep,addr(_tmp1133)); _tmp1134 != 0 {
+  if _tmp1134 := C.MSK_getnumcon(self.ptr(),addr(_tmp1133)); _tmp1134 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1134)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(slc) < _tmp1133 {
+  if int64(len(slc)) < int64(_tmp1133) {
     err = &ArrayLengthError{fun:"PutSlc",arg:"slc"}
     return
   }
@@ -6920,7 +7348,7 @@ func (self *Task) PutSlc(whichsol Soltype,slc []float64) (err error) {
 }
 func (self *Task) PutSlcSlice(whichsol Soltype,first int32,last int32,slc []float64) (err error) {
   var _tmp1137 *float64
-  if len(slc) < (last - first) {
+  if int64(len(slc)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutSlcSlice",arg:"slc"}
     return
   }
@@ -6935,12 +7363,12 @@ func (self *Task) PutSlcSlice(whichsol Soltype,first int32,last int32,slc []floa
 func (self *Task) PutSlx(whichsol Soltype,slx []float64) (err error) {
   var _tmp1141 *float64
   var _tmp1139 int32
-  if _tmp1140 := C.MSK_getnumvar(task.nativep,addr(_tmp1139)); _tmp1140 != 0 {
+  if _tmp1140 := C.MSK_getnumvar(self.ptr(),addr(_tmp1139)); _tmp1140 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1140)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(slx) < _tmp1139 {
+  if int64(len(slx)) < int64(_tmp1139) {
     err = &ArrayLengthError{fun:"PutSlx",arg:"slx"}
     return
   }
@@ -6954,7 +7382,7 @@ func (self *Task) PutSlx(whichsol Soltype,slx []float64) (err error) {
 }
 func (self *Task) PutSlxSlice(whichsol Soltype,first int32,last int32,slx []float64) (err error) {
   var _tmp1143 *float64
-  if len(slx) < (last - first) {
+  if int64(len(slx)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutSlxSlice",arg:"slx"}
     return
   }
@@ -6969,12 +7397,12 @@ func (self *Task) PutSlxSlice(whichsol Soltype,first int32,last int32,slx []floa
 func (self *Task) PutSnx(whichsol Soltype,sux []float64) (err error) {
   var _tmp1147 *float64
   var _tmp1145 int32
-  if _tmp1146 := C.MSK_getnumvar(task.nativep,addr(_tmp1145)); _tmp1146 != 0 {
+  if _tmp1146 := C.MSK_getnumvar(self.ptr(),addr(_tmp1145)); _tmp1146 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1146)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(sux) < _tmp1145 {
+  if int64(len(sux)) < int64(_tmp1145) {
     err = &ArrayLengthError{fun:"PutSnx",arg:"sux"}
     return
   }
@@ -6988,7 +7416,7 @@ func (self *Task) PutSnx(whichsol Soltype,sux []float64) (err error) {
 }
 func (self *Task) PutSnxSlice(whichsol Soltype,first int32,last int32,snx []float64) (err error) {
   var _tmp1149 *float64
-  if len(snx) < (last - first) {
+  if int64(len(snx)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutSnxSlice",arg:"snx"}
     return
   }
@@ -7082,12 +7510,12 @@ func (self *Task) PutStrParam(param Sparam,parvalue string) (err error) {
 func (self *Task) PutSuc(whichsol Soltype,suc []float64) (err error) {
   var _tmp1181 *float64
   var _tmp1179 int32
-  if _tmp1180 := C.MSK_getnumcon(task.nativep,addr(_tmp1179)); _tmp1180 != 0 {
+  if _tmp1180 := C.MSK_getnumcon(self.ptr(),addr(_tmp1179)); _tmp1180 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1180)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(suc) < _tmp1179 {
+  if int64(len(suc)) < int64(_tmp1179) {
     err = &ArrayLengthError{fun:"PutSuc",arg:"suc"}
     return
   }
@@ -7101,7 +7529,7 @@ func (self *Task) PutSuc(whichsol Soltype,suc []float64) (err error) {
 }
 func (self *Task) PutSucSlice(whichsol Soltype,first int32,last int32,suc []float64) (err error) {
   var _tmp1183 *float64
-  if len(suc) < (last - first) {
+  if int64(len(suc)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutSucSlice",arg:"suc"}
     return
   }
@@ -7116,12 +7544,12 @@ func (self *Task) PutSucSlice(whichsol Soltype,first int32,last int32,suc []floa
 func (self *Task) PutSux(whichsol Soltype,sux []float64) (err error) {
   var _tmp1187 *float64
   var _tmp1185 int32
-  if _tmp1186 := C.MSK_getnumvar(task.nativep,addr(_tmp1185)); _tmp1186 != 0 {
+  if _tmp1186 := C.MSK_getnumvar(self.ptr(),addr(_tmp1185)); _tmp1186 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1186)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(sux) < _tmp1185 {
+  if int64(len(sux)) < int64(_tmp1185) {
     err = &ArrayLengthError{fun:"PutSux",arg:"sux"}
     return
   }
@@ -7135,7 +7563,7 @@ func (self *Task) PutSux(whichsol Soltype,sux []float64) (err error) {
 }
 func (self *Task) PutSuxSlice(whichsol Soltype,first int32,last int32,sux []float64) (err error) {
   var _tmp1189 *float64
-  if len(sux) < (last - first) {
+  if int64(len(sux)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutSuxSlice",arg:"sux"}
     return
   }
@@ -7199,19 +7627,19 @@ func (self *Task) PutVarBoundListConst(sub []int32,bkx Boundkey,blx float64,bux 
 }
 func (self *Task) PutVarBoundSlice(first int32,last int32,bkx []Boundkey,blx []float64,bux []float64) (err error) {
   var _tmp1203 *Boundkey
-  if len(bkx) < (last - first) {
+  if int64(len(bkx)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutVarBoundSlice",arg:"bkx"}
     return
   }
   if bkx != nil { _tmp1203 = (*Boundkey)(&bkx[0]) }
   var _tmp1204 *float64
-  if len(blx) < (last - first) {
+  if int64(len(blx)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutVarBoundSlice",arg:"blx"}
     return
   }
   if blx != nil { _tmp1204 = (*float64)(&blx[0]) }
   var _tmp1205 *float64
-  if len(bux) < (last - first) {
+  if int64(len(bux)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutVarBoundSlice",arg:"bux"}
     return
   }
@@ -7274,7 +7702,7 @@ func (self *Task) PutVarTypeList(subj []int32,vartype []Variabletype) (err error
 func (self *Task) PutXc(whichsol Soltype) (xc []float64,err error) {
   var _tmp1218 *float64
   var _tmp1216 int32
-  if _tmp1217 := C.MSK_getnumcon(task.nativep,addr(_tmp1216)); _tmp1217 != 0 {
+  if _tmp1217 := C.MSK_getnumcon(self.ptr(),addr(_tmp1216)); _tmp1217 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1217)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
@@ -7290,7 +7718,7 @@ func (self *Task) PutXc(whichsol Soltype) (xc []float64,err error) {
 }
 func (self *Task) PutXcSlice(whichsol Soltype,first int32,last int32,xc []float64) (err error) {
   var _tmp1220 *float64
-  if len(xc) < (last - first) {
+  if int64(len(xc)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutXcSlice",arg:"xc"}
     return
   }
@@ -7305,12 +7733,12 @@ func (self *Task) PutXcSlice(whichsol Soltype,first int32,last int32,xc []float6
 func (self *Task) PutXx(whichsol Soltype,xx []float64) (err error) {
   var _tmp1224 *float64
   var _tmp1222 int32
-  if _tmp1223 := C.MSK_getnumvar(task.nativep,addr(_tmp1222)); _tmp1223 != 0 {
+  if _tmp1223 := C.MSK_getnumvar(self.ptr(),addr(_tmp1222)); _tmp1223 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1223)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(xx) < _tmp1222 {
+  if int64(len(xx)) < int64(_tmp1222) {
     err = &ArrayLengthError{fun:"PutXx",arg:"xx"}
     return
   }
@@ -7324,7 +7752,7 @@ func (self *Task) PutXx(whichsol Soltype,xx []float64) (err error) {
 }
 func (self *Task) PutXxSlice(whichsol Soltype,first int32,last int32,xx []float64) (err error) {
   var _tmp1226 *float64
-  if len(xx) < (last - first) {
+  if int64(len(xx)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutXxSlice",arg:"xx"}
     return
   }
@@ -7339,12 +7767,12 @@ func (self *Task) PutXxSlice(whichsol Soltype,first int32,last int32,xx []float6
 func (self *Task) PutY(whichsol Soltype,y []float64) (err error) {
   var _tmp1230 *float64
   var _tmp1228 int32
-  if _tmp1229 := C.MSK_getnumcon(task.nativep,addr(_tmp1228)); _tmp1229 != 0 {
+  if _tmp1229 := C.MSK_getnumcon(self.ptr(),addr(_tmp1228)); _tmp1229 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1229)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(y) < _tmp1228 {
+  if int64(len(y)) < int64(_tmp1228) {
     err = &ArrayLengthError{fun:"PutY",arg:"y"}
     return
   }
@@ -7358,7 +7786,7 @@ func (self *Task) PutY(whichsol Soltype,y []float64) (err error) {
 }
 func (self *Task) PutYSlice(whichsol Soltype,first int32,last int32,y []float64) (err error) {
   var _tmp1232 *float64
-  if len(y) < (last - first) {
+  if int64(len(y)) < int64((last - first)) {
     err = &ArrayLengthError{fun:"PutYSlice",arg:"y"}
     return
   }
@@ -7607,24 +8035,24 @@ func (self *Task) SolutionSummary(whichstream Streamtype) (err error) {
 func (self *Task) SolveWithBasis(transp bool,numnz int32,sub []int32,val []float64) (numnzout int32,err error) {
   var _tmp1282 *int32
   var _tmp1280 int32
-  if _tmp1281 := C.MSK_getnumcon(task.nativep,addr(_tmp1280)); _tmp1281 != 0 {
+  if _tmp1281 := C.MSK_getnumcon(self.ptr(),addr(_tmp1280)); _tmp1281 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1281)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(sub) < _tmp1280 {
+  if int64(len(sub)) < int64(_tmp1280) {
     err = &ArrayLengthError{fun:"SolveWithBasis",arg:"sub"}
     return
   }
   if sub != nil { _tmp1282 = (*int32)(&sub[0]) }
   var _tmp1285 *float64
   var _tmp1283 int32
-  if _tmp1284 := C.MSK_getnumcon(task.nativep,addr(_tmp1283)); _tmp1284 != 0 {
+  if _tmp1284 := C.MSK_getnumcon(self.ptr(),addr(_tmp1283)); _tmp1284 != 0 {
     lastcode,lastmsg = self.getlasterror(_tmp1284)
      err = MosekError{ code:lastcode,msg:lastmsg}
     return
   }
-  if len(val) < _tmp1283 {
+  if int64(len(val)) < int64(_tmp1283) {
     err = &ArrayLengthError{fun:"SolveWithBasis",arg:"val"}
     return
   }
@@ -7739,13 +8167,13 @@ func (self *Task) WriteTask(filename string) (err error) {
 }
 func (self *Env) Axpy(n int32,alpha float64,x []float64,y []float64) (err error) {
   var _tmp1310 *float64
-  if len(x) < n {
+  if int64(len(x)) < int64(n) {
     err = &ArrayLengthError{fun:"Axpy",arg:"x"}
     return
   }
   if x != nil { _tmp1310 = (*float64)(&x[0]) }
   var _tmp1311 *float64
-  if len(y) < n {
+  if int64(len(y)) < int64(n) {
     err = &ArrayLengthError{fun:"Axpy",arg:"y"}
     return
   }
@@ -7783,13 +8211,13 @@ func (self *Env) CheckOutLicense(feature Feature) (err error) {
 }
 func (self *Env) Dot(n int32,x []float64,y []float64) (xty float64,err error) {
   var _tmp1316 *float64
-  if len(x) < n {
+  if int64(len(x)) < int64(n) {
     err = &ArrayLengthError{fun:"Dot",arg:"x"}
     return
   }
   if x != nil { _tmp1316 = (*float64)(&x[0]) }
   var _tmp1317 *float64
-  if len(y) < n {
+  if int64(len(y)) < int64(n) {
     err = &ArrayLengthError{fun:"Dot",arg:"y"}
     return
   }
@@ -7819,19 +8247,19 @@ func (self *Env) Expirylicenses() (expiry int64,err error) {
 }
 func (self *Env) Gemm(transa Transpose,transb Transpose,m int32,n int32,k int32,alpha float64,a []float64,b []float64,beta float64,c []float64) (err error) {
   var _tmp1321 *float64
-  if len(a) < (m * k) {
+  if int64(len(a)) < int64((m * k)) {
     err = &ArrayLengthError{fun:"Gemm",arg:"a"}
     return
   }
   if a != nil { _tmp1321 = (*float64)(&a[0]) }
   var _tmp1322 *float64
-  if len(b) < (k * n) {
+  if int64(len(b)) < int64((k * n)) {
     err = &ArrayLengthError{fun:"Gemm",arg:"b"}
     return
   }
   if b != nil { _tmp1322 = (*float64)(&b[0]) }
   var _tmp1323 *float64
-  if len(c) < (m * n) {
+  if int64(len(c)) < int64((m * n)) {
     err = &ArrayLengthError{fun:"Gemm",arg:"c"}
     return
   }
@@ -7845,7 +8273,7 @@ func (self *Env) Gemm(transa Transpose,transb Transpose,m int32,n int32,k int32,
 }
 func (self *Env) Gemv(transa Transpose,m int32,n int32,alpha float64,a []float64,x []float64,beta float64,y []float64) (err error) {
   var _tmp1325 *float64
-  if len(a) < (n * m) {
+  if int64(len(a)) < int64((n * m)) {
     err = &ArrayLengthError{fun:"Gemv",arg:"a"}
     return
   }
@@ -7857,7 +8285,7 @@ func (self *Env) Gemv(transa Transpose,m int32,n int32,alpha float64,a []float64
   } else {
     _tmp1326 = m
   }
-  if len(x) < _tmp1326 {
+  if int64(len(x)) < int64(_tmp1326) {
     err = &ArrayLengthError{fun:"Gemv",arg:"x"}
     return
   }
@@ -7869,7 +8297,7 @@ func (self *Env) Gemv(transa Transpose,m int32,n int32,alpha float64,a []float64
   } else {
     _tmp1328 = n
   }
-  if len(y) < _tmp1328 {
+  if int64(len(y)) < int64(_tmp1328) {
     err = &ArrayLengthError{fun:"Gemv",arg:"y"}
     return
   }
@@ -7927,7 +8355,7 @@ func (self *Env) Linkfiletostream(whichstream Streamtype,filename string,append 
 }
 func (self *Env) Potrf(uplo Uplo,n int32,a []float64) (err error) {
   var _tmp1338 *float64
-  if len(a) < (n * n) {
+  if int64(len(a)) < int64((n * n)) {
     err = &ArrayLengthError{fun:"Potrf",arg:"a"}
     return
   }
@@ -7941,7 +8369,7 @@ func (self *Env) Potrf(uplo Uplo,n int32,a []float64) (err error) {
 }
 func (self *Env) PutLicenseCode(code []int32) (err error) {
   var _tmp1340 *int32
-  if len(code) < license_buffer_length {
+  if int64(len(code)) < int64(license_buffer_length) {
     err = &ArrayLengthError{fun:"PutLicenseCode",arg:"code"}
     return
   }
@@ -7988,7 +8416,7 @@ func (self *Env) ResetExpiryLicenses() (err error) {
 }
 func (self *Env) Syeig(uplo Uplo,n int32,a []float64) (w []float64,err error) {
   var _tmp1347 *float64
-  if len(a) < (n * n) {
+  if int64(len(a)) < int64((n * n)) {
     err = &ArrayLengthError{fun:"Syeig",arg:"a"}
     return
   }
@@ -8005,7 +8433,7 @@ func (self *Env) Syeig(uplo Uplo,n int32,a []float64) (w []float64,err error) {
 }
 func (self *Env) Syevd(uplo Uplo,n int32,a []float64) (w []float64,err error) {
   var _tmp1350 *float64
-  if len(a) < (n * n) {
+  if int64(len(a)) < int64((n * n)) {
     err = &ArrayLengthError{fun:"Syevd",arg:"a"}
     return
   }
@@ -8022,13 +8450,13 @@ func (self *Env) Syevd(uplo Uplo,n int32,a []float64) (w []float64,err error) {
 }
 func (self *Env) Syrk(uplo Uplo,trans Transpose,n int32,k int32,alpha float64,a []float64,beta float64,c []float64) (err error) {
   var _tmp1353 *float64
-  if len(a) < (n * k) {
+  if int64(len(a)) < int64((n * k)) {
     err = &ArrayLengthError{fun:"Syrk",arg:"a"}
     return
   }
   if a != nil { _tmp1353 = (*float64)(&a[0]) }
   var _tmp1354 *float64
-  if len(c) < (n * n) {
+  if int64(len(c)) < int64((n * n)) {
     err = &ArrayLengthError{fun:"Syrk",arg:"c"}
     return
   }
@@ -8040,5 +8468,4 @@ func (self *Env) Syrk(uplo Uplo,trans Transpose,n int32,k int32,alpha float64,a 
   }
   return
 }
-
 

@@ -122,7 +122,7 @@ class ComputeGen(ag.BaseComputeGenerator):
         for a in args:
             if   a in ['self','task']:
                 #n = self.__func.getReplaces()
-                callargs.append(f'{selfargs[0]["name"]}.nativep')
+                callargs.append(f'self.ptr()')
             elif isinstance(a,ag.DummyArg) or isinstance(a,ag.ReturnArg):
                 tmpvar = self.tmpvargen()
                 if isinstance(a.type, ag.agref):
@@ -170,13 +170,16 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_classarg(self,a,tp,atn,ctn,n,argbrief,argdesc):
         self['callarg'].append(f'self.ptr()')
         self.__selfarg = f'self *{objecttypemap[atn]}'
+        self['nativearg'].append('void *')
         self.__clsarg = a
         self.__clstp = atn
         #self['funarg'].append(f'{n} {objecttypemap[atn]}')
     def arg_ptr(self,a,basetp,atn,ctn,n,minlength,indexof,isdefaultoarg,argbrief,argdesc):
         if atn == 'enum':
+            self['nativearg'].append('int *')
             argtp = ctn.capitalize() 
         else:
+            self['nativearg'].append(f'{ctn} *')
             try:
                 argtp = atype2nimdecl(atn)
             except KeyError:
@@ -193,11 +196,16 @@ class FuncGen(ag.BaseFuncGenerator):
 
         if 'i' in a['mode']:
             if minlength:
-                self['prelude'].extend([f'if len({n}) < {minlength.value} {{',
+                self['prelude'].extend([f'if int64(len({n})) < int64({minlength.value}) {{',
                                         f'''  err = &ArrayLengthError{{fun:"{self.funapiname}",arg:"{n}"}}''',
                                         '  return',
                                         '}'])
-            self['prelude'].append(f'if {n} != nil {{ {tmp} = (*{argtp})(&{n}[0]) }}')
+            if ctn != 'string_t':
+                self['prelude'].append(f'if {n} != nil {{ {tmp} = (*{argtp})(&{n}[0]) }}')
+            else:
+                tmpl = self.tmpvargen()
+                self['prelude'].extend([f'{tmpl} := make('])
+
             self['funarg'].append(f'{n} []{argtp}')
 
             if indexof:
@@ -214,7 +222,11 @@ class FuncGen(ag.BaseFuncGenerator):
             self['prelude'].extend([f'{n} := make([]{argtp},{minlength.value})',
                                     f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&n[0]) }}'])
             self['retarg'].append((n,f'[]{argtp}'))
-        self['callarg'].append(tmp)
+
+        if ctn != 'string_t':
+            self['callarg'].append(tmp)
+        else:
+            
             
 #    def arg_surpof(self,a,basetp,atn,ctn,n,surpof,argbrief,argdesc):
 #        minlen = f'{surpof[0]["name"]}.len'
@@ -227,12 +239,14 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_ref(self,a,basetp,atn,ctn,n,indexof,isdefaultoarg,argbrief,argdesc):
         assert a['mode'] != 'io'
         if atn == 'enum':
+            self['nativearg'].append(f'int *')
             argtp = ctn.capitalize()
             tmp = self.tmpvargen()
             self['prelude'].append(f'var {tmp} C.MSK{ctn}e')
             self['callarg'].append(f'&{tmp}')
             self['postlude'].append(f'{n} = {argtp}({tmp})')
         else:
+            self['nativearg'].append(f'{ctn} *')
             argtp = atype2nimdecl(atn)
             self['callarg'].append(f'&{n}')
         self['retarg'].append((n,argtp))
@@ -243,11 +257,13 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_refptr(self,a,basetp,atn,ctn,n,lenarg,minlength,isdefaultoarg,argbrief,argdesc):
         raise ag.DontGenerate(self.funname,"Not supported: Ref to pointer")
     def arg_instring(self,a,tp,atn,ctn,n,argbrief,argdesc):
+        self['nativearg'].append(f'const char *')
         self['funarg'].append(f'{n} string')
         tmp = self.tmpvargen()
         self['prelude'].append(f'{tmp} := C.CString({n})')
         self['callarg'].append(tmp)
     def arg_outstring(self,a,tp,atn,ctn,n,minlength,isdefaultoarg,argbrief,argdesc):
+        self['nativearg'].append(f'char *')
         tmpvar1 = self.tmpvargen()
         self['prelude'].extend(minlength.code)
         self['prelude'].append(f'{tmpvar1} := make([]byte,{minlength.value})')
@@ -260,6 +276,7 @@ class FuncGen(ag.BaseFuncGenerator):
                                  '}'])
         self['retarg'].append((n,'string'))
     def arg_computed_value(self,a,tp,atn,ctn,n,lengthof,code,argbrief,argdesc):
+        self['nativearg'].append(f'{ctn} *')
         argtp = atype2nimdecl(atn)
         ctp = t2cmap[argtp]
         if lengthof:
@@ -285,9 +302,11 @@ class FuncGen(ag.BaseFuncGenerator):
         raise ag.DontGenerate(self.funname,"Not supported: Non-class-arg object arguments")
     def arg_value(self,a,tp,atn,ctn,n,argbrief,argdesc):
         if atn == 'enum':
+            self['nativearg'].append('int')
             argtp = ctn.capitalize()
             self['callarg'].append(f'C.MSK{ctn}e({n})')
         else:
+            self['nativearg'].append(f'{ctn}')
             argtp = atype2nimdecl(atn)
             ctp = t2cmap[argtp]
             self['callarg'].append(f'{ctp}({n})')
@@ -331,6 +350,10 @@ class FuncGen(ag.BaseFuncGenerator):
         d['funimpl'].extend(['  '+l for l in self['postlude']])
         d['funimpl'].append('  return')
         d['funimpl'].append('}')
+
+
+        nargs = ','.join(self['nativearg'])
+        d['extern'].append(f'extern int MSK_{self.funname}({nargs});')
 
 class APIGen(ag.BaseAPIGenerator):
     def __init__(self,
@@ -383,12 +406,13 @@ if __name__ == '__main__':
         print(f"Write to {a.target}")
 
         d = {'const'      : ['// Constants'],
-             'funimpl'    : ['// Methods']}
+             'funimpl'    : ['// Methods'],
+             'extern'     : []}
 
         APIGen(jtis,ag.TempVarNameGenerator(prefix="_tmp",postfix="",init=0)).run(d)
 
         p = 0
-        for o in re.finditer(r'^//<([A-Za-z0-9]+)>.*$',template,re.MULTILINE):
+        for o in re.finditer(r'^//<([A-Za-z0-9]+)>.*$\n',template,re.MULTILINE):
             f.write(template[p:o.start()])
             p = o.end()
             if o.group(1) == 'consts':
@@ -402,6 +426,11 @@ if __name__ == '__main__':
                 f.write('\n')
             elif o.group(1) == 'comment':
                 f.write('// Generated for MOSEK %s' % mosek_version)
+            elif o.group(1) == 'extern':
+                for l in d['extern']:
+                    f.write('// ')
+                    f.write(l)
+                    f.write('\n')
             else:
                 print(f"Warning! Unknown label '{o.group(1)}'")
 

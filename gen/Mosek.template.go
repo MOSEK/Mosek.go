@@ -1,16 +1,19 @@
 package mosek
 
-//<comment>
+// /*<comment>*/
 
 // #include <stdlib.h>
-// #include <mosek.h>
+// #include <stdint.h>
 // #cgo LDFLAGS: -lmosek64
+//
+// typedef const char * string_t;
 //
 // extern void streamfunc_log(void *, char *);
 // extern void streamfunc_wrn(void *, char *);
 // extern void streamfunc_msg(void *, char *);
 // extern void streamfunc_err(void *, char *);
-// extern int callbackfunc(void *, void *, int, MSKrealt *, MSKint32t*, MSKint64t *);
+// extern int callbackfunc(void *, void *, int, double*,int32_t*, int64_t*);
+//<extern>
 import "C"
 
 import (
