@@ -1,17 +1,17 @@
 # *DISCLAIMER*
 
-This software is experimental. We (MOSEK) may fix errors and bugs, but provide
-no guarantee on how or how quickly we do so.
+This software is not officially supported. We (MOSEK) accept bug reports and
+may fix errors and bugs, but provide no guarantee on how or how quickly we do so.
 
-The API has been tested on 64bit Linux, but may work on other posix platforms as well.
-
+The API has been tested on Linux x86-64, but may work on other posix platforms
+as well. It may require some tweaking to get it to build on Windows.
 
 # Requirements
 
 - MOSEK tools
-- Go v1.12+
+- Go v1.21+
 
-The MOSEK Go interface does not depend on any third-party packages.
+The MOSEK Go interface does not depend on any third-party packages, only Go standard libraries. 
 
 # Go interface for MOSEK
 
@@ -23,36 +23,31 @@ Currently implemented:
 - Stream printing callbacks
 - Progress and information callbacks
 
+It it not thoroughly tested.
+
 ## Documentation
 
-The documentation contains an API reference covering all functions and
-constants in the interface. It may contain dead links since many sections are
-not included in the manual yet.
-
-- [API reference](docs/mosek.rst)
-- [Constants reference](docs/mosek_const.rst).
-
-For a more complete version of the documentation, see the [official C API documentation](https://docs.mosek.com/9.2/capi/index.html).
+Currently, it is recommened to use `go doc ...` and the official C documentation [official C API documentation](https://docs.mosek.com/9.2/capi/index.html).
 
 # Using MOSEK from another project
 
-You can use Mosek from a go project by importing it by its full name:
-
-```
-import mosek "github.com/mosek/mosek.go"
-```
-
-When building using `go build`, MOSEK must be available (the specific
+When building a project that uses MOSEK, MOSEK must be available (the specific
 version is defined in the file `MOSEKVER`). Usually MOSEK will not be
-globally available, so locations of header file and library must be
-specified when building a project that imports MOSEK:
-
+globally available, so locations the library library must be
+specified when building a project that imports MOSEK, e.g.
 ```
-export CGO_CFLAGS="-I$HOME/mosek/9.2/tools/platform/linux64x86/h"
-export CGO_LDFLAGS="-L$HOME/mosek/9.2/tools/platform/linux64x86/bin"
-go build
+CGO_LDFLAGS="-L$MOSEKBINDIR" go build
+```
+or alternatively
+```
+LPATH=$MOSEKBINDIR go build
 ```
 
 # Building examples
 
-Run the included script `build.sh` to build examples.
+To build the included examples do 
+```
+CGO_LDFLAGS="-L$MOSEKBINDIR" go build examples/lo1.go
+CGO_LDFLAGS="-L$MOSEKBINDIR" go build examples/qo1.go
+CGO_LDFLAGS="-L$MOSEKBINDIR" go build examples/cqo1.go
+```
