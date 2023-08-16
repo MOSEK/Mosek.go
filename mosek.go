@@ -2117,11 +2117,10 @@ type Env struct {
 }
 
 type Task struct {
-        r               Rescode
-        cptr            C.MSKtask_t
-	streamfunc      [4]func(string)
-	callbackfunc    func(int32)int
-	infcallbackfunc func(int32,[]float64,[]int32,[]int64)int
+    cptr            C.MSKtask_t
+    streamfunc      [4]func(string)
+    callbackfunc    func(int32)int
+    infcallbackfunc func(int32,[]float64,[]int32,[]int64)int
 }
 
 func (t * Task) ptr() C.MSKtask_t { return t.cptr }
@@ -2288,12 +2287,6 @@ func (self *Task) PutInfoCallbackFunc(fun func(int32,[]float64,[]int32,[]int64) 
 		C.MSK_putcallbackfunc(self.ptr(), (*[0]byte)(C.callbackfunc), C.MSKuserhandle_t(unsafe.Pointer(self)))
 	}
 }
-
-func (e * Env)  ClearError() { e.r = MSK_RES_OK }
-func (self * Task) ClearError() { self.r = MSK_RES_OK }
-
-//func (e * Env)  GetRes() int32 { return e.r }
-//func (t * Task) GetRes() int32 { return t.r }
 
 func minint(a []int) (r int) {
         if len(a) == 0 { panic("Minimum of empty array") }
