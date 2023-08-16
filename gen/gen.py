@@ -32,45 +32,48 @@ t2cmap = {
     }
 
 atypemap = {
+    'int32'        : 'C.int32_t',
+    'int64'        : 'C.int64_t',
+    'string'       : '* C.char',
+    'float64'      : 'C.double',
+    'double'       : 'C.double',
+    'bool'         : 'C.int',
+    }
+gtypemap = {
     'int32'        : 'int32',
     'int64'        : 'int64',
     'string'       : 'string',
     'float64'      : 'float64',
     'double'       : 'float64',
-    'void'         : 'void',
-    'usize'        : 'uint',
-    'uint32'       : 'uint32',
-    'uint64'       : 'uint64',
     'bool'         : 'bool',
     }
 
-ffitypemap = {
-    'int'          : 'int32',
-    'uint'         : 'uint32',
-    'int64'        : 'int64',
-    'uint64'       : 'uint64',
-    'double'       : 'float64',
-    'string_t'     : 'cstring',
-
-    'void'         : 'void',
-    'int32_t'      : 'int32',
-    'int64_t'      : 'int64',
-    }
-
-def atype2nimdecl(t):
+def atype2cgodecl(t):
     if   isinstance(t,ag.agref):
-        return 'ref ' + atype2num(t.t)
+        return '*' + atype2cgodecl(t.t)
     elif isinstance(t,ag.agptr):
-        return 'ptr ' + atype2num(t.t)
+        return '*' + atype2cgodecl(t.t)
     elif isinstance(t,ag.agenum):
-        return t.t
+        return 'C.int32_t'
     elif isinstance(t,ag.agtype):
         return atypemap[t.t]
     elif isinstance(t,str):
         return atypemap[t]
     else:
         assert False,t
-
+def atype2godecl(t):
+    if   isinstance(t,ag.agref):
+        return '*' + atypecgodecl(t.t)
+    elif isinstance(t,ag.agptr):
+        return '[]' + atypecgodecl(t.t)
+    elif isinstance(t,ag.agenum):
+        return t.t 
+    elif isinstance(t,ag.agtype):
+        return gtypemap[t.t]
+    elif isinstance(t,str):
+        return gtypemap[t]
+    else:
+        assert False,t
 
 
 class ComputeGen(ag.BaseComputeGenerator):
@@ -93,27 +96,28 @@ class ComputeGen(ag.BaseComputeGenerator):
         code.extend(arg.code)
         return ComputeNodePartial(f'cast[{tp.t}]({arg.value})',code)
     def ifthenelse(self,cond,thenitem,elseitem):
+        ctp = atype2cgodecl(thenitem.type)
         code = []
         tmpvar = self.tmpvargen()
         code.extend(cond.code)
-        code.append(f'var {tmpvar} {atype2nimdecl(thenitem.type)}')
+        code.append(f'var {tmpvar} {atype2cgodecl(thenitem.type)}')
         code.append(f'if {cond.value} {{')
         code.extend(['  ' + l for l in thenitem.code])
-        code.append(f'  {tmpvar} = {thenitem.value}')
+        code.append(f'  {tmpvar} = ({ctp})({thenitem.value})')
         code.append(f'}} else {{')
         code.extend(['  ' + l for l in elseitem.code])
-        code.append(f'  {tmpvar} = {elseitem.value}')
+        code.append(f'  {tmpvar} = ({ctp})({elseitem.value})')
         code.append( '}')
 
         return ag.ComputeNodePartial(tmpvar,code)
     def constref(self,cc,name):
-        return cc['prefix'].lower()+name
+        return f"MSK_{cc['prefix']}{name}".upper()
     def lengthof(self,arg):
-        return ag.ComputeNodePartial(f'cast[int32]({arg.value}.len)',arg.code)
+        return ag.ComputeNodePartial(f'len({arg.value})',arg.code)
     def longlengthof(self,arg):
-        return ag.ComputeNodePartial(f'{arg.value}.len',arg.code)
+        return ag.ComputeNodePartial(f'len({arg.value})',arg.code)
     def sumof(self,arg):
-        return ag.ComputeNodePartial(f'{arg.value}.foldl(a+b)',arg.code)
+        return ag.ComputeNodePartial(f'sum({arg.value})',arg.code)
     def gencall(self,func,*args):
         callargs = []
         value = None
@@ -126,22 +130,24 @@ class ComputeGen(ag.BaseComputeGenerator):
             elif isinstance(a,ag.DummyArg) or isinstance(a,ag.ReturnArg):
                 tmpvar = self.tmpvargen()
                 if isinstance(a.type, ag.agref):
-                    code.append(f'var {tmpvar} {atype2nimdecl(a.type.t)}')
-                    callargs.append(f'addr({tmpvar})')
+                    code.append(f'var {tmpvar} {atype2cgodecl(a.type.t)}')
+                    callargs.append(f'(&{tmpvar})')
                 else:
-                    code.append('var {tmpvar} {atype2nimdecl(a.type)}')
-                    callargs.append(f'{tmpvar}')
+                    code.append('var {tmpvar} {atype2cgodecl(a.type)}')
+                    ctp = atype2cgodecl(a.type.t) 
+                    callargs.append(f'({ctp})({tmpvar})')
 
                 if isinstance(a,ag.ReturnArg):
                     value = tmpvar
             else:
+                ctp = atype2cgodecl(a.type) 
                 code.extend(a.code)
-                callargs.append(a.value)
+                callargs.append(f'({ctp})({a.value})')
         callargs = ','.join(callargs)
         tmpres = self.tmpvargen()
         code.extend([f'if {tmpres} := C.MSK_{func["name"]}({callargs}); {tmpres} != 0 {{',
-                     f'  lastcode,lastmsg = self.getlasterror({tmpres})',
-                     '   err = MosekError{ code:lastcode,msg:lastmsg}',
+                     f'  lastcode,lastmsg := self.getlasterror({tmpres})',
+                     '   err = &MosekError{ code:Rescode(lastcode),msg:lastmsg}',
                      '  return',
                      '}'])
         return ag.ComputeNodePartial(value,code)
@@ -178,10 +184,16 @@ class FuncGen(ag.BaseFuncGenerator):
         if atn == 'enum':
             self['nativearg'].append('int32_t *')
             argtp = ctn.capitalize() 
+            cctype = '*C.int32_t' 
+        elif atn == 'string':
+            cctype = f'**C.char' 
+            self['nativearg'].append(f'const char **')
+            argtp = 'string'
         else:
+            cctype = f'*C.{ctn}' 
             self['nativearg'].append(f'{ctn} *')
             try:
-                argtp = atype2nimdecl(atn)
+                argtp = atype2godecl(atn)
             except KeyError:
                 raise ag.DontGenerate(self.__func['name'],"Invalid type") 
             if argtp == 'void':
@@ -198,18 +210,21 @@ class FuncGen(ag.BaseFuncGenerator):
                                         f'''  err = &ArrayLengthError{{fun:"{self.funapiname}",arg:"{n}"}}''',
                                         '  return',
                                         '}'])
-            if ctn != 'string_t':
+            if atn != 'string':
                 self['prelude'].extend([f'var {tmp} *{argtp}'])
                 self['prelude'].append(f'if {n} != nil {{ {tmp} = (*{argtp})(&{n}[0]) }}')
             else:
+                cctype = '(**C.char)' 
                 tmpl = self.tmpvargen()
                 i = self.tmpvargen()
                 v = self.tmpvargen()
                 self['prelude'].extend([f'{tmpl} := make([]*C.char,len({n}))',
                                         f'for {i},{v} := range {n} {{',
-                                        f'  {tmpl}[{i}] = C.CString({v})'
+                                        f'  {tmpl}[{i}] = C.CString({v})',
                                         '}',
-                                        f'{tmp} = &{tmpl}[0]'])
+                                        f'var {tmp} **C.char;',
+                                        f'if len({tmpl}) > 0 {{ {tmp} = &{tmpl}[0] }}',
+                                        ])
 
             self['funarg'].append(f'{n} []{argtp}')
 
@@ -225,22 +240,12 @@ class FuncGen(ag.BaseFuncGenerator):
         else:
             assert minlength
             self['prelude'].extend([f'var {tmp} *{argtp}'])
-            self['prelude'].extend([f'{n} := make([]{argtp},{minlength.value})',
-                                    f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&n[0]) }}'])
+            self['prelude'].extend([f'{n} = make([]{argtp},{minlength.value})',
+                                    f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&{n}[0]) }}'])
             self['retarg'].append((n,f'[]{argtp}'))
 
-        self['callarg'].append(tmp)
+        self['callarg'].append(f'({cctype})({tmp})')
 
-            
-            
-#    def arg_surpof(self,a,basetp,atn,ctn,n,surpof,argbrief,argdesc):
-#        minlen = f'{surpof[0]["name"]}.len'
-#        for sof in surpof[1:]:
-#            minlen = f'min({minlen},{sof["name"]}.len)'
-#        argtp = atype2nimdecl(atn)
-#        self['prelude'].append(f'var {n} = cast[{argtp}]({minlen})')
-#        self['callarg'].append(f'unsafeAddr({n})')
-#        self['nativearg'].append(f'{n} : ptr {argtp}')
     def arg_ref(self,a,basetp,atn,ctn,n,indexof,isdefaultoarg,argbrief,argdesc):
         assert a['mode'] != 'io'
         if atn == 'enum':
@@ -248,12 +253,19 @@ class FuncGen(ag.BaseFuncGenerator):
             argtp = ctn.capitalize()
             tmp = self.tmpvargen()
             self['prelude'].append(f'var {tmp} int32')
-            self['callarg'].append(f'&{tmp}')
+            self['callarg'].append(f'(*C.int32_t)(&{tmp})')
             self['postlude'].append(f'{n} = {argtp}({tmp})')
+        elif atn == 'bool': 
+            self['nativearg'].append(f'int *')
+            argtp = atype2godecl(atn)
+            tmp = self.tmpvargen()
+            self['prelude'].append(f'var {tmp} C.int')
+            self['callarg'].append(f'(&{tmp})')
+            self['postlude'].append(f'{n} = {tmp} != 0')
         else:
             self['nativearg'].append(f'{ctn} *')
-            argtp = atype2nimdecl(atn)
-            self['callarg'].append(f'&{n}')
+            argtp = atype2godecl(atn)
+            self['callarg'].append(f'(*C.{ctn})(&{n})')
         self['retarg'].append((n,argtp))
     def arg_ref_func(self,a,tp,rettype,argtypes,n,isdefaultoarg,argbrief,argdesc):
         raise DontGenerate("arg_ref_func() not implemented")
@@ -268,13 +280,12 @@ class FuncGen(ag.BaseFuncGenerator):
         self['prelude'].append(f'{tmp} := C.CString({n})')
         self['callarg'].append(tmp)
     def arg_outstring(self,a,tp,atn,ctn,n,minlength,isdefaultoarg,argbrief,argdesc):
-        self['nativearg'].append(f'char *')
+        self['nativearg'].append(f'unsigned char *')
         tmpvar1 = self.tmpvargen()
         self['prelude'].extend(minlength.code)
         self['prelude'].append(f'{tmpvar1} := make([]byte,{minlength.value})')
-        self['callarg'].append(f'C.CString(&tmpvar1[0])')
-        self['postlude'].extend([f'var {n} string',
-                                 f"if p := strings.IndexByte({tmpvar1},byte(0)); p < 0 {{",
+        self['callarg'].append(f'(*C.uchar)(&{tmpvar1}[0])')
+        self['postlude'].extend([f"if p := bytes.IndexByte({tmpvar1},byte(0)); p < 0 {{",
                                  f'  {n} = string({tmpvar1})',
                                  '} else {',
                                  f'  {n} = string({tmpvar1}[:p])',
@@ -282,25 +293,24 @@ class FuncGen(ag.BaseFuncGenerator):
         self['retarg'].append((n,'string'))
     def arg_computed_value(self,a,tp,atn,ctn,n,lengthof,code,argbrief,argdesc):
         self['nativearg'].append(f'{ctn}')
-        argtp = atype2nimdecl(atn)
-        ctp = t2cmap[argtp]
+        argtp = atype2godecl(atn)
         if lengthof:
             tmp = self.tmpvargen()
             self['prelude'].append(f'{tmp} := len({lengthof[0]["name"]})')
             for lof in lengthof[1:]:
-                self['prelude'].append(f'if {tmp} < {lof["name"]} {{ {tmp} = lof["name"] }}')
+                self['prelude'].append(f'if {tmp} < len({lof["name"]}) {{ {tmp} = len({lof["name"]}) }}')
 
             if argtp == ag.agtype('int64'):
                 self['prelude'].append(f'var {n} int64 = int64({tmp})')
             else:
                 self['prelude'].append(f'var {n} {argtp} = {argtp}({tmp})')
-            self['callarg'].append(f'{ctp}({n})')
+            self['callarg'].append(f'C.{ctn}({n})')
         elif code:
-            argtp = atype2nimdecl(atn)
+            argtp = atype2godecl(atn)
             self['prelude'].extend(code.code)
             self['prelude'].append(f'var {n} {argtp} = {argtp}({code.value})')
 
-            self['callarg'].append(n)
+            self['callarg'].append(f'C.{ctn}({n})')
         else:
             assert False
     def arg_obj(self,a,tp,atn,ctn,n,argbrief,argdesc):
@@ -310,11 +320,16 @@ class FuncGen(ag.BaseFuncGenerator):
             self['nativearg'].append('int32_t')
             argtp = ctn.capitalize()
             self['callarg'].append(f'C.int32_t({n})')
+        elif atn == 'bool':
+            self['nativearg'].append(f'int')
+            argtp = atype2godecl(atn)
+            tmp = self.tmpvargen()
+            self['prelude'].append(f'var {tmp} C.int; if {n} {{ {tmp} = 1; }}')
+            self['callarg'].append(f'{tmp}')
         else:
             self['nativearg'].append(f'{ctn}')
-            argtp = atype2nimdecl(atn)
-            ctp = t2cmap[argtp]
-            self['callarg'].append(f'{ctp}({n})')
+            argtp = atype2godecl(atn)
+            self['callarg'].append(f'C.{ctn}({n})')
 
         self['funarg'].append(f'{n} {argtp}')
     def genfunc(self,d,func,funname,apiname,brief,desc):
@@ -344,10 +359,10 @@ class FuncGen(ag.BaseFuncGenerator):
         d['funimpl'].append( f'  if {tmp} := C.MSK_{self.funname}({argstr}); {tmp} != 0 {{')
         if self.__clsarg is not None:
             d['funimpl'].extend([f'    lastcode,lastmsg := self.getlasterror({tmp})',
-                                 '    err = &MosekError{code:lastcode,msg:lastmsg}',
+                                 '    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}',
                                  '    return'])
         else:
-            d['funimpl'].extend([f'    err = &MosekError{{ code:{tmp} }}',
+            d['funimpl'].extend([f'    err = &MosekError{{ code:Rescode({tmp}) }}',
                                  '    return'])
         d['funimpl'].append('  }')
 

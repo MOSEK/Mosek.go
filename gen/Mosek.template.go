@@ -7,18 +7,18 @@ package mosek
 // #cgo LDFLAGS: -lmosek64
 //
 // typedef void * MSKuserhandle_t;
-// typedef const char * string_t;
+// typedef const int8_t * string_t;
 // typedef void * MSKtask_t;
 // typedef void * MSKenv_t;
-// typedef void  (* MSKstreamfunc) ( void *, const char *);
+// typedef void  (* MSKstreamfunc) ( void *, const string_t);
 // typedef int32_t  (* MSKcallbackfunc) ( MSKtask_t, MSKuserhandle_t, int32_t, const double *, const int32_t *, const int64_t *);
 // 
-// extern void streamfunc_log(void *, char *);
-// extern void streamfunc_wrn(void *, char *);
-// extern void streamfunc_msg(void *, char *);
-// extern void streamfunc_err(void *, char *);
+// extern void streamfunc_log(void *, char*);
+// extern void streamfunc_wrn(void *, char*);
+// extern void streamfunc_msg(void *, char*);
+// extern void streamfunc_err(void *, char*);
 // extern int callbackfunc(void *, void *, int, double*,int32_t*, int64_t*);
-// extern int MSK_makeenv(MSKenv_t *, const char *);
+// extern int MSK_makeenv(MSKenv_t *, const string_t);
 // extern int MSK_makeemptytask(MSKenv_t, MSKtask_t *);
 // extern int MSK_deleteenv(MSKenv_t *);
 // extern int MSK_deletetask(MSKtask_t *);
@@ -31,7 +31,7 @@ import "C"
 import (
     "unsafe"
     "fmt"
-    "golang.org/x/exp/constraints"
+    "bytes"
 )
 //<consts>
 
@@ -90,25 +90,25 @@ func (self * Task) getlasterror(res C.int32_t) (Rescode,string) {
 
 
 //export streamfunc_log
-func streamfunc_log(handle unsafe.Pointer, msg * C.char) {
+func streamfunc_log(handle unsafe.Pointer, msg *C.char) {
 	task := (*Task)(handle)
 	if task.streamfunc[MSK_STREAM_LOG] != nil { task.streamfunc[MSK_STREAM_LOG](C.GoString(msg)) }
 }
 
 //export streamfunc_msg
-func streamfunc_msg(handle unsafe.Pointer, msg * C.char) {
+func streamfunc_msg(handle unsafe.Pointer, msg *C.char) {
 	task := (*Task)(handle)
 	if task.streamfunc[MSK_STREAM_MSG] != nil { task.streamfunc[MSK_STREAM_MSG](C.GoString(msg)) }
 }
 
 //export streamfunc_wrn
-func streamfunc_wrn(handle unsafe.Pointer, msg * C.char) {
+func streamfunc_wrn(handle unsafe.Pointer, msg *C.char) {
 	task := (*Task)(handle)
 	if task.streamfunc[MSK_STREAM_WRN] != nil { task.streamfunc[MSK_STREAM_WRN](C.GoString(msg)) }
 }
 
 //export streamfunc_err
-func streamfunc_err(handle unsafe.Pointer, msg * C.char) {
+func streamfunc_err(handle unsafe.Pointer, msg *C.char) {
 	task := (*Task)(handle)
 	if task.streamfunc[MSK_STREAM_ERR] != nil { task.streamfunc[MSK_STREAM_ERR](C.GoString(msg)) }
 }
