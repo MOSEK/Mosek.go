@@ -1,3 +1,7 @@
+/* MOSEK package.
+
+   Thin wrapper for MOSEK solver API.
+ */
 package mosek
 
 // /*<comment>*/
@@ -36,6 +40,7 @@ import (
 //<consts>
 
 
+// Mosek response and error message
 type MosekError struct {
     code Rescode
     msg string
@@ -54,11 +59,13 @@ func (self*ArrayLengthError) Error() string {
 }
 
 
+// Mosek Env. Multiple tasks can be create in each Env.
 type Env struct {
         r    Rescode
         cptr C.MSKenv_t
 }
 
+// Mosek Task represents a single optimizatrion problem and solver information.
 type Task struct {
     cptr            C.MSKtask_t
     streamfunc      [4]func(string)
@@ -137,7 +144,7 @@ func callbackfunc(
 	return C.int(r)
 }
 
-
+// Create a new Env
 func MakeEnv() (env Env, err error) {
         if res := C.MSK_makeenv(&env.cptr,nil); res != 0 {
             err = &MosekError{code : Rescode(res) }
@@ -145,6 +152,7 @@ func MakeEnv() (env Env, err error) {
         return
 }
 
+// Create a new Task in the Env
 func (env *Env) MakeTask() (task Task, err error) {
     if res := C.MSK_makeemptytask(env.ptr(), &task.cptr); res != 0 {
         err = &MosekError{ code:Rescode(res) }
@@ -159,6 +167,7 @@ func (env *Env) MakeTask() (task Task, err error) {
     return
 }
 
+// Create a new Task in the global Env
 func NewTask() (task Task, err error) {
     if res := C.MSK_makeemptytask(nil, &task.cptr); res != 0 {
         err = &MosekError{ code:Rescode(res) }
@@ -173,6 +182,7 @@ func NewTask() (task Task, err error) {
     return
 }
 
+// Delete Env. The Environment MUST NOT be used subsequently.
 func (self *Env) Delete() (err error) {
     if r := C.MSK_deleteenv(&self.cptr); r != 0 {
         err = &MosekError{code : Rescode(r) }
@@ -180,6 +190,7 @@ func (self *Env) Delete() (err error) {
     return 
 }
 
+// Delete Task. The Task MUST NOT be used subsequently.
 func (self *Task) Delete() (err error) {
     if r := C.MSK_deletetask(&self.cptr); r != 0 {
         err = &MosekError{code : Rescode(r) }
@@ -187,6 +198,7 @@ func (self *Task) Delete() (err error) {
     return
 }
 
+// Attach a stream callback function for receiving log messages.
 func (self *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) {
 	self.streamfunc[whichstream] = fun
 
@@ -213,6 +225,7 @@ func (self *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) {
 	}
 }
 
+// Attach a callback function for receiving progress status during optimizations.
 func (self *Task) PutCallbackFunc(fun func(int32) int) {
 	self.callbackfunc = fun
 	if fun == nil {
@@ -222,6 +235,7 @@ func (self *Task) PutCallbackFunc(fun func(int32) int) {
 	}
 }
 
+// Attach a callback function for receiving information during optimizations.
 func (self *Task) PutInfoCallbackFunc(fun func(int32,[]float64,[]int32,[]int64) int) {
 	self.infcallbackfunc = fun
 	if fun == nil {

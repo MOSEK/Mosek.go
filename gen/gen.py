@@ -226,7 +226,7 @@ class FuncGen(ag.BaseFuncGenerator):
                                         f'if len({tmpl}) > 0 {{ {tmp} = &{tmpl}[0] }}',
                                         ])
 
-            self['funarg'].append(f'{n} []{argtp}')
+            self['funarg'].append((f'{n} []{argtp}',argbrief))
 
             if indexof:
                 tmpvar = self.tmpvargen()
@@ -242,7 +242,7 @@ class FuncGen(ag.BaseFuncGenerator):
             self['prelude'].extend([f'var {tmp} *{argtp}'])
             self['prelude'].extend([f'{n} = make([]{argtp},{minlength.value})',
                                     f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&{n}[0]) }}'])
-            self['retarg'].append((n,f'[]{argtp}'))
+            self['retarg'].append((n,f'[]{argtp}',argbrief))
 
         self['callarg'].append(f'({cctype})({tmp})')
 
@@ -266,7 +266,7 @@ class FuncGen(ag.BaseFuncGenerator):
             self['nativearg'].append(f'{ctn} *')
             argtp = atype2godecl(atn)
             self['callarg'].append(f'(*C.{ctn})(&{n})')
-        self['retarg'].append((n,argtp))
+        self['retarg'].append((n,argtp,argbrief))
     def arg_ref_func(self,a,tp,rettype,argtypes,n,isdefaultoarg,argbrief,argdesc):
         raise DontGenerate("arg_ref_func() not implemented")
     def arg_refobj(self,a,basetp,atn,ctn,n,isdefaultoarg,argbrief,argdesc):
@@ -275,7 +275,7 @@ class FuncGen(ag.BaseFuncGenerator):
         raise ag.DontGenerate(self.funname,"Not supported: Ref to pointer")
     def arg_instring(self,a,tp,atn,ctn,n,argbrief,argdesc):
         self['nativearg'].append(f'const char *')
-        self['funarg'].append(f'{n} string')
+        self['funarg'].append((f'{n} string',argbrief))
         tmp = self.tmpvargen()
         self['prelude'].append(f'{tmp} := C.CString({n})')
         self['callarg'].append(tmp)
@@ -290,7 +290,7 @@ class FuncGen(ag.BaseFuncGenerator):
                                  '} else {',
                                  f'  {n} = string({tmpvar1}[:p])',
                                  '}'])
-        self['retarg'].append((n,'string'))
+        self['retarg'].append((n,'string',argbrief))
     def arg_computed_value(self,a,tp,atn,ctn,n,lengthof,code,argbrief,argdesc):
         self['nativearg'].append(f'{ctn}')
         argtp = atype2godecl(atn)
@@ -331,21 +331,32 @@ class FuncGen(ag.BaseFuncGenerator):
             argtp = atype2godecl(atn)
             self['callarg'].append(f'C.{ctn}({n})')
 
-        self['funarg'].append(f'{n} {argtp}')
+        self['funarg'].append((f'{n} {argtp}',argbrief))
     def genfunc(self,d,func,funname,apiname,brief,desc):
         if func['status'] == 'internal':
             raise ag.DontGenerate(self.__func['name'],"Invalid type") 
 
         callargs = ','.join(self['callarg'])
-        funargs  = ','.join(self['funarg'])
+        funargs  = ','.join([ a for (a,b) in self['funarg']])
         nfunargs = ','.join(self['nativearg'])
 
-        rets = [ f'{n} {t}' for n,t in self['retarg'] ]
+        rets = [ f'{n} {t}' for n,t,d in self['retarg'] ]
         rets.append('err error')
 
         if len(rets) == 0: retstr = ''
         else: retstr = ' (' + ','.join(rets) + ')'
         
+        
+        d['funimpl'].append('')           
+        d['funimpl'].extend([ f'// {l}' for l in brief.split('\n')])
+        if self['funarg'] or self['retarg']:
+            d['funimpl'].append('//')           
+            for n,doc in self['funarg'] + [ (f'{n} {t}',doc) for n,t,doc in self['retarg']]:
+                d['funimpl'].append(f'// - {n}')
+                
+                L = doc.split('\n')
+                d['funimpl'].extend([f'//   {l}' for l in L])
+
         if self.__clsarg is not None:
             d['funimpl'].append(f'func (self *{self.__clstp}) {self.funapiname}({funargs}){retstr} {{')
         else:
@@ -386,16 +397,21 @@ class APIGen(ag.BaseAPIGenerator):
     def info(self,msg,*args): logging.info(msg,*args)
     def genenum(self,d,cc,enumname,prefix,members,enumerable=True):
         if cc['value-type'] == 'int':
-            L = [  (i['name'], int(i['value'])) for i in cc['members'] ]
+            L = [  (i['name'], int(i['value']),i.get('brief')) for i in cc['members'] ]
             L.sort (key = lambda i: i[1])
             ccname = cc['name']
             pfx = cc['prefix'].upper()
 
             cname = ccname.capitalize()
+            d['const'].append('')
             d['const'].append(f'type {cname} int32')
+            if 'brief' in cc:
+                d['const'].extend([ '// '+l for l in cc['brief'].split('\n')])
             d['const'].append('const (')
-            for k,v in L:
-                d['const'].append(f'    MSK_{pfx}{k.upper()} {cname} = {v}')
+            for k,v,doc in L:
+                if doc is None: doc = ''
+                else: doc = ' // ' + ' '.join(doc.split('\n'))
+                d['const'].append(f'    MSK_{pfx}{k.upper()} {cname} = {v}{doc}')
             if pfx:
                 d['const'].append(f'    MSK_{pfx}END {cname} = {v}')
             d['const'].append(')')
