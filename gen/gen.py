@@ -25,9 +25,9 @@ typemap = {
     'int64_t'      : 'int64',
     }
 t2cmap = {
-    'int32'  : 'C.MSKint32t',   
-    'int64'  : 'C.MSKint32t',
-    'float64': 'C.MSKrealt',
+    'int32'  : 'C.int32_t',   
+    'int64'  : 'C.int64_t',
+    'float64': 'C.double',
     'bool': 'C.int',
     }
 
@@ -170,13 +170,13 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_classarg(self,a,tp,atn,ctn,n,argbrief,argdesc):
         self['callarg'].append(f'self.ptr()')
         self.__selfarg = f'self *{objecttypemap[atn]}'
-        self['nativearg'].append('void *')
+        self['nativearg'].append(f'{ctn}')
         self.__clsarg = a
         self.__clstp = atn
         #self['funarg'].append(f'{n} {objecttypemap[atn]}')
     def arg_ptr(self,a,basetp,atn,ctn,n,minlength,indexof,isdefaultoarg,argbrief,argdesc):
         if atn == 'enum':
-            self['nativearg'].append('int *')
+            self['nativearg'].append('int32_t *')
             argtp = ctn.capitalize() 
         else:
             self['nativearg'].append(f'{ctn} *')
@@ -189,8 +189,6 @@ class FuncGen(ag.BaseFuncGenerator):
         
         tmp = self.tmpvargen()
 
-        self['prelude'].extend([f'var {tmp} *{argtp}'])
-
         if minlength:
             self['prelude'].extend(minlength.code)
 
@@ -201,10 +199,17 @@ class FuncGen(ag.BaseFuncGenerator):
                                         '  return',
                                         '}'])
             if ctn != 'string_t':
+                self['prelude'].extend([f'var {tmp} *{argtp}'])
                 self['prelude'].append(f'if {n} != nil {{ {tmp} = (*{argtp})(&{n}[0]) }}')
             else:
                 tmpl = self.tmpvargen()
-                self['prelude'].extend([f'{tmpl} := make('])
+                i = self.tmpvargen()
+                v = self.tmpvargen()
+                self['prelude'].extend([f'{tmpl} := make([]*C.char,len({n}))',
+                                        f'for {i},{v} := range {n} {{',
+                                        f'  {tmpl}[{i}] = C.CString({v})'
+                                        '}',
+                                        f'{tmp} = &{tmpl}[0]'])
 
             self['funarg'].append(f'{n} []{argtp}')
 
@@ -219,13 +224,13 @@ class FuncGen(ag.BaseFuncGenerator):
                                         '}'])
         else:
             assert minlength
+            self['prelude'].extend([f'var {tmp} *{argtp}'])
             self['prelude'].extend([f'{n} := make([]{argtp},{minlength.value})',
                                     f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&n[0]) }}'])
             self['retarg'].append((n,f'[]{argtp}'))
 
-        if ctn != 'string_t':
-            self['callarg'].append(tmp)
-        else:
+        self['callarg'].append(tmp)
+
             
             
 #    def arg_surpof(self,a,basetp,atn,ctn,n,surpof,argbrief,argdesc):
@@ -239,10 +244,10 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_ref(self,a,basetp,atn,ctn,n,indexof,isdefaultoarg,argbrief,argdesc):
         assert a['mode'] != 'io'
         if atn == 'enum':
-            self['nativearg'].append(f'int *')
+            self['nativearg'].append(f'int32_t *')
             argtp = ctn.capitalize()
             tmp = self.tmpvargen()
-            self['prelude'].append(f'var {tmp} C.MSK{ctn}e')
+            self['prelude'].append(f'var {tmp} int32')
             self['callarg'].append(f'&{tmp}')
             self['postlude'].append(f'{n} = {argtp}({tmp})')
         else:
@@ -276,7 +281,7 @@ class FuncGen(ag.BaseFuncGenerator):
                                  '}'])
         self['retarg'].append((n,'string'))
     def arg_computed_value(self,a,tp,atn,ctn,n,lengthof,code,argbrief,argdesc):
-        self['nativearg'].append(f'{ctn} *')
+        self['nativearg'].append(f'{ctn}')
         argtp = atype2nimdecl(atn)
         ctp = t2cmap[argtp]
         if lengthof:
@@ -302,9 +307,9 @@ class FuncGen(ag.BaseFuncGenerator):
         raise ag.DontGenerate(self.funname,"Not supported: Non-class-arg object arguments")
     def arg_value(self,a,tp,atn,ctn,n,argbrief,argdesc):
         if atn == 'enum':
-            self['nativearg'].append('int')
+            self['nativearg'].append('int32_t')
             argtp = ctn.capitalize()
-            self['callarg'].append(f'C.MSK{ctn}e({n})')
+            self['callarg'].append(f'C.int32_t({n})')
         else:
             self['nativearg'].append(f'{ctn}')
             argtp = atype2nimdecl(atn)
@@ -319,7 +324,6 @@ class FuncGen(ag.BaseFuncGenerator):
         callargs = ','.join(self['callarg'])
         funargs  = ','.join(self['funarg'])
         nfunargs = ','.join(self['nativearg'])
-
 
         rets = [ f'{n} {t}' for n,t in self['retarg'] ]
         rets.append('err error')

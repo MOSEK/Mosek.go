@@ -6,13 +6,25 @@ package mosek
 // #include <stdint.h>
 // #cgo LDFLAGS: -lmosek64
 //
+// typedef void * MSKuserhandle_t;
 // typedef const char * string_t;
-//
+// typedef void * MSKtask_t;
+// typedef void * MSKenv_t;
+// typedef void  (* MSKstreamfunc) ( void *, const char *);
+// typedef int32_t  (* MSKcallbackfunc) ( MSKtask_t, MSKuserhandle_t, int32_t, const double *, const int32_t *, const int64_t *);
+// 
 // extern void streamfunc_log(void *, char *);
 // extern void streamfunc_wrn(void *, char *);
 // extern void streamfunc_msg(void *, char *);
 // extern void streamfunc_err(void *, char *);
 // extern int callbackfunc(void *, void *, int, double*,int32_t*, int64_t*);
+// extern int MSK_makeenv(MSKenv_t *, const char *);
+// extern int MSK_makeemptytask(MSKenv_t, MSKtask_t *);
+// extern int MSK_deleteenv(MSKenv_t *);
+// extern int MSK_deletetask(MSKtask_t *);
+// extern int MSK_getlasterror64(MSKtask_t,int*,int64_t,int64_t*,char*);
+// extern int MSK_linkfunctotaskstream(MSKtask_t task,int32_t whichstream, MSKuserhandle_t handle, MSKstreamfunc func);
+// int32_t MSK_putcallbackfunc(MSKtask_t task,MSKcallbackfunc func,MSKuserhandle_t handle);
 //<extern>
 import "C"
 
@@ -44,25 +56,25 @@ func (self*ArrayLengthError) Error() string {
 
 type Env struct {
         r    Rescode
-        cptr unsafe.Pointer
+        cptr C.MSKenv_t
 }
 
 type Task struct {
         r               Rescode
-        cptr            unsafe.Pointer
+        cptr            C.MSKtask_t
 	streamfunc      [4]func(string)
 	callbackfunc    func(int32)int
 	infcallbackfunc func(int32,[]float64,[]int32,[]int64)int
 }
 
-func (t * Task) ptr() C.MSKtask_t { return C.MSKtask_t(t.cptr) }
-func (e * Env)  ptr() C.MSKenv_t  { return C.MSKenv_t(e.cptr) }
+func (t * Task) ptr() C.MSKtask_t { return t.cptr }
+func (e * Env)  ptr() C.MSKenv_t  { return e.cptr }
 
-func (self * Env) getlasterror(res C.MSKrescodee) (Rescode,string) {
+func (self * Env) getlasterror(res C.int32_t) (Rescode,string) {
     return Rescode(res),""
 }
-func (self * Task) getlasterror(res C.MSKrescodee) (Rescode,string) {
-    var lastcode C.MSKrescodee = res
+func (self * Task) getlasterror(res C.int32_t) (Rescode,string) {
+    var lastcode C.int32_t = res
     var lastmsglen C.long
     if 0 != C.MSK_getlasterror64(self.ptr(),&lastcode,0, &lastmsglen, nil) {
         return Rescode(lastcode),""
@@ -106,9 +118,9 @@ func callbackfunc(
 	nativetask unsafe.Pointer,
 	handle  unsafe.Pointer,
 	code    C.int,
-	dinf  * C.MSKrealt,
-	iinf  * C.MSKint32t,
-	liinf * C.MSKint64t) (C.int) {
+	dinf  * C.double,
+	iinf  * C.int32_t,
+	liinf * C.int64_t) (C.int) {
 
 	task := (*Task)(handle)
 
@@ -127,49 +139,62 @@ func callbackfunc(
 }
 
 
-func MakeEnv() (env Env, res int32) {
-        var envptr C.MSKenv_t
-        res = int32(C.MSK_makeenv(&envptr,nil))
-        if res == 0 {
-                env.cptr = unsafe.Pointer(envptr)
+func MakeEnv() (env Env, err error) {
+        if res := C.MSK_makeenv(&env.cptr,nil); res != 0 {
+            err = &MosekError{code : Rescode(res) }
         }
         return
 }
 
-func (env *Env) MakeTask() (task Task, res int32) {
-        var taskptr C.MSKtask_t
-        res = int32(C.MSK_makeemptytask(env.ptr(), &taskptr))
-        if res != 0 { return }
-	task.cptr            = unsafe.Pointer(taskptr)
+func (env *Env) MakeTask() (task Task, err error) {
+    if res := C.MSK_makeemptytask(env.ptr(), &task.cptr); res != 0 {
+        err = &MosekError{ code:Rescode(res) }
+    } else { 
 	task.streamfunc[0]   = nil
 	task.streamfunc[1]   = nil
 	task.streamfunc[2]   = nil
 	task.streamfunc[3]   = nil
 	task.callbackfunc    = nil
 	task.infcallbackfunc = nil
-
-        return
+    }
+    return
 }
 
-func (e *Env) Delete() {
-        envptr := e.ptr()
-        _ = C.MSK_deleteenv(&envptr)
-        e.cptr = nil
+func NewTask() (task Task, err error) {
+    if res := C.MSK_makeemptytask(nil, &task.cptr); res != 0 {
+        err = &MosekError{ code:Rescode(res) }
+    } else { 
+	task.streamfunc[0]   = nil
+	task.streamfunc[1]   = nil
+	task.streamfunc[2]   = nil
+	task.streamfunc[3]   = nil
+	task.callbackfunc    = nil
+	task.infcallbackfunc = nil
+    }
+    return
 }
 
-func (t *Task) Delete() {
-        taskptr := t.ptr()
-        _ = C.MSK_deletetask(&taskptr)
-        t.cptr = nil
+func (self *Env) Delete() (err error) {
+    if r := C.MSK_deleteenv(&self.cptr); r != 0 {
+        err = &MosekError{code : Rescode(r) }
+    }
+    return 
 }
 
-func (t *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) {
-	t.streamfunc[whichstream] = fun
+func (self *Task) Delete() (err error) {
+    if r := C.MSK_deletetask(&self.cptr); r != 0 {
+        err = &MosekError{code : Rescode(r) }
+    }
+    return
+}
+
+func (self *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) {
+	self.streamfunc[whichstream] = fun
 
 	if fun == nil {
 		C.MSK_linkfunctotaskstream(
-			t.ptr(),
-			C.MSKstreamtypee(whichstream),
+			self.ptr(),
+			C.int32_t(whichstream),
 			nil,
 			nil)
 	} else {
@@ -182,33 +207,33 @@ func (t *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) {
 		}
 
 		C.MSK_linkfunctotaskstream(
-			t.ptr(),
-			C.MSKstreamtypee(whichstream),
-			C.MSKuserhandle_t(unsafe.Pointer(t)),
+			self.ptr(),
+			C.int32_t(whichstream),
+			C.MSKuserhandle_t(unsafe.Pointer(self)),
 			strmfun) // ?!?
 	}
 }
 
-func (t *Task) PutCallbackFunc(fun func(int32) int) {
-	t.callbackfunc = fun
+func (self *Task) PutCallbackFunc(fun func(int32) int) {
+	self.callbackfunc = fun
 	if fun == nil {
-		C.MSK_putcallbackfunc(t.ptr(), nil, nil)
+		C.MSK_putcallbackfunc(self.ptr(), nil, nil)
 	} else {
-		C.MSK_putcallbackfunc(t.ptr(), (*[0]byte)(C.callbackfunc), C.MSKuserhandle_t(unsafe.Pointer(t)))
+		C.MSK_putcallbackfunc(self.ptr(), (*[0]byte)(C.callbackfunc), C.MSKuserhandle_t(unsafe.Pointer(self)))
 	}
 }
 
-func (t *Task) PutInfoCallbackFunc(fun func(int32,[]float64,[]int32,[]int64) int) {
-	t.infcallbackfunc = fun
+func (self *Task) PutInfoCallbackFunc(fun func(int32,[]float64,[]int32,[]int64) int) {
+	self.infcallbackfunc = fun
 	if fun == nil {
-		C.MSK_putcallbackfunc(t.ptr(), nil, nil)
+		C.MSK_putcallbackfunc(self.ptr(), nil, nil)
 	} else {
-		C.MSK_putcallbackfunc(t.ptr(), (*[0]byte)(C.callbackfunc), C.MSKuserhandle_t(unsafe.Pointer(t)))
+		C.MSK_putcallbackfunc(self.ptr(), (*[0]byte)(C.callbackfunc), C.MSKuserhandle_t(unsafe.Pointer(self)))
 	}
 }
 
 func (e * Env)  ClearError() { e.r = MSK_RES_OK }
-func (t * Task) ClearError() { t.r = MSK_RES_OK }
+func (self * Task) ClearError() { self.r = MSK_RES_OK }
 
 //func (e * Env)  GetRes() int32 { return e.r }
 //func (t * Task) GetRes() int32 { return t.r }
