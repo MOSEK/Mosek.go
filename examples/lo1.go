@@ -10,7 +10,6 @@ import (
 	mosek "github.com/mosek/mosek.go"
 	"fmt"
 	"math"
-	"os"
 )
 
 func main() {
@@ -86,29 +85,31 @@ func main() {
 	/* for debugging purposes. */
 	task.SolutionSummary(mosek.MSK_STREAM_LOG)
 
-	var solsta int32
-	solsta = task.GetSolSta (mosek.MSK_SOL_BAS)
-
-        switch solsta {
-	case mosek.MSK_SOL_STA_OPTIMAL:
-		xx := task.GetXx(mosek.MSK_SOL_BAS, nil)
-
-		fmt.Println("Optimal primal solution")
-		fmt.Println("  x = ",xx)
-
-	case mosek.MSK_SOL_STA_DUAL_INFEAS_CER: fallthrough
-	case mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
-		fmt.Println("Primal or dual infeasibility certificate found.")
-	case mosek.MSK_SOL_STA_UNKNOWN:
-		/* If the solutions status is unknown, print the
+        if solsta,err := task.GetSolSta(mosek.MSK_SOL_BAS); err != nil {
+            panic(err)
+        } else {
+            switch solsta {
+            case mosek.MSK_SOL_STA_OPTIMAL:
+                if xx,err := task.GetXx(mosek.MSK_SOL_BAS); err != nil {
+                    panic(err)
+                } else {
+                    fmt.Println("Optimal primal solution")
+                    fmt.Println("  x = ",xx)
+                }
+            case mosek.MSK_SOL_STA_DUAL_INFEAS_CER: fallthrough
+            case mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
+                fmt.Println("Primal or dual infeasibility certificate found.")
+            case mosek.MSK_SOL_STA_UNKNOWN:
+                /* If the solutions status is unknown, print the
                 /* termination code indicating why the optimizer
                 /* terminated prematurely. */
 
-		symname,_,_ := mosek.GetCodeDesc(trmcode)
+                symname,_,_ := mosek.GetCodeDesc(trmcode)
 
-		fmt.Println("The solution status is unknown.")
-		fmt.Printf("The optimizer terminitated with code: %s\n",symname)
-	default:
-		fmt.Println("Other solution status.")
-	}
+                fmt.Println("The solution status is unknown.")
+                fmt.Printf("The optimizer terminitated with code: %s\n",symname)
+            default:
+                fmt.Println("Other solution status.")
+            }
+        }
 }

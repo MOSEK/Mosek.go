@@ -32,6 +32,6 @@ echo CGO_CFLAGS: $CGO_CFLAGS
 echo CGO_LDFLAGS: $CGO_LDFLAGS
 
 go build && \
-go build examples/lo1.go && \
-go build examples/qo1.go && \
-go build examples/cqo1.go
+go build -o build/lo1 examples/lo1.go && \
+go build -o build/qo1 examples/qo1.go && \
+go build -o build/cqo1 examples/cqo1.go

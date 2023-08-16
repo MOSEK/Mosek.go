@@ -212,7 +212,7 @@ class FuncGen(ag.BaseFuncGenerator):
                                         '}'])
             if atn != 'string':
                 self['prelude'].extend([f'var {tmp} *{argtp}'])
-                self['prelude'].append(f'if {n} != nil {{ {tmp} = (*{argtp})(&{n}[0]) }}')
+                self['prelude'].append(f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&{n}[0]) }}')
             else:
                 cctype = '(**C.char)' 
                 tmpl = self.tmpvargen()

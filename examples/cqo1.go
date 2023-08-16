@@ -6,7 +6,6 @@ package main
 
 import mosek "github.com/mosek/mosek.go"
 import "fmt"
-import "os"
 import "math"
 
 
@@ -15,17 +14,17 @@ func main() {
 	const numcon  int32 = 1
 	const numcone int32 = 2
 
-	bkc := []int32   { mosek.BK_FX }
+	bkc := []mosek.Boundkey { mosek.MSK_BK_FX }
 	blc := []float64 { 1.0 }
 	buc := []float64 { 1.0 }
 
-	bkx := []int32 {
-		mosek.BK_LO,
-		mosek.BK_LO,
-		mosek.BK_LO,
-		mosek.BK_FR,
-		mosek.BK_FR,
-		mosek.BK_FR }
+	bkx := []mosek.Boundkey {
+		mosek.MSK_BK_LO,
+		mosek.MSK_BK_LO,
+		mosek.MSK_BK_LO,
+		mosek.MSK_BK_FR,
+		mosek.MSK_BK_FR,
+		mosek.MSK_BK_FR }
 
 	blx := []float64 {
 		0.0,
@@ -49,24 +48,18 @@ func main() {
 	asub     := []int32   {   0,   0,   0 }
 	aval     := []float64 { 1.0, 1.0, 2.0 }
 
-	conetype := []int32   { mosek.CT_QUAD, mosek.CT_RQUAD }
+	conetype := []mosek.Conetype { mosek.MSK_CT_QUAD, mosek.MSK_CT_RQUAD }
 	coneptrb := []int32   { 0, 3 }
 	coneptre := []int32   { 3, 6 }
 	conesub := []int32 {
 		3, 0, 1,
 		4, 5, 2 }
 
-	var r int32
-
-        env,r := mosek.MakeEnv()
-        if r != 0 { os.Exit(1) }
-        defer env.DeleteEnv()
-        task,r := env.MakeTask()
-        if r != 0 { os.Exit(1) }
-
+        task,err := mosek.NewTask()
+        if err != nil { panic(err) }
 
 	/* Create the mosek environment. */
-	task.PutStreamFunc(mosek.STREAM_LOG,func(msg string) { fmt.Print(msg) })
+	task.PutStreamFunc(mosek.MSK_STREAM_LOG,func(msg string) { fmt.Print(msg) })
 
 	/* Append 'numcon' empty constraints. The constraints will initially have no bounds. */
         task.AppendCons(numcon)
@@ -96,38 +89,37 @@ func main() {
 
 
 	/* Run optimizer */
-	trmcode := task.Optimize()
-
-	if task.GetRes() != mosek.RES_OK { os.Exit(1) }
-
+	trmcode,err := task.Optimize(); if err != nil { panic(err) }
 
 	/* Print a summary containing information about the solution
 	/* for debugging purposes. */
-	task.SolutionSummary(mosek.STREAM_LOG)
+	task.SolutionSummary(mosek.MSK_STREAM_LOG)
 
-	solsta := task.GetSolSta (mosek.SOL_ITR)
-	if task.GetRes() != mosek.RES_OK { os.Exit(1) }
+        if solsta,err := task.GetSolSta (mosek.MSK_SOL_ITR); err != nil {
+            panic(err)
+        } else {
+            switch solsta {
+            case mosek.MSK_SOL_STA_OPTIMAL:
+                if xx,err := task.GetXx(mosek.MSK_SOL_ITR); err != nil {
+                    panic(err)
+                } else {
+                    fmt.Println("Optimal primal solution")
+                    fmt.Println("  x = ",xx)
+                }
+            case mosek.MSK_SOL_STA_DUAL_INFEAS_CER: fallthrough
+            case mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
+                    fmt.Println("Primal or dual infeasibility certificate found.")
+            case mosek.MSK_SOL_STA_UNKNOWN:
+                    /* If the solutions status is unknown, print the
+                    /* termination code indicating why the optimizer
+                    /* terminated prematurely. */
 
-        switch solsta {
-	case mosek.SOL_STA_OPTIMAL:
-		xx := task.GetXx(mosek.SOL_ITR, nil)
+                    symname,_,_ := mosek.GetCodeDesc(trmcode)
 
-		fmt.Println("Optimal primal solution")
-		fmt.Println("  x = ",xx)
-
-	case mosek.SOL_STA_DUAL_INFEAS_CER: fallthrough
-	case mosek.SOL_STA_PRIM_INFEAS_CER:
-		fmt.Println("Primal or dual infeasibility certificate found.")
-	case mosek.SOL_STA_UNKNOWN:
-		/* If the solutions status is unknown, print the
-                /* termination code indicating why the optimizer
-                /* terminated prematurely. */
-
-		symname,_,_ := mosek.GetCodeDesc(trmcode)
-
-		fmt.Println("The solution status is unknown.")
-		fmt.Printf("The optimizer terminitated with code: %s\n",symname)
-	default:
-		fmt.Println("Other solution status.")
-	}
+                    fmt.Println("The solution status is unknown.")
+                    fmt.Printf("The optimizer terminitated with code: %s\n",symname)
+            default:
+                    fmt.Println("Other solution status.")
+            }
+        }
 } /* main */
