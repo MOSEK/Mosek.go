@@ -6,6 +6,10 @@ may fix errors and bugs, but provide no guarantee on how or how quickly we do so
 The API has been tested on Linux x86-64, but may work on other posix platforms
 as well. It may require some tweaking to get it to build on Windows.
 
+# Versioning
+
+The `Major.Minor` part of the version corresponds to the MOSEK Version it requires.
+
 # Requirements
 
 - MOSEK tools
