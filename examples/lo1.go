@@ -1,10 +1,10 @@
-package main
 /*
   Purpose:   To demonstrate how to solve a small linear
              optimization problem using the MOSEK C API,
              and handle the solver result and the problem
              solution.
 */
+package main
 
 import (
 	mosek "github.com/mosek/mosek.go"
