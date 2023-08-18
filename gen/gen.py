@@ -168,9 +168,9 @@ class FuncGen(ag.BaseFuncGenerator):
         self.funname = func['name']
         self.funapiname = re.sub('-.',lambda o: o.group(0)[1].upper(),func.get('api-caml-name').capitalize())
 
-    def warn(self,msg,*args): logging.warning(msg,*args)
+    def warn(self,msg,*args):  logging.warning(msg,*args)
     def error(self,msg,*args): logging.error(msg,*args)
-    def info(self,msg,*args): logging.info(msg,*args)
+    def info(self,msg,*args):  logging.info(msg,*args)
     def codegen(self,code):
         return ComputeGen(code,self.jtis,self.__cls,self.__func,self.__tmpvargen)()
     def arg_classarg(self,a,tp,atn,ctn,n,argbrief,argdesc):
@@ -179,7 +179,6 @@ class FuncGen(ag.BaseFuncGenerator):
         self['nativearg'].append(f'{ctn}')
         self.__clsarg = a
         self.__clstp = atn
-        #self['funarg'].append(f'{n} {objecttypemap[atn]}')
     def arg_ptr(self,a,basetp,atn,ctn,n,minlength,indexof,isdefaultoarg,argbrief,argdesc):
         if atn == 'enum':
             self['nativearg'].append('int32_t *')
