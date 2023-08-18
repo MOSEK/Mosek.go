@@ -206,10 +206,16 @@ class FuncGen(ag.BaseFuncGenerator):
 
         if 'i' in a['mode']:
             if minlength:
-                self['prelude'].extend([f'if int64(len({n})) < int64({minlength.value}) {{',
-                                        f'''  err = &ArrayLengthError{{fun:"{self.funapiname}",arg:"{n}"}}''',
-                                        '  return',
-                                        '}'])
+                if a['null?']:
+                    self['prelude'].extend([f'if {n} != nil && int64(len({n})) < int64({minlength.value}) {{',
+                                            f'''  err = &ArrayLengthError{{fun:"{self.funapiname}",arg:"{n}"}}''',
+                                            '  return',
+                                            '}'])
+                else:
+                    self['prelude'].extend([f'if int64(len({n})) < int64({minlength.value}) {{',
+                                            f'''  err = &ArrayLengthError{{fun:"{self.funapiname}",arg:"{n}"}}''',
+                                            '  return',
+                                            '}'])
             if atn != 'string':
                 self['prelude'].extend([f'var {tmp} *{argtp}'])
                 self['prelude'].append(f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&{n}[0]) }}')
@@ -405,6 +411,7 @@ class APIGen(ag.BaseAPIGenerator):
             cname = ccname.capitalize()
             d['const'].append('')
             d['const'].append(f'type {cname} int32')
+
             if 'brief' in cc:
                 d['const'].extend([ '// '+l for l in cc['brief'].split('\n')])
             d['const'].append('const (')
@@ -415,6 +422,13 @@ class APIGen(ag.BaseAPIGenerator):
             if pfx:
                 d['const'].append(f'    MSK_{pfx}END {cname} = {v}')
             d['const'].append(')')
+            d['const'].extend([f'func (self {cname}) String() string {{',
+                               '  switch self {'])
+            d['const'].extend([f'    case MSK_{pfx}{k.upper()}: return "MSK_{pfx}{k.upper()}"' for k,_,_ in L ])
+
+            d['const'].extend(['    default: return "<unknown>"',
+                               '  }',
+                               f'}} // {cname}.String()'])
 
     def genfunc(self,dfunc,func,cls):
         fn = FuncGen(self.jtis,cls,func,self.__tmpvargen)
