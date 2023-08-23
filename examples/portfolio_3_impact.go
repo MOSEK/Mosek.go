@@ -1,7 +1,7 @@
 //
 //   Copyright : Copyright (c) MOSEK ApS, Denmark. All rights reserved.
 //
-//   File :      portfolio_3_impact.java
+//   File :      portfolio_3_impact.go
 //
 //   Purpose :   Implements a basic portfolio optimization model
 //               with transaction costs of the form x^(3/2).
