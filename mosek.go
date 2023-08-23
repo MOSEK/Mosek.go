@@ -95,30 +95,6 @@ func (self * Task) getlasterror(res C.int32_t) (Rescode,string) {
     }
 }
 
-////export streamfunc_log
-//func streamfunc_log(handle unsafe.Pointer, msg *C.char) {
-//	task := (*Task)(handle)
-//	if task.streamfunc[MSK_STREAM_LOG] != nil { task.streamfunc[MSK_STREAM_LOG](C.GoString(msg)) }
-//}
-//
-////export streamfunc_msg
-//func streamfunc_msg(handle unsafe.Pointer, msg *C.char) {
-//	task := (*Task)(handle)
-//	if task.streamfunc[MSK_STREAM_MSG] != nil { task.streamfunc[MSK_STREAM_MSG](C.GoString(msg)) }
-//}
-//
-////export streamfunc_wrn
-//func streamfunc_wrn(handle unsafe.Pointer, msg *C.char) {
-//	task := (*Task)(handle)
-//	if task.streamfunc[MSK_STREAM_WRN] != nil { task.streamfunc[MSK_STREAM_WRN](C.GoString(msg)) }
-//}
-//
-////export streamfunc_err
-//func streamfunc_err(handle unsafe.Pointer, msg *C.char) {
-//	task := (*Task)(handle)
-//	if task.streamfunc[MSK_STREAM_ERR] != nil { task.streamfunc[MSK_STREAM_ERR](C.GoString(msg)) }
-//}
-
 //export msk_cgo_streamfunc
 func msk_cgo_streamfunc(handle C.uintptr_t, msg * C.char) {
     if fun,ok := cgo.Handle(handle).Value().(func(string)); ok {

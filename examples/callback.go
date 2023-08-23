@@ -92,6 +92,7 @@ func makeUserCallback(maxtime float64) func(mosek.Callbackcode,[]float64,[]int32
             fmt.Printf("Basis identification finished.\n")
             break
           default:
+              //fmt.Printf("Other: %s\n",caller)
         }
 
         stop = opttime >= maxtime
