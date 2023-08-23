@@ -89,8 +89,7 @@ func main() {
                 fmt.Println("Optimal primal solution")
                 fmt.Println("  x = ",xx)
             }
-        case mosek.MSK_SOL_STA_DUAL_INFEAS_CER: fallthrough
-        case mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
+        case mosek.MSK_SOL_STA_DUAL_INFEAS_CER,mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
                 fmt.Println("Primal or dual infeasibility certificate found.")
         case mosek.MSK_SOL_STA_UNKNOWN:
                 /* If the solutions status is unknown, print the

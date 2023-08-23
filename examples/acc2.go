@@ -100,17 +100,12 @@ func main() {
             fmt.Printf("Dual doty value for the ACC: %v\n",doty);
             fmt.Printf("Activity for the ACC: %v\n",activity);
         }
-        break;
-    case mosek.MSK_SOL_STA_DUAL_INFEAS_CER:
-    case mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
+    case mosek.MSK_SOL_STA_DUAL_INFEAS_CER,mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
         fmt.Println("Primal or dual infeasibility.");
-        break;
     case mosek.MSK_SOL_STA_UNKNOWN:
         fmt.Println("Unknown solution status.");
-        break;
     default:
         fmt.Println("Other solution status");
-        break;
     }
 }
 

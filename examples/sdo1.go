@@ -125,16 +125,12 @@ func main() {
                 xx,err := task.GetXx(mosek.MSK_SOL_ITR); if err != nil { panic(err) }
                 barx,err := task.GetBarxJ(mosek.MSK_SOL_ITR, 0); if err != nil { panic(err) }    // Request the interior solution. 
                 fmt.Printf("Optimal primal solution: \n  xx   = %v\n  barx = %v\n",xx,barx);
-                break;
-            case mosek.MSK_SOL_STA_DUAL_INFEAS_CER:
-            case mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
+            case mosek.MSK_SOL_STA_DUAL_INFEAS_CER,mosek.MSK_SOL_STA_PRIM_INFEAS_CER:
                 fmt.Println("Primal or dual infeasibility certificate found.");
             case mosek.MSK_SOL_STA_UNKNOWN:
                 fmt.Println("The status of the solution could not be determined.");
-                break;
             default:
                 fmt.Println("Other solution status.");
-                break;
         }
     }
 }

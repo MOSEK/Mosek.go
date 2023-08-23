@@ -33,6 +33,7 @@ go run examples/lo1.go && \
 go run examples/qo1.go && \
 go run examples/cqo1.go && \
 go run examples/acc1.go && \
+go run examples/acc2.go && \
 go run examples/djc1.go && \
 go run examples/portfolio_1_basic.go && \
 go run examples/concurrent1.go examples/25fv47.mps
