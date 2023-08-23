@@ -3,7 +3,7 @@
 
 cd $(dirname $0)
 
-python3 gen/gen.py -o mosek.go gen/ais.json || exit 1
+python3 gen/gen.py -o functions.go gen/ais.json || exit 1
 
 MOSEKMAJORVER=$(sed 's/\([0-9]\+\)\.\([0-9]\+\)/\1/' < MOSEKVER)
 MOSEKMINORVER=$(sed 's/\([0-9]\+\)\.\([0-9]\+\)/\2/' < MOSEKVER)
@@ -29,6 +29,10 @@ echo CGO_CFLAGS: $CGO_CFLAGS
 echo CGO_LDFLAGS: $CGO_LDFLAGS
 
 go build && \
-go build -o build/lo1 examples/lo1.go && \
-go build -o build/qo1 examples/qo1.go && \
-go build -o build/cqo1 examples/cqo1.go
+go run examples/lo1.go && \
+go run examples/qo1.go && \
+go run examples/cqo1.go && \
+go run examples/acc1.go && \
+go run examples/djc1.go && \
+go run examples/portfolio_1_basic.go && \
+go run examples/concurrent1.go examples/25fv47.mps

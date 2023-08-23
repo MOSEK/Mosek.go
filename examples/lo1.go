@@ -48,6 +48,10 @@ func main() {
 
 	/* Directs the log task stream to the 'printstr' function. */
 	task.PutStreamFunc(mosek.MSK_STREAM_LOG,func(msg string) { fmt.Print(msg) })
+        task.PutCallbackFunc(func(code mosek.Callbackcode) bool{
+            fmt.Printf("Callback: %s\n",code)
+            return false
+        })
 
 	/* Append 'numcon' empty constraints. The constraints will
 	/* initially have no bounds. */

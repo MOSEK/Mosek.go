@@ -165,6 +165,7 @@ class FuncGen(ag.BaseFuncGenerator):
         self.__clstp = None
         self.__func = func
         self.__selfarg = None
+        self.__dontgenerate = None
         self.funname = func['name']
         self.funapiname = re.sub('-.',lambda o: o.group(0)[1].upper(),func.get('api-caml-name').capitalize())
 
@@ -194,10 +195,9 @@ class FuncGen(ag.BaseFuncGenerator):
             try:
                 argtp = atype2godecl(atn)
             except KeyError:
-                raise ag.DontGenerate(self.__func['name'],"Invalid type") 
+                self.__dontgenerate = "Invalid type"
             if argtp == 'void':
-                raise ag.DontGenerate(self.__func['name'],"Void pointer arguments not supported")
-        
+                self.__dontgenerate = "Void pointer arguments not supported"        
         tmp = self.tmpvargen()
 
         if minlength:
@@ -275,9 +275,11 @@ class FuncGen(ag.BaseFuncGenerator):
     def arg_ref_func(self,a,tp,rettype,argtypes,n,isdefaultoarg,argbrief,argdesc):
         raise DontGenerate("arg_ref_func() not implemented")
     def arg_refobj(self,a,basetp,atn,ctn,n,isdefaultoarg,argbrief,argdesc):
-        raise ag.DontGenerate(self.funname,"Not supported: Ref to object")
+        self['nativearg'].append(f'{ctn}*')
+        self.__dontgenerate = "Not supported: Ref to object"
     def arg_refptr(self,a,basetp,atn,ctn,n,lenarg,minlength,isdefaultoarg,argbrief,argdesc):
-        raise ag.DontGenerate(self.funname,"Not supported: Ref to pointer")
+        self['nativearg'].append(f'{ctn}**')
+        self.__dontgenerate = "Not supported: Ref to pointer"
     def arg_instring(self,a,tp,atn,ctn,n,argbrief,argdesc):
         self['nativearg'].append(f'const char *')
         self['funarg'].append((f'{n} string',argbrief))
@@ -319,7 +321,8 @@ class FuncGen(ag.BaseFuncGenerator):
         else:
             assert False
     def arg_obj(self,a,tp,atn,ctn,n,argbrief,argdesc):
-        raise ag.DontGenerate(self.funname,"Not supported: Non-class-arg object arguments")
+        self['nativearg'].append(ctn)
+        self.__dontgenerate = "Not supported: Non-class-arg object arguments"
     def arg_value(self,a,tp,atn,ctn,n,argbrief,argdesc):
         if atn == 'enum':
             self['nativearg'].append('int32_t')
@@ -340,6 +343,11 @@ class FuncGen(ag.BaseFuncGenerator):
     def genfunc(self,d,func,funname,apiname,brief,desc):
         if func['status'] == 'internal':
             raise ag.DontGenerate(self.__func['name'],"Invalid type") 
+        nargs = ','.join(self['nativearg'])
+        d['extern'].append(f'extern int MSK_{self.funname}({nargs});')
+        if self.__dontgenerate is not None:
+            raise ag.DontGenerate(self.__func['name'],self.__dontgenerate)
+
 
         callargs = ','.join(self['callarg'])
         funargs  = ','.join([ a for (a,b) in self['funarg']])
@@ -387,8 +395,6 @@ class FuncGen(ag.BaseFuncGenerator):
         d['funimpl'].append('}')
 
 
-        nargs = ','.join(self['nativearg'])
-        d['extern'].append(f'extern int MSK_{self.funname}({nargs});')
 
 class APIGen(ag.BaseAPIGenerator):
     def __init__(self,
