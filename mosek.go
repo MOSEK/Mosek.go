@@ -39,10 +39,7 @@ import (
 	"fmt"
 	"runtime/cgo"
 	"unsafe"
-
-	//"golang.org/x/tools/go/analysis/passes/nilfunc"
 )
-
 
 // Mosek response and error message
 type MosekError struct {
