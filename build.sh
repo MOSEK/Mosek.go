@@ -37,6 +37,7 @@ go run examples/acc2.go && \
 go run examples/djc1.go && \
 go run examples/sdo1.go && \
 go run examples/pow1.go && \
+go run examples/solvelinear.go && \
 go run examples/callback.go && \
 go run examples/portfolio_1_basic.go && \
 go run examples/portfolio_2_frontier.go && \
