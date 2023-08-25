@@ -13320,10 +13320,53 @@ func (self *Env) Axpy(n int32,alpha float64,x []float64,y []float64) (err error)
   return
 }
 
+// Computes vector addition and multiplication by a scalar.
+//
+// - n int32
+//   Length of the vectors.
+// - alpha float64
+//   The scalar that multiplies x.
+// - x []float64
+//   The x vector.
+// - y []float64
+//   The y vector.
+func Axpy(n int32,alpha float64,x []float64,y []float64) (err error) {
+  self := &globalenv
+  if int64(len(x)) < int64(n) {
+    err = &ArrayLengthError{fun:"Axpy",arg:"x"}
+    return
+  }
+  var _tmp1330 *float64
+  if len(x) > 0 { _tmp1330 = (*float64)(&x[0]) }
+  if int64(len(y)) < int64(n) {
+    err = &ArrayLengthError{fun:"Axpy",arg:"y"}
+    return
+  }
+  var _tmp1331 *float64
+  if len(y) > 0 { _tmp1331 = (*float64)(&y[0]) }
+  if _tmp1333 := C.MSK_axpy(self.ptr(),C.int32_t(n),C.double(alpha),(*C.double)(_tmp1330),(*C.double)(_tmp1331)); _tmp1333 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1333)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
 // Check in all unused license features to the license token server.
 func (self *Env) CheckInAll() (err error) {
-  if _tmp1333 := C.MSK_checkinall(self.ptr()); _tmp1333 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1333)
+  if _tmp1334 := C.MSK_checkinall(self.ptr()); _tmp1334 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1334)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Check in all unused license features to the license token server.
+func CheckInAll() (err error) {
+  self := &globalenv
+  if _tmp1335 := C.MSK_checkinall(self.ptr()); _tmp1335 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1335)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13335,8 +13378,22 @@ func (self *Env) CheckInAll() (err error) {
 // - feature Feature
 //   Feature to check in to the license system.
 func (self *Env) CheckInLicense(feature Feature) (err error) {
-  if _tmp1334 := C.MSK_checkinlicense(self.ptr(),C.int32_t(feature)); _tmp1334 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1334)
+  if _tmp1336 := C.MSK_checkinlicense(self.ptr(),C.int32_t(feature)); _tmp1336 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1336)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Check in a license feature back to the license server ahead of time.
+//
+// - feature Feature
+//   Feature to check in to the license system.
+func CheckInLicense(feature Feature) (err error) {
+  self := &globalenv
+  if _tmp1337 := C.MSK_checkinlicense(self.ptr(),C.int32_t(feature)); _tmp1337 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1337)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13348,8 +13405,22 @@ func (self *Env) CheckInLicense(feature Feature) (err error) {
 // - feature Feature
 //   Feature to check out from the license system.
 func (self *Env) CheckOutLicense(feature Feature) (err error) {
-  if _tmp1335 := C.MSK_checkoutlicense(self.ptr(),C.int32_t(feature)); _tmp1335 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1335)
+  if _tmp1338 := C.MSK_checkoutlicense(self.ptr(),C.int32_t(feature)); _tmp1338 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1338)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Check out a license feature from the license server ahead of time.
+//
+// - feature Feature
+//   Feature to check out from the license system.
+func CheckOutLicense(feature Feature) (err error) {
+  self := &globalenv
+  if _tmp1339 := C.MSK_checkoutlicense(self.ptr(),C.int32_t(feature)); _tmp1339 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1339)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13371,16 +13442,48 @@ func (self *Env) Dot(n int32,x []float64,y []float64) (xty float64,err error) {
     err = &ArrayLengthError{fun:"Dot",arg:"x"}
     return
   }
-  var _tmp1336 *float64
-  if len(x) > 0 { _tmp1336 = (*float64)(&x[0]) }
+  var _tmp1340 *float64
+  if len(x) > 0 { _tmp1340 = (*float64)(&x[0]) }
   if int64(len(y)) < int64(n) {
     err = &ArrayLengthError{fun:"Dot",arg:"y"}
     return
   }
-  var _tmp1337 *float64
-  if len(y) > 0 { _tmp1337 = (*float64)(&y[0]) }
-  if _tmp1338 := C.MSK_dot(self.ptr(),C.int32_t(n),(*C.double)(_tmp1336),(*C.double)(_tmp1337),(*C.double)(&xty)); _tmp1338 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1338)
+  var _tmp1341 *float64
+  if len(y) > 0 { _tmp1341 = (*float64)(&y[0]) }
+  if _tmp1342 := C.MSK_dot(self.ptr(),C.int32_t(n),(*C.double)(_tmp1340),(*C.double)(_tmp1341),(*C.double)(&xty)); _tmp1342 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1342)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Computes the inner product of two vectors.
+//
+// - n int32
+//   Length of the vectors.
+// - x []float64
+//   The x vector.
+// - y []float64
+//   The y vector.
+// - xty float64
+//   The result of the inner product.
+func Dot(n int32,x []float64,y []float64) (xty float64,err error) {
+  self := &globalenv
+  if int64(len(x)) < int64(n) {
+    err = &ArrayLengthError{fun:"Dot",arg:"x"}
+    return
+  }
+  var _tmp1340 *float64
+  if len(x) > 0 { _tmp1340 = (*float64)(&x[0]) }
+  if int64(len(y)) < int64(n) {
+    err = &ArrayLengthError{fun:"Dot",arg:"y"}
+    return
+  }
+  var _tmp1341 *float64
+  if len(y) > 0 { _tmp1341 = (*float64)(&y[0]) }
+  if _tmp1343 := C.MSK_dot(self.ptr(),C.int32_t(n),(*C.double)(_tmp1340),(*C.double)(_tmp1341),(*C.double)(&xty)); _tmp1343 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1343)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13392,8 +13495,22 @@ func (self *Env) Dot(n int32,x []float64,y []float64) (xty float64,err error) {
 // - longver int32
 //   If non-zero, then the intro is slightly longer.
 func (self *Env) EchoIntro(longver int32) (err error) {
-  if _tmp1339 := C.MSK_echointro(self.ptr(),C.int32_t(longver)); _tmp1339 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1339)
+  if _tmp1344 := C.MSK_echointro(self.ptr(),C.int32_t(longver)); _tmp1344 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1344)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Prints an intro to message stream.
+//
+// - longver int32
+//   If non-zero, then the intro is slightly longer.
+func EchoIntro(longver int32) (err error) {
+  self := &globalenv
+  if _tmp1345 := C.MSK_echointro(self.ptr(),C.int32_t(longver)); _tmp1345 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1345)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13405,8 +13522,22 @@ func (self *Env) EchoIntro(longver int32) (err error) {
 // - expiry int64
 //   If nonnegative, then it is the minimum number days to expiry of any feature that has been checked out.
 func (self *Env) Expirylicenses() (expiry int64,err error) {
-  if _tmp1340 := C.MSK_expirylicenses(self.ptr(),(*C.int64_t)(&expiry)); _tmp1340 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1340)
+  if _tmp1346 := C.MSK_expirylicenses(self.ptr(),(*C.int64_t)(&expiry)); _tmp1346 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1346)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Reports when the first license feature expires.
+//
+// - expiry int64
+//   If nonnegative, then it is the minimum number days to expiry of any feature that has been checked out.
+func Expirylicenses() (expiry int64,err error) {
+  self := &globalenv
+  if _tmp1347 := C.MSK_expirylicenses(self.ptr(),(*C.int64_t)(&expiry)); _tmp1347 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1347)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13440,22 +13571,72 @@ func (self *Env) Gemm(transa Transpose,transb Transpose,m int32,n int32,k int32,
     err = &ArrayLengthError{fun:"Gemm",arg:"a"}
     return
   }
-  var _tmp1341 *float64
-  if len(a) > 0 { _tmp1341 = (*float64)(&a[0]) }
+  var _tmp1348 *float64
+  if len(a) > 0 { _tmp1348 = (*float64)(&a[0]) }
   if int64(len(b)) < int64((k * n)) {
     err = &ArrayLengthError{fun:"Gemm",arg:"b"}
     return
   }
-  var _tmp1342 *float64
-  if len(b) > 0 { _tmp1342 = (*float64)(&b[0]) }
+  var _tmp1349 *float64
+  if len(b) > 0 { _tmp1349 = (*float64)(&b[0]) }
   if int64(len(c)) < int64((m * n)) {
     err = &ArrayLengthError{fun:"Gemm",arg:"c"}
     return
   }
-  var _tmp1343 *float64
-  if len(c) > 0 { _tmp1343 = (*float64)(&c[0]) }
-  if _tmp1344 := C.MSK_gemm(self.ptr(),C.int32_t(transa),C.int32_t(transb),C.int32_t(m),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1341),(*C.double)(_tmp1342),C.double(beta),(*C.double)(_tmp1343)); _tmp1344 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1344)
+  var _tmp1350 *float64
+  if len(c) > 0 { _tmp1350 = (*float64)(&c[0]) }
+  if _tmp1351 := C.MSK_gemm(self.ptr(),C.int32_t(transa),C.int32_t(transb),C.int32_t(m),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1348),(*C.double)(_tmp1349),C.double(beta),(*C.double)(_tmp1350)); _tmp1351 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1351)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Performs a dense matrix multiplication.
+//
+// - transa Transpose
+//   Indicates whether the matrix A must be transposed.
+// - transb Transpose
+//   Indicates whether the matrix B must be transposed.
+// - m int32
+//   Indicates the number of rows of matrix C.
+// - n int32
+//   Indicates the number of columns of matrix C.
+// - k int32
+//   Specifies the common dimension along which op(A) and op(B) are multiplied.
+// - alpha float64
+//   A scalar value multiplying the result of the matrix multiplication.
+// - a []float64
+//   The pointer to the array storing matrix A in a column-major format.
+// - b []float64
+//   The pointer to the array storing matrix B in a column-major format.
+// - beta float64
+//   A scalar value that multiplies C.
+// - c []float64
+//   The pointer to the array storing matrix C in a column-major format.
+func Gemm(transa Transpose,transb Transpose,m int32,n int32,k int32,alpha float64,a []float64,b []float64,beta float64,c []float64) (err error) {
+  self := &globalenv
+  if int64(len(a)) < int64((m * k)) {
+    err = &ArrayLengthError{fun:"Gemm",arg:"a"}
+    return
+  }
+  var _tmp1348 *float64
+  if len(a) > 0 { _tmp1348 = (*float64)(&a[0]) }
+  if int64(len(b)) < int64((k * n)) {
+    err = &ArrayLengthError{fun:"Gemm",arg:"b"}
+    return
+  }
+  var _tmp1349 *float64
+  if len(b) > 0 { _tmp1349 = (*float64)(&b[0]) }
+  if int64(len(c)) < int64((m * n)) {
+    err = &ArrayLengthError{fun:"Gemm",arg:"c"}
+    return
+  }
+  var _tmp1350 *float64
+  if len(c) > 0 { _tmp1350 = (*float64)(&c[0]) }
+  if _tmp1352 := C.MSK_gemm(self.ptr(),C.int32_t(transa),C.int32_t(transb),C.int32_t(m),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1348),(*C.double)(_tmp1349),C.double(beta),(*C.double)(_tmp1350)); _tmp1352 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1352)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13485,34 +13666,92 @@ func (self *Env) Gemv(transa Transpose,m int32,n int32,alpha float64,a []float64
     err = &ArrayLengthError{fun:"Gemv",arg:"a"}
     return
   }
-  var _tmp1345 *float64
-  if len(a) > 0 { _tmp1345 = (*float64)(&a[0]) }
-  var _tmp1346 C.int32_t
+  var _tmp1353 *float64
+  if len(a) > 0 { _tmp1353 = (*float64)(&a[0]) }
+  var _tmp1354 C.int32_t
   if (transa == MSK_TRANSPOSE_NO) {
-    _tmp1346 = (C.int32_t)(n)
+    _tmp1354 = (C.int32_t)(n)
   } else {
-    _tmp1346 = (C.int32_t)(m)
+    _tmp1354 = (C.int32_t)(m)
   }
-  if int64(len(x)) < int64(_tmp1346) {
+  if int64(len(x)) < int64(_tmp1354) {
     err = &ArrayLengthError{fun:"Gemv",arg:"x"}
     return
   }
-  var _tmp1347 *float64
-  if len(x) > 0 { _tmp1347 = (*float64)(&x[0]) }
-  var _tmp1348 C.int32_t
+  var _tmp1355 *float64
+  if len(x) > 0 { _tmp1355 = (*float64)(&x[0]) }
+  var _tmp1356 C.int32_t
   if (transa == MSK_TRANSPOSE_NO) {
-    _tmp1348 = (C.int32_t)(m)
+    _tmp1356 = (C.int32_t)(m)
   } else {
-    _tmp1348 = (C.int32_t)(n)
+    _tmp1356 = (C.int32_t)(n)
   }
-  if int64(len(y)) < int64(_tmp1348) {
+  if int64(len(y)) < int64(_tmp1356) {
     err = &ArrayLengthError{fun:"Gemv",arg:"y"}
     return
   }
-  var _tmp1349 *float64
-  if len(y) > 0 { _tmp1349 = (*float64)(&y[0]) }
-  if _tmp1350 := C.MSK_gemv(self.ptr(),C.int32_t(transa),C.int32_t(m),C.int32_t(n),C.double(alpha),(*C.double)(_tmp1345),(*C.double)(_tmp1347),C.double(beta),(*C.double)(_tmp1349)); _tmp1350 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1350)
+  var _tmp1357 *float64
+  if len(y) > 0 { _tmp1357 = (*float64)(&y[0]) }
+  if _tmp1358 := C.MSK_gemv(self.ptr(),C.int32_t(transa),C.int32_t(m),C.int32_t(n),C.double(alpha),(*C.double)(_tmp1353),(*C.double)(_tmp1355),C.double(beta),(*C.double)(_tmp1357)); _tmp1358 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1358)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Computes dense matrix times a dense vector product.
+//
+// - transa Transpose
+//   Indicates whether the matrix A must be transposed.
+// - m int32
+//   Specifies the number of rows of the matrix A.
+// - n int32
+//   Specifies the number of columns of the matrix A.
+// - alpha float64
+//   A scalar value multiplying the matrix A.
+// - a []float64
+//   A pointer to the array storing matrix A in a column-major format.
+// - x []float64
+//   A pointer to the array storing the vector x.
+// - beta float64
+//   A scalar value multiplying the vector y.
+// - y []float64
+//   A pointer to the array storing the vector y.
+func Gemv(transa Transpose,m int32,n int32,alpha float64,a []float64,x []float64,beta float64,y []float64) (err error) {
+  self := &globalenv
+  if int64(len(a)) < int64((n * m)) {
+    err = &ArrayLengthError{fun:"Gemv",arg:"a"}
+    return
+  }
+  var _tmp1353 *float64
+  if len(a) > 0 { _tmp1353 = (*float64)(&a[0]) }
+  var _tmp1354 C.int32_t
+  if (transa == MSK_TRANSPOSE_NO) {
+    _tmp1354 = (C.int32_t)(n)
+  } else {
+    _tmp1354 = (C.int32_t)(m)
+  }
+  if int64(len(x)) < int64(_tmp1354) {
+    err = &ArrayLengthError{fun:"Gemv",arg:"x"}
+    return
+  }
+  var _tmp1355 *float64
+  if len(x) > 0 { _tmp1355 = (*float64)(&x[0]) }
+  var _tmp1356 C.int32_t
+  if (transa == MSK_TRANSPOSE_NO) {
+    _tmp1356 = (C.int32_t)(m)
+  } else {
+    _tmp1356 = (C.int32_t)(n)
+  }
+  if int64(len(y)) < int64(_tmp1356) {
+    err = &ArrayLengthError{fun:"Gemv",arg:"y"}
+    return
+  }
+  var _tmp1357 *float64
+  if len(y) > 0 { _tmp1357 = (*float64)(&y[0]) }
+  if _tmp1359 := C.MSK_gemv(self.ptr(),C.int32_t(transa),C.int32_t(m),C.int32_t(n),C.double(alpha),(*C.double)(_tmp1353),(*C.double)(_tmp1355),C.double(beta),(*C.double)(_tmp1357)); _tmp1359 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1359)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13528,21 +13767,21 @@ func (self *Env) Gemv(transa Transpose,m int32,n int32,alpha float64,a []float64
 // - str string
 //   Obtains a short description of a response code.
 func GetCodeDesc(code Rescode) (symname string,str string,err error) {
-  _tmp1351 := make([]byte,MSK_MAX_STR_LEN)
-  _tmp1352 := make([]byte,MSK_MAX_STR_LEN)
-  if _tmp1353 := C.MSK_getcodedesc(C.int32_t(code),(*C.uchar)(&_tmp1351[0]),(*C.uchar)(&_tmp1352[0])); _tmp1353 != 0 {
-    err = &MosekError{ code:Rescode(_tmp1353) }
+  _tmp1360 := make([]byte,MSK_MAX_STR_LEN)
+  _tmp1361 := make([]byte,MSK_MAX_STR_LEN)
+  if _tmp1362 := C.MSK_getcodedesc(C.int32_t(code),(*C.uchar)(&_tmp1360[0]),(*C.uchar)(&_tmp1361[0])); _tmp1362 != 0 {
+    err = &MosekError{ code:Rescode(_tmp1362) }
     return
   }
-  if p := bytes.IndexByte(_tmp1351,byte(0)); p < 0 {
-    symname = string(_tmp1351)
+  if p := bytes.IndexByte(_tmp1360,byte(0)); p < 0 {
+    symname = string(_tmp1360)
   } else {
-    symname = string(_tmp1351[:p])
+    symname = string(_tmp1360[:p])
   }
-  if p := bytes.IndexByte(_tmp1352,byte(0)); p < 0 {
-    str = string(_tmp1352)
+  if p := bytes.IndexByte(_tmp1361,byte(0)); p < 0 {
+    str = string(_tmp1361)
   } else {
-    str = string(_tmp1352[:p])
+    str = string(_tmp1361[:p])
   }
   return
 }
@@ -13556,8 +13795,8 @@ func GetCodeDesc(code Rescode) (symname string,str string,err error) {
 // - revision int32
 //   Revision number.
 func GetVersion() (major int32,minor int32,revision int32,err error) {
-  if _tmp1354 := C.MSK_getversion((*C.int32_t)(&major),(*C.int32_t)(&minor),(*C.int32_t)(&revision)); _tmp1354 != 0 {
-    err = &MosekError{ code:Rescode(_tmp1354) }
+  if _tmp1363 := C.MSK_getversion((*C.int32_t)(&major),(*C.int32_t)(&minor),(*C.int32_t)(&revision)); _tmp1363 != 0 {
+    err = &MosekError{ code:Rescode(_tmp1363) }
     return
   }
   return
@@ -13565,8 +13804,8 @@ func GetVersion() (major int32,minor int32,revision int32,err error) {
 
 // Stops all threads and delete all handles used by the license system.
 func LicenseCleanup() (err error) {
-  if _tmp1355 := C.MSK_licensecleanup(); _tmp1355 != 0 {
-    err = &MosekError{ code:Rescode(_tmp1355) }
+  if _tmp1364 := C.MSK_licensecleanup(); _tmp1364 != 0 {
+    err = &MosekError{ code:Rescode(_tmp1364) }
     return
   }
   return
@@ -13581,9 +13820,28 @@ func LicenseCleanup() (err error) {
 // - append int32
 //   If this argument is 0 the file will be overwritten, otherwise it will be appended to.
 func (self *Env) Linkfiletostream(whichstream Streamtype,filename string,append int32) (err error) {
-  _tmp1356 := C.CString(filename)
-  if _tmp1357 := C.MSK_linkfiletoenvstream(self.ptr(),C.int32_t(whichstream),_tmp1356,C.int32_t(append)); _tmp1357 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1357)
+  _tmp1365 := C.CString(filename)
+  if _tmp1366 := C.MSK_linkfiletoenvstream(self.ptr(),C.int32_t(whichstream),_tmp1365,C.int32_t(append)); _tmp1366 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1366)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Directs all output from a stream to a file.
+//
+// - whichstream Streamtype
+//   Index of the stream.
+// - filename string
+//   A valid file name.
+// - append int32
+//   If this argument is 0 the file will be overwritten, otherwise it will be appended to.
+func Linkfiletostream(whichstream Streamtype,filename string,append int32) (err error) {
+  self := &globalenv
+  _tmp1365 := C.CString(filename)
+  if _tmp1367 := C.MSK_linkfiletoenvstream(self.ptr(),C.int32_t(whichstream),_tmp1365,C.int32_t(append)); _tmp1367 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1367)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13603,10 +13861,34 @@ func (self *Env) Potrf(uplo Uplo,n int32,a []float64) (err error) {
     err = &ArrayLengthError{fun:"Potrf",arg:"a"}
     return
   }
-  var _tmp1358 *float64
-  if len(a) > 0 { _tmp1358 = (*float64)(&a[0]) }
-  if _tmp1359 := C.MSK_potrf(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1358)); _tmp1359 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1359)
+  var _tmp1368 *float64
+  if len(a) > 0 { _tmp1368 = (*float64)(&a[0]) }
+  if _tmp1369 := C.MSK_potrf(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1368)); _tmp1369 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1369)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Computes a Cholesky factorization of a dense matrix.
+//
+// - uplo Uplo
+//   Indicates whether the upper or lower triangular part of the matrix is stored.
+// - n int32
+//   Dimension of the symmetric matrix.
+// - a []float64
+//   A symmetric matrix stored in column-major order.
+func Potrf(uplo Uplo,n int32,a []float64) (err error) {
+  self := &globalenv
+  if int64(len(a)) < int64((n * n)) {
+    err = &ArrayLengthError{fun:"Potrf",arg:"a"}
+    return
+  }
+  var _tmp1368 *float64
+  if len(a) > 0 { _tmp1368 = (*float64)(&a[0]) }
+  if _tmp1370 := C.MSK_potrf(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1368)); _tmp1370 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1370)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13622,10 +13904,30 @@ func (self *Env) PutLicenseCode(code []int32) (err error) {
     err = &ArrayLengthError{fun:"PutLicenseCode",arg:"code"}
     return
   }
-  var _tmp1360 *int32
-  if len(code) > 0 { _tmp1360 = (*int32)(&code[0]) }
-  if _tmp1361 := C.MSK_putlicensecode(self.ptr(),(*C.int32_t)(_tmp1360)); _tmp1361 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1361)
+  var _tmp1371 *int32
+  if len(code) > 0 { _tmp1371 = (*int32)(&code[0]) }
+  if _tmp1372 := C.MSK_putlicensecode(self.ptr(),(*C.int32_t)(_tmp1371)); _tmp1372 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1372)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Input a runtime license code.
+//
+// - code []int32
+//   A license key string.
+func PutLicenseCode(code []int32) (err error) {
+  self := &globalenv
+  if code != nil && int64(len(code)) < int64(MSK_LICENSE_BUFFER_LENGTH) {
+    err = &ArrayLengthError{fun:"PutLicenseCode",arg:"code"}
+    return
+  }
+  var _tmp1371 *int32
+  if len(code) > 0 { _tmp1371 = (*int32)(&code[0]) }
+  if _tmp1373 := C.MSK_putlicensecode(self.ptr(),(*C.int32_t)(_tmp1371)); _tmp1373 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1373)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13637,8 +13939,22 @@ func (self *Env) PutLicenseCode(code []int32) (err error) {
 // - licdebug int32
 //   Enable output of license check-out debug information.
 func (self *Env) PutLicenseDebug(licdebug int32) (err error) {
-  if _tmp1362 := C.MSK_putlicensedebug(self.ptr(),C.int32_t(licdebug)); _tmp1362 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1362)
+  if _tmp1374 := C.MSK_putlicensedebug(self.ptr(),C.int32_t(licdebug)); _tmp1374 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1374)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Enables debug information for the license system.
+//
+// - licdebug int32
+//   Enable output of license check-out debug information.
+func PutLicenseDebug(licdebug int32) (err error) {
+  self := &globalenv
+  if _tmp1375 := C.MSK_putlicensedebug(self.ptr(),C.int32_t(licdebug)); _tmp1375 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1375)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13650,9 +13966,24 @@ func (self *Env) PutLicenseDebug(licdebug int32) (err error) {
 // - licensepath string
 //   A path specifying where to search for the license.
 func (self *Env) PutLicensePath(licensepath string) (err error) {
-  _tmp1363 := C.CString(licensepath)
-  if _tmp1364 := C.MSK_putlicensepath(self.ptr(),_tmp1363); _tmp1364 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1364)
+  _tmp1376 := C.CString(licensepath)
+  if _tmp1377 := C.MSK_putlicensepath(self.ptr(),_tmp1376); _tmp1377 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1377)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Set the path to the license file.
+//
+// - licensepath string
+//   A path specifying where to search for the license.
+func PutLicensePath(licensepath string) (err error) {
+  self := &globalenv
+  _tmp1376 := C.CString(licensepath)
+  if _tmp1378 := C.MSK_putlicensepath(self.ptr(),_tmp1376); _tmp1378 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1378)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13664,8 +13995,22 @@ func (self *Env) PutLicensePath(licensepath string) (err error) {
 // - licwait int32
 //   Enable waiting for a license.
 func (self *Env) PutLicenseWait(licwait int32) (err error) {
-  if _tmp1365 := C.MSK_putlicensewait(self.ptr(),C.int32_t(licwait)); _tmp1365 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1365)
+  if _tmp1379 := C.MSK_putlicensewait(self.ptr(),C.int32_t(licwait)); _tmp1379 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1379)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Control whether mosek should wait for an available license if no license is available.
+//
+// - licwait int32
+//   Enable waiting for a license.
+func PutLicenseWait(licwait int32) (err error) {
+  self := &globalenv
+  if _tmp1380 := C.MSK_putlicensewait(self.ptr(),C.int32_t(licwait)); _tmp1380 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1380)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13674,8 +14019,19 @@ func (self *Env) PutLicenseWait(licwait int32) (err error) {
 
 // Reset the license expiry reporting startpoint.
 func (self *Env) ResetExpiryLicenses() (err error) {
-  if _tmp1366 := C.MSK_resetexpirylicenses(self.ptr()); _tmp1366 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1366)
+  if _tmp1381 := C.MSK_resetexpirylicenses(self.ptr()); _tmp1381 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1381)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Reset the license expiry reporting startpoint.
+func ResetExpiryLicenses() (err error) {
+  self := &globalenv
+  if _tmp1382 := C.MSK_resetexpirylicenses(self.ptr()); _tmp1382 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1382)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13697,13 +14053,42 @@ func (self *Env) Syeig(uplo Uplo,n int32,a []float64) (w []float64,err error) {
     err = &ArrayLengthError{fun:"Syeig",arg:"a"}
     return
   }
-  var _tmp1367 *float64
-  if len(a) > 0 { _tmp1367 = (*float64)(&a[0]) }
-  var _tmp1368 *float64
+  var _tmp1383 *float64
+  if len(a) > 0 { _tmp1383 = (*float64)(&a[0]) }
+  var _tmp1384 *float64
   w = make([]float64,n)
-  if len(w) > 0 { _tmp1368 = (*float64)(&w[0]) }
-  if _tmp1369 := C.MSK_syeig(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1367),(*C.double)(_tmp1368)); _tmp1369 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1369)
+  if len(w) > 0 { _tmp1384 = (*float64)(&w[0]) }
+  if _tmp1385 := C.MSK_syeig(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1383),(*C.double)(_tmp1384)); _tmp1385 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1385)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Computes all eigenvalues of a symmetric dense matrix.
+//
+// - uplo Uplo
+//   Indicates whether the upper or lower triangular part is used.
+// - n int32
+//   Dimension of the symmetric input matrix.
+// - a []float64
+//   Input matrix A.
+// - w []float64
+//   Array of length at least n containing the eigenvalues of A.
+func Syeig(uplo Uplo,n int32,a []float64) (w []float64,err error) {
+  self := &globalenv
+  if int64(len(a)) < int64((n * n)) {
+    err = &ArrayLengthError{fun:"Syeig",arg:"a"}
+    return
+  }
+  var _tmp1383 *float64
+  if len(a) > 0 { _tmp1383 = (*float64)(&a[0]) }
+  var _tmp1384 *float64
+  w = make([]float64,n)
+  if len(w) > 0 { _tmp1384 = (*float64)(&w[0]) }
+  if _tmp1386 := C.MSK_syeig(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1383),(*C.double)(_tmp1384)); _tmp1386 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1386)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13725,13 +14110,42 @@ func (self *Env) Syevd(uplo Uplo,n int32,a []float64) (w []float64,err error) {
     err = &ArrayLengthError{fun:"Syevd",arg:"a"}
     return
   }
-  var _tmp1370 *float64
-  if len(a) > 0 { _tmp1370 = (*float64)(&a[0]) }
-  var _tmp1371 *float64
+  var _tmp1387 *float64
+  if len(a) > 0 { _tmp1387 = (*float64)(&a[0]) }
+  var _tmp1388 *float64
   w = make([]float64,n)
-  if len(w) > 0 { _tmp1371 = (*float64)(&w[0]) }
-  if _tmp1372 := C.MSK_syevd(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1370),(*C.double)(_tmp1371)); _tmp1372 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1372)
+  if len(w) > 0 { _tmp1388 = (*float64)(&w[0]) }
+  if _tmp1389 := C.MSK_syevd(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1387),(*C.double)(_tmp1388)); _tmp1389 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1389)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Computes all the eigenvalues and eigenvectors of a symmetric dense matrix, and thus its eigenvalue decomposition.
+//
+// - uplo Uplo
+//   Indicates whether the upper or lower triangular part is used.
+// - n int32
+//   Dimension of the symmetric input matrix.
+// - a []float64
+//   Input matrix A.
+// - w []float64
+//   Array of length at least n containing the eigenvalues of A.
+func Syevd(uplo Uplo,n int32,a []float64) (w []float64,err error) {
+  self := &globalenv
+  if int64(len(a)) < int64((n * n)) {
+    err = &ArrayLengthError{fun:"Syevd",arg:"a"}
+    return
+  }
+  var _tmp1387 *float64
+  if len(a) > 0 { _tmp1387 = (*float64)(&a[0]) }
+  var _tmp1388 *float64
+  w = make([]float64,n)
+  if len(w) > 0 { _tmp1388 = (*float64)(&w[0]) }
+  if _tmp1390 := C.MSK_syevd(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1387),(*C.double)(_tmp1388)); _tmp1390 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1390)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13761,16 +14175,56 @@ func (self *Env) Syrk(uplo Uplo,trans Transpose,n int32,k int32,alpha float64,a 
     err = &ArrayLengthError{fun:"Syrk",arg:"a"}
     return
   }
-  var _tmp1373 *float64
-  if len(a) > 0 { _tmp1373 = (*float64)(&a[0]) }
+  var _tmp1391 *float64
+  if len(a) > 0 { _tmp1391 = (*float64)(&a[0]) }
   if int64(len(c)) < int64((n * n)) {
     err = &ArrayLengthError{fun:"Syrk",arg:"c"}
     return
   }
-  var _tmp1374 *float64
-  if len(c) > 0 { _tmp1374 = (*float64)(&c[0]) }
-  if _tmp1375 := C.MSK_syrk(self.ptr(),C.int32_t(uplo),C.int32_t(trans),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1373),C.double(beta),(*C.double)(_tmp1374)); _tmp1375 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1375)
+  var _tmp1392 *float64
+  if len(c) > 0 { _tmp1392 = (*float64)(&c[0]) }
+  if _tmp1393 := C.MSK_syrk(self.ptr(),C.int32_t(uplo),C.int32_t(trans),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1391),C.double(beta),(*C.double)(_tmp1392)); _tmp1393 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1393)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Performs a rank-k update of a symmetric matrix.
+//
+// - uplo Uplo
+//   Indicates whether the upper or lower triangular part of C is used.
+// - trans Transpose
+//   Indicates whether the matrix A must be transposed.
+// - n int32
+//   Specifies the order of C.
+// - k int32
+//   Indicates the number of rows or columns of A, and its rank.
+// - alpha float64
+//   A scalar value multiplying the result of the matrix multiplication.
+// - a []float64
+//   The pointer to the array storing matrix A in a column-major format.
+// - beta float64
+//   A scalar value that multiplies C.
+// - c []float64
+//   The pointer to the array storing matrix C in a column-major format.
+func Syrk(uplo Uplo,trans Transpose,n int32,k int32,alpha float64,a []float64,beta float64,c []float64) (err error) {
+  self := &globalenv
+  if int64(len(a)) < int64((n * k)) {
+    err = &ArrayLengthError{fun:"Syrk",arg:"a"}
+    return
+  }
+  var _tmp1391 *float64
+  if len(a) > 0 { _tmp1391 = (*float64)(&a[0]) }
+  if int64(len(c)) < int64((n * n)) {
+    err = &ArrayLengthError{fun:"Syrk",arg:"c"}
+    return
+  }
+  var _tmp1392 *float64
+  if len(c) > 0 { _tmp1392 = (*float64)(&c[0]) }
+  if _tmp1394 := C.MSK_syrk(self.ptr(),C.int32_t(uplo),C.int32_t(trans),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1391),C.double(beta),(*C.double)(_tmp1392)); _tmp1394 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1394)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }

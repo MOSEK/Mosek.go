@@ -60,7 +60,7 @@ def atype2cgodecl(t):
     elif isinstance(t,str):
         return atypemap[t]
     else:
-        assert False,t
+        raise KeyError(t)
 def atype2godecl(t):
     if   isinstance(t,ag.agref):
         return '*' + atypecgodecl(t.t)
@@ -73,7 +73,7 @@ def atype2godecl(t):
     elif isinstance(t,str):
         return gtypemap[t]
     else:
-        assert False,t
+        raise KeyError(t)
 
 
 class ComputeGen(ag.BaseComputeGenerator):
@@ -140,7 +140,10 @@ class ComputeGen(ag.BaseComputeGenerator):
                 if isinstance(a,ag.ReturnArg):
                     value = tmpvar
             else:
-                ctp = atype2cgodecl(a.type) 
+                try:
+                    ctp = atype2cgodecl(a.type) 
+                except KeyError:
+                    raise ag.DontGenerate(func['name'],"invalid type")
                 code.extend(a.code)
                 callargs.append(f'({ctp})({a.value})')
         callargs = ','.join(callargs)
@@ -195,9 +198,7 @@ class FuncGen(ag.BaseFuncGenerator):
             try:
                 argtp = atype2godecl(atn)
             except KeyError:
-                self.__dontgenerate = "Invalid type"
-            if argtp == 'void':
-                self.__dontgenerate = "Void pointer arguments not supported"        
+                raise ag.DontGenerate(self.__func,"Invalid type")
         tmp = self.tmpvargen()
 
         if minlength:
@@ -252,7 +253,9 @@ class FuncGen(ag.BaseFuncGenerator):
         self['callarg'].append(f'({cctype})({tmp})')
 
     def arg_ref(self,a,basetp,atn,ctn,n,indexof,isdefaultoarg,argbrief,argdesc):
-        assert a['mode'] != 'io'
+        if a['mode'] == 'io':
+            raise ag.DontGenerate(self.__func,"Invalid mode")
+
         if atn == 'enum':
             self['nativearg'].append(f'int32_t *')
             argtp = ctn.capitalize()
@@ -273,7 +276,7 @@ class FuncGen(ag.BaseFuncGenerator):
             self['callarg'].append(f'(*C.{ctn})(&{n})')
         self['retarg'].append((n,argtp,argbrief))
     def arg_ref_func(self,a,tp,rettype,argtypes,n,isdefaultoarg,argbrief,argdesc):
-        raise DontGenerate("arg_ref_func() not implemented")
+        raise ag.DontGenerate("arg_ref_func() not implemented")
     def arg_refobj(self,a,basetp,atn,ctn,n,isdefaultoarg,argbrief,argdesc):
         self['nativearg'].append(f'{ctn}*')
         self.__dontgenerate = "Not supported: Ref to object"
@@ -336,7 +339,11 @@ class FuncGen(ag.BaseFuncGenerator):
             self['callarg'].append(f'{tmp}')
         else:
             self['nativearg'].append(f'{ctn}')
-            argtp = atype2godecl(atn)
+            try:
+                argtp = atype2godecl(atn)
+            except KeyError:
+                raise ag.DontGenerate(self.__func['name'],"Invalid type") 
+
             self['callarg'].append(f'C.{ctn}({n})')
 
         self['funarg'].append((f'{n} {argtp}',argbrief))
@@ -348,7 +355,6 @@ class FuncGen(ag.BaseFuncGenerator):
         if self.__dontgenerate is not None:
             raise ag.DontGenerate(self.__func['name'],self.__dontgenerate)
 
-
         callargs = ','.join(self['callarg'])
         funargs  = ','.join([ a for (a,b) in self['funarg']])
         nfunargs = ','.join(self['nativearg'])
@@ -358,41 +364,49 @@ class FuncGen(ag.BaseFuncGenerator):
 
         if len(rets) == 0: retstr = ''
         else: retstr = ' (' + ','.join(rets) + ')'
-        
-        
-        d['funimpl'].append('')           
-        d['funimpl'].extend([ f'// {l}' for l in brief.split('\n')])
-        if self['funarg'] or self['retarg']:
-            d['funimpl'].append('//')           
-            for n,doc in self['funarg'] + [ (f'{n} {t}',doc) for n,t,doc in self['retarg']]:
-                d['funimpl'].append(f'// - {n}')
-                
-                L = doc.split('\n')
-                d['funimpl'].extend([f'//   {l}' for l in L])
+       
+        vs = [None]
+        if self.__clsarg is not None and self.__clsarg['name'] == 'env':
+            vs.append('global')
 
-        if self.__clsarg is not None:
-            d['funimpl'].append(f'func (self *{self.__clstp}) {self.funapiname}({funargs}){retstr} {{')
-        else:
-            d['funimpl'].append(f'func {self.funapiname}({funargs}){retstr} {{')
+        for var in vs:
+            d['funimpl'].append('')           
+            d['funimpl'].extend([ f'// {l}' for l in brief.split('\n')])
+            if self['funarg'] or self['retarg']:
+                d['funimpl'].append('//')           
+                for n,doc in self['funarg'] + [ (f'{n} {t}',doc) for n,t,doc in self['retarg']]:
+                    d['funimpl'].append(f'// - {n}')
+                    
+                    L = doc.split('\n')
+                    d['funimpl'].extend([f'//   {l}' for l in L])
+
+            if self.__clsarg is not None:
+                if var is None:
+                    d['funimpl'].append(f'func (self *{self.__clstp}) {self.funapiname}({funargs}){retstr} {{')
+                else:
+                    d['funimpl'].append(f'func {self.funapiname}({funargs}){retstr} {{')
+                    d['funimpl'].append(f'  self := &globalenv')
+            else:
+                d['funimpl'].append(f'func {self.funapiname}({funargs}){retstr} {{')
 
 
-        d['funimpl'].extend(['  '+l for l in self['prelude']])
+            d['funimpl'].extend(['  '+l for l in self['prelude']])
 
-        tmp = self.tmpvargen()
-        argstr = ','.join(self["callarg"])
-        d['funimpl'].append( f'  if {tmp} := C.MSK_{self.funname}({argstr}); {tmp} != 0 {{')
-        if self.__clsarg is not None:
-            d['funimpl'].extend([f'    lastcode,lastmsg := self.getlasterror({tmp})',
-                                 '    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}',
-                                 '    return'])
-        else:
-            d['funimpl'].extend([f'    err = &MosekError{{ code:Rescode({tmp}) }}',
-                                 '    return'])
-        d['funimpl'].append('  }')
+            tmp = self.tmpvargen()
+            argstr = ','.join(self["callarg"])
+            d['funimpl'].append( f'  if {tmp} := C.MSK_{self.funname}({argstr}); {tmp} != 0 {{')
+            if self.__clsarg is not None:
+                d['funimpl'].extend([f'    lastcode,lastmsg := self.getlasterror({tmp})',
+                                     '    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}',
+                                     '    return'])
+            else:
+                d['funimpl'].extend([f'    err = &MosekError{{ code:Rescode({tmp}) }}',
+                                     '    return'])
+            d['funimpl'].append('  }')
 
-        d['funimpl'].extend(['  '+l for l in self['postlude']])
-        d['funimpl'].append('  return')
-        d['funimpl'].append('}')
+            d['funimpl'].extend(['  '+l for l in self['postlude']])
+            d['funimpl'].append('  return')
+            d['funimpl'].append('}')
 
 
 
@@ -401,7 +415,9 @@ class APIGen(ag.BaseAPIGenerator):
                  tis,
                  tmpvargen):
         self.__tmpvargen = tmpvargen
-        super().__init__(tis, tmpvargen = tmpvargen, targetfilter='go')
+        super().__init__(tis, 
+                         tmpvargen = tmpvargen, 
+                         targetfilter="go")
 
     def warn(self,msg,*args): logging.warning(msg,*args)
     def error(self,msg,*args): logging.error(msg,*args)

@@ -65,6 +65,7 @@ type Env struct {
         cptr C.MSKenv_t
 }
 
+var globalenv Env = Env{}
 // Mosek Task represents a single optimizatrion problem and solver information.
 type Task struct {
     cptr            C.MSKtask_t
