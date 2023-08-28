@@ -434,6 +434,7 @@ package mosek
 // extern int MSK_getversion(int32_t *,int32_t *,int32_t *);
 // extern int MSK_licensecleanup();
 // extern int MSK_linkfiletoenvstream(MSKenv_t,int32_t,const char *,int32_t);
+// extern int MSK_optimizebatch(MSKenv_t,int,double,int32_t,int64_t,MSKtask_t *,int32_t *,int32_t *);
 // extern int MSK_potrf(MSKenv_t,int32_t,int32_t,double *);
 // extern int MSK_putlicensecode(MSKenv_t,int32_t *);
 // extern int MSK_putlicensedebug(MSKenv_t,int32_t);
@@ -1806,7 +1807,7 @@ const (
     MSK_IPAR_MIO_MAX_NUM_ROOT_CUT_ROUNDS Iparam = 75 // Maximum number of cut separation rounds at the root node.
     MSK_IPAR_MIO_MAX_NUM_SOLUTIONS Iparam = 76 // Controls how many feasible solutions the mixed-integer optimizer investigates.
     MSK_IPAR_MIO_MEMORY_EMPHASIS_LEVEL Iparam = 77 // Controls how much emphasis is put on reducing memory usage.
-    MSK_IPAR_MIO_MIN_REL Iparam = 78 // Number of times a variable must have been branched on for its pseudocost to be cosidered reliable.
+    MSK_IPAR_MIO_MIN_REL Iparam = 78 // Number of times a variable must have been branched on for its pseudocost to be considered reliable.
     MSK_IPAR_MIO_MODE Iparam = 79 // Turns on/off the mixed-integer mode.
     MSK_IPAR_MIO_NODE_OPTIMIZER Iparam = 80 // Controls which optimizer is employed at the non-root nodes in the mixed-integer optimizer.
     MSK_IPAR_MIO_NODE_SELECTION Iparam = 81 // Controls the node selection strategy employed by the mixed-integer optimizer.
@@ -3950,7 +3951,7 @@ func (self *Task) AnalyzeSolution(whichstream Streamtype,whichsol Soltype) (err 
 // - afeidxlist []int64
 //   List of affine expression indexes.
 // - b []float64
-//   The vector of constant terms added to affine expressions. Optional, can be NULL.
+//   The vector of constant terms added to affine expressions. Optional.
 func (self *Task) AppendAcc(domidx int64,afeidxlist []int64,b []float64) (err error) {
   _tmp3 := len(afeidxlist)
   var numafeidx int64 = int64(_tmp3)
@@ -3977,7 +3978,7 @@ func (self *Task) AppendAcc(domidx int64,afeidxlist []int64,b []float64) (err er
 // - afeidxlist []int64
 //   List of affine expression indexes.
 // - b []float64
-//   The vector of constant terms added to affine expressions. Optional, can be NULL.
+//   The vector of constant terms added to affine expressions. Optional.
 func (self *Task) AppendAccs(domidxs []int64,afeidxlist []int64,b []float64) (err error) {
   _tmp7 := len(domidxs)
   var numaccs int64 = int64(_tmp7)
@@ -4008,7 +4009,7 @@ func (self *Task) AppendAccs(domidxs []int64,afeidxlist []int64,b []float64) (er
 // - afeidxfirst int64
 //   Index of the first affine expression.
 // - b []float64
-//   The vector of constant terms added to affine expressions. Optional, can be NULL.
+//   The vector of constant terms added to affine expressions. Optional.
 func (self *Task) AppendAccSeq(domidx int64,afeidxfirst int64,b []float64) (err error) {
   var _tmp13 C.int64_t
   if _tmp14 := C.MSK_getdomainn(self.ptr(),(C.int64_t)(domidx),(&_tmp13)); _tmp14 != 0 {
@@ -4040,7 +4041,7 @@ func (self *Task) AppendAccSeq(domidx int64,afeidxfirst int64,b []float64) (err 
 // - afeidxfirst int64
 //   Index of the first affine expression.
 // - b []float64
-//   The vector of constant terms added to affine expressions. Optional, can be NULL.
+//   The vector of constant terms added to affine expressions. Optional.
 func (self *Task) AppendAccsSeq(domidxs []int64,numafeidx int64,afeidxfirst int64,b []float64) (err error) {
   _tmp17 := len(domidxs)
   var numaccs int64 = int64(_tmp17)
@@ -4419,8 +4420,8 @@ func (self *Task) AppendSparseSymMat(dim int32,subi []int32,subj []int32,valij [
 // - idx []int64
 //   Unique index assigned to the inputted matrix.
 func (self *Task) AppendSparseSymMatList(dims []int32,nz []int64,subi []int32,subj []int32,valij []float64) (idx []int64,err error) {
-  _tmp57 := len(dims)
-  if _tmp57 < len(nz) { _tmp57 = len(nz) }
+  _tmp57 := len(nz)
+  if _tmp57 < len(dims) { _tmp57 = len(dims) }
   var num int32 = int32(_tmp57)
   var _tmp58 *int32
   if len(dims) > 0 { _tmp58 = (*int32)(&dims[0]) }
@@ -9634,16 +9635,16 @@ func (self *Task) InitBasisSolve() (basis []int32,err error) {
 // - bux []float64
 //   Upper bounds for the variables.
 func (self *Task) InputData(maxnumcon int32,maxnumvar int32,c []float64,cfix float64,aptrb []int64,aptre []int64,asub []int32,aval []float64,bkc []Boundkey,blc []float64,buc []float64,bkx []Boundkey,blx []float64,bux []float64) (err error) {
-  _tmp817 := len(buc)
-  if _tmp817 < len(bkc) { _tmp817 = len(bkc) }
+  _tmp817 := len(bkc)
+  if _tmp817 < len(buc) { _tmp817 = len(buc) }
   if _tmp817 < len(blc) { _tmp817 = len(blc) }
   var numcon int32 = int32(_tmp817)
-  _tmp818 := len(aptrb)
+  _tmp818 := len(bux)
   if _tmp818 < len(blx) { _tmp818 = len(blx) }
-  if _tmp818 < len(bux) { _tmp818 = len(bux) }
-  if _tmp818 < len(bkx) { _tmp818 = len(bkx) }
+  if _tmp818 < len(aptrb) { _tmp818 = len(aptrb) }
   if _tmp818 < len(aptre) { _tmp818 = len(aptre) }
   if _tmp818 < len(c) { _tmp818 = len(c) }
+  if _tmp818 < len(bkx) { _tmp818 = len(bkx) }
   var numvar int32 = int32(_tmp818)
   var _tmp819 *float64
   if len(c) > 0 { _tmp819 = (*float64)(&c[0]) }
@@ -9884,8 +9885,8 @@ func (self *Task) PrimalRepair(wlc []float64,wuc []float64,wlx []float64,wux []f
 // - rightrangej []float64
 //   Right range for variables.
 func (self *Task) PrimalSensitivity(subi []int32,marki []Mark,subj []int32,markj []Mark) (leftpricei []float64,rightpricei []float64,leftrangei []float64,rightrangei []float64,leftpricej []float64,rightpricej []float64,leftrangej []float64,rightrangej []float64,err error) {
-  _tmp859 := len(subi)
-  if _tmp859 < len(marki) { _tmp859 = len(marki) }
+  _tmp859 := len(marki)
+  if _tmp859 < len(subi) { _tmp859 = len(subi) }
   var numi int32 = int32(_tmp859)
   var _tmp860 *int32
   if len(subi) > 0 { _tmp860 = (*int32)(&subi[0]) }
@@ -9981,7 +9982,7 @@ func (self *Task) ProStaToStr(problemsta Prosta) (str string,err error) {
 // - afeidxlist []int64
 //   List of affine expression indexes.
 // - b []float64
-//   The vector of constant terms added to affine expressions. Optional, can be NULL.
+//   The vector of constant terms added to affine expressions. Optional.
 func (self *Task) PutAcc(accidx int64,domidx int64,afeidxlist []int64,b []float64) (err error) {
   _tmp878 := len(afeidxlist)
   var numafeidx int64 = int64(_tmp878)
@@ -10006,7 +10007,7 @@ func (self *Task) PutAcc(accidx int64,domidx int64,afeidxlist []int64,b []float6
 // - accidx int64
 //   Affine conic constraint index.
 // - b []float64
-//   The vector of constant terms added to affine expressions. Optional, can be NULL.
+//   The vector of constant terms added to affine expressions. Optional.
 func (self *Task) PutAccB(accidx int64,b []float64) (err error) {
   _tmp882 := len(b)
   var lengthb int64 = int64(_tmp882)
@@ -10072,10 +10073,10 @@ func (self *Task) PutAccDotY(whichsol Soltype,accidx int64) (doty []float64,err 
 // - afeidxlist []int64
 //   List of affine expression indexes.
 // - b []float64
-//   The vector of constant terms added to affine expressions. Optional, can be NULL.
+//   The vector of constant terms added to affine expressions. Optional.
 func (self *Task) PutAccList(accidxs []int64,domidxs []int64,afeidxlist []int64,b []float64) (err error) {
-  _tmp890 := len(accidxs)
-  if _tmp890 < len(domidxs) { _tmp890 = len(domidxs) }
+  _tmp890 := len(domidxs)
+  if _tmp890 < len(accidxs) { _tmp890 = len(accidxs) }
   var numaccs int64 = int64(_tmp890)
   var _tmp891 *int64
   if len(accidxs) > 0 { _tmp891 = (*int64)(&accidxs[0]) }
@@ -10152,8 +10153,8 @@ func (self *Task) PutACol(j int32,subj []int32,valj []float64) (err error) {
 // - aval []float64
 //   Coefficient values.
 func (self *Task) PutAColList(sub []int32,ptrb []int32,ptre []int32,asub []int32,aval []float64) (err error) {
-  _tmp903 := len(ptrb)
-  if _tmp903 < len(ptre) { _tmp903 = len(ptre) }
+  _tmp903 := len(ptre)
+  if _tmp903 < len(ptrb) { _tmp903 = len(ptrb) }
   if _tmp903 < len(sub) { _tmp903 = len(sub) }
   var num int32 = int32(_tmp903)
   var _tmp904 *int32
@@ -10218,11 +10219,11 @@ func (self *Task) PutAColSlice(first int32,last int32,ptrb []int64,ptre []int64,
 // - valkl []float64
 //   The numerical value associated with each block triplet.
 func (self *Task) PutAfeBarfBlockTriplet(afeidx []int64,barvaridx []int32,subk []int32,subl []int32,valkl []float64) (err error) {
-  _tmp915 := len(subl)
-  if _tmp915 < len(subk) { _tmp915 = len(subk) }
+  _tmp915 := len(valkl)
   if _tmp915 < len(barvaridx) { _tmp915 = len(barvaridx) }
-  if _tmp915 < len(valkl) { _tmp915 = len(valkl) }
+  if _tmp915 < len(subl) { _tmp915 = len(subl) }
   if _tmp915 < len(afeidx) { _tmp915 = len(afeidx) }
+  if _tmp915 < len(subk) { _tmp915 = len(subk) }
   var numtrip int64 = int64(_tmp915)
   if int64(len(afeidx)) < int64(numtrip) {
     err = &ArrayLengthError{fun:"PutAfeBarfBlockTriplet",arg:"afeidx"}
@@ -10273,8 +10274,8 @@ func (self *Task) PutAfeBarfBlockTriplet(afeidx []int64,barvaridx []int32,subk [
 // - termweight []float64
 //   Weights in the weighted sum.
 func (self *Task) PutAfeBarfEntry(afeidx int64,barvaridx int32,termidx []int64,termweight []float64) (err error) {
-  _tmp922 := len(termidx)
-  if _tmp922 < len(termweight) { _tmp922 = len(termweight) }
+  _tmp922 := len(termweight)
+  if _tmp922 < len(termidx) { _tmp922 = len(termidx) }
   var numterm int64 = int64(_tmp922)
   var _tmp923 *int64
   if len(termidx) > 0 { _tmp923 = (*int64)(&termidx[0]) }
@@ -10305,8 +10306,8 @@ func (self *Task) PutAfeBarfEntry(afeidx int64,barvaridx int32,termidx []int64,t
 func (self *Task) PutAfeBarfEntryList(afeidx []int64,barvaridx []int32,numterm []int64,ptrterm []int64,termidx []int64,termweight []float64) (err error) {
   _tmp926 := len(barvaridx)
   if _tmp926 < len(ptrterm) { _tmp926 = len(ptrterm) }
-  if _tmp926 < len(numterm) { _tmp926 = len(numterm) }
   if _tmp926 < len(afeidx) { _tmp926 = len(afeidx) }
+  if _tmp926 < len(numterm) { _tmp926 = len(numterm) }
   var numafeidx int64 = int64(_tmp926)
   var _tmp927 *int64
   if len(afeidx) > 0 { _tmp927 = (*int64)(&afeidx[0]) }
@@ -10316,8 +10317,8 @@ func (self *Task) PutAfeBarfEntryList(afeidx []int64,barvaridx []int32,numterm [
   if len(numterm) > 0 { _tmp929 = (*int64)(&numterm[0]) }
   var _tmp930 *int64
   if len(ptrterm) > 0 { _tmp930 = (*int64)(&ptrterm[0]) }
-  _tmp931 := len(termidx)
-  if _tmp931 < len(termweight) { _tmp931 = len(termweight) }
+  _tmp931 := len(termweight)
+  if _tmp931 < len(termidx) { _tmp931 = len(termidx) }
   var lenterm int64 = int64(_tmp931)
   var _tmp932 *int64
   if len(termidx) > 0 { _tmp932 = (*int64)(&termidx[0]) }
@@ -10356,8 +10357,8 @@ func (self *Task) PutAfeBarfRow(afeidx int64,barvaridx []int32,numterm []int64,p
   if len(numterm) > 0 { _tmp937 = (*int64)(&numterm[0]) }
   var _tmp938 *int64
   if len(ptrterm) > 0 { _tmp938 = (*int64)(&ptrterm[0]) }
-  _tmp939 := len(termidx)
-  if _tmp939 < len(termweight) { _tmp939 = len(termweight) }
+  _tmp939 := len(termweight)
+  if _tmp939 < len(termidx) { _tmp939 = len(termidx) }
   var lenterm int64 = int64(_tmp939)
   var _tmp940 *int64
   if len(termidx) > 0 { _tmp940 = (*int64)(&termidx[0]) }
@@ -10380,8 +10381,8 @@ func (self *Task) PutAfeBarfRow(afeidx int64,barvaridx []int32,numterm []int64,p
 // - val []float64
 //   New non-zero values in the column.
 func (self *Task) PutAfeFCol(varidx int32,afeidx []int64,val []float64) (err error) {
-  _tmp943 := len(val)
-  if _tmp943 < len(afeidx) { _tmp943 = len(afeidx) }
+  _tmp943 := len(afeidx)
+  if _tmp943 < len(val) { _tmp943 = len(val) }
   var numnz int64 = int64(_tmp943)
   var _tmp944 *int64
   if len(afeidx) > 0 { _tmp944 = (*int64)(&afeidx[0]) }
@@ -10421,9 +10422,9 @@ func (self *Task) PutAfeFEntry(afeidx int64,varidx int32,value float64) (err err
 // - val []float64
 //   Values of the entries in F.
 func (self *Task) PutAfeFEntryList(afeidx []int64,varidx []int32,val []float64) (err error) {
-  _tmp948 := len(val)
-  if _tmp948 < len(varidx) { _tmp948 = len(varidx) }
+  _tmp948 := len(varidx)
   if _tmp948 < len(afeidx) { _tmp948 = len(afeidx) }
+  if _tmp948 < len(val) { _tmp948 = len(val) }
   var numentr int64 = int64(_tmp948)
   var _tmp949 *int64
   if len(afeidx) > 0 { _tmp949 = (*int64)(&afeidx[0]) }
@@ -10523,8 +10524,8 @@ func (self *Task) PutAfeG(afeidx int64,g float64) (err error) {
 // - g []float64
 //   New values for the elements of g.
 func (self *Task) PutAfeGList(afeidx []int64,g []float64) (err error) {
-  _tmp966 := len(g)
-  if _tmp966 < len(afeidx) { _tmp966 = len(afeidx) }
+  _tmp966 := len(afeidx)
+  if _tmp966 < len(g) { _tmp966 = len(g) }
   var numafeidx int64 = int64(_tmp966)
   var _tmp967 *int64
   if len(afeidx) > 0 { _tmp967 = (*int64)(&afeidx[0]) }
@@ -10642,8 +10643,8 @@ func (self *Task) PutARow(i int32,subi []int32,vali []float64) (err error) {
 // - aval []float64
 //   Coefficient values.
 func (self *Task) PutARowList(sub []int32,ptrb []int64,ptre []int64,asub []int32,aval []float64) (err error) {
-  _tmp982 := len(ptrb)
-  if _tmp982 < len(ptre) { _tmp982 = len(ptre) }
+  _tmp982 := len(ptre)
+  if _tmp982 < len(ptrb) { _tmp982 = len(ptrb) }
   if _tmp982 < len(sub) { _tmp982 = len(sub) }
   var num int32 = int32(_tmp982)
   var _tmp983 *int32
@@ -10729,8 +10730,8 @@ func (self *Task) PutATruncateTol(tolzero float64) (err error) {
 // - valijkl []float64
 //   The numerical value associated with each block triplet.
 func (self *Task) PutBaraBlockTriplet(subi []int32,subj []int32,subk []int32,subl []int32,valijkl []float64) (err error) {
-  _tmp995 := len(subl)
-  if _tmp995 < len(valijkl) { _tmp995 = len(valijkl) }
+  _tmp995 := len(valijkl)
+  if _tmp995 < len(subl) { _tmp995 = len(subl) }
   if _tmp995 < len(subk) { _tmp995 = len(subk) }
   if _tmp995 < len(subj) { _tmp995 = len(subj) }
   var num int64 = int64(_tmp995)
@@ -10855,8 +10856,8 @@ func (self *Task) PutBaraIjList(subi []int32,subj []int32,alphaptrb []int64,alph
 // - weights []float64
 //   Weights for weighted sum of matrixes.
 func (self *Task) PutBaraRowList(subi []int32,ptrb []int64,ptre []int64,subj []int32,nummat []int64,matidx []int64,weights []float64) (err error) {
-  _tmp1014 := len(ptrb)
-  if _tmp1014 < len(ptre) { _tmp1014 = len(ptre) }
+  _tmp1014 := len(ptre)
+  if _tmp1014 < len(ptrb) { _tmp1014 = len(ptrb) }
   if _tmp1014 < len(subi) { _tmp1014 = len(subi) }
   var num int32 = int32(_tmp1014)
   var _tmp1015 *int32
@@ -11390,7 +11391,7 @@ func (self *Task) PutDjcName(djcidx int64,name string) (err error) {
 // - afeidxlist []int64
 //   List of affine expression indexes.
 // - b []float64
-//   The vector of constant terms added to affine expressions. Optional, may be NULL.
+//   The vector of constant terms added to affine expressions. Optional.
 // - termsizelist []int64
 //   List of term sizes.
 // - termsindjc []int64
@@ -12374,9 +12375,9 @@ func (self *Task) PutVarBound(j int32,bkx Boundkey,blx float64,bux float64) (err
 // - bux []float64
 //   Upper bounds for the variables.
 func (self *Task) PutVarBoundList(sub []int32,bkx []Boundkey,blx []float64,bux []float64) (err error) {
-  _tmp1212 := len(bkx)
-  if _tmp1212 < len(blx) { _tmp1212 = len(blx) }
+  _tmp1212 := len(blx)
   if _tmp1212 < len(bux) { _tmp1212 = len(bux) }
+  if _tmp1212 < len(bkx) { _tmp1212 = len(bkx) }
   if _tmp1212 < len(sub) { _tmp1212 = len(sub) }
   var num int32 = int32(_tmp1212)
   var _tmp1213 *int32
@@ -13819,7 +13820,7 @@ func LicenseCleanup() (err error) {
 //   A valid file name.
 // - append int32
 //   If this argument is 0 the file will be overwritten, otherwise it will be appended to.
-func (self *Env) Linkfiletostream(whichstream Streamtype,filename string,append int32) (err error) {
+func (self *Env) Linkfiletosenvtream(whichstream Streamtype,filename string,append int32) (err error) {
   _tmp1365 := C.CString(filename)
   if _tmp1366 := C.MSK_linkfiletoenvstream(self.ptr(),C.int32_t(whichstream),_tmp1365,C.int32_t(append)); _tmp1366 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmp1366)
@@ -13837,11 +13838,96 @@ func (self *Env) Linkfiletostream(whichstream Streamtype,filename string,append 
 //   A valid file name.
 // - append int32
 //   If this argument is 0 the file will be overwritten, otherwise it will be appended to.
-func Linkfiletostream(whichstream Streamtype,filename string,append int32) (err error) {
+func Linkfiletosenvtream(whichstream Streamtype,filename string,append int32) (err error) {
   self := &globalenv
   _tmp1365 := C.CString(filename)
   if _tmp1367 := C.MSK_linkfiletoenvstream(self.ptr(),C.int32_t(whichstream),_tmp1365,C.int32_t(append)); _tmp1367 != 0 {
     lastcode,lastmsg := self.getlasterror(_tmp1367)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Optimize a number of tasks in parallel using a specified number of threads.
+//
+// - israce bool
+//   If nonzero, then the function is terminated after the first task has been completed.
+// - maxtime float64
+//   Time limit for the function.
+// - numthreads int32
+//   Number of threads to be employed.
+// - task []*Task
+//   An array of tasks to optimize in parallel.
+// - trmcode []Rescode
+//   The termination code for each task.
+// - rcode []Rescode
+//   The response code for each task.
+func (self *Env) OptimizeBatch(israce bool,maxtime float64,numthreads int32,task []*Task) (trmcode []Rescode,rcode []Rescode,err error) {
+  var _tmp1368 C.int; if israce { _tmp1368 = 1; }
+  _tmp1369 := len(task)
+  var numtask int64 = int64(_tmp1369)
+  if int64(len(task)) < int64(numtask) {
+    err = &ArrayLengthError{fun:"OptimizeBatch",arg:"task"}
+    return
+  }
+  var _tmp1371 []C.MSKtask_t = make([]C.MSKtask_t,len(task))
+  for i,t := range(task) {
+    _tmp1371[i] = t.ptr()
+  }
+  var _tmp1370 *C.MSKtask_t;
+  if len(task) > 0 { _tmp1370 = &(_tmp1371[0]) }
+  var _tmp1372 *Rescode
+  trmcode = make([]Rescode,numtask)
+  if len(trmcode) > 0 { _tmp1372 = (*Rescode)(&trmcode[0]) }
+  var _tmp1373 *Rescode
+  rcode = make([]Rescode,numtask)
+  if len(rcode) > 0 { _tmp1373 = (*Rescode)(&rcode[0]) }
+  if _tmp1374 := C.MSK_optimizebatch(self.ptr(),_tmp1368,C.double(maxtime),C.int32_t(numthreads),C.int64_t(numtask),(*C.MSKtask_t)(_tmp1370),(*C.int32_t)(_tmp1372),(*C.int32_t)(_tmp1373)); _tmp1374 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1374)
+    err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
+    return
+  }
+  return
+}
+
+// Optimize a number of tasks in parallel using a specified number of threads.
+//
+// - israce bool
+//   If nonzero, then the function is terminated after the first task has been completed.
+// - maxtime float64
+//   Time limit for the function.
+// - numthreads int32
+//   Number of threads to be employed.
+// - task []*Task
+//   An array of tasks to optimize in parallel.
+// - trmcode []Rescode
+//   The termination code for each task.
+// - rcode []Rescode
+//   The response code for each task.
+func OptimizeBatch(israce bool,maxtime float64,numthreads int32,task []*Task) (trmcode []Rescode,rcode []Rescode,err error) {
+  self := &globalenv
+  var _tmp1368 C.int; if israce { _tmp1368 = 1; }
+  _tmp1369 := len(task)
+  var numtask int64 = int64(_tmp1369)
+  if int64(len(task)) < int64(numtask) {
+    err = &ArrayLengthError{fun:"OptimizeBatch",arg:"task"}
+    return
+  }
+  var _tmp1371 []C.MSKtask_t = make([]C.MSKtask_t,len(task))
+  for i,t := range(task) {
+    _tmp1371[i] = t.ptr()
+  }
+  var _tmp1370 *C.MSKtask_t;
+  if len(task) > 0 { _tmp1370 = &(_tmp1371[0]) }
+  var _tmp1372 *Rescode
+  trmcode = make([]Rescode,numtask)
+  if len(trmcode) > 0 { _tmp1372 = (*Rescode)(&trmcode[0]) }
+  var _tmp1373 *Rescode
+  rcode = make([]Rescode,numtask)
+  if len(rcode) > 0 { _tmp1373 = (*Rescode)(&rcode[0]) }
+  if _tmp1375 := C.MSK_optimizebatch(self.ptr(),_tmp1368,C.double(maxtime),C.int32_t(numthreads),C.int64_t(numtask),(*C.MSKtask_t)(_tmp1370),(*C.int32_t)(_tmp1372),(*C.int32_t)(_tmp1373)); _tmp1375 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1375)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13861,10 +13947,10 @@ func (self *Env) Potrf(uplo Uplo,n int32,a []float64) (err error) {
     err = &ArrayLengthError{fun:"Potrf",arg:"a"}
     return
   }
-  var _tmp1368 *float64
-  if len(a) > 0 { _tmp1368 = (*float64)(&a[0]) }
-  if _tmp1369 := C.MSK_potrf(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1368)); _tmp1369 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1369)
+  var _tmp1376 *float64
+  if len(a) > 0 { _tmp1376 = (*float64)(&a[0]) }
+  if _tmp1377 := C.MSK_potrf(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1376)); _tmp1377 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1377)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13885,10 +13971,10 @@ func Potrf(uplo Uplo,n int32,a []float64) (err error) {
     err = &ArrayLengthError{fun:"Potrf",arg:"a"}
     return
   }
-  var _tmp1368 *float64
-  if len(a) > 0 { _tmp1368 = (*float64)(&a[0]) }
-  if _tmp1370 := C.MSK_potrf(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1368)); _tmp1370 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1370)
+  var _tmp1376 *float64
+  if len(a) > 0 { _tmp1376 = (*float64)(&a[0]) }
+  if _tmp1378 := C.MSK_potrf(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1376)); _tmp1378 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1378)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13904,10 +13990,10 @@ func (self *Env) PutLicenseCode(code []int32) (err error) {
     err = &ArrayLengthError{fun:"PutLicenseCode",arg:"code"}
     return
   }
-  var _tmp1371 *int32
-  if len(code) > 0 { _tmp1371 = (*int32)(&code[0]) }
-  if _tmp1372 := C.MSK_putlicensecode(self.ptr(),(*C.int32_t)(_tmp1371)); _tmp1372 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1372)
+  var _tmp1379 *int32
+  if len(code) > 0 { _tmp1379 = (*int32)(&code[0]) }
+  if _tmp1380 := C.MSK_putlicensecode(self.ptr(),(*C.int32_t)(_tmp1379)); _tmp1380 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1380)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13924,10 +14010,10 @@ func PutLicenseCode(code []int32) (err error) {
     err = &ArrayLengthError{fun:"PutLicenseCode",arg:"code"}
     return
   }
-  var _tmp1371 *int32
-  if len(code) > 0 { _tmp1371 = (*int32)(&code[0]) }
-  if _tmp1373 := C.MSK_putlicensecode(self.ptr(),(*C.int32_t)(_tmp1371)); _tmp1373 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1373)
+  var _tmp1379 *int32
+  if len(code) > 0 { _tmp1379 = (*int32)(&code[0]) }
+  if _tmp1381 := C.MSK_putlicensecode(self.ptr(),(*C.int32_t)(_tmp1379)); _tmp1381 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1381)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13939,8 +14025,8 @@ func PutLicenseCode(code []int32) (err error) {
 // - licdebug int32
 //   Enable output of license check-out debug information.
 func (self *Env) PutLicenseDebug(licdebug int32) (err error) {
-  if _tmp1374 := C.MSK_putlicensedebug(self.ptr(),C.int32_t(licdebug)); _tmp1374 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1374)
+  if _tmp1382 := C.MSK_putlicensedebug(self.ptr(),C.int32_t(licdebug)); _tmp1382 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1382)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13953,8 +14039,8 @@ func (self *Env) PutLicenseDebug(licdebug int32) (err error) {
 //   Enable output of license check-out debug information.
 func PutLicenseDebug(licdebug int32) (err error) {
   self := &globalenv
-  if _tmp1375 := C.MSK_putlicensedebug(self.ptr(),C.int32_t(licdebug)); _tmp1375 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1375)
+  if _tmp1383 := C.MSK_putlicensedebug(self.ptr(),C.int32_t(licdebug)); _tmp1383 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1383)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13966,9 +14052,9 @@ func PutLicenseDebug(licdebug int32) (err error) {
 // - licensepath string
 //   A path specifying where to search for the license.
 func (self *Env) PutLicensePath(licensepath string) (err error) {
-  _tmp1376 := C.CString(licensepath)
-  if _tmp1377 := C.MSK_putlicensepath(self.ptr(),_tmp1376); _tmp1377 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1377)
+  _tmp1384 := C.CString(licensepath)
+  if _tmp1385 := C.MSK_putlicensepath(self.ptr(),_tmp1384); _tmp1385 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1385)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13981,9 +14067,9 @@ func (self *Env) PutLicensePath(licensepath string) (err error) {
 //   A path specifying where to search for the license.
 func PutLicensePath(licensepath string) (err error) {
   self := &globalenv
-  _tmp1376 := C.CString(licensepath)
-  if _tmp1378 := C.MSK_putlicensepath(self.ptr(),_tmp1376); _tmp1378 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1378)
+  _tmp1384 := C.CString(licensepath)
+  if _tmp1386 := C.MSK_putlicensepath(self.ptr(),_tmp1384); _tmp1386 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1386)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -13995,8 +14081,8 @@ func PutLicensePath(licensepath string) (err error) {
 // - licwait int32
 //   Enable waiting for a license.
 func (self *Env) PutLicenseWait(licwait int32) (err error) {
-  if _tmp1379 := C.MSK_putlicensewait(self.ptr(),C.int32_t(licwait)); _tmp1379 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1379)
+  if _tmp1387 := C.MSK_putlicensewait(self.ptr(),C.int32_t(licwait)); _tmp1387 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1387)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14009,8 +14095,8 @@ func (self *Env) PutLicenseWait(licwait int32) (err error) {
 //   Enable waiting for a license.
 func PutLicenseWait(licwait int32) (err error) {
   self := &globalenv
-  if _tmp1380 := C.MSK_putlicensewait(self.ptr(),C.int32_t(licwait)); _tmp1380 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1380)
+  if _tmp1388 := C.MSK_putlicensewait(self.ptr(),C.int32_t(licwait)); _tmp1388 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1388)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14019,8 +14105,8 @@ func PutLicenseWait(licwait int32) (err error) {
 
 // Reset the license expiry reporting startpoint.
 func (self *Env) ResetExpiryLicenses() (err error) {
-  if _tmp1381 := C.MSK_resetexpirylicenses(self.ptr()); _tmp1381 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1381)
+  if _tmp1389 := C.MSK_resetexpirylicenses(self.ptr()); _tmp1389 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1389)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14030,8 +14116,8 @@ func (self *Env) ResetExpiryLicenses() (err error) {
 // Reset the license expiry reporting startpoint.
 func ResetExpiryLicenses() (err error) {
   self := &globalenv
-  if _tmp1382 := C.MSK_resetexpirylicenses(self.ptr()); _tmp1382 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1382)
+  if _tmp1390 := C.MSK_resetexpirylicenses(self.ptr()); _tmp1390 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1390)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14053,13 +14139,13 @@ func (self *Env) Syeig(uplo Uplo,n int32,a []float64) (w []float64,err error) {
     err = &ArrayLengthError{fun:"Syeig",arg:"a"}
     return
   }
-  var _tmp1383 *float64
-  if len(a) > 0 { _tmp1383 = (*float64)(&a[0]) }
-  var _tmp1384 *float64
+  var _tmp1391 *float64
+  if len(a) > 0 { _tmp1391 = (*float64)(&a[0]) }
+  var _tmp1392 *float64
   w = make([]float64,n)
-  if len(w) > 0 { _tmp1384 = (*float64)(&w[0]) }
-  if _tmp1385 := C.MSK_syeig(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1383),(*C.double)(_tmp1384)); _tmp1385 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1385)
+  if len(w) > 0 { _tmp1392 = (*float64)(&w[0]) }
+  if _tmp1393 := C.MSK_syeig(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1391),(*C.double)(_tmp1392)); _tmp1393 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1393)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14082,13 +14168,13 @@ func Syeig(uplo Uplo,n int32,a []float64) (w []float64,err error) {
     err = &ArrayLengthError{fun:"Syeig",arg:"a"}
     return
   }
-  var _tmp1383 *float64
-  if len(a) > 0 { _tmp1383 = (*float64)(&a[0]) }
-  var _tmp1384 *float64
+  var _tmp1391 *float64
+  if len(a) > 0 { _tmp1391 = (*float64)(&a[0]) }
+  var _tmp1392 *float64
   w = make([]float64,n)
-  if len(w) > 0 { _tmp1384 = (*float64)(&w[0]) }
-  if _tmp1386 := C.MSK_syeig(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1383),(*C.double)(_tmp1384)); _tmp1386 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1386)
+  if len(w) > 0 { _tmp1392 = (*float64)(&w[0]) }
+  if _tmp1394 := C.MSK_syeig(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1391),(*C.double)(_tmp1392)); _tmp1394 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1394)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14110,13 +14196,13 @@ func (self *Env) Syevd(uplo Uplo,n int32,a []float64) (w []float64,err error) {
     err = &ArrayLengthError{fun:"Syevd",arg:"a"}
     return
   }
-  var _tmp1387 *float64
-  if len(a) > 0 { _tmp1387 = (*float64)(&a[0]) }
-  var _tmp1388 *float64
+  var _tmp1395 *float64
+  if len(a) > 0 { _tmp1395 = (*float64)(&a[0]) }
+  var _tmp1396 *float64
   w = make([]float64,n)
-  if len(w) > 0 { _tmp1388 = (*float64)(&w[0]) }
-  if _tmp1389 := C.MSK_syevd(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1387),(*C.double)(_tmp1388)); _tmp1389 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1389)
+  if len(w) > 0 { _tmp1396 = (*float64)(&w[0]) }
+  if _tmp1397 := C.MSK_syevd(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1395),(*C.double)(_tmp1396)); _tmp1397 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1397)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14139,13 +14225,13 @@ func Syevd(uplo Uplo,n int32,a []float64) (w []float64,err error) {
     err = &ArrayLengthError{fun:"Syevd",arg:"a"}
     return
   }
-  var _tmp1387 *float64
-  if len(a) > 0 { _tmp1387 = (*float64)(&a[0]) }
-  var _tmp1388 *float64
+  var _tmp1395 *float64
+  if len(a) > 0 { _tmp1395 = (*float64)(&a[0]) }
+  var _tmp1396 *float64
   w = make([]float64,n)
-  if len(w) > 0 { _tmp1388 = (*float64)(&w[0]) }
-  if _tmp1390 := C.MSK_syevd(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1387),(*C.double)(_tmp1388)); _tmp1390 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1390)
+  if len(w) > 0 { _tmp1396 = (*float64)(&w[0]) }
+  if _tmp1398 := C.MSK_syevd(self.ptr(),C.int32_t(uplo),C.int32_t(n),(*C.double)(_tmp1395),(*C.double)(_tmp1396)); _tmp1398 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1398)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14175,16 +14261,16 @@ func (self *Env) Syrk(uplo Uplo,trans Transpose,n int32,k int32,alpha float64,a 
     err = &ArrayLengthError{fun:"Syrk",arg:"a"}
     return
   }
-  var _tmp1391 *float64
-  if len(a) > 0 { _tmp1391 = (*float64)(&a[0]) }
+  var _tmp1399 *float64
+  if len(a) > 0 { _tmp1399 = (*float64)(&a[0]) }
   if int64(len(c)) < int64((n * n)) {
     err = &ArrayLengthError{fun:"Syrk",arg:"c"}
     return
   }
-  var _tmp1392 *float64
-  if len(c) > 0 { _tmp1392 = (*float64)(&c[0]) }
-  if _tmp1393 := C.MSK_syrk(self.ptr(),C.int32_t(uplo),C.int32_t(trans),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1391),C.double(beta),(*C.double)(_tmp1392)); _tmp1393 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1393)
+  var _tmp1400 *float64
+  if len(c) > 0 { _tmp1400 = (*float64)(&c[0]) }
+  if _tmp1401 := C.MSK_syrk(self.ptr(),C.int32_t(uplo),C.int32_t(trans),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1399),C.double(beta),(*C.double)(_tmp1400)); _tmp1401 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1401)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }
@@ -14215,16 +14301,16 @@ func Syrk(uplo Uplo,trans Transpose,n int32,k int32,alpha float64,a []float64,be
     err = &ArrayLengthError{fun:"Syrk",arg:"a"}
     return
   }
-  var _tmp1391 *float64
-  if len(a) > 0 { _tmp1391 = (*float64)(&a[0]) }
+  var _tmp1399 *float64
+  if len(a) > 0 { _tmp1399 = (*float64)(&a[0]) }
   if int64(len(c)) < int64((n * n)) {
     err = &ArrayLengthError{fun:"Syrk",arg:"c"}
     return
   }
-  var _tmp1392 *float64
-  if len(c) > 0 { _tmp1392 = (*float64)(&c[0]) }
-  if _tmp1394 := C.MSK_syrk(self.ptr(),C.int32_t(uplo),C.int32_t(trans),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1391),C.double(beta),(*C.double)(_tmp1392)); _tmp1394 != 0 {
-    lastcode,lastmsg := self.getlasterror(_tmp1394)
+  var _tmp1400 *float64
+  if len(c) > 0 { _tmp1400 = (*float64)(&c[0]) }
+  if _tmp1402 := C.MSK_syrk(self.ptr(),C.int32_t(uplo),C.int32_t(trans),C.int32_t(n),C.int32_t(k),C.double(alpha),(*C.double)(_tmp1399),C.double(beta),(*C.double)(_tmp1400)); _tmp1402 != 0 {
+    lastcode,lastmsg := self.getlasterror(_tmp1402)
     err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
     return
   }

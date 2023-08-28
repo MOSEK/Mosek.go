@@ -192,13 +192,17 @@ class FuncGen(ag.BaseFuncGenerator):
             cctype = f'**C.char' 
             self['nativearg'].append(f'const char **')
             argtp = 'string'
+        elif atn == 'Task':
+            cctype = f'*C.MSKtask_t'
+            self['nativearg'].append(f'MSKtask_t *')
+            argtp = f'*Task'
         else:
             cctype = f'*C.{ctn}' 
             self['nativearg'].append(f'{ctn} *')
             try:
                 argtp = atype2godecl(atn)
             except KeyError:
-                raise ag.DontGenerate(self.__func,"Invalid type")
+                raise ag.DontGenerate(self.__func,f"Invalid type: {atn}")
         tmp = self.tmpvargen()
 
         if minlength:
@@ -216,7 +220,16 @@ class FuncGen(ag.BaseFuncGenerator):
                                             f'''  err = &ArrayLengthError{{fun:"{self.funapiname}",arg:"{n}"}}''',
                                             '  return',
                                             '}'])
-            if atn != 'string':
+            if atn == 'Task':
+                tmpl = self.tmpvargen()
+                self['prelude'].extend([f'var {tmpl} []C.MSKtask_t = make([]C.MSKtask_t,len({n}))',
+                                        f'for i,t := range({n}) {{',
+                                        f'  {tmpl}[i] = t.ptr()',
+                                        f'}}',
+                                        f'var {tmp} *C.MSKtask_t;',
+                                        f'if len({n}) > 0 {{ {tmp} = &({tmpl}[0]) }}'])
+                
+            elif atn != 'string':
                 self['prelude'].extend([f'var {tmp} *{argtp}'])
                 self['prelude'].append(f'if len({n}) > 0 {{ {tmp} = (*{argtp})(&{n}[0]) }}')
             else:
