@@ -72,6 +72,7 @@ type Task struct {
     streamfunc      [4]func(string)
     callbackfunc    func(Callbackcode)bool
     infcallbackfunc func(Callbackcode,[]float64,[]int32,[]int64)bool
+    itgsolcallback  func([]float64)bool
 }
 
 func (t * Task) ptr() C.MSKtask_t { return t.cptr }
@@ -105,11 +106,14 @@ func msk_cgo_streamfunc(handle C.uintptr_t, msg * C.char) {
 //export msk_cgo_callbackfunc
 func msk_cgo_callbackfunc(
 	handle  C.uintptr_t,
-	code    C.int32_t,
+	icode   C.int32_t,
 	dinf  * C.double,
 	iinf  * C.int32_t,
 	liinf * C.int64_t) (r C.int) {
 
+        stop := false
+        
+        code := Callbackcode(icode)
         if task,ok := cgo.Handle(handle).Value().(*Task); ok {
             r = 0
             if task.infcallbackfunc != nil {
@@ -117,20 +121,18 @@ func msk_cgo_callbackfunc(
                 _iinf  := (*[int(MSK_IINF_END)]int32)  (unsafe.Pointer(iinf))[0:MSK_IINF_END]
                 _liinf := (*[int(MSK_LIINF_END)]int64) (unsafe.Pointer(liinf))[0:MSK_LIINF_END]
 
-                if task.infcallbackfunc(Callbackcode(code),_dinf,_iinf,_liinf) {
-                    r = 1
-                } else {
-                    r = 0
-                }
+                stop = stop || task.infcallbackfunc(code,_dinf,_iinf,_liinf)
             }
             if task.callbackfunc != nil {
-                if task.callbackfunc(Callbackcode(code)) {
-                    r = 1
-                } else {
-                    r = 0
+                stop = stop || task.callbackfunc(code)
+            }
+            if task.itgsolcallback != nil && code == MSK_CALLBACK_NEW_INT_MIO { 
+                if xx,err := task.GetXx(MSK_SOL_ITG); err == nil {
+                    stop = stop || task.itgsolcallback(xx)
                 }
             }
         }
+        if stop { r = 1 }
 	return
 }
 
@@ -192,6 +194,7 @@ func (self *Task) Delete() (err error) {
 }
 
 
+
 // Attach a stream callback function for receiving log messages.
 func (self *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) (err error) {
 	if fun == nil {
@@ -215,7 +218,7 @@ func (self *Task) PutStreamFunc(whichstream Streamtype, fun func(string)) (err e
 
 
 func (self *Task) updateCallbackFunc() (err error) {
-    if self.callbackfunc == nil && self.infcallbackfunc == nil {
+    if self.callbackfunc == nil && self.infcallbackfunc == nil && self.itgsolcallback == nil {
         if r := C.MSK_putcallbackfunc(self.ptr(), nil, nil); r != 0 {
             lastcode,lastmsg := self.getlasterror(r)
             err = &MosekError{code:Rescode(lastcode),msg:lastmsg}
@@ -232,6 +235,10 @@ func (self *Task) updateCallbackFunc() (err error) {
     return
 }
 
+func (self *Task) PutItgSolutionCallbackFunc(fun func([]float64)bool) error {
+    self.itgsolcallback = fun
+    return self.updateCallbackFunc()
+}
 
 // Attach a callback function for receiving progress status during optimizations.
 func (self *Task) PutCallbackFunc(fun func(Callbackcode) bool) error {
